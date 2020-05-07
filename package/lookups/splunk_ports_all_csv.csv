@@ -1,0 +1,26 @@
+Port,Component,Purpose,Communicates
+80,,,
+443,,,
+514,Indexer/Forwarder,Network input (syslog),N/A
+8000,Search Head,Splunk Web access,"web.conf/[settings]/httpport: The TCP port on which Splunk Web listens for incoming connections.
+* Port 8000 is the default endpoint for the Splunk Web browser-based user interface.
+* A user can connect to the interface using the IP or domain name and the port number.
+* Or a load balancer could be deployed in front of the series of Splunk Web instances."
+8065,Search Head,Splunk App Server Loopback / Web App Server Proxy,"server.conf/[settings]/appServerPorts: Port number(s) for the python-based application server to listen on.  This port is bound only on the loopback interface -- it is not exposed to the network at large.
+* Port 8065 is used by default for the application server to listen on.
+* Only bound on the loopback interface
+* Not exposed to the network at large"
+8088,HTTP Event Collector (HEC),,inputs.conf/[http]/port: The event collector data endpoint server port.
+8089,All components,Splunkd / Management / REST API,"The default port of 8089 acts as a management port for the Splunkd process.
+* Most communication that happens with Splunkd is over this port:
+    * This includes search commands from Search Heads or Search Head clusters
+    * Communication with License and deployment servers
+    * REST API communications
+    * Communication from the command line interface"
+8181,Search Head Cluster Replication,,
+8191,Search head,App Key Value Store,"[kvstore]/port: Port to connect to the KV Store server
+The KV Store uses port 8191 by default."
+9887,Indexer cluster peer node / Search head cluster member,"Cluster Replication.
+Port 8080 sometimes is used instead of 9887","server.conf/[clustering]/replication_port://9887]: Configure Splunk to listen on a given TCP port for replicated data from another cluster member.
+server.conf/[clustering]/[replication_port-ssl://<port>]: This configuration is the same as the replication_port stanza, but uses SSL."
+9997,Indexer,Receiving data from forwarders,N/A

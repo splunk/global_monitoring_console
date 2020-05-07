@@ -1,0 +1,308 @@
+<form theme="dark">
+  <label>SH - 11 - Data Models - Dashboard - v1.5.15</label>
+  <search id="splunk_sh_11_data_models_dashboard_v1">
+    <query>
+| from lookup:splunk_rest_data_models_sh_kv_store_lookup 
+| fields shcluster_label Splunk_Instance Splunk_Roles disabled title app sharing author acceleration allow_old_summaries allow_skew cron_schedule earliest_time manual_rebuilds max_concurrent max_time poll_buckets_until_maxtime updated
+
+| `get_instance_roles(Splunk_Instance)`
+
+|	`get_identity_info_simple(author)`
+| `strftime_format(updated)`
+
+| fillnull value="false" poll_buckets_until_maxtime allow_old_summaries manual_rebuilds 
+| fillnull value="0" acceleration allow_skew
+| fillnull value="*/5 * * * *" cron_schedule 
+| fillnull value="3" max_concurrent 
+| fillnull value="3600" max_time
+
+| search shcluster_label="$shcluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" app="$app$" title="*$title$*" author="$author$" acceleration="$acceleration$" emp_name="$emp_name$" emp_ttl="$emp_ttl$" emp_lob="$emp_lob$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$" manual_rebuilds="$manual_rebuilds$" cron_schedule="$cron_schedule$"
+      </query>
+  </search>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+      <label>Splunk SH (Cluster/Instance)</label>
+      <fieldForLabel>shcluster_label</fieldForLabel>
+      <fieldForValue>shcluster_label</fieldForValue>
+      <search base="splunk_sh_11_data_models_dashboard_v1">
+        <query>| stats count by shcluster_label</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+      <label>Splunk Roles</label>
+      <fieldForLabel>Splunk_Roles</fieldForLabel>
+      <fieldForValue>Splunk_Roles</fieldForValue>
+      <search base="splunk_sh_11_data_models_dashboard_v1">
+        <query>| stats count by Splunk_Roles</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
+      <label>Splunk Instance</label>
+      <fieldForLabel>Splunk_Instance</fieldForLabel>
+      <fieldForValue>Splunk_Instance</fieldForValue>
+      <search base="splunk_sh_11_data_models_dashboard_v1">
+        <query>| stats count by Splunk_Instance</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="app" searchWhenChanged="true">
+      <label>App</label>
+      <fieldForLabel>app</fieldForLabel>
+      <fieldForValue>app</fieldForValue>
+      <search base="splunk_sh_11_data_models_dashboard_v1">
+        <query>| stats count by app</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="sharing" searchWhenChanged="true">
+      <label>App Sharing</label>
+      <fieldForLabel>sharing</fieldForLabel>
+      <fieldForValue>sharing</fieldForValue>
+      <search base="splunk_sh_11_data_models_dashboard_v1">
+        <query>| stats count by sharing</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="author" searchWhenChanged="true">
+      <label>Owner</label>
+      <fieldForLabel>author</fieldForLabel>
+      <fieldForValue>author</fieldForValue>
+      <search base="splunk_sh_11_data_models_dashboard_v1">
+        <query>| stats count by author</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="title" searchWhenChanged="true">
+      <label>Data Model Name</label>
+      <fieldForLabel>title</fieldForLabel>
+      <fieldForValue>title</fieldForValue>
+      <search base="splunk_sh_11_data_models_dashboard_v1">
+        <query>| stats count by title</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="acceleration" searchWhenChanged="true">
+      <label>Accelerated</label>
+      <fieldForLabel>acceleration</fieldForLabel>
+      <fieldForValue>acceleration</fieldForValue>
+      <choice value="*">All</choice>
+      <choice value="1">Yes</choice>
+      <choice value="0">No</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="manual_rebuilds" searchWhenChanged="true">
+      <label>Manual Rebuilds</label>
+      <fieldForLabel>manual_rebuilds</fieldForLabel>
+      <fieldForValue>manual_rebuilds</fieldForValue>
+      <choice value="*">All</choice>
+      <choice value="1">Yes</choice>
+      <choice value="0">No</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="cron_schedule" searchWhenChanged="true">
+      <label>Summarization Period</label>
+      <fieldForLabel>cron_schedule</fieldForLabel>
+      <fieldForValue>cron_schedule</fieldForValue>
+      <search base="splunk_sh_11_data_models_dashboard_v1">
+        <query>| stats count by cron_schedule</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="emp_name" searchWhenChanged="true">
+      <label>Employee Full Name</label>
+      <fieldForLabel>emp_name</fieldForLabel>
+      <fieldForValue>emp_name</fieldForValue>
+      <search base="splunk_sh_07_calculated_fields_dashboard_v1">
+        <query>| stats count by emp_name</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="emp_ttl" searchWhenChanged="true">
+      <label>Employee Title</label>
+      <fieldForLabel>emp_ttl</fieldForLabel>
+      <fieldForValue>emp_ttl</fieldForValue>
+      <search base="splunk_sh_07_calculated_fields_dashboard_v1">
+        <query>| stats count by emp_ttl</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="emp_dep" searchWhenChanged="true">
+      <label>Employee Department</label>
+      <choice value="*">All</choice>
+      <fieldForLabel>emp_dep</fieldForLabel>
+      <fieldForValue>emp_dep</fieldForValue>
+      <search base="splunk_sh_07_calculated_fields_dashboard_v1">
+        <query>| stats count by emp_dep</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="emp_lob" searchWhenChanged="true">
+      <label>Employee LOB</label>
+      <fieldForLabel>emp_lob</fieldForLabel>
+      <fieldForValue>emp_lob</fieldForValue>
+      <search base="splunk_sh_07_calculated_fields_dashboard_v1">
+        <query>| stats count by emp_lob</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="emp_type" searchWhenChanged="true">
+      <label>Employee Type</label>
+      <fieldForLabel>emp_type</fieldForLabel>
+      <fieldForValue>emp_type</fieldForValue>
+      <search base="splunk_sh_07_calculated_fields_dashboard_v1">
+        <query>| stats count by emp_type</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="emp_status" searchWhenChanged="true">
+      <label>Employee Status</label>
+      <fieldForLabel>emp_status</fieldForLabel>
+      <fieldForValue>emp_status</fieldForValue>
+      <search base="splunk_sh_07_calculated_fields_dashboard_v1">
+        <query>| stats count by emp_status</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="Splunk_Roles" searchWhenChanged="true">
+      <label>Splunk Roles (Contains)</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="Splunk_Instance" searchWhenChanged="true">
+      <label>Splunk Instance (Contains)</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="title" searchWhenChanged="true">
+      <label>Data Model Name (Contains)</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Associated GMC Job(s) - $env:page$</title>
+      <html>
+            GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
+            <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_data_models_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Data Models Gen Job</a>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_data_models_sh_kv_store&amp;type=kv">
+                     View Data Models KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+         </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Total Number of Data Models</title>
+      <single>
+        <search base="splunk_sh_11_data_models_dashboard_v1">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>By App</title>
+      <chart>
+        <search base="splunk_sh_11_data_models_dashboard_v1">
+          <query>| stats count by app</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Data Models</title>
+      <table>
+        <search base="splunk_sh_11_data_models_dashboard_v1">
+          <query>| table shcluster_label Splunk_Roles app sharing title updated disabled acceleration allow_old_summaries allow_skew cron_schedule earliest_time manual_rebuilds max_concurrent max_time poll_buckets_until_maxtime emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status endDate 
+| sort 0 shcluster_label app title 
+| `rename_common_fields`
+| `rename_identity_fields`
+| `rename_rest_fields`
+| rename title AS "Data Model" acceleration AS Accelerated manual_rebuilds AS "Manual Rebuilds" max_concurrent AS "Maximum Concurrent Summarization Searches" max_time AS "Custom Max Time" poll_buckets_until_maxtime AS "Poll Buckets For Data To Summarize" earliest_time AS "Summary Range" cron_schedule AS "Summarization Period" allow_skew AS "Allow Skew" allow_old_summaries AS "Allow Old Summaries"</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Splunk_Instance">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Splunk Roles">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Data Model">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Owner">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Accelerate">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Accelerated">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+</form>

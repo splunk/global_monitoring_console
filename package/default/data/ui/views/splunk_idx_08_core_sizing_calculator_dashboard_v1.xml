@@ -1,0 +1,290 @@
+<form theme="dark">
+  <label>IDX - 08 - Splunk Core Sizing Calculator - Dashboard - v1.5.15</label>
+  <description>Splunk Core Sizing Calculator assists you in scaling your Splunk Enterprise deployment without premium apps to meet your data usage
+requirements. If you also have premium apps such as Enterprise Security (ES) app and ITSI (Splunk IT Service Intelligence) app installed and
+implemented in your Splunk environment, use the corresponding sizing calculator instead or consult Splunk Services.
+Splunk Core Sizing Calculator guides you through the process of specifying values for key factors impacting Splunk platform performance, and
+based on your input, gives you sizing recommendations and system usage analysis.
+This guide provides detailed descriptions of the input factors as well as caveats to help you specify proper values for them. If you are scaling an
+existing Splunk environment, SPL script is also provided for each applicabe factor for you to retrieve value from your current deployment so that
+you can supply values or estimates more accurately. This guide also helps you get the most out of the system usage analysis report by providing
+detailed explanations and performance tips to optimize your system.</description>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+      <label>Time Range</label>
+      <default>
+        <earliest>-15m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>1.1.1 CPU &amp; Memory / Splunk Hardware Specification</title>
+      <table>
+        <title>$env:page$ if numberOfVirtualCores equals to numberOfCores, disable hyper-threading, else enable hyper-threading.</title>
+        <search>
+          <query>| from lookup:splunk_assets_kv_store_lookup 
+| fields serverName, numberOfCores, numberOfVirtualCores, physicalMemoryMB 
+| rename numberOfCores as numberOfPhyscialCores 
+| eval physicalMemoryGB = round(physicalMemoryMB/1024) 
+| table serverName, numberOfPhyscialCores, numberOfVirtualCores, physicalMemoryGB</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <title>1.1.2 Max IOPS &amp; Effective Storage / Splunk Hardware Specification</title>
+      <table>
+        <title>Use I/O Bandwidth Utilization and I/O operations per second to calculate the max IOPS, the effective storage is the free disk size and should take RAID type into consideration. Replace splunk_server=* with splunk_server=[indexer server] if you know the indexer server names.</title>
+        <search>
+          <query>| rest splunk_server=* /services/server/status/partitions-space 
+| join type=outer splunk_server, mount_point 
+    [| rest splunk_server=* /services/server/status/resource-usage/iostats 
+    | eval iops = round(reads_ps + writes_ps) 
+    | fields splunk_server, mount_point, iops, cpu_pct] 
+| eval free = if(isnotnull(available), available, free) 
+| eval usage = round((capacity - free) / 1024, 2) 
+| eval capacity = round(capacity / 1024, 2) 
+| eval compare_usage = usage." / ".capacity 
+| eval pct_usage = round(usage / capacity * 100, 2) 
+| stats first(fs_type) as fs_type first(compare_usage) as compare_usage first(pct_usage) as pct_usage, first(iops) as iops, first(cpu_pct) as
+    cpu_pct by mount_point 
+| rename mount_point as "Mount Point", fs_type as "File System Type", compare_usage as "Disk Usage (GB)", capacity as "Capacity (GB)",pct_usage as "Disk Usage (%)", iops as "I/O operations per second", cpu_pct as "I/O Bandwidth Utilization(%)"</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>2.2.1 Index Volume Per Day / Index and Search</title>
+      <chart>
+        <title>Limit the host to indexers if you know the indexer hostname. Or you can search with 7 days time range then divide the result by 7 to get the input value.</title>
+        <search>
+          <query>index="_internal" source="*/metrics.log" group=per_index_thruput 
+| eval gb=kb/1024/1024 
+| stats sum(gb) as "Volume Per Day"</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>2.2.2 Total Search Count Per Day / Index and Search</title>
+      <chart>
+        <title>Search time range should be 24h if use "total_search_count" as expected search count per day, or input the value you expected. Or you can search with 7 days time range then divide the result by 7 to get the input value.</title>
+        <search>
+          <query>index=_audit host=* action=search info=completed search_id=* search_id!="*rsa_*" 
+| stats count as daily_search_count</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>2.2.3 Average Search Concurrency / Index and Search</title>
+      <chart>
+        <title>Search with 24h time range. Or you can search with 7 days time range then divide the result by 7 to get the input value.</title>
+        <search>
+          <query>index="_audit" host=* action=search info=completed search_id=*
+    search_id!="*rsa_*" 
+| append 
+    [ search index="_audit" host=* action=search info=completed
+        search_id=* search_id!="*rsa_*" 
+    | stats dc(search_id) count as
+        search_count] 
+| stats avg(total_run_time) as avg_runtime values(search_count) as
+    search_count 
+| eval total_time = search_count * avg_runtime 
+| eval concurrency = total_time / 86400 
+| chart avg(concurrency) as "Average Search Concurrency"</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>2.2.4 Search Options / Scheduled/DMA searches</title>
+      <chart>
+        <title>Search time range should be 24h if use " scheduled_search /total_search" in SPL as input, or use the value you expected. Or you can search with 7 days time range then divide the result by 7 to get the input value.</title>
+        <search>
+          <query>index=_audit host=* action=search info=completed search_id!="*rsa_*" 
+| search search_id = "SummaryDirector_" OR search_id = *_scheduler_* OR
+    search_id = *_alert_* 
+| stats count as scheduled_search_count</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>2.2.4 Search Options / Ad hoc searches</title>
+      <chart>
+        <title>search with 24h time range. Limit the host to indexers if you know the indexer hostname. Or you can search with 7 days time range then divide the result by 7 to get the input value.</title>
+        <search>
+          <query>index=_audit host=* action=search info=completed search_id!="*rsa_*" 
+| search search_id != "SummaryDirector_" search_id != *_scheduler_* search_id
+    != *_alert_* 
+| eval search_lt = if(search_lt = "N/A", 864000, search_lt) 
+| eval search_et = if(search_et = "N/A", 0, search_et) 
+| eval tr = search_lt - search_et 
+| search tr&lt;=86400 
+| stats count as ad_hoc_searches_count</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>2.2.4 Search Options / Historical data searches</title>
+      <chart>
+        <title>search time range should be 24h if use " scheduled_search /total_search" in SPL as input, or use the value you expected. Or you can search with 7 days time range then divide the result by 7 to get the input value.</title>
+        <search>
+          <query>index=_audit host=* action=search info=completed search_id=*
+    search_id!="*rsa_*" 
+| search search_id != "SummaryDirector_" search_id !=
+    *_scheduler_* search_id != *_alert_* 
+| eval search_lt = if(search_lt =
+    "N/A", 864000, search_lt) 
+| eval search_et = if(search_et = "N/A", 0,
+    search_et) 
+| eval tr = search_lt - search_et 
+| search tr&gt;86400 
+| stats
+    count as historical_searches_count</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>2.2.5 Advanced Mode / Scheduled/Data Model Acceleration Searches Average Search Time (Seconds per 100GB per Indexer) SPL-1</title>
+      <chart>
+        <title>Comment: search time range should be 24h. Or you can search with 7 days time range then divide the result by 7 to get the input value. Case 1: physical CPU core (chapter 1.1.1) &gt;= search concurrency (chapter 3.2) Use SPL–1 and SPL-2 result “avg_search_time / gb_per_day_per_indexer * 100” to get the value. Case 2: physical CPU core (chapter 1.1.1) &lt; search concurrency (chapter 3.2) Use SPL–1 and SPL-2 result “avg_search_time / gb_per_day_per_indexer * 100*(physical_cpu_core/average_search_concurrency)” to get the value.</title>
+        <search>
+          <query>index="_internal" source="*/metrics.log" group=per_index_thruput 
+| eval gb=kb/1024/1024 
+| stats sum(gb) as "Volume Per Day"</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>2.2.5 Advanced Mode / Scheduled/Data Model Acceleration Searches Average Search Time (Seconds per 100GB per Indexer) SPL-2</title>
+      <chart>
+        <title>Comment: search time range should be 24h. Or you can search with 7 days time range then divide the result by 7 to get the input value. Case 1: physical CPU core (chapter 1.1.1) &gt;= search concurrency (chapter 3.2) Use SPL–1 and SPL-2 result “avg_search_time / gb_per_day_per_indexer * 100” to get the value. Case 2: physical CPU core (chapter 1.1.1) &lt; search concurrency (chapter 3.2) Use SPL–1 and SPL-2 result “avg_search_time / gb_per_day_per_indexer * 100*(physical_cpu_core/average_search_concurrency)” to get the value.</title>
+        <search>
+          <query>index="_audit" action=search host=* info=completed search_id=* search_id!="*rsa_*" 
+| search search_id = "SummaryDirector_" OR search_id = *_scheduler_* OR search_id = *_alert_* 
+| stats avg(total_run_time) as scheduled_search_avg_run_time</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>2.2.5 Advanced Mode / Ad Hoc Searches Average Search Time (Seconds per 100GB per Indexer) - SPL-1</title>
+      <chart>
+        <title>search with 24h time range. Limit the host to indexers if you know the indexer hostname. Or you can search with 7 days time range then divide the result by 7 to get the input value.</title>
+        <search>
+          <query>index="_internal" source="*/metrics.log" group=per_index_thruput 
+| eval gb=kb/1024/1024 
+| stats sum(gb) as gb_per_day, dc(host) as idx_num 
+| eval gb_per_day_per_indexer = gb_per_day/idx_num 
+| table gb_per_day_per_indexer</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>2.2.5 Advanced Mode / Ad Hoc Searches Average Search Time (Seconds per 100GB per Indexer) - SPL-2</title>
+      <chart>
+        <title>Comment: search time range should be 24h. Or you can search with 7 days time range then divide the result by 7 to get the input value. Case 1: physical CPU core (chapter 1.1.1) &gt;= search concurrency (chapter 3.2) Use SPL–1 and SPL-2 result “avg_search_time / gb_per_day_per_indexer * 100” to get the value. Case 2: physical CPU core (chapter 1.1.1) &lt; search concurrency (chapter 3.2) Use SPL–1 and SPL-2 result “avg_search_time / gb_per_day_per_indexer * 100*(physical_cpu_core/average_search_concurrency)” to get the value.</title>
+        <search>
+          <query>index="_audit" action=search host=* info=completed search_id=* search_id!="*rsa_*" 
+| search search_id != "SummaryDirector_" search_id != *_scheduler_* search_id != *_alert_* 
+| eval search_lt = if(search_lt = "N/A", 864000, search_lt) 
+| eval search_et = if(search_et = "N/A", 0, search_et) 
+| eval tr = search_lt - search_et 
+| search tr&lt;=86400 
+| stats avg(total_run_time) as avg_run_time</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>2.2.5 Advanced Mode / Historical Data Searches Average Search Time (Seconds per 100GB per Indexer) - SPL-1</title>
+      <chart>
+        <title>Comment: search time range should be 24h. Or you can search with 7 days time range then divide the result by 7 to get the input value. Case 1: physical CPU core (chapter 1.1.1) &gt;= search concurrency (chapter 3.2) Use SPL–1 and SPL-2 result “avg_search_time / gb_per_day_per_indexer * 100” to get the value. Case 2: physical CPU core (chapter 1.1.1) &lt; search concurrency (chapter 3.2) Use SPL–1 and SPL-2 result “avg_search_time / gb_per_day_per_indexer * 100*(physical_cpu_core/average_search_concurrency)” to get the value.</title>
+        <search>
+          <query>index="_internal" source="*/metrics.log" group=per_index_thruput 
+| eval gb=kb/1024/1024 
+| stats sum(gb) as gb_per_day, dc(host) as idx_num 
+| eval gb_per_day_per_indexer = gb_per_day/idx_num 
+| table gb_per_day_per_indexer</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>2.2.5 Advanced Mode / Historical Data Searches Average Search Time (Seconds per 100GB per Indexer) - SPL-2</title>
+      <chart>
+        <title>Comment: search time range should be 24h. Or you can search with 7 days time range then divide the result by 7 to get the input value. Case 1: physical CPU core (chapter 1.1.1) &gt;= search concurrency (chapter 3.2) Use SPL–1 and SPL-2 result “avg_search_time / gb_per_day_per_indexer * 100” to get the value. Case 2: physical CPU core (chapter 1.1.1) &lt; search concurrency (chapter 3.2) Use SPL–1 and SPL-2 result “avg_search_time / gb_per_day_per_indexer * 100*(physical_cpu_core/average_search_concurrency)” to get the value.</title>
+        <search>
+          <query>index="_audit" action=search host=* info=completed search_id=* search_id!="*rsa_*" 
+| search search_id != "SummaryDirector_" search_id != *_scheduler_* search_id != *_alert_* 
+| eval search_lt = if(search_lt = "N/A", 864000, search_lt) 
+| eval search_et = if(search_et = "N/A", 0, search_et) 
+| eval tr = search_lt - search_et 
+| search tr&gt;86400 
+| stats avg(total_run_time) as avg_run_time</query>
+          <earliest>$TimeRangePkr.earliest$</earliest>
+          <latest>$TimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.chart">radialGauge</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

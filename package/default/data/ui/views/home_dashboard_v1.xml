@@ -1,0 +1,476 @@
+<form theme="dark">
+  <label>Home - Dashboard - v1.5.15</label>
+  <description>Splunk Global Monitoring Console (GMC) - Written By Amir Khamis / Splunk PS / akhamis@splunk.com - GitHub: https://github.com/amir-khamis/gmc</description>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <html>
+            <div class="floatright" id="DemoModeSwitch"/>
+            <div data-translate-id="home-div-welcometext" style="max-width: 1200px">
+               Welcome $env:user_realname$ to Splunk Global Monitoring Console! Below you can find documentation on the App's various knowledge objects like Dashboards and Lookups. The App can be downloaded here:
+               <a href="https://github.com/amir-khamis/gmc" target="_blank">https://github.com/amir-khamis/gmc</a>
+               Happy Splunking!
+            </div>
+         </html>
+    </panel>
+  </row>
+  <row>
+    <panel id="UsersPanel">
+      <title>Users Logged into GMC Today</title>
+      <table>
+        <search>
+          <query>index=`gmc_summary_index` search_name="splunk_audit_user_login_idx_summary_tracker" 
+| makemv delim="|" Splunk_Instance 
+| makemv delim="|" Login_Source 
+| makemv delim="|" OS_Name 
+| makemv delim="|" OS_Version 
+| makemv delim="|" Browser_Name 
+| makemv delim="|" Browser_Version 
+| search Splunk_Instance=`gmc_instance_name` 
+| table _time Splunk_Instance User Login_Source Latest_Access OS_Name OS_Version Browser_Name Browser_Version 
+| `get_identity_info_simple(User)` 
+| stats latest(Latest_Access) as Latest_Access values(Splunk_Instance) as Splunk_Instance latest(Login_Source) as Login_Source latest(OS_Name) as OS_Name latest(OS_Version) as OS_Version latest(emp_name) as Name latest(Browser_Name) as Browser_Name latest(Browser_Version) as Browser_Version
+    by User 
+| sort 0 - Latest_Access 
+| `strftime_format(Latest_Access)` 
+| `get_iplocation_info(Login_Source)` 
+| table User Name Latest_Access Login_Source Latest_Access work_city work_region work_country OS_Name OS_Version Browser_Name Browser_Version</query>
+          <earliest>@d</earliest>
+          <latest>now</latest>
+          <refresh>10m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="User">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Latest_Access">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="work_city">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="work_country">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="OS_Version">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Browser_Version">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="NumUsersPanel">
+      <title>Number of Users</title>
+      <single>
+        <search>
+          <query>index=`gmc_summary_index` search_name="splunk_audit_user_login_idx_summary_tracker" 
+| makemv delim="|" Splunk_Instance 
+| makemv delim="|" Login_Source 
+| makemv delim="|" OS_Name 
+| makemv delim="|" OS_Version 
+| makemv delim="|" Browser_Name 
+| makemv delim="|" Browser_Version 
+| search Splunk_Instance=`gmc_instance_name` 
+| table _time Splunk_Instance User Login_Source Latest_Access OS_Name OS_Version Browser_Name Browser_Version 
+| `get_identity_info_simple(User)` 
+| stats latest(Latest_Access) as Latest_Access values(Splunk_Instance) as Splunk_Instance latest(Login_Source) as Login_Source latest(OS_Name) as OS_Name latest(OS_Version) as OS_Version latest(emp_name) as Name latest(Browser_Name) as Browser_Name latest(Browser_Version) as Browser_Version
+    by User 
+| stats count</query>
+          <earliest>@d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">200</option>
+        <option name="rangeColors">["0x53a051","0xFF1493"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>App Data Model</title>
+      <table>
+        <search>
+          <query>| inputlookup splunk_rest_data_models_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+| table Splunk_Instance title disabled description acceleration cron_schedule earliest_time allow_skew updated
+| `strftime_format(updated)`
+| rename title AS "Data Model" , disabled AS Disabled acceleration AS Accelerated earliest_time AS "Summary Range" cron_schedule AS "Summarization Period"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">cell</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Macro Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Arguments">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Data Model">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Accelerated">
+          <colorPalette type="map">{"0":#DC4E41,"1":#53A051}</colorPalette>
+        </format>
+        <format type="color" field="Summary Range">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Disabled">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="DashboardsPanel">
+      <title>App Dashboards</title>
+      <table>
+        <search>
+          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+| eval Splunk_Tier = case ( match(label, "IDX"), "Indexer", match(label, "SH"), "Search Head", match(label, "UF"), "Forwarder", true(), "Other") 
+| table Splunk_Instance Splunk_Tier label description updated 
+| `strftime_format(updated)` 
+| `rename_dashboards_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Macro Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Dashboard Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="NumDashboardsPanel">
+      <title>Number of Dashboards</title>
+      <single>
+        <search>
+          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">200</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x53a051"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="ReportsPanel">
+      <title>App Reports/Alerts</title>
+      <table>
+        <search>
+          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+| fields Splunk_Instance app savedsearch_name description updated cron_schedule cron_schedule_described Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew 
+| stats values(scheduled_times) as scheduled_times values(next_scheduled_time) as next_scheduled_time last(*) as * by Splunk_Instance app savedsearch_name 
+| `strftime_format(updated)` 
+| eval scheduled_times=mvindex(scheduled_times,0,3) ,scheduled_times=mvindex(scheduled_times,1,3) , TimeZone=strftime(strptime(next_scheduled_time,"%m/%d/%Y %H:%M:%S"), "%Y%m%d%H%M%S") + " -500" , EST_Time=strftime(strptime(TimeZone,"%Y%m%d%H%M%S %Z"),"%Y/%m/%d %H:%M:%S %Z") 
+| `get_saved_searches_usage(Splunk_Instance,app,savedsearch_name)` 
+| eval "Job Class" = case ( match(savedsearch_name, "_tracker$"), "Tracking Jobs", match(savedsearch_name, "_lookup_gen"), "Lookup Gen Jobs", true(), "Other") 
+| `get_cron_schedule(cron_schedule)` 
+| table Splunk_Instance savedsearch_name description updated cron_schedule cron_schedule_described  Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew 
+| `strftime_format(scheduled_times)` 
+| `strftime_format(next_scheduled_time)` 
+| `rename_saved_searches_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Macro Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Cron Schedule">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Scheduled">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Job Class">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Run_Time">
+          <option name="unit">s</option>
+        </format>
+        <format type="color" field="Job Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="NumReportsPanel">
+      <title>Number of Reports/Alerts</title>
+      <single>
+        <search>
+          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup 
+| where app="splunk_global_monitoring_console"
+| stats count AS "Number of Scheduled Jobs"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">200</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="LookupsPanel">
+      <title>App Lookups</title>
+      <table>
+        <search>
+          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+| `strftime_format(updated)` 
+| eval Description = case (
+    Lookup="abc", "abc",
+    true(), "Need to document") 
+| table Splunk_Instance Lookup Type Description Filename Collection updated
+| `rename_lookup_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Macro Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup_File">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Fields_List">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup Collection Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="NumLookupsPanel">
+      <title>Number of Lookups</title>
+      <single>
+        <search>
+          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+| stats  count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">200</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0xFA5B3D"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="MacrosPanel">
+      <title>App Macros</title>
+      <input type="dropdown" token="Macro_Class" searchWhenChanged="true">
+        <label>Macro_Class</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Macro_Class</fieldForLabel>
+        <fieldForValue>Macro_Class</fieldForValue>
+        <search>
+          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+| eval Macro_Class = case ( 
+    match(title, "_reference"), "Gather Reference Info", 
+    match(title, "_usage"), "Gather Usage Info", 
+    match(title, "^get_"), "Gather Info", 
+    match(title, "^rename_"), "Fields Renames", 
+    match(title, "^from_|^tstats_"), "Get Data Model Data", 
+    match(title, "^normalize_"), "Normalize Fields", 
+    match(title, "time"), "Time Manipulation", 
+    match(title, "^gmc_"), "Various GMC Macros") 
+| fillnull value="Other GMC Macros" Macro_Class 
+| stats count by Macro_Class</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+      </input>
+      <input type="text" token="title" searchWhenChanged="true">
+        <label>Macro  Name  (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <table>
+        <search>
+          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+| eval Macro_Class = case ( 
+    match(title, "_reference"), "Gather Reference Info", 
+    match(title, "_usage"), "Gather Usage Info", 
+    match(title, "^get_"), "Gather Info", 
+    match(title, "^rename_"), "Fields Renames", 
+    match(title, "^from_|^tstats_"), "Get Data Model Data", 
+    match(title, "^normalize_"), "Normalize Fields", 
+    match(title, "time"), "Time Manipulation", 
+    match(title, "^gmc_"), "Various GMC Macros") 
+| fillnull value="Other GMC Macros" Macro_Class 
+| search Macro_Class="$Macro_Class$" AND title="*$title$*" 
+| `strftime_format(updated)` 
+| table Splunk_Instance title Macro_Class description updated args definition 
+| sort 0 title 
+| `rename_macros_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Macro Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Macro Class">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Macro Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Macro Arguments">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="NumMacrosPanel">
+      <title>Number of Macros</title>
+      <single>
+        <search>
+          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="splunk_global_monitoring_console" | search title="*$title$*" 
+| stats count AS "Number of Macros"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">200</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x1f75fe"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$alwaysHideCSS$">
+      <html>
+            <style>#UsersPanel{
+             width:85% !important;
+           }
+           #NumUsersPanel{
+             width:15% !important;
+           }</style>
+           <style>#MacrosPanel{
+             width:85% !important;
+           }
+           #NumMacrosPanel{
+             width:15% !important;
+           }</style>
+           <style>#ReportsPanel{
+             width:85% !important;
+           }
+           #NumReportsPanel{
+             width:15% !important;
+           }</style>
+           <style>#LookupsPanel{
+             width:85% !important;
+           }
+           #NumLookupsPanel{
+             width:15% !important;
+           }</style>
+           <style>#DashboardsPanel{
+             width:85% !important;
+           }
+           #NumDashboardsPanel{
+             width:15% !important;
+           }</style>
+         </html>
+    </panel>
+  </row>
+</form>

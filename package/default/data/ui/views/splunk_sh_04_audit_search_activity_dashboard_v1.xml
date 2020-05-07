@@ -1,0 +1,2707 @@
+<form theme="dark" script="tabs.js" stylesheet="tabs.css">
+  <label>SH - 04 - Audit Search Activity - Dashboard - v1.5.15</label>
+  <description>Audit all Splunk Search Activities using one normalized Data Model for Audit, Introspection &amp; Internal</description>
+  <search id="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+    <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+    `tstats_gmc_audit`
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Audit_Search
+    index=_audit
+    AND Search_Activity.Audit_Search.search_type1 = "$search_type1$"
+    AND Search_Activity.Audit_Search.info1 = "$info1$"
+    AND Search_Activity.Audit_Search.user1 = "*$user$*"
+    AND Search_Activity.Audit_Search.savedsearch_name1 = "$savedsearch_name$"
+    AND host = "$host$"
+    $Exclutions1$
+    $Exclude_Status_Granted$
+    BY _time Search_Activity.Audit_Search.search_id Search_Activity.Audit_Search.info1 $span_period$
+| `gmc_drop_dm_object_name(Search_Activity.Audit_Search)`
+| rename info1 AS info
+| fields _time host available_count considered_events datamodel decompressed_slices event_count dispatch_time exec_time info result_count roles savedsearch_name scan_count search search_et search_id search_lt search_startup_time search_type searched_buckets total_run_time total_slices user
+| `gmc_convert_runtime('total_run_time')`
+| `get_normalized_search_id(search_id)`
+| `get_lookup_reference(search)`
+| `get_macro_reference(search)`
+| `get_datamodel_reference(search)`
+| `get_index_reference(search)` | `get_sourcetype_reference(search)` | `get_source_reference(search)` | `get_eventtype_reference(search)`
+| `get_rest_reference(search)`
+| `get_instance_info(host)` 
+| `get_shcluster_info(host)` 
+| `get_identity_info(user)`
+| `get_saved_searches_info(shcluster_label,savedsearch_name)`
+| `get_cron_schedule(cron_schedule)`
+| fillnull value="no-search_id" search_id_normalized 
+| fillnull value=0 total_run_time searched_buckets
+| fillnull value="Undefined" shcluster_label datamodel emp_lob emp_dep work_city work_region work_country savedsearch_type search cron_schedule_described
+| search shcluster_label="$shcluster_label$" search_id_normalized="*$search_id_normalized$*" datamodel="$datamodel1$" search="*$search$*" total_run_time&gt;$total_run_time$ searched_buckets&gt;$searched_buckets$ emp_lob="$emp_lob$" emp_dep="$emp_dep$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$" Splunk_Roles="$Splunk_Roles$" Lookup_Reference="*$Lookup_Reference$*" savedsearch_type="$savedsearch_type$" Macro_Reference="*$Macro_Reference$*" Datamodel_Reference="*$Datamodel_Reference$*" Index_Reference="*$Index_Reference$*" Sourcetype_Reference="*$Sourcetype_Reference$*" Source_Reference="*$Source_Reference$*" Eventtype_Reference="*$Eventtype_Reference$*" Rest_Reference="*$Rest_Reference$*" cron_schedule_described="$cron_schedule_described$"</query>
+    <earliest>$AuditTimeRangePkr.earliest$</earliest>
+    <latest>$AuditTimeRangePkr.latest$</latest>
+  </search>
+  <search id="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+    <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE 
+    `tstats_gmc_internal`
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Internal_Scheduler
+    index=_internal
+    AND Search_Activity.Internal_Scheduler.savedsearch_name2 = "$savedsearch_name$"
+    AND Search_Activity.Internal_Scheduler.app2 = "$app$"
+    AND Search_Activity.Internal_Scheduler.search_type2 = "$search_type2$" 
+    AND Search_Activity.Internal_Scheduler.info2 = "$info2$"
+    AND Search_Activity.Internal_Scheduler.user2 = "*$user$*"
+    AND host = "$host$"
+    AND $Exclutions2$
+    BY _time Search_Activity.Internal_Scheduler.search_id $span_period$
+| `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)`
+| fields _time host app concurrency_category concurrency_context concurrency_limit dispatch_time priority reason result_count total_run_time savedsearch_id savedsearch_name scheduled_time search_id search_type skipped_count info user window_time alert_actions event_message
+| `gmc_convert_runtime('total_run_time')`
+| `get_normalized_search_id(search_id)`
+| `get_datamodel_fields(savedsearch_name)`
+| `get_instance_info(host)` 
+| `get_shcluster_info(host)`
+| `get_identity_info(user)`
+| `get_saved_searches_info(shcluster_label,app,savedsearch_name)`
+| `get_memory_tracker_fields`
+| `get_cron_schedule(cron_schedule)`
+| fillnull value="no-search_id" search_id_normalized 
+| fillnull value=0 total_run_time allow_skew schedule_window
+| fillnull value="no-skipps" concurrency_category concurrency_context concurrency_limit reason
+| fillnull value="Undefined" shcluster_label emp_lob emp_dep work_city work_region work_country savedsearch_type priority cron_schedule_described window_time datamodel
+| search shcluster_label="$shcluster_label$" search_id_normalized = "*$search_id_normalized$*" priority="$priority$" window_time="$window_time$" concurrency_category="$concurrency_category$" concurrency_context="$concurrency_context$" concurrency_limit="$concurrency_limit$" reason="$reason$" total_run_time &gt; $total_run_time$ emp_lob="$emp_lob$" emp_dep = "$emp_dep$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$" Splunk_Roles="$Splunk_Roles$" savedsearch_type="$savedsearch_type$" allow_skew="$allow_skew$" cron_schedule_described="$cron_schedule_described$" datamodel="$datamodel$"
+</query>
+    <earliest>$InternalTimeRangePkr.earliest$</earliest>
+    <latest>$InternalTimeRangePkr.latest$</latest>
+  </search>
+  <search id="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+    <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+  `tstats_gmc_introspection`
+  FROM DATAMODEL=GMC
+  WHERE nodename=Search_Activity.Introspection_Search_Usage 
+  AND index=_introspection AND Search_Activity.Introspection_Search_Usage.app3 = "$app$" 
+  AND Search_Activity.Introspection_Search_Usage.search_type3 = "$search_type3$"
+  AND Search_Activity.Introspection_Search_Usage.user3 = "*$user$*"
+  AND Search_Activity.Introspection_Search_Usage.savedsearch_name3 = "$savedsearch_name$"
+  AND Search_Activity.Introspection_Search_Usage.search_head = "$search_head$" 
+  AND Search_Activity.Introspection_Search_Usage.pid = "$pid$"
+  AND Search_Activity.Introspection_Search_Usage.total_run_time3 &gt;= $total_run_time$
+  AND Search_Activity.Introspection_Search_Usage.mem_used &gt;= $mem_used$
+  AND Search_Activity.Introspection_Search_Usage.mode = "$mode$"
+  AND host="$host$"
+  $Exclutions3$
+  BY Search_Activity.Introspection_Search_Usage.search_id Search_Activity.Introspection_Search_Usage.pid
+| `gmc_drop_dm_object_name(Search_Activity.Introspection_Search_Usage)`
+| fields _time host search_id search_head app user acceleration_id delta_scan_count total_run_time fd_used mem_used normalized_pct_cpu page_faults pid ppid provenance read_mb savedsearch_name scan_count search_type t_count written_mb mode
+| `gmc_convert_runtime('total_run_time')`
+| `get_normalized_search_id(search_id)`
+| `get_provenance_fields(provenance)`
+| `get_instance_info(host)` 
+| `get_shcluster_info(host)` 
+| `get_search_concurrency(shcluster_label, search-concurrency)`
+| `get_saved_searches_info(shcluster_label,app,savedsearch_name)`
+| `get_dashboards_info(shcluster_label,app,Provenance_KO)` 
+| `get_dashboards_info(shcluster_label,Provenance_KO)`
+| `get_dashboards_usage(shcluster_label,app,Provenance_KO)`
+| `get_identity_info(user)`
+| `get_cron_schedule(cron_schedule)`
+| fillnull value="no-search_id" search_id_normalized 
+| fillnull value=999999 Days_Latest_Dashboard_Access 
+| fillnull value=0 total_run_time mem_used normalized_pct_cpu 
+| fillnull value="Undefined" shcluster_label Splunk_Roles search_id_normalized datamodel Provenance_Type Provenance_KO_Type Provenance_KO emp_lob emp_dep work_city work_region work_country savedsearch_type Lookup_Reference Datamodel_Reference
+| search shcluster_label="$shcluster_label$" search_id_normalized="*$search_id_normalized$*" datamodel="$datamodel$" Provenance_Type="$Provenance_Type$" Provenance_KO_Type="$Provenance_KO_Type$" Provenance_KO="$Provenance_KO$" emp_lob="$emp_lob$" emp_dep="$emp_dep$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$" Splunk_Roles="$Splunk_Roles$" savedsearch_type="$savedsearch_type$" Lookup_Reference="*$Lookup_Reference$*" Datamodel_Reference="*$Datamodel_Reference$*"</query>
+    <earliest>$IntrospectionTimeRangePkr.earliest$</earliest>
+    <latest>$IntrospectionTimeRangePkr.latest$</latest>
+  </search>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row id="tabs">
+    <panel>
+      <html>
+            <ul id="tabs" class="nav nav-tabs">
+               <li class="active">
+                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Introspection_Inputs,Introspection_Panel0,Introspection_Panel1,Introspection_Panel2,Introspection_Panel3,Introspection_Panel4,Introspection_Panel5">Introspection (Mem/CPU)</a>
+               </li>
+               <li>
+                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Audit_Inputs,Audit_Panel0,Audit_Panel1,Audit_Panel2,Audit_Panel3">Audit (Everything)</a>
+               </li>
+               <li>
+                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Internal_Inputs,Internal_Panel0,Internal_Panel1,Internal_Panel2,Internal_Panel3,Internal_Panel4,Internal_Panel5,Internal_Panel6,Internal_Panel7,Internal_Panel10">Internal (Jobs + Skips)</a>
+               </li>
+            </ul>
+         </html>
+    </panel>
+  </row>
+  <row id="Introspection_Inputs">
+    <panel>
+      <title>1. Introspection Search Usage</title>
+      <input type="checkbox" token="Exclutions3" searchWhenChanged="true">
+        <label>1. Exclude GMC Searches ?</label>
+        <choice value="Search_Activity.Introspection_Search_Usage.app3!=&quot;splunk_global_monitoring_console&quot;">Yes</choice>
+        <choice value="">No</choice>
+        <default>"Search_Activity.Introspection_Search_Usage.app3!=""splunk_global_monitoring_console"""</default>
+        <initialValue>Search_Activity.Introspection_Search_Usage.app3!="splunk_global_monitoring_console"</initialValue>
+      </input>
+      <input type="time" token="IntrospectionTimeRangePkr" searchWhenChanged="true">
+        <label>2. Introspection Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="span_period" searchWhenChanged="true">
+        <label>3. Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
+      <input type="dropdown" token="search_id_normalized" searchWhenChanged="true">
+        <label>4. Normalized Search ID</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>search_id_normalized</fieldForLabel>
+        <fieldForValue>search_id_normalized</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by search_id_normalized</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+        <label>5. Splunk SH (Cluster/Instance)</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>6. Splunk Roles</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by Splunk_Roles
+| search NOT Splunk_Roles IN (license_master, kv_store, cluster_search_head, cluster_slave, search_peer, deployment_server)</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="host" searchWhenChanged="true">
+        <label>7. Splunk Instance</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>host</fieldForLabel>
+        <fieldForValue>host</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by host</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="search_type3" searchWhenChanged="true">
+        <label>8. Search Type</label>
+        <choice value="*">All</choice>
+        <choice value="adhoc">Ad-Hoc</choice>
+        <choice value="scheduled">Scheduled Jobs</choice>
+        <choice value="datamodel_acceleration">Datamodel Acceleration</choice>
+        <choice value="report_acceleration">Report Acceleration</choice>
+        <choice value="summary_indexing">Summary Indexing</choice>
+        <fieldForLabel>search_type3</fieldForLabel>
+        <fieldForValue>search_type3</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="search_head" searchWhenChanged="true">
+        <label>9. Search Head Initiator</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>search_head</fieldForLabel>
+        <fieldForValue>search_head</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by search_head</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="mode" searchWhenChanged="true">
+        <label>10. Search Mode</label>
+        <choice value="*">All</choice>
+        <choice value="RT">Real-Time</choice>
+        <choice value="RT indexed">Real-Time Indexed</choice>
+        <choice value="historical">Historical</choice>
+        <choice value="historical batch">Historical Batch</choice>
+        <fieldForLabel>mode</fieldForLabel>
+        <fieldForValue>mode</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="savedsearch_type" searchWhenChanged="true">
+        <label>11. Savedsearch Type (Report/Alert)</label>
+        <choice value="*">All</choice>
+        <choice value="alert">Alert</choice>
+        <choice value="report">Report</choice>
+        <fieldForLabel>savedsearch_type</fieldForLabel>
+        <fieldForValue>savedsearch_type</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="savedsearch_name" searchWhenChanged="true">
+        <label>12. Savedsearch Name</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>savedsearch_name</fieldForLabel>
+        <fieldForValue>savedsearch_name</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by savedsearch_name 
+| where ! savedsearch_name LIKE "_ACCELERATE%"</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Provenance_Type" searchWhenChanged="true">
+        <label>13. Provenance</label>
+        <choice value="*">All</choice>
+        <choice value="UI">User Interface</choice>
+        <choice value="scheduler">Scheduler</choice>
+        <choice value="summary_director">Report Summarization</choice>
+        <choice value="rest">Rest</choice>
+        <choice value="splunkjs">Splunkjs</choice>
+        <fieldForLabel>Provenance_Type</fieldForLabel>
+        <fieldForValue>Provenance_Type</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Provenance_KO_Type" searchWhenChanged="true">
+        <label>14. Provenance Type</label>
+        <choice value="*">All</choice>
+        <choice value="Search">Search</choice>
+        <choice value="Dashboard">Dashboard</choice>
+        <fieldForLabel>Provenance_KO_Type</fieldForLabel>
+        <fieldForValue>Provenance_KO_Type</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Provenance_KO" searchWhenChanged="true">
+        <label>15. Dashboard</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Provenance_KO</fieldForLabel>
+        <fieldForValue>Provenance_KO</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by Provenance_KO</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="datamodel" searchWhenChanged="true">
+        <label>16. Datamodel (from Introspection)</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>datamodel</fieldForLabel>
+        <fieldForValue>datamodel</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by datamodel</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Datamodel_Reference" searchWhenChanged="true">
+        <label>17. Datamodel Reference</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Datamodel_Reference</fieldForLabel>
+        <fieldForValue>Datamodel_Reference</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by Datamodel_Reference</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Lookup_Reference" searchWhenChanged="true">
+        <label>18. Lookup Reference</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Lookup_Reference</fieldForLabel>
+        <fieldForValue>Lookup_Reference</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by Lookup_Reference</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="user" searchWhenChanged="true">
+        <label>19. User</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>user</fieldForLabel>
+        <fieldForValue>user</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by user</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app" searchWhenChanged="true">
+        <label>20. App</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>app</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by app</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_dep" searchWhenChanged="true">
+        <label>21. Employee Department</label>Employee Department<choice value="*">All</choice>
+        <fieldForLabel>emp_dep</fieldForLabel>
+        <fieldForValue>emp_dep</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by emp_dep</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob" searchWhenChanged="true">
+        <label>22. Employee LOB</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>emp_lob</fieldForLabel>
+        <fieldForValue>emp_lob</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by emp_lob</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_city" searchWhenChanged="true">
+        <label>23. City</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_city</fieldForLabel>
+        <fieldForValue>work_city</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by work_city</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_region" searchWhenChanged="true">
+        <label>24. Region/State</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_region</fieldForLabel>
+        <fieldForValue>work_region</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by work_region</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_country" searchWhenChanged="true">
+        <label>25. Country</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_country</fieldForLabel>
+        <fieldForValue>work_country</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by work_country</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="search_id2" searchWhenChanged="true">
+        <label>26. Search ID (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="search_id_normalized" searchWhenChanged="true">
+        <label>27. Normalized Search ID (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="pid" searchWhenChanged="true">
+        <label>28. PID</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Provenance_KO" searchWhenChanged="true">
+        <label>29. Dashboard Name (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="total_run_time" searchWhenChanged="true">
+        <label>30. Total Run Time (&gt;=) IN Sec</label>
+        <default>-1</default>
+        <initialValue>-1</initialValue>
+      </input>
+      <input type="text" token="mem_used" searchWhenChanged="true">
+        <label>31. Memory Used (&gt;=) IN GB</label>
+        <default>0</default>
+        <initialValue>0</initialValue>
+      </input>
+      <input type="text" token="user" searchWhenChanged="true">
+        <label>32. User (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row id="Introspection_Panel0">
+    <panel>
+      <title>2. To Drilldown on a Normalized Search ID to see information on it from _audit &amp; _internal click inside the field value of  the "Normalized Search ID" Field</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| table search_id_normalized shcluster_label search_head host search_type mode Provenance_Type Provenance_KO_Type Provenance_KO app user emp_name pid savedsearch_name savedsearch_type _time 'total_run_time' total_run_time mem_used physicalMemoryGB normalized_pct_cpu max_hist_searches max_searches_per_cpu numberOfCores base_max_searches numberOfVirtualCores t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_ttl emp_lob work_city work_region work_country cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches 
+| sort 0 - mem_used 
+| `normalize_search_type(search_type)` 
+| `rename_common_fields` 
+| `rename_reference_fields` 
+| `rename_saved_searches_fields` 
+| `rename_identity_fields` 
+| `rename_search_concurrency_fields` 
+| `rename_instance_fields` 
+| `rename_gmc_introspection_fields`</query>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="number" field="Runtime_Sec">
+          <option name="unit">Seconds</option>
+        </format>
+        <format type="color" field="Runtime_Sec">
+          <colorPalette type="list">[#53A051,#006D9C,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+          <scale type="threshold">0,300,600,900</scale>
+        </format>
+        <format type="number" field="Normalized CPU %">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="Normalized CPU %">
+          <colorPalette type="list">[#53A051,#006D9C,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+          <scale type="threshold">0,30,70,100</scale>
+        </format>
+        <format type="number" field="Read MB">
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="Written MB">
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="Thread Count">
+          <option name="precision">0</option>
+          <option name="unit">Threads</option>
+        </format>
+        <format type="color" field="Search Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="search_id_normalized">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="First Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Last Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="PPID">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Savedsearch Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Memory Used">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="90"></scale>
+        </format>
+        <format type="number" field="Memory Used">
+          <option name="unit">GB</option>
+        </format>
+        <format type="number" field="Server Memory (GB)">
+          <option name="unit">GB</option>
+        </format>
+        <format type="color" field="pCPU">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Server Memory">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Region">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Scan Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Scan Count">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="Ulimit Open Files">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Ulimit Stack Size">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Ulimit User Processes">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Provenance">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Delta Scan Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Dashboard Load Time">
+          <option name="unit">Seconds</option>
+        </format>
+        <format type="color" field="Job Schedule Window">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Page Faults">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Max Historical Searches">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Max Searches Per CPU">
+          <option name="precision">0</option>
+          <option name="unit">Searches</option>
+        </format>
+        <format type="number" field="pCPU">
+          <option name="precision">0</option>
+          <option name="unit">pCPU</option>
+        </format>
+        <format type="number" field="Base Max Searches">
+          <option name="precision">0</option>
+          <option name="unit">vCPU</option>
+        </format>
+        <format type="number" field="Max Searches %">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Auto Summary %">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Max Auto Summary Searches">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Max Historical Scheduled Searches">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Job Cron Schedule">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Job Allow Skew">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Job Allow Skew">
+          <colorPalette type="map">{"0":#DC4E41,"100%":#53A051}</colorPalette>
+        </format>
+        <format type="color" field="Splunk Roles">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Dashboard Load Time">
+          <colorPalette type="minMidMax" maxColor="#B6C75A" midColor="#FFFFFF" minColor="#294E70"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="number" field="Job RT Schedule">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Splunk Startup Time">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Runtime in Sec">
+          <option name="unit">s</option>
+        </format>
+        <format type="color" field="Job Schedule Priority">
+          <colorPalette type="map">{"High":#DC4E41,"default":#006D9C,"Low":#53A051}</colorPalette>
+        </format>
+        <format type="color" field="Runtime in Sec">
+          <colorPalette type="minMidMax" maxColor="#F1813F" midColor="#F8BE34" minColor="#006D9C"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="90"></scale>
+        </format>
+        <drilldown>
+          <set token="form.search_id_normalized">$row.search_id_normalized$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row id="Introspection_Panel1">
+    <panel>
+      <title>3. Before you can drildown to look at running jobs, select the host from the dropdown above and then click the link below.   https://$host$:8000/en-US/app/search/job_manager?owner=&amp;app=&amp;jobStatus=running</title>
+      <html>
+            <a href="https://$host$:8000/en-US/app/search/job_manager?owner=&amp;app=&amp;jobStatus=running" target="_blank">Splunk Job Manager</a>
+         </html>
+    </panel>
+  </row>
+  <row id="Introspection_Panel2">
+    <panel>
+      <title>6. Dashboard Drilldown</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| where Provenance_KO!="Undefined" 
+| stats values(search) AS Search by host Provenance_KO 
+| rename Provenance_KO as "Dashboard" 
+| fields - count</query>
+        </search>
+        <option name="count">1</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Dashboard emp_ttl">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Search">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <drilldown>
+          <link target="_blank">/app/splunk_global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.title=$click.value2$</link>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>7. Report/Alert Drilldown</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| where savedsearch_name!="Undefined" 
+| stats values(savedsearch_search) AS Search by host savedsearch_name 
+| rename savedsearch_name as "Report/Alert Name"</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Report/Alert Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <drilldown>
+          <link target="_blank">/app/splunk_global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.savedsearch_name=$click.value2$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row id="Introspection_Panel3">
+    <panel>
+      <title>4. Introspection Count</title>
+      <single>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count AS "# of Searches"</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">202</option>
+        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>10. By Search Type with Sparkline Bar &amp; Color Map</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| chart count sparkline(count, 1h) as trend by search_type 
+| sort -count</query>
+        </search>
+        <!-- Set span for each sparkline datapoint to be 1 hour -->
+        <!-- Set sparkline options here; make sure that field matches field name of the search results -->
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format field="trend" type="sparkline">
+          <option name="type">bar</option>
+          <option name="height">40px</option>
+          <option name="colorMap">
+            <option name="2000:">#5379AF</option>
+            <option name=":1999">#9ac23c</option>
+          </option>
+          <option name="barWidth">5px</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>5. Count By Search Type</title>
+      <chart>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by search_type</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="charting.chart.showPercent">true</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="Introspection_Panel5">
+    <panel>
+      <title>8. Top N CPU Intensive Scheduled Reports/Alerts</title>
+      <input type="text" token="top_tok1" searchWhenChanged="true">
+        <label>Timechart IN top:</label>
+        <default>10</default>
+        <initialValue>10</initialValue>
+      </input>
+      <chart>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| where savedsearch_name!="Undefined" 
+| eval normalized_pct_cpu=round(normalized_pct_cpu) 
+| timechart $span_period$ useother=f
+    Max(normalized_pct_cpu) as "Normalized CPU %" 
+    By savedsearch_name 
+    Where max in top$top_tok1$</query>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="height">558</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="Introspection_Panel4">
+    <panel>
+      <title>9. Top N Memory Intensive Scheduled Reports/Alerts (in GB)</title>
+      <input type="text" token="top_tok2" searchWhenChanged="true">
+        <label>Timechart IN top:</label>
+        <default>10</default>
+        <initialValue>10</initialValue>
+      </input>
+      <input type="dropdown" token="unit_tok2" searchWhenChanged="true">
+        <label>Unit</label>
+        <choice value="MB">MB</choice>
+        <choice value="GB">GB</choice>
+        <choice value="TB">TB</choice>
+        <default>GB</default>
+        <initialValue>GB</initialValue>
+        <fieldForLabel>unit_tok2</fieldForLabel>
+        <fieldForValue>unit_tok2</fieldForValue>
+      </input>
+      <input type="dropdown" token="round_tok2" searchWhenChanged="true">
+        <label>Rounding</label>
+        <default>0</default>
+        <initialValue>0</initialValue>
+        <choice value="0">0</choice>
+        <choice value="1">1</choice>
+        <choice value="2">2</choice>
+        <choice value="3">3</choice>
+        <fieldForLabel>round_tok2</fieldForLabel>
+        <fieldForValue>round_tok2</fieldForValue>
+      </input>
+      <chart>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| where savedsearch_name!="Undefined" 
+| timechart $span_period$ useother=f
+    eval(round(sum(mem_used),$round_tok2$)) as "Memory Used/GB" 
+    By savedsearch_name 
+    Where max in top$top_tok2$</query>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.text">GB</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="height">588</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="Audit_Inputs">
+    <panel>
+      <title>1. Audit Search Usage</title>
+      <input type="checkbox" token="Exclutions1" searchWhenChanged="true">
+        <label>1. Exclude GMC Searches ?</label>
+        <choice value="NOT Search_Activity.Audit_Search.savedsearch_name1 IN (&quot;*splunk_global_monitoring_console*&quot;, &quot;splunk_*_dashboard*&quot;, &quot;splunk_*_*_lookup_*&quot;, &quot;splunk_*_*_audit_search_activity_*&quot;)">Yes</choice>
+        <choice value="">No</choice>
+        <default>"NOT Search_Activity.Audit_Search.savedsearch_name1 IN (""*splunk_global_monitoring_console*"", ""splunk_*_dashboard*"", ""splunk_*_*_lookup_*"", ""splunk_*_*_audit_search_activity_*"")"</default>
+        <initialValue>NOT Search_Activity.Audit_Search.savedsearch_name1 IN ("*splunk_global_monitoring_console*",splunk_*_dashboard*,splunk_*_*_lookup_*,splunk_*_*_audit_search_activity_*</initialValue>
+        <search>
+          <query/>
+        </search>
+        <delimiter> </delimiter>
+      </input>
+      <input type="checkbox" token="Exclude_Status_Granted" searchWhenChanged="true">
+        <label>2. Exclude status=granted ?</label>
+        <choice value="Search_Activity.Audit_Search.info1!=&quot;granted&quot;">Yes</choice>
+        <choice value="">No</choice>
+        <default>"Search_Activity.Audit_Search.info1!=""granted"""</default>
+        <initialValue>Search_Activity.Audit_Search.info1!="granted"</initialValue>
+        <search>
+          <query/>
+        </search>
+      </input>
+      <input type="time" token="AuditTimeRangePkr" searchWhenChanged="true">
+        <label>3. Audit Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="span_period" searchWhenChanged="true">
+        <label>4. Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+        <label>5. Splunk SH (Cluster/Instance)</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>6. Splunk Roles</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="host" searchWhenChanged="true">
+        <label>7. Splunk Instance</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>host</fieldForLabel>
+        <fieldForValue>host</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by host</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="search_type1" searchWhenChanged="true">
+        <label>8. Search Type</label>
+        <choice value="*">All</choice>
+        <choice value="adhoc">Ad-Hoc</choice>
+        <choice value="scheduled">Scheduled Jobs</choice>
+        <choice value="datamodel_acceleration">Datamodel Acceleration</choice>
+        <choice value="report_acceleration">Report Acceleration</choice>
+        <choice value="summary_indexing">Summary Indexing</choice>
+        <choice value="realtime">Real-Time</choice>
+        <choice value="subsearch">Subsearch</choice>
+        <choice value="typeahead">Typeahead</choice>
+        <fieldForLabel>search_type1</fieldForLabel>
+        <fieldForValue>search_type1</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="info1" searchWhenChanged="true">
+        <label>9. Search Info (Status)</label>
+        <choice value="*">All</choice>
+        <choice value="granted">Granted</choice>
+        <choice value="completed">Completed</choice>
+        <choice value="canceled">Canceled</choice>
+        <choice value="failed">Failed</choice>
+        <choice value="terminate">Terminated</choice>
+        <fieldForLabel>info1</fieldForLabel>
+        <fieldForValue>info1</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="savedsearch_name" searchWhenChanged="true">
+        <label>10. Savedsearch Name</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>savedsearch_name</fieldForLabel>
+        <fieldForValue>savedsearch_name</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by savedsearch_name 
+| where savedsearch_name!="N/A" AND ! savedsearch_name LIKE "_ACCELERATE%"</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="savedsearch_type" searchWhenChanged="true">
+        <label>11. Savedsearch Type (Report/Alert)</label>
+        <choice value="*">All</choice>
+        <choice value="alert">Alert</choice>
+        <choice value="report">Report</choice>
+        <fieldForLabel>savedsearch_type</fieldForLabel>
+        <fieldForValue>savedsearch_type</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="datamodel1" searchWhenChanged="true">
+        <label>12. Data Model Reference</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>datamodel1</fieldForLabel>
+        <fieldForValue>datamodel1</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by datamodel
+| rename datamodel AS datamodel1</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Datamodel_Reference" searchWhenChanged="true">
+        <label>13. Data Model Reference</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Datamodel_Reference</fieldForLabel>
+        <fieldForValue>Datamodel_Reference</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by Datamodel_Reference</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Lookup_Reference" searchWhenChanged="true">
+        <label>14. Lookup Reference</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Lookup_Reference</fieldForLabel>
+        <fieldForValue>Lookup_Reference</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by Lookup_Reference</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Macro_Reference" searchWhenChanged="true">
+        <label>15. Macro Reference</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Macro_Reference</fieldForLabel>
+        <fieldForValue>Macro_Reference</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by Macro_Reference</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Index_Reference" searchWhenChanged="true">
+        <label>16. Index Reference</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Index_Reference</fieldForLabel>
+        <fieldForValue>Index_Reference</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by Index_Reference</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Sourcetype_Reference" searchWhenChanged="true">
+        <label>17. Sourcetype Reference</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Sourcetype_Reference</fieldForLabel>
+        <fieldForValue>Sourcetype_Reference</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by Sourcetype_Reference</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Source_Reference" searchWhenChanged="true">
+        <label>18. Source Reference</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Source_Reference</fieldForLabel>
+        <fieldForValue>Source_Reference</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by Source_Reference</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Eventtype_Reference" searchWhenChanged="true">
+        <label>19. Eventtype Reference</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Eventtype_Reference</fieldForLabel>
+        <fieldForValue>Eventtype_Reference</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by Eventtype_Reference</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Rest_Reference" searchWhenChanged="true">
+        <label>20. Rest Reference</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Rest_Reference</fieldForLabel>
+        <fieldForValue>Rest_Reference</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by Rest_Reference</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="user" searchWhenChanged="true">
+        <label>21. User</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>user</fieldForLabel>
+        <fieldForValue>user</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by user</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob" searchWhenChanged="true">
+        <label>22. Employee LOB</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>emp_lob</fieldForLabel>
+        <fieldForValue>emp_lob</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by emp_lob</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_dep" searchWhenChanged="true">
+        <label>23. Employee Department</label>Employee Department<choice value="*">All</choice>
+        <fieldForLabel>emp_dep</fieldForLabel>
+        <fieldForValue>emp_dep</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by emp_dep</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_city" searchWhenChanged="true">
+        <label>24. City</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_city</fieldForLabel>
+        <fieldForValue>work_city</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by work_city</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_region" searchWhenChanged="true">
+        <label>25. Region/State</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_region</fieldForLabel>
+        <fieldForValue>work_region</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by work_region</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_country" searchWhenChanged="true">
+        <label>26. Country</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_country</fieldForLabel>
+        <fieldForValue>work_country</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by work_country</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="cron_schedule_described" searchWhenChanged="true">
+        <label>27. Job Cron Schedule</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>cron_schedule_described</fieldForLabel>
+        <fieldForValue>cron_schedule_described</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by cron_schedule_described</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="searched_buckets" searchWhenChanged="true">
+        <label>28. Number Searched Buckets &gt;</label>
+        <default>-1</default>
+        <initialValue>-1</initialValue>
+      </input>
+      <input type="text" token="search" searchWhenChanged="true">
+        <label>29. Search (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="total_run_time" searchWhenChanged="true">
+        <label>30. Total Run Time in Seconds &gt;</label>
+        <default>-1</default>
+        <initialValue>-1</initialValue>
+      </input>
+      <input type="text" token="search_id_normalized" searchWhenChanged="true">
+        <label>31. Normalized Search ID (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="search_id_normalized" searchWhenChanged="true">
+        <label>32. Normalized Search ID</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>search_id_normalized</fieldForLabel>
+        <fieldForValue>search_id_normalized</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by search_id_normalized</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="user" searchWhenChanged="true">
+        <label>33. User (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row id="Audit_Panel0">
+    <panel>
+      <title>2. Audit - List of searches matching the above filter</title>
+      <table depends="$search_id_normalized$">
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| table search_id_normalized shcluster_label host search_type info savedsearch_name savedsearch_type dispatch_time total_run_time 'total_run_time' _time search_et search_lt Time_Diff user emp_name emp_dep emp_lob emp_ttl work_city work_region work_country datamodel scan_count event_count result_count available_count considered_events searched_buckets total_slices decompressed_slices cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Eventtype_Reference 
+| `normalize_search_type(search_type)`
+| `rename_common_fields`
+| `rename_reference_fields`
+| `rename_saved_searches_fields`
+| `rename_identity_fields` 
+| `rename_gmc_audit_fields`</query>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Host">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Scan Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Event Count"></format>
+        <format type="number" field="Result Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Considered Events">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Available Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Total Slices">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Decompressed Slices">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Search">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Runtime_Sec">
+          <colorPalette type="list">[#53A051,#006D9C,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+          <scale type="threshold">0,300,600,900</scale>
+        </format>
+        <format type="number" field="Runtime_Sec">
+          <option name="unit">s</option>
+        </format>
+        <format type="number" field="Searched Buckets">
+          <option name="precision">0</option>
+          <option name="unit">Buckets</option>
+        </format>
+        <format type="color" field="Savedsearch Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="search_id_normalized">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <drilldown>
+          <unset token="form.search_id_normalized"></unset>
+        </drilldown>
+      </table>
+      <viz type="number_display_viz.number_display_viz">
+        <title>3. Search Types</title>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| eval search_type=case(search_type="adhoc", "Ad-Hoc", search_type="scheduled", "Scheduled Reports/Alerts", search_type="datamodel_acceleration", "Datamodel Acceleration", search_type="report_acceleration", "Report Acceleration", search_type="summary_indexing", "Summary Indexing", search_type="realtime", "Realtime", search_type="subsearch", "Subsearch", search_type="typeahead", "Typeahead", true(), search_type)
+| stats count by search_type</query>
+        </search>
+        <option name="height">234</option>
+        <option name="number_display_viz.number_display_viz.bordercolor">#FFFFFF</option>
+        <option name="number_display_viz.number_display_viz.bordersize">2</option>
+        <option name="number_display_viz.number_display_viz.colorprimary">#ebb839</option>
+        <option name="number_display_viz.number_display_viz.colorprimarymode">auto</option>
+        <option name="number_display_viz.number_display_viz.colorsecondary">#1a9035</option>
+        <option name="number_display_viz.number_display_viz.colorsecondarymode">static</option>
+        <option name="number_display_viz.number_display_viz.max">100</option>
+        <option name="number_display_viz.number_display_viz.min">0</option>
+        <option name="number_display_viz.number_display_viz.nodatacolor">#0178c7</option>
+        <option name="number_display_viz.number_display_viz.padding">10</option>
+        <option name="number_display_viz.number_display_viz.pulserate">4</option>
+        <option name="number_display_viz.number_display_viz.shadowcolor">#F2F4F5</option>
+        <option name="number_display_viz.number_display_viz.shapebordercolor">#FFFFFF</option>
+        <option name="number_display_viz.number_display_viz.shapebordercolormode">static</option>
+        <option name="number_display_viz.number_display_viz.shapebordersize">1</option>
+        <option name="number_display_viz.number_display_viz.shapedropcolor">#ffffff</option>
+        <option name="number_display_viz.number_display_viz.shapeshadow">yes</option>
+        <option name="number_display_viz.number_display_viz.shapetexture">solid</option>
+        <option name="number_display_viz.number_display_viz.size">200</option>
+        <option name="number_display_viz.number_display_viz.sparkHeight">30</option>
+        <option name="number_display_viz.number_display_viz.sparkWidth">90</option>
+        <option name="number_display_viz.number_display_viz.sparkalign">5</option>
+        <option name="number_display_viz.number_display_viz.sparkalignv">70</option>
+        <option name="number_display_viz.number_display_viz.sparkcolorfill">#009DD9</option>
+        <option name="number_display_viz.number_display_viz.sparkcolorline">#0178c7</option>
+        <option name="number_display_viz.number_display_viz.sparkcolormodefill">auto</option>
+        <option name="number_display_viz.number_display_viz.sparkcolormodeline">auto</option>
+        <option name="number_display_viz.number_display_viz.sparkmin">0</option>
+        <option name="number_display_viz.number_display_viz.sparknulls">span</option>
+        <option name="number_display_viz.number_display_viz.sparkorder">no</option>
+        <option name="number_display_viz.number_display_viz.sparkstyle">line</option>
+        <option name="number_display_viz.number_display_viz.spinnerspeedmax">25</option>
+        <option name="number_display_viz.number_display_viz.spinnerspeedmin">0</option>
+        <option name="number_display_viz.number_display_viz.style">s1</option>
+        <option name="number_display_viz.number_display_viz.subtitlealign">center</option>
+        <option name="number_display_viz.number_display_viz.subtitlealignv">70</option>
+        <option name="number_display_viz.number_display_viz.subtitlecolor">#5C6773</option>
+        <option name="number_display_viz.number_display_viz.subtitlecolormode">static</option>
+        <option name="number_display_viz.number_display_viz.subtitledrop">yes</option>
+        <option name="number_display_viz.number_display_viz.subtitledropcolor">#ffffff</option>
+        <option name="number_display_viz.number_display_viz.subtitlesize">40</option>
+        <option name="number_display_viz.number_display_viz.textalign">center</option>
+        <option name="number_display_viz.number_display_viz.textalignv">50</option>
+        <option name="number_display_viz.number_display_viz.textcolor">#000000</option>
+        <option name="number_display_viz.number_display_viz.textdrop">yes</option>
+        <option name="number_display_viz.number_display_viz.textdropcolor">#ffffff</option>
+        <option name="number_display_viz.number_display_viz.textduration">300</option>
+        <option name="number_display_viz.number_display_viz.textmode">darker1</option>
+        <option name="number_display_viz.number_display_viz.textprecision">1</option>
+        <option name="number_display_viz.number_display_viz.textprocessing">abr3</option>
+        <option name="number_display_viz.number_display_viz.textsize">100</option>
+        <option name="number_display_viz.number_display_viz.textunitposition">after</option>
+        <option name="number_display_viz.number_display_viz.textunitsize">50</option>
+        <option name="number_display_viz.number_display_viz.thickness">50</option>
+        <option name="number_display_viz.number_display_viz.thresholdcol1">#1a9035</option>
+        <option name="number_display_viz.number_display_viz.thresholdcol2">#006d9c</option>
+        <option name="number_display_viz.number_display_viz.thresholdcol3">#edd051</option>
+        <option name="number_display_viz.number_display_viz.thresholdcol4">#ecbc1b</option>
+        <option name="number_display_viz.number_display_viz.thresholdcol5">#AF5300</option>
+        <option name="number_display_viz.number_display_viz.thresholdcol6">#b22b32</option>
+        <option name="number_display_viz.number_display_viz.thresholdsize">20</option>
+        <option name="number_display_viz.number_display_viz.thresholdval2">1000</option>
+        <option name="number_display_viz.number_display_viz.thresholdval3">5000</option>
+        <option name="number_display_viz.number_display_viz.thresholdval4">10000</option>
+        <option name="number_display_viz.number_display_viz.thresholdval5">20000</option>
+        <option name="number_display_viz.number_display_viz.thresholdval6">40000</option>
+        <option name="number_display_viz.number_display_viz.titlealign">center</option>
+        <option name="number_display_viz.number_display_viz.titlealignv">30</option>
+        <option name="number_display_viz.number_display_viz.titlecolor">#5C6773</option>
+        <option name="number_display_viz.number_display_viz.titlecolormode">lighter1</option>
+        <option name="number_display_viz.number_display_viz.titledrop">no</option>
+        <option name="number_display_viz.number_display_viz.titledropcolor">#ffffff</option>
+        <option name="number_display_viz.number_display_viz.titlesize">30</option>
+        <option name="refresh.display">none</option>
+      </viz>
+    </panel>
+  </row>
+  <row id="Audit_Panel1">
+    <panel>
+      <title>4. Audit Search Count</title>
+      <single>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">175</option>
+        <option name="rangeColors">["0x53a051","0xf1813f"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>5. Count By Search Status</title>
+      <chart>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by info</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="charting.chart.showPercent">true</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>6. Searches by LOB</title>
+      <chart>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by emp_lob</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="charting.chart.showPercent">true</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>7. Searches by Department</title>
+      <chart>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by emp_dep</query>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">none</option>
+        <option name="charting.chart.showPercent">true</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>8. Searches by Title</title>
+      <chart>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| stats count by emp_ttl</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="charting.chart.showPercent">true</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="Audit_Panel2">
+    <panel>
+      <title>9. Search Code from Event</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| eval search_org=search 
+| rex field=search mode=sed "s/^search\s//g"
+| rex field=search mode=sed "s/\n//g"
+| rex field=search mode=sed "s/^\s|^\"//g" 
+| rex field=search mode=sed "s/\s{2,}/ /g" 
+| rex field=search mode=sed "s/\n//g"
+| rex field=search mode=sed "s/\|/\n|/g"
+| rex field=search mode=sed "s/\|\s*/| /g" 
+| stats count by search 
+| rename search as Search
+| where Search!="Undefined"</query>
+        </search>
+        <option name="count">2</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Search">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="search_id_normalized">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>10. Search Code from Report/Alert</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| where savedsearch_name!="Undefined" 
+| stats values(savedsearch_search) AS Search by savedsearch_name 
+| rename savedsearch_name as "Report/Alert Name"</query>
+        </search>
+        <option name="count">2</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">none</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Report/Alert Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <drilldown>
+          <link target="_blank">/app/splunk_global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.savedsearch_name=$click.value2$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row id="Audit_Panel3">
+    <panel>
+      <title>11. Search Type with basic Sparkline &amp; Max Value Indicator</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| chart count sparkline(count, 1h) as trend by search_type 
+| sort -count</query>
+        </search>
+        <!-- Set sparkline options here; make sure that field matches field name of the search results -->
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format field="sparkline" type="sparkline">
+          <option name="lineColor">#5379af</option>
+          <option name="fillColor">#CCDDFF</option>
+          <option name="lineWidth">1</option>
+          <option name="maxSpotColor">#A2FFA2</option>
+          <option name="spotRadius">3</option>
+          <option name="height">25px</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>12. Search Status with basic Sparkline &amp; line options</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
+          <query>| chart count sparkline by info 
+| sort -count</query>
+        </search>
+        <!-- Set sparkline options here; make sure that field matches field name of the search results -->
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format field="sparkline" type="sparkline">
+          <option name="lineColor">#5379af</option>
+          <option name="fillColor">#CCDDFF</option>
+          <option name="lineWidth">1</option>
+          <option name="height">25px</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Internal_Inputs">
+    <panel>
+      <title>1. Internal Scheduler Usage</title>
+      <input type="checkbox" token="Exclutions2" searchWhenChanged="true">
+        <label>1. Exclude GMC Searches ?</label>
+        <choice value="Search_Activity.Internal_Scheduler.app2!=&quot;splunk_global_monitoring_console&quot;">Yes</choice>
+        <choice value="Search_Activity.Internal_Scheduler.app2=&quot;*&quot;">No</choice>
+        <default>"Search_Activity.Internal_Scheduler.app2!=""splunk_global_monitoring_console"""</default>
+        <initialValue>Search_Activity.Internal_Scheduler.app2!="splunk_global_monitoring_console"</initialValue>
+        <delimiter> </delimiter>
+      </input>
+      <input type="time" token="InternalTimeRangePkr" searchWhenChanged="true">
+        <label>2. Internal Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="span_period" searchWhenChanged="true">
+        <label>3. Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
+      <input type="dropdown" token="search_id_normalized" searchWhenChanged="true">
+        <label>4. Normalized Search ID</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>search_id_normalized</fieldForLabel>
+        <fieldForValue>search_id_normalized</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by search_id_normalized</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+        <label>5. Splunk SH (Cluster/Instance)</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>6. Splunk Roles</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="host" searchWhenChanged="true">
+        <label>7. Splunk Instance</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>host</fieldForLabel>
+        <fieldForValue>host</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by host</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app" searchWhenChanged="true">
+        <label>8. App</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>app</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by app</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="search_type2" searchWhenChanged="true">
+        <label>9. Search Type</label>
+        <choice value="*">All</choice>
+        <choice value="datamodel_acceleration">Datamodel Acceleration</choice>
+        <choice value="report_acceleration">Report Acceleration</choice>
+        <choice value="scheduled">Scheduled Jobs</choice>
+        <choice value="summary_indexing">Summary Indexing</choice>
+        <fieldForLabel>search_type2</fieldForLabel>
+        <fieldForValue>search_type2</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="info2" searchWhenChanged="true">
+        <label>10. Search Info (Status)</label>
+        <choice value="*">All</choice>
+        <choice value="completed">Completed</choice>
+        <choice value="deferred">Deferred</choice>
+        <choice value="delegated_remote">Delegated Remote</choice>
+        <choice value="delegated_remote_completion">Delegated Remote Completion</choice>
+        <choice value="delegated_remote_error">Delegated Remote Error</choice>
+        <choice value="skipped">Skipped</choice>
+        <choice value="terminated">Terminated</choice>
+        <fieldForLabel>info2</fieldForLabel>
+        <fieldForValue>info2</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="savedsearch_name" searchWhenChanged="true">
+        <label>11. Savedsearch Name</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>savedsearch_name</fieldForLabel>
+        <fieldForValue>savedsearch_name</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by savedsearch_name</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="savedsearch_type" searchWhenChanged="true">
+        <label>12. Savedsearch Type (Report/Alert)</label>
+        <choice value="*">All</choice>
+        <choice value="alert">Alert</choice>
+        <choice value="report">Report</choice>
+        <fieldForLabel>savedsearch_type</fieldForLabel>
+        <fieldForValue>savedsearch_type</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="cron_schedule_described" searchWhenChanged="true">
+        <label>13. Job Cron Schedule</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>cron_schedule_described</fieldForLabel>
+        <fieldForValue>cron_schedule_described</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by cron_schedule_described</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="priority" searchWhenChanged="true">
+        <label>14. Schedule Priority</label>
+        <choice value="*">All</choice>
+        <choice value="default">Default</choice>
+        <choice value="higher">higher</choice>
+        <choice value="highest">highest</choice>
+        <fieldForLabel>priority</fieldForLabel>
+        <fieldForValue>priority</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="window_time" searchWhenChanged="true">
+        <label>15. Schedule Window</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>window_time</fieldForLabel>
+        <fieldForValue>window_time</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by window_time</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="allow_skew" searchWhenChanged="true">
+        <label>16. Allow Skew</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>allow_skew</fieldForLabel>
+        <fieldForValue>allow_skew</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by allow_skew</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="concurrency_category" searchWhenChanged="true">
+        <label>17. Concurrency Category</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>concurrency_category</fieldForLabel>
+        <fieldForValue>concurrency_category</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by concurrency_category</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="concurrency_context" searchWhenChanged="true">
+        <label>18. Concurrency Context</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>concurrency_context</fieldForLabel>
+        <fieldForValue>concurrency_context</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by concurrency_context</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="concurrency_limit" searchWhenChanged="true">
+        <label>19. Concurrency Limit</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>concurrency_limit</fieldForLabel>
+        <fieldForValue>concurrency_limit</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by concurrency_limit</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="reason" searchWhenChanged="true">
+        <label>20. Skip Reason</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>reason</fieldForLabel>
+        <fieldForValue>reason</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by reason</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="user" searchWhenChanged="true">
+        <label>21. User</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>user</fieldForLabel>
+        <fieldForValue>user</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by user</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="datamodel" searchWhenChanged="true">
+        <label>22. Datamodel</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>datamodel</fieldForLabel>
+        <fieldForValue>datamodel</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by datamodel</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob" searchWhenChanged="true">
+        <label>23. Employee LOB</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>emp_lob</fieldForLabel>
+        <fieldForValue>emp_lob</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by emp_lob</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_dep" searchWhenChanged="true">
+        <label>24. Employee Department</label>Employee Department<choice value="*">All</choice>
+        <fieldForLabel>emp_dep</fieldForLabel>
+        <fieldForValue>emp_dep</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by emp_dep</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_city" searchWhenChanged="true">
+        <label>25. City</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_city</fieldForLabel>
+        <fieldForValue>work_city</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by work_city</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_region" searchWhenChanged="true">
+        <label>26. Region/State</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_region</fieldForLabel>
+        <fieldForValue>work_region</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by work_region</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_country" searchWhenChanged="true">
+        <label>27. Country</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_country</fieldForLabel>
+        <fieldForValue>work_country</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by work_country</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="search_id_normalized" searchWhenChanged="true">
+        <label>28. Normalized Search ID (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="total_run_time" searchWhenChanged="true">
+        <label>29. Total Run Time in Seconds &gt;</label>
+        <default>-1</default>
+        <initialValue>-1</initialValue>
+      </input>
+      <input type="text" token="user" searchWhenChanged="true">
+        <label>30. User (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row id="Internal_Panel0">
+    <panel>
+      <title>2. Internal - List of searches matching the above filter</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| table search_id_normalized shcluster_label host search_type info savedsearch_name _time cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule scheduled_time dispatch_time total_run_time 'total_run_time' app user emp_dep emp_lob work_city work_region work_country datamodel result_count concurrency_category concurrency_context concurrency_limit skipped_count reason alert_actions Memory_Usage Memory_Threshold Lookup_Reference Datamodel_Reference Macro_Reference action_summary_index_name Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference savedsearch_search
+| `normalize_search_type(search_type)` 
+| `rename_common_fields` 
+| `rename_reference_fields` 
+| `rename_saved_searches_fields` 
+| `rename_identity_fields` 
+| `rename_gmc_internal_fields`</query>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Host">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Savedsearch Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="search_id_normalized">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Info">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Runtime_Sec">
+          <colorPalette type="list">[#53A051,#006D9C,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+          <scale type="threshold">0,300,600,900</scale>
+        </format>
+        <format type="number" field="Runtime_Sec">
+          <option name="unit">s</option>
+        </format>
+        <format type="color" field="App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Search Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Schedule Priority">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Schedule Window">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Result Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Concurrency Category">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Concurrency Context">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Concurrency Limit">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Skipped Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Reason">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Alert Actions">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Splunk_Roles">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Splunk Instance">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Memory_Usage">
+          <option name="unit">MB</option>
+        </format>
+        <format type="color" field="Memory_Threshold">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Memory Usage">
+          <colorPalette type="list">[#53A051,#006D9C,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+          <scale type="threshold">0,30,70,100</scale>
+        </format>
+        <format type="number" field="Memory Usage">
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="Job Schedule Window">
+          <option name="precision">0</option>
+          <option name="unit">Minutes</option>
+        </format>
+        <drilldown>
+          <unset token="form.search_id_normalized"></unset>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row id="Internal_Panel1">
+    <panel>
+      <title>3. Search Count</title>
+      <single>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">90</option>
+        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>4. By Search Type</title>
+      <chart>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by search_type</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="charting.chart.showPercent">true</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>5. By Search Status</title>
+      <chart>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| stats count by info</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="height">217</option>
+        <option name="refresh.display">none</option>
+        <option name="charting.chart.showPercent">true</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>6. Top 10 Apps</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| top app
+| table app percent count
+| rename app AS App count AS Count percent AS %</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="wrap">false</option>
+        <format type="number" field="percent">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="%">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="%">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Internal_Panel2">
+    <panel>
+      <title>7. Top 10 Reports/Alerts</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| where savedsearch_name!="Undefined" 
+| top savedsearch_name 
+| table savedsearch_name percent count 
+| rename savedsearch_name AS "Report/Alert" percent AS %</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">none</option>
+        <option name="wrap">false</option>
+        <format type="number" field="percent">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="Report/Alert">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="%">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="%">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <drilldown>
+          <link target="_blank">/app/splunk_global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.savedsearch_name=$click.value2$</link>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>8. Top 10 Schedules</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| where savedsearch_name!="Undefined" 
+| top cron_schedule_described 
+| table cron_schedule_described percent count
+| rename percent AS % cron_schedule_described AS "Schedule"</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="wrap">false</option>
+        <format type="number" field="percent">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="Report/Alert">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="%">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="Cron Schedule Described">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Schedule">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="%">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>9. Top 10 Allow Skew</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| top allow_skew 
+| table allow_skew percent count 
+| rename allow_skew AS "Allow Skew" count AS Count percent AS %</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="wrap">false</option>
+        <format type="number" field="percent">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="%">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="%">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="color" field="Allow Skew">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Internal_Panel3">
+    <panel>
+      <title>10. Top 10 Data Models</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| top datamodel 
+| table datamodel percent count 
+| rename datamodel AS "Data Model" count AS Count percent AS %</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="wrap">false</option>
+        <format type="number" field="percent">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="%">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="%">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="color" field="Concurrency Context">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>11. Top 10 Summary Index</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| top action_summary_index_name 
+| table action_summary_index_name percent count 
+| rename action_summary_index_name AS "Summary Index" count AS Count percent AS %</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="wrap">false</option>
+        <format type="number" field="percent">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="%">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="%">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="color" field="Concurrency Context">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Internal_Panel4">
+    <panel>
+      <title>12. Top 10 Skip Reasons</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| where reason!="no-skipps" 
+| top reason 
+| table reason percent count 
+| rename reason AS Reason count AS Count percent AS %</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="wrap">true</option>
+        <format type="number" field="percent">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="%">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="%">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="color" field="Reason">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>13. Top 10 Concurrency Context</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| where concurrency_context!="no-skipps" 
+| top concurrency_context 
+| table concurrency_context percent count 
+| rename concurrency_context AS "Concurrency Context" count AS Count percent AS %</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="wrap">false</option>
+        <format type="number" field="percent">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="%">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="%">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="color" field="Concurrency Context">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>14. Top 10 Concurrency Limit</title>
+      <table>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
+          <query>| where concurrency_limit!="no-skipps" 
+| top concurrency_limit 
+| table concurrency_limit percent count 
+| rename concurrency_limit AS "Concurrency Limit" count AS Count percent AS %</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="wrap">false</option>
+        <format type="number" field="percent">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="%">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="%">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="color" field="Reason">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Allow Skew">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Concurrency Limit">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Internal_Panel5">
+    <panel>
+      <title>15. Total Executions / Skipped Executions / Skip Ratio</title>
+      <table>
+        <title>Search Type=$search_type2$ / App=$app$ / User= $user$ / Splunk Instance=$host$ /  Splunk Roles="$Splunk_Roles$" / Savedsearch="$savedsearch_name$"  /      Note: In a Splunk Search Head Cluster environment we need to just look at the captain, set the Splunk Roles filter above to shc_captain which represents the current captain.</title>
+        <search>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE 
+    count
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Internal_Scheduler
+    index=_internal
+    AND Search_Activity.Internal_Scheduler.savedsearch_name2 = "$savedsearch_name$"
+    AND Search_Activity.Internal_Scheduler.app2 = "$app$"
+    AND Search_Activity.Internal_Scheduler.search_type2 = "$search_type2$"
+    AND Search_Activity.Internal_Scheduler.user2 = "$user$"
+    AND host = "$host$"
+    BY _time span=1s host Search_Activity.Internal_Scheduler.info2 Search_Activity.Internal_Scheduler.savedsearch_name2 Search_Activity.Internal_Scheduler.savedsearch_id Search_Activity.Internal_Scheduler.app2 Search_Activity.Internal_Scheduler.user2 Search_Activity.Internal_Scheduler.search_type2 
+| `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)` 
+| rename info2 AS status app2 AS app savedsearch_name2 AS savedsearch_name user2 AS user search_type2 AS search_type 
+| stats 
+    count(eval(status=="delegated_remote")) AS SHC_DLG_RMT_EXEC
+    count(eval(status=="delegated_remote_error")) AS SHC_DLG_RMT_ERR_EXEC
+    count(eval(status=="delegated_remote_completion")) AS SHC_COMP_EXEC
+    count(eval(status=="deferred")) AS SHC_DEF_EXEC
+    count(eval(status=="delegated_remote_completion" OR status=="skipped")) AS SHC_TOT_EXEC
+    count(eval(status=="completed")) AS SH_COMP_EXEC
+    count(eval(status=="completed" OR status=="skipped")) AS SH_TOT_EXEC
+    count(eval(status=="skipped")) AS Skipped_EXEC
+    count(eval(status=="terminated")) AS Terminated_EXEC
+    BY _time host app savedsearch_name user search_type 
+| stats 
+    sum(SHC_DLG_RMT_EXEC) AS SHC_DLG_RMT_EXEC 
+    sum(SHC_DLG_RMT_ERR_EXEC) AS SHC_DLG_RMT_ERR_EXEC 
+    sum(SHC_COMP_EXEC) AS SHC_COMP_EXEC 
+    sum(SHC_DEF_EXEC) AS SHC_DEF_EXEC 
+    sum(SHC_TOT_EXEC) AS SHC_TOT_EXEC 
+    sum(SH_COMP_EXEC) AS SH_COMP_EXEC 
+    sum(SH_TOT_EXEC) AS SH_TOT_EXEC 
+    sum(Skipped_EXEC) AS Skipped_EXEC 
+    sum(Terminated_EXEC) AS Terminated_EXEC 
+    BY host search_type 
+| `get_instance_info(host)` 
+| `get_shcluster_info(host)` 
+| search (shcluster_label="$shcluster_label$" AND Splunk_Roles="$Splunk_Roles$") 
+| `get_search_concurrency(shcluster_label, search-concurrency)`
+| eval Skip_Ratio = case ( 
+    match(Splunk_Roles, "shc_captain"), round ( ( Skipped_EXEC / SHC_TOT_EXEC ) * 100, 2),
+    ! ( match(Splunk_Roles, "shc_captain") AND match(Splunk_Roles, "search_peer")), round ( ( Skipped_EXEC / SH_TOT_EXEC ) * 100, 2),
+    true(), "Unknown" ) 
+| eval SHC_TOT_EXEC = if (! match(Splunk_Roles, "shc_captain"), 0, SHC_TOT_EXEC), SH_TOT_EXEC = if ( match(Splunk_Roles, "shc_captain"), 0, SH_TOT_EXEC) 
+| eval Splunk_Roles = mvfilter( ! match(Splunk_Roles, "kv_store|deployment_server|license_master|search_peer") ) 
+| table shcluster_label Splunk_Roles host search_type SHC_TOT_EXEC SH_TOT_EXEC Skipped_EXEC Skip_Ratio SH_COMP_EXEC SHC_COMP_EXEC SHC_DEF_EXEC SHC_DLG_RMT_EXEC SHC_DLG_RMT_ERR_EXEC Terminated_EXEC max_hist_searches max_searches_perc max_hist_scheduled_searches auto_summary_perc max_auto_summary_searches max_searches_per_cpu numberOfCores base_max_searches numberOfVirtualCores physicalMemoryMB adhoc_searchhead captain_is_adhoc_searchhead startup_time 
+| sort 0 - Skip_Ratio 
+| `rename_common_fields` 
+| `rename_gmc_internal_fields`
+| `rename_instance_fields` 
+| `rename_saved_searches_fields` 
+| `rename_shcluster_fields` 
+| `rename_search_concurrency_fields` 
+| rename Skip_Ratio AS "Skip Ratio %"</query>
+          <earliest>$InternalTimeRangePkr.earliest$</earliest>
+          <latest>$InternalTimeRangePkr.latest$</latest>
+        </search>
+        <option name="count">12</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">true</option>
+        <option name="wrap">false</option>
+        <format type="number" field="Skip Ratio %">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="Skip_Ratio">
+          <colorPalette type="map">{"0":#53A051,"5":#F8BE34,"15":#F1813F,"30":#DC4E41}</colorPalette>
+        </format>
+        <format type="number" field="Server Memory">
+          <option name="precision">0</option>
+          <option name="unit">GB</option>
+        </format>
+        <format type="number" field="Max Searches Per CPU">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Skip Ratio %">
+          <colorPalette type="list">[#53A051,#53A051,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+          <scale type="threshold">0,1,15,30</scale>
+        </format>
+        <format type="color" field="Max Searches %">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="SHC_TOT_EXEC">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="SH_TOT_EXEC">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Skipped_EXEC">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="SH_COMP_EXEC">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="SHC_COMP_EXEC">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="SHC_DEF_EXEC">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="SHC_DLG_RMT_EXEC">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="SHC_DLG_RMT_ERR_EXEC">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Terminated_EXEC">
+          <option name="precision">0</option>
+          <option name="unit">Terminated</option>
+        </format>
+        <format type="color" field="Splunk Startup Time">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Max Historical Searches">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Max Searches %">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Max Historical Scheduled Searches">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Auto Summary %">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Max Auto Summary Searches">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="SHC/SH">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Splunk Instance">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Terminated_EXEC">
+          <colorPalette type="list">[#53A051,#DC4E41]</colorPalette>
+          <scale type="threshold">1</scale>
+        </format>
+        <format type="color" field="Auto Summary %">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="search_type">
+          <colorPalette type="map">{"scheduled":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="Search Head">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="SH_TOT_EXEC">
+          <colorPalette type="minMidMax" maxColor="#B6C75A" midColor="#FFFFFF" minColor="#294E70"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="number" field="Instance Memory (MB)">
+          <option name="precision">0</option>
+          <option name="unit">GB</option>
+        </format>
+        <format type="number" field="Instance vCPU">
+          <option name="precision">0</option>
+          <option name="unit">vCPU</option>
+        </format>
+        <format type="number" field="Instance pCPU">
+          <option name="precision">0</option>
+          <option name="unit">pCPU</option>
+        </format>
+        <format type="number" field="Base Max Searches">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Ad-Hoc SH">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Search Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Instance pCPU">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Instance Memory (MB)">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Internal_Panel7">
+    <panel>
+      <title>16. Skip Ratio Over Time</title>
+      <input type="time" token="InternalTimeRangePkr" searchWhenChanged="true">
+        <label>Internal Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="span_period" searchWhenChanged="true">
+        <label>Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
+      <chart>
+        <title>Span Period: $span_period$  / Earliest Time: $InternalTimeRangePkr.earliest$ / Latest Time: $InternalTimeRangePkr.latest$</title>
+        <search>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE 
+    count
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Internal_Scheduler
+    index=_internal
+    AND Search_Activity.Internal_Scheduler.savedsearch_name2 = "$savedsearch_name$"
+    AND Search_Activity.Internal_Scheduler.app2 = "$app$"
+    AND Search_Activity.Internal_Scheduler.search_type2 = "$search_type2$"
+    AND Search_Activity.Internal_Scheduler.user2 = "$user$"
+    AND host = "$host$"
+    BY _time $span_period$ host Search_Activity.Internal_Scheduler.info2 Search_Activity.Internal_Scheduler.savedsearch_name2 Search_Activity.Internal_Scheduler.savedsearch_id Search_Activity.Internal_Scheduler.app2 Search_Activity.Internal_Scheduler.user2 Search_Activity.Internal_Scheduler.search_type2 
+| `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)` 
+| rename info2 AS status app2 AS app savedsearch_name2 AS savedsearch_name user2 AS user search_type2 AS search_type 
+| stats 
+    count(eval(status=="delegated_remote")) AS SHC_DLG_RMT_EXEC
+    count(eval(status=="delegated_remote_error")) AS SHC_DLG_RMT_ERR_EXEC
+    count(eval(status=="delegated_remote_completion")) AS SHC_COMP_EXEC
+    count(eval(status=="deferred")) AS SHC_DEF_EXEC
+    count(eval(status=="delegated_remote_completion" OR status=="skipped")) AS SHC_TOT_EXEC
+    count(eval(status=="completed")) AS SH_COMP_EXEC
+    count(eval(status=="completed" OR status=="skipped")) AS SH_TOT_EXEC
+    count(eval(status=="skipped")) AS Skipped_EXEC
+    count(eval(status=="terminated")) AS Terminated_EXEC
+    BY _time host app savedsearch_name user search_type 
+| stats 
+    sum(SHC_DLG_RMT_EXEC) AS SHC_DLG_RMT_EXEC 
+    sum(SHC_DLG_RMT_ERR_EXEC) AS SHC_DLG_RMT_ERR_EXEC 
+    sum(SHC_COMP_EXEC) AS SHC_COMP_EXEC 
+    sum(SHC_DEF_EXEC) AS SHC_DEF_EXEC 
+    sum(SHC_TOT_EXEC) AS SHC_TOT_EXEC 
+    sum(SH_COMP_EXEC) AS SH_COMP_EXEC 
+    sum(SH_TOT_EXEC) AS SH_TOT_EXEC 
+    sum(Skipped_EXEC) AS Skipped_EXEC 
+    sum(Terminated_EXEC) AS Terminated_EXEC 
+    BY _time host search_type 
+| `get_instance_info(host)` 
+| `get_shcluster_info(host)` 
+| search (shcluster_label="$shcluster_label$" AND Splunk_Roles="$Splunk_Roles$") 
+| `get_search_concurrency(shcluster_label, search-concurrency)` 
+| eval SHC_TOT_EXEC = if (! match(Splunk_Roles, "shc_captain"), 0, SHC_TOT_EXEC), SH_TOT_EXEC = if ( match(Splunk_Roles, "shc_captain"), 0, SH_TOT_EXEC) 
+| eval Splunk_Roles = mvfilter( ! match(Splunk_Roles, "kv_store|deployment_server|license_master|search_peer") ) 
+| fields _time shcluster_label search_type SHC_TOT_EXEC SH_TOT_EXEC Skipped_EXEC Skip_Ratio SH_COMP_EXEC SHC_COMP_EXEC SHC_DEF_EXEC SHC_DLG_RMT_EXEC SHC_DLG_RMT_ERR_EXEC 
+| bin _time $span_period$
+| stats 
+    Sum(SHC_TOT_EXEC) As SHC_TOT_EXEC 
+    Sum(SH_TOT_EXEC) As SH_TOT_EXEC 
+    Sum(Skipped_EXEC) As Skipped_EXEC 
+    By _time 
+| eval Skip_Ratio = case ( 
+    match(Splunk_Roles, "shc_captain"), round ( ( Skipped_EXEC / SHC_TOT_EXEC ) * 100, 0),
+    ! ( match(Splunk_Roles, "shc_captain") AND match(Splunk_Roles, "search_peer")), round ( ( Skipped_EXEC / SH_TOT_EXEC ) * 100, 0),
+    true(), "Unknown" )</query>
+          <earliest>$InternalTimeRangePkr.earliest$</earliest>
+          <latest>$InternalTimeRangePkr.latest$</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.text">Skip Ratio</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">auto</option>
+        <option name="charting.axisY2.enabled">1</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.overlayFields">Skip_Ratio</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="height">610</option>
+        <option name="refresh.display">none</option>
+        <option name="trellis.enabled">0</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="style_settings" depends="$visible$">
+    <panel depends="$alwaysHideCSS$">
+      <title>$env:page$</title>
+      <html>
+            <style>.dashboard-panel h2{
+             background:#f8be34 !important;
+             color:black !important;
+             text-align: center !important;
+             font-weight: bold !important;
+             border-top-right-radius: 15px;
+             border-top-left-radius: 15px; }
+            .dashboard-panel h1.panel-title {
+              font-weight: bold !important;
+              font-size: 100% !important; }
+                .table, th, td {
+              border: 8px solid black !important; }
+            { display: none;  }</style>
+         </html>
+    </panel>
+  </row>
+  <row id="Internal_Panel10">
+    <panel depends="$alwaysHideCSS$">
+      <html>
+            <style>#Narrow1{
+          width:10% !important;
+        }
+        #Narrow2{
+          width:15% !important;
+        }
+        #Narrow3{
+          width:15% !important;
+        }
+        #Wide1{
+          width:15% !important;
+        }
+        #Wide2{
+          width:25% !important;
+        }
+        #Wide3{
+          width:20% !important;
+        }</style>
+         </html>
+    </panel>
+  </row>
+</form>

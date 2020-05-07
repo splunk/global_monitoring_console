@@ -1,0 +1,115 @@
+Data_Model,Dataset_Name,Field_Name,Field_Type,Field_Description
+Identity_Management,All_Assets,"For a list of extracted fields, see Asset lookup fields in the Enterprise Security User manual.",,http://docs.splunk.com/Documentation/ES/latest/Admin/Formatassetoridentitylist#Asset_lookup_fields
+Identity_Management,All_Identities,"For a list of extracted fields, see Identity lookup fields in the Enterprise Security User manual.",,http://docs.splunk.com/Documentation/ES/latest/Admin/Formatassetoridentitylist#Identity_lookup_fields
+Identity_Management,All_Identities,employedDays,number,A calculated field based upon the identity startDate field.
+Identity_Management,All_Identities,expiredDays,number,A calculated field based upon the identity endDate field.
+Identity_Management,Expired_Identity_Activity,src_user,string,The source user name.
+Identity_Management,Expired_Identity_Activity,src_user_endDate,time,The source identity's end date.
+Identity_Management,Expired_Identity_Activity,user,string,The source user name.
+Identity_Management,Expired_Identity_Activity,user_endDate,time,The source identity's end date.
+Identity_Management,Expired_Identity_Activity,expired_user,string,The user that was identified as being expired  (either src_user or user).
+Domain_Analysis,All_Domains,created,time,The date when the domain was registered.
+Domain_Analysis,All_Domains,expires,time,The date when the domain will expire.
+Domain_Analysis,All_Domains,retrieved,time,The date when the domain information was retrieved.
+Domain_Analysis,All_Domains,tag,string,Tags associated with the domain analysis events.
+Domain_Analysis,All_Domains,updated,time,The date when the domain registration was updated.
+Domain_Analysis,All_Domains,domain,string,The domain or IP that was scanned.
+Domain_Analysis,All_Domains,nameservers,string,The list of authoritative name servers for the domain.
+Domain_Analysis,All_Domains,registrant,string,The name of the organization or individual that registered the domain name with the registrar.
+Domain_Analysis,All_Domains,registrar,string,The name of the organization or individual that maintains the domain name registration.
+Domain_Analysis,All_Domains,resolved_domain,string,The domain name that a scanned IP address resolved to.
+Incident_Management,Notable_Events_Meta,tag,string,Splunk tags associated with the notable event.
+Incident_Management,Notable_Events_Meta,rule_id,string,The rule_id of the notable event.
+Incident_Management,Notable_Events_Meta,orig_tag,string,Splunk tags associated with the original events that contributed to the notable event.
+Incident_Management,Notable_Events,owner,string,The Splunk ID of the owner of the notable event.
+Incident_Management,Notable_Events,owner_realname,string,The real name of the owner of the notable event in Enterprise Security.
+Incident_Management,Notable_Events,rule_name,string,The rule name of the notable event.
+Incident_Management,Notable_Events,security_domain,string,The security domain of the notable event.
+Incident_Management,Notable_Events,status,string,The status id of the notable event.
+Incident_Management,Notable_Events,status_group,string,The status group of the notable event.
+Incident_Management,Notable_Events,tag,string,Splunk tags associated with the notable event.
+Incident_Management,Notable_Events,urgency,,
+Incident_Management,Notable_Events,urgencystring,string,The urgency of the notable event.
+Incident_Management,Notable_Events,dest,string,The dest of the notable event.
+Incident_Management,Notable_Events,src,string,The src of of the notable event.
+Incident_Management,Suppressed_Notable_Events,rule_name,string,The rule_name of the suppressed notable event.
+Incident_Management,Suppressed_Notable_Events,security_domain,string,The security_domain of the suppressed notable event.
+Incident_Management,Suppressed_Notable_Events,suppression,string,The name of the suppression that suppressed this notable event.
+Incident_Management,Suppressed_Notable_Events,tag,string,Splunk tags associated with the suppressed notable event.
+Incident_Management,Suppressed_Notable_Events,urgency,string,The urgency of the notable event.
+Incident_Management,Suppressed_Notable_Events,dest,string,The dest of the notable event.
+Incident_Management,Suppressed_Notable_Events,src,string,The src of the notable event.
+Incident_Management,Incident_Review,comment,string,The review comment.
+Incident_Management,Incident_Review,owner,string,The owner of the notable event.
+Incident_Management,Incident_Review,reviewer,string,The reviewer of the notable event.
+Incident_Management,Incident_Review,rule_id,string,The rule_id of the notable event.
+Incident_Management,Incident_Review,security_domain,string,The security domain of the notable event.
+Incident_Management,Incident_Review,status,string,The status of the notable event.
+Incident_Management,Incident_Review,status_group,string,The status_group of the notable event.
+Incident_Management,Incident_Review,tag,string,The Splunk tags associated with the notable event.
+Incident_Management,Incident_Review,urgency,string,The urgency of the notable event.
+Incident_Management,Correlation_Search_Lookups.Correlation_Searches,See correlationsearches.conf.spec for descriptions of these fields.,,
+Incident_Management,Correlation_Search_Lookups.Notable_Owners,owner,string,The Splunk user ID of a potential notable owner.
+Incident_Management,Correlation_Search_Lookups.Notable_Owners,owner_realname,string,The real name of a potential notable event owner in Enterprise Security.
+Incident_Management,Correlation_Search_Lookups.Review_Statuses,See reviewstatuses.conf.spec for descriptions of these fields.,,
+Incident_Management,Correlation_Search_Lookups.Security_Domains,is_enabled,boolean,Whether or not the security domain is enabled.
+Incident_Management,Correlation_Search_Lookups.Security_Domains,is_expected,boolean,Whether or not the security domain is expected.
+Incident_Management,Correlation_Search_Lookups.Security_Domains,is_ignored,boolean,Whether or not the security domain is ignored.
+Incident_Management,Correlation_Search_Lookups.Security_Domains,security_domain,string,The security domain label.
+Incident_Management,Correlation_Search_Lookups.Urgencies,priority,string,The priority of the notable event.
+Incident_Management,Correlation_Search_Lookups.Urgencies,severity,string,The severity of the notable event.
+Incident_Management,Correlation_Search_Lookups.Urgencies,urgency,string,"The urgency of the notable event, calculated based on the priority and severity."
+Incident_Management,Notable_Event_Suppressions.Suppression_Audit,action,string,The action performed on the suppression (enable/disable).
+Incident_Management,Notable_Event_Suppressions.Suppression_Audit,signature,string,The signature of the suppression audit event.
+Incident_Management,Notable_Event_Suppressions.Suppression_Audit,status,string,The status of the suppression audit event (success/failure).
+Incident_Management,Notable_Event_Suppressions.Suppression_Audit,suppression,string,The name of the suppression.
+Incident_Management,Notable_Event_Suppressions.Suppression_Audit,user,string,The user who performed the CRUD operation on suppression.
+Incident_Management,Notable_Event_Suppressions.Suppression_Audit_Expired,signature,string,The signature of the suppression audit event.
+Incident_Management,Notable_Event_Suppressions.Suppression_Audit_Expired,suppression,string,The name of the suppression.
+Incident_Management,Notable_Event_Suppressions.Suppression_Eventtypes,start_time,time,The start time of the suppression.
+Incident_Management,Notable_Event_Suppressions.Suppression_Eventtypes,end_time,time,The end time of the suppression.
+Incident_Management,Notable_Event_Suppressions.Suppression_Eventtypes,description,string,The description of the suppression.
+Incident_Management,Notable_Event_Suppressions.Suppression_Eventtypes,disabled,boolean,If the suppression is enabled or disabled.
+Incident_Management,Notable_Event_Suppressions.Suppression_Eventtypes,search,string,The notable event suppression search.
+Incident_Management,Notable_Event_Suppressions.Suppression_Eventtypes,suppression,string,The notable event suppression name.
+Risk,All_Risk,creator,string,"If the modifier was created ad-hoc, this is the Splunk user ID that created the modifier."
+Risk,All_Risk,tag,string,Splunk tags associated with the risk modifiers.
+Risk,All_Risk,savedsearch_description,string,Used for calculating the description field.
+Risk,All_Risk,description,string,The description of the risk modifier as specified by the creator or the saved search.
+Risk,All_Risk,risk_object,string,The object for which the risk modifier applies.
+Risk,All_Risk,risk_object_type,string,"The type of object for which the risk modifier applies (system, user, other)."
+Risk,All_Risk,risk_score,number,The risk score associated with the risk modifier.
+Threat_Intelligence,Threat_Activity,dest_bunit,string,The destination asset business unit.
+Threat_Intelligence,Threat_Activity,dest_category,string,The destination asset category.
+Threat_Intelligence,Threat_Activity,dest_priority,string,The destination asset priority.
+Threat_Intelligence,Threat_Activity,src_bunit,string,The source asset business unit.
+Threat_Intelligence,Threat_Activity,src_category,string,The source asset category.
+Threat_Intelligence,Threat_Activity,src_priority,string,The source asset priority.
+Threat_Intelligence,Threat_Activity,threat_match_field,string,The name of the field for which Enterprise Security found a threat match.
+Threat_Intelligence,Threat_Activity,threat_match_value,string,The value Enterprise Security matched on.
+Threat_Intelligence,Threat_Activity,threat_collection,string,The collection of intelligence Enterprise Security matched on.
+Threat_Intelligence,Threat_Activity,threat_collection_key,string,The KV store key of the intelligence Enterprise Security matched on.
+Threat_Intelligence,Threat_Activity,threat_key,string,The key for the threat attribution associated with the intelligence Enterprise matched on.
+Threat_Intelligence,Threat_Activity,dest,string,The destination of the event that Enterprise Security matched on.
+Threat_Intelligence,Threat_Activity,orig_sourcetype,string,The original sourcetype of the event Enterprise Security matched on.
+Threat_Intelligence,Threat_Activity,src,string,The source of the event that we matched on.
+User and Entity Behavior Analytics,All_UEBA_Events,action,string,The recommended action to take in response to a threat in Splunk UBA.
+User and Entity Behavior Analytics,All_UEBA_Events,app,string,A multi-value attribute with the names of all the applications associated with the anomaly or threat.
+User and Entity Behavior Analytics,All_UEBA_Events,category,string,The category or categories associated with an anomaly.
+User and Entity Behavior Analytics,All_UEBA_Events,description,string,The long description of an anomaly.
+User and Entity Behavior Analytics,All_UEBA_Events,dvc,string,A multi-value attribute with the names of all devices associated with an anomaly or threat.
+User and Entity Behavior Analytics,All_UEBA_Events,link,string,The link to view the anomaly or threat in Splunk UBA.
+User and Entity Behavior Analytics,All_UEBA_Events,severity,string,The severity level of an anomaly or threat. Based on the risk score in Splunk UBA.
+User and Entity Behavior Analytics,All_UEBA_Events,severity_id,number,The severity id of an anomaly or threat.
+User and Entity Behavior Analytics,All_UEBA_Events,signature,string,The internal name of a threat or anomaly.
+User and Entity Behavior Analytics,All_UEBA_Events,threat_category,string,The category of a threat in Splunk UBA.
+User and Entity Behavior Analytics,All_UEBA_Events,uba_event_id,string,The internal id for an anomaly or threat in Splunk UBA.
+User and Entity Behavior Analytics,All_UEBA_Events,uba_event_type,string,An anomaly or threat.
+User and Entity Behavior Analytics,All_UEBA_Events,uba_host,string,The UBA host sending the threats and anomalies.
+User and Entity Behavior Analytics,All_UEBA_Events,url,string,A multi-value attribute with the names of all domains associated with an anomaly.
+User and Entity Behavior Analytics,All_UEBA_Events,user,string,A multi-value attribute with the names of all users associated with an anomaly.
+User and Entity Behavior Analytics,All_UEBA_Events,uba_time,time,The time the anomaly or threat was forwarded to Enterprise Security.
+User and Entity Behavior Analytics,All_UEBA_Events,modify_time,time,The time an anomaly or threat was last modified by Splunk UBA.
+User and Entity Behavior Analytics,All_UEBA_Events,start_time,time,The time an anomaly or threat was first identified by Splunk UBA.
+User and Entity Behavior Analytics,All_UEBA_Events.UEBA_Anomalies,uba_model,time,The name of the Splunk UBA model that detected the anomaly.
+User and Entity Behavior Analytics,All_UEBA_Events.UEBA_Anomalies,uba_model_version,string,The version of the Splunk UBA model that detected the anomaly.

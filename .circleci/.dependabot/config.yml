@@ -1,0 +1,11 @@
+version: 1
+update_configs:
+  # Keep package.json (& lockfiles) up to date as soon as
+  # new versions are published to the npm registry
+  - package_manager: "submodules"
+    directory: "/deps"
+    update_schedule: "daily"
+  # Keep Dockerfile up to date, batching pull requests weekly
+  - package_manager: "python"
+    directory: "/"
+    update_schedule: "live"

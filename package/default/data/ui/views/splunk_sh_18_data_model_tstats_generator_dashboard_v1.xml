@@ -1,0 +1,403 @@
+<form theme="dark">
+  <label>SH - 18 - Data Model tstats Generator - Dashboard - v1.5.15</label>
+  <description>Select The Data Model and Dataset you would like to generate a | tstats statement for.  Some Datasets contains additional fields only available for that particular Dataset.  Copy the | tstats statement first and paste in a new search tab, then select values you are interested to explore or use other functions and paste just before the count which is on line 2.  Here are a list of all other functions to use:
+avg,
+dc,
+estdc,
+exactperc&lt;int&gt;,
+max,
+median,
+min,
+mode,
+perc&lt;int&gt;,
+range,
+stdev,
+stdevp,
+sum,
+sumsq,
+upperperc&lt;int&gt;,
+var,
+varp,
+first,
+last,
+earliest,
+earliest_time,
+latest,
+latest_time,
+rate</description>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="dropdown" token="Model_Name" searchWhenChanged="false">
+      <label>Model Name</label>
+      <fieldForLabel>Display_Name</fieldForLabel>
+      <fieldForValue>Model_Name</fieldForValue>
+      <search>
+        <query>| datamodel
+| spath output=Display_Name displayName
+| spath output=Model_Name modelName
+| spath output=Model_Description description
+| spath output=Dataset_Name objects{}.lineage 
+| search NOT Model_Description = "*deprecated*"
+| stats count by Model_Name Display_Name</query>
+        <earliest>-1s</earliest>
+        <latest>now</latest>
+      </search>
+      <default>Authentication</default>
+      <initialValue>Authentication</initialValue>
+      <choice value="internal_server">Splunk's Internal Server Logs</choice>
+    </input>
+    <input type="dropdown" token="Dataset_Name" searchWhenChanged="false">
+      <label>Dataset Name</label>
+      <fieldForLabel>displayName</fieldForLabel>
+      <fieldForValue>Dataset_Name</fieldForValue>
+      <search>
+        <query>| datamodel $Model_Name$ 
+| spath output=objects path=objects{} 
+| stats count by objects 
+| rex field=objects "objectName\":\"(?&lt;objectName&gt;.*?)\"" 
+| rex field=objects "displayName\":\"(?&lt;displayName&gt;.*?)\"" 
+| rename objectName as Dataset_Name 
+| table Dataset_Name displayName
+| sort displayName</query>
+        <earliest>-15m</earliest>
+        <latest>now</latest>
+      </search>
+      <default>Authentication</default>
+      <initialValue>Authentication</initialValue>
+      <choice value="server">Splunk Server</choice>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Copy the | tstats command below and append to it any necessary values functions from the list below and end the search by copying the drop macro at the bottom - $env:page$</title>
+      <table>
+        <title>https://docs.splunk.com/Documentation/Splunk/latest/SearchReference/From</title>
+        <search>
+          <query>| datamodel "$Model_Name$" "$Dataset_Name$" 
+| spath output=Model_Name displayName 
+| spath output=Dataset_Name objects{}.objectName 
+| spath output=Dataset_Name1 calculations{}.outputFields{}.owner 
+| spath output=calculated_fieldName calculations{}.outputFields{}.fieldName 
+| spath output=calculated_type calculations{}.outputFields{}.type 
+| spath output=calculated_description calculations{}.outputFields{}.comment{}.description 
+| spath output=Dataset_Name2 fields{}.owner 
+| spath output=fields_fieldName fields{}.fieldName 
+| spath output=fields_type fields{}.type 
+| spath output=fields_description fields{}.comment{}.description 
+| eval Dataset_Name = case(
+    "$Model_Name$"="Certificates", "All_Certificates", 
+    "$Model_Name$"="Change", "All_Changes", 
+    "$Model_Name$"="Compute_Inventory", "All_Inventory", 
+    "$Model_Name$"="Databases", "All_Databases",
+    "$Model_Name$"="DLP", "DLP_Incidents",
+    "$Model_Name$"="Email", "All_Email",
+    "$Model_Name$"="Domain_Analysis", "All_Domains", 
+    "$Model_Name$"="Interprocess_Messaging", "All_Messaging", 
+    "$Model_Name$"="Intrusion_Detection", "Intrusion_Detection", 
+    "$Model_Name$"="Malware", "Malware_Attacks", 
+    "$Model_Name$"="Network_Sessions", "All_Sessions", 
+    "$Model_Name$"="Network_Traffic", "All_Traffic", 
+    "$Model_Name$"="Performance", "All_Performance", 
+    "$Model_Name$"="Ticket_Management", "All_Ticket_Management", 
+    "$Model_Name$"="Splunk_Audit", "Search_Activity", 
+    true(), "$Model_Name$") 
+| eval Model_Name = "$Model_Name$" 
+| eval Data_Model = case(
+    "$Model_Name$" = "$Dataset_Name$", "$Model_Name$", 
+    "$Model_Name$" = "Splunk_Audit", "$Model_Name$",
+    "$Model_Name$" = "Intrusion_Detection", "$Model_Name$",
+    "$Model_Name$" = "Network_Resolution", "$Model_Name$",
+    "$Model_Name$" = "Threat_Intelligence", "$Model_Name$",
+    "$Model_Name$" = "Risk", "$Model_Name$",
+    "$Model_Name$" = "Endpoint", "$Model_Name$.$Dataset_Name$" ,
+    true(), Model_Name . "." . Dataset_Name) 
+| eval nodename = case("$Model_Name$" = "$Dataset_Name$", "$Model_Name$", true(), Dataset_Name . ".$Dataset_Name$") 
+| strcat "| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=TRUE 
+    count 
+    FROM DATAMODEL=" . Data_Model . " 
+    WHERE nodename=" . nodename . " 
+    BY " . Dataset_Name . ".src " . Dataset_Name . ".dest " . Dataset_Name . ".user" tstats 
+| strcat "| from datamodel:" . Model_Name . ".$Dataset_Name$ | fields - _raw sourcetype source host | table _time *" from_data_model 
+| eval Tstats_Command = case(match("$Model_Name$","Identity_Management|Splunk_CIM_Validation|Incident_Management|Risk|Threat_Intelligence"), from_data_model, true(), tstats) 
+| eval Drop_Data_Model_Object = case(match("$Model_Name$","Identity_Management|Splunk_CIM_Validation|Incident_Management|Risk|Threat_Intelligence"), null(), true(), "|`drop_dm_object_name(" + Dataset_Name + ")`") 
+| eval Drill-down_Search = "| from datamodel:" . Model_Name . ".$Dataset_Name$ | where &lt;Split By Field&gt; = &lt;Split By Field&gt;" 
+| table Tstats_Command Drop_Data_Model_Object Drill-down_Search</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <format type="color" field="tstats">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="drop">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="command"></format>
+        <format type="color" field="command">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Drill-down">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Tstats_Command">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Drop_Data_Model_Object">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Drill-down_Search">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| datamodel $Model_Name$ 
+| spath output=Model_Description description 
+| table Model_Description</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="color" field="Model_Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+      <table>
+        <search>
+          <query>| datamodel "$Model_Name$" "$Dataset_Name$" 
+| spath output=search path=constraints{}.search 
+| spath output=baseSearch path=baseSearch 
+| spath output=autoextractSearch path=autoextractSearch 
+| eval baseSearch = mvappend(baseSearch, autoextractSearch, search) 
+| spath output=constraints path=constraints{} 
+| eval constraints = if(isnotnull(baseSearch), baseSearch, constraints) 
+| eval constraints=trim(constraints), baseSearch=trim(baseSearch) 
+| stats values(baseSearch) as baseSearch count by constraints 
+| rex field=constraints "owner\":\"(?&lt;owner&gt;.*?)\"" 
+| rex field=constraints "search\":\"(?&lt;search&gt;.*?)," 
+| rex field=constraints "cim(?&lt;CIM_Indexes&gt;.*?)`" 
+| rex field=search mode=sed "s/\"$|\\\//g" 
+| rename owner AS Dataset, search as Constraints 
+| eval CIM_Indexes = "cim" + CIM_Indexes 
+| eval Constraints = if(isnotnull(baseSearch), baseSearch, Constraints) 
+| eval Dataset = if(isnotnull(baseSearch), "$Dataset_Name$", Dataset) 
+| eval CIM_Indexes = if(match(Dataset, "^Search_|^Scheduler_|^View_|^Modular_|^Web_Service_|^Threat_|_Intelligence$|^All_Domains|Identities|Identity|_Assets$|_Jobs$"), "NOT_Applicable", CIM_Indexes) 
+| fields Dataset Constraints CIM_Indexes 
+| sort + Dataset 
+| filldown CIM_Indexes 
+| join 
+    [| rest /services/data/macros 
+    | table title definition 
+    | rename title as CIM_Indexes 
+    | eval CIM_Indexes = if(match(CIM_Indexes, "^N"), "NOT_Applicable", CIM_Indexes)] 
+| eval definition = if(match(CIM_Indexes, "NOT_Applicable"), "See Constraints", definition) 
+| rename definition as "CIM Setup Indexes Whitelist" 
+| table Dataset Constraints "CIM Setup Indexes Whitelist" 
+| dedup Dataset 
+| dedup Constraints</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="search">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Dataset">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Copy values function below and paste before the count above</title>
+      <table>
+        <title>https://docs.splunk.com/Documentation/Splunk/latest/SearchReference/Tstats</title>
+        <search>
+          <query>| datamodel $Model_Name$ $Dataset_Name$
+| spath output=Model_Name displayName 
+| spath output=Dataset_Name objects{}.objectName 
+| spath output=Dataset_Name1 calculations{}.outputFields{}.owner 
+| spath output=calculated_fieldName calculations{}.outputFields{}.fieldName 
+| spath output=calculated_type calculations{}.outputFields{}.type 
+| spath output=calculated_description calculations{}.outputFields{}.comment{}.description 
+| spath output=Dataset_Name2 fields{}.owner 
+| spath output=fields_fieldName fields{}.fieldName 
+| spath output=fields_type fields{}.type 
+| spath output=fields_description fields{}.comment{}.description 
+| eval calculated_zipped = mvzip(Dataset_Name1, calculated_fieldName, "|") 
+| eval calculated_zipped = mvzip(calculated_zipped, calculated_type, "|") 
+| eval calculated_zipped = mvzip(calculated_zipped, calculated_description, "|") 
+| eval fields_zipped = mvzip(Dataset_Name2, fields_fieldName, "|") 
+| eval fields_zipped = mvzip(fields_zipped, fields_type, "|") 
+| eval fields_zipped = mvzip(fields_zipped, fields_description, "|") 
+| eval all = mvappend(calculated_zipped,fields_zipped) 
+| stats count by all 
+| rex field=all "(?&lt;Dataset_Name&gt;\N+)\|(?&lt;Field_Name&gt;\N+)\|(?&lt;Field_Type&gt;\N+)\|(?&lt;Field_Description&gt;\N+)" 
+| table Dataset_Name Field_Name Field_Type Field_Description 
+| search NOT Field_Name IN ("source", "sourcetype", "host", "_time")
+| sort 0 Field_Name
+| eval Field_Name = case(Field_Name IN ("source", "sourcetype", "host"), "VALUES(" . Field_Name . ") AS " . Field_Name, true(), "VALUES(" . Dataset_Name . "." . Field_Name . ") AS " . Field_Name)
+| fields Field_Name
+| rename Field_Name AS "tstats values function against all fields in the Datamodel.Dataset"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">100</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="tstats values function against all fields in the Datamodel.Dataset">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>Data Model / Dataset Field Description</title>
+      <table>
+        <title>https://docs.splunk.com/Documentation/CIM/latest/User/Overview</title>
+        <search>
+          <query>| datamodel $Model_Name$ $Dataset_Name$ 
+| spath output=Dataset_Name1 calculations{}.outputFields{}.owner 
+| spath output=calculated_fieldName calculations{}.outputFields{}.fieldName 
+| spath output=calculated_type calculations{}.outputFields{}.type 
+| spath output=calculated_description calculations{}.outputFields{}.comment{}.description 
+| spath output=Dataset_Name2 fields{}.owner 
+| spath output=fields_fieldName fields{}.fieldName 
+| spath output=fields_type fields{}.type 
+| spath output=fields_description fields{}.comment{}.description 
+| eval calculated_zipped = mvzip(Dataset_Name1, calculated_fieldName, "|") 
+| eval calculated_zipped = mvzip(calculated_zipped, calculated_type, "|") 
+| eval calculated_zipped = mvzip(calculated_zipped, calculated_description, "|") 
+| eval fields_zipped = mvzip(Dataset_Name2, fields_fieldName, "|") 
+| eval fields_zipped = mvzip(fields_zipped, fields_type, "|") 
+| eval fields_zipped = mvzip(fields_zipped, fields_description, "|") 
+| eval all = mvappend(calculated_zipped,fields_zipped) 
+| stats count by all 
+| rex field=all "(?&lt;Dataset_Name&gt;\N+)\|(?&lt;Field_Name&gt;\N+)\|(?&lt;Field_Type&gt;\N+)\|(?&lt;Field_Description&gt;\N+)" 
+| table Dataset_Name Field_Name Field_Type Field_Description 
+| search NOT Field_Name IN ("source", "sourcetype", "host", "_time")
+| sort 0 Field_Name</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Field_Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Field_Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Dataset_Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Field_Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Data Models used by Splunk Enterprise Security</title>
+      <table>
+        <title>For more information see: http://dev.splunk.com/view/enterprise-security/SP-CAAAFBM</title>
+        <search>
+          <query>| inputlookup es_data_models_lookup 
+| table Data_Model Dataset_Name Field_Name Field_Type Field_Description 
+| where Data_Model = "$Model_Name$"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <format type="color" field="Data_Model">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Dataset_Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Field_Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Field_Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="test">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Field_Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Using The datamodelsimple command</title>
+      <table>
+        <title>Excluding _raw, _time, host, source, sourcetype</title>
+        <search>
+          <query>| datamodelsimple type=attributes datamodel="$Model_Name$" nodename="$Dataset_Name$" 
+| search NOT attribute IN (_raw, _time, host, source, sourcetype)
+| table lineage attribute
+| sort + lineage</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">100</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="lineage">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+</form>

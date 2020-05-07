@@ -1,0 +1,87 @@
+<form theme="dark">
+  <label>SH - 17 - Search Using Data Models - Dashboard - v1.5.15</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="TimePicker" searchWhenChanged="false">
+      <label>TimePicker</label>
+      <default>
+        <earliest>-15m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="Model_Name" searchWhenChanged="false">
+      <label>Model Name</label>
+      <fieldForLabel>Display_Name</fieldForLabel>
+      <fieldForValue>Model_Name</fieldForValue>
+      <search>
+        <query>| datamodel
+| spath output=Display_Name displayName
+| spath output=Model_Name modelName
+| spath output=Model_Description description
+| spath output=Dataset_Name objects{}.lineage 
+| search NOT Model_Description = "*deprecated*"
+| stats count by Model_Name Display_Name</query>
+        <earliest>-1s</earliest>
+        <latest>now</latest>
+      </search>
+      <default>Splunk_Audit</default>
+      <initialValue>Splunk_Audit</initialValue>
+    </input>
+    <input type="dropdown" token="Dataset_Name" searchWhenChanged="false">
+      <label>Dataset Name</label>
+      <fieldForLabel>displayName</fieldForLabel>
+      <fieldForValue>Dataset_Name</fieldForValue>
+      <search>
+        <query>| datamodel $Model_Name$ 
+| spath output=objects path=objects{} 
+| stats count by objects 
+| rex field=objects "objectName\":\"(?&lt;objectName&gt;.*?)\"" 
+| rex field=objects "displayName\":\"(?&lt;displayName&gt;.*?)\"" 
+| rename objectName as Dataset_Name 
+| table Dataset_Name displayName
+| sort displayName</query>
+        <earliest>-15m</earliest>
+        <latest>now</latest>
+      </search>
+      <default>Adhoc_Jobs</default>
+      <initialValue>Adhoc_Jobs</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>| from datamodel:$Model_Name$.$Dataset_Name$ - $env:page$</title>
+      <table>
+        <search>
+          <query>| from datamodel:$Model_Name$.$Dataset_Name$ 
+| fields - _raw _time
+| table host sourcetype src dest user *_category *_bunit *_priority *_nt_domain *</query>
+          <earliest>$TimePicker.earliest$</earliest>
+          <latest>$TimePicker.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="host">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="user">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="info">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="sourcetype">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+</form>

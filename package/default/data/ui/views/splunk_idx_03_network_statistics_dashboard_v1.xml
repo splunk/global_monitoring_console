@@ -1,0 +1,340 @@
+<form theme="dark">
+  <label>IDX - 03 - Network Statistics - Dashboard - v1.5.15</label>
+  <description>Network Statistics using the Splunk_TA_nix netstat Scripted Inputs</description>
+  <search id="splunk_idx_03_network_statistics_dashboard_v1">
+    <query>index=osnixperf sourcetype=netstat host="$host$" | multikv | rename Proto as transport, State as state, Recv_Q as receive_queue, Send_Q as send_queue | rex field=LocalAddress "(?&lt;src_ip&gt;\d+.\d+.\d+.\d+):" | rex field=ForeignAddress "(?&lt;dest_ip&gt;\d+.\d+.\d+.\d+):" | rex field=LocalAddress ":(?&lt;src_port&gt;\d+?)$" | rex field=ForeignAddress ":(?&lt;dest_port&gt;\d+?)$" 
+    | `get_instance_roles(host)`
+    | `get_instance_info_simple(host)` 
+    | fields _time host transport state receive_queue send_queue src_ip dest_ip src_port dest_port Splunk_Roles
+    | fillnull value=0 receive_queue send_queue
+    | fillnull value="Unknown" host transport state send_queue src_ip dest_ip src_port dest_port Splunk_Roles
+    | search Splunk_Roles="*$Splunk_Roles$*" src_ip="$src_ip$" dest_ip="$dest_ip$" src_port="*$src_port$*" dest_port="*$dest_port$*" state="$state$" send_queue &gt;= $send_queue$ receive_queue &gt;= $receive_queue$
+      </query>
+    <earliest>$TimeRangePkr.earliest$</earliest>
+    <latest>$TimeRangePkr.latest$</latest>
+  </search>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+      <label>Time Range</label>
+      <default>
+        <earliest>-15m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+      <label>Splunk_Roles</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>Splunk_Roles</fieldForLabel>
+      <fieldForValue>Splunk_Roles</fieldForValue>
+      <search base="splunk_idx_03_network_statistics_dashboard_v1">
+        <query>| stats count by Splunk_Roles</query>
+      </search>
+    </input>
+    <input type="dropdown" token="host" searchWhenChanged="true">
+      <label>Splunk Instance</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search base="splunk_idx_03_network_statistics_dashboard_v1">
+        <query>| stats count by host</query>
+      </search>
+    </input>
+    <input type="dropdown" token="src_ip" searchWhenChanged="true">
+      <label>Source IP</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>src_ip</fieldForLabel>
+      <fieldForValue>src_ip</fieldForValue>
+      <search base="splunk_idx_03_network_statistics_dashboard_v1">
+        <query>| stats count by src_ip</query>
+      </search>
+    </input>
+    <input type="dropdown" token="src_port" searchWhenChanged="true">
+      <label>Source Port</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>src_port</fieldForLabel>
+      <fieldForValue>src_port</fieldForValue>
+      <search base="splunk_idx_03_network_statistics_dashboard_v1">
+        <query>| stats count by src_port</query>
+      </search>
+    </input>
+    <input type="dropdown" token="dest_ip" searchWhenChanged="true">
+      <label>Destination IP</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>dest_ip</fieldForLabel>
+      <fieldForValue>dest_ip</fieldForValue>
+      <search base="splunk_idx_03_network_statistics_dashboard_v1">
+        <query>| stats count by dest_ip</query>
+      </search>
+    </input>
+    <input type="dropdown" token="dest_port" searchWhenChanged="true">
+      <label>Destination Port</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>dest_port</fieldForLabel>
+      <fieldForValue>dest_port</fieldForValue>
+      <search base="splunk_idx_03_network_statistics_dashboard_v1">
+        <query>| stats count by dest_port</query>
+      </search>
+    </input>
+    <input type="dropdown" token="state" searchWhenChanged="true">
+      <label>State</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>state</fieldForLabel>
+      <fieldForValue>state</fieldForValue>
+      <search base="splunk_idx_03_network_statistics_dashboard_v1">
+        <query>| stats count by state</query>
+      </search>
+    </input>
+    <input type="text" token="send_queue" searchWhenChanged="true">
+      <label>Send-Q &gt;= X</label>
+      <default>0</default>
+      <initialValue>0</initialValue>
+    </input>
+    <input type="text" token="receive_queue" searchWhenChanged="true">
+      <label>Recv-Q &gt;= X</label>
+      <default>0</default>
+      <initialValue>0</initialValue>
+    </input>
+    <input type="text" token="src_port" searchWhenChanged="true">
+      <label>Source Port</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="dest_port" searchWhenChanged="true">
+      <label>Destination Port</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>| table src_ip dest_ip src_port dest_port state send_queue  - $env:page$</title>
+      <html>
+                <h1>
+                    <strong>Network Statistics</strong>
+                </h1>
+                <p/> netstat - Print network connections, routing tables, interface statistics, masquerade connections, and multicast memberships
+            
+                <p/> The “Proto” column tell us if the socket listed is TCP or UDP. Those are network protocols. TCP makes reliable connections but slows down dramatically if the network quality is bad. UDP stays fast but may lose a few packets or deliver them in the wrong order. TCP connections are used for browsing the web and downloading files. UDP connections are used by certain fast-paced computer games and sometimes by live streams.
+            
+                <p/> The “Recv-Q” and “Send-Q” columns tell us how much data is in the queue for that socket, waiting to be read (Recv-Q) or sent (Send-Q). In short: if this is 0, everything’s ok, if there are non-zero values anywhere, there may be trouble.
+            
+                <p/> The “Local Address” and “Foreign Address” columns tell to which hosts and ports the listed sockets are connected. The local end is always on the computer on which you’re running netstat, and the foreign end is about the other computer (could be somewhere in the local network or somewhere on the internet).
+            
+                <p/> The “State” column tells in which state the listed sockets are. The TCP protocol defines states, including “LISTEN” (wait for some external computer to contact us) and “ESTABLISHED” (ready for communication). The stranger among these is the “CLOSE WAIT” state shown by two sockets. This means that the foreign or remote machine has already closed the connection, but that the local program somehow hasn’t followed suit. N/A: Indicates that this connection is not registered to the TCP bulk data ancillary input queue.
+            
+                <p/> The “PID/Program name” column tells us which pid owns the listed socket and the name of the program running in the process with that pid. So you can see which programs are using the network and to whom they are connecting.
+            
+                <p/> More Information on netstat:
+            
+                <hr/>
+                <p/> Deploy The Splunk Add-on for Unix and Linux (Splunk_TA_nix) to the Indexer Tier:
+               
+                <a href="https://splunkbase.splunk.com/app/833">https://splunkbase.splunk.com/app/833</a>
+                <h1> Configure inputs.conf: Splunk_TA_nix/local</h1>
+                <p/> [script://./bin/netstat.sh] 
+            
+                <p/> disabled = false
+            
+                <p/> index = osnixperf
+            
+                <p/> interval = 60
+            
+                <hr/>
+                <h1>Components and their relationship with the network:</h1>
+                <p/> Splunk Enterprise components require network connectivity to work properly if they have been distributed across multiple machines, and even in cases where the components are on one machine.
+            
+                <p/> Splunk components communicate with each other using TCP and UDP network protocols. A firewall that has not been configured to allow these ports open can block communication between the Splunk instances.
+            
+                <p/> Splunk software uses the following network ports to communicate between its components by default or by convention. You can perform a network port scan on a host to determine if it is listening on a port. Record open port numbers on your deployment diagram. 
+            
+                <p/>
+                <a href="https://docs.splunk.com/Documentation/Splunk/latest/InheritedDeployment/Ports">Diagrams</a>
+                <p/>
+                <img src="https://docs.splunk.com/images/9/9a/SplunkNetworkPorts.png" style="background-color:white;"/>
+                <img src="https://docs.splunk.com/images/2/24/SplunkNetworkPortsCluster.png" style="background-color:white;"/>
+            </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Splunk Ports Definition</title>
+      <table>
+        <search>
+          <query>| inputlookup splunk_ports_all_csv_lookup 
+| table Port Component Purpose Communicates 
+| sort + Port</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Component">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Recv-Q: The count of bytes not copied by the user program connected to this socket.</title>
+      <chart>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>timechart max(receive_queue) as receive_queue by host</query>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">1</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Send-Q: The count of bytes not acknowledged by the remote host.</title>
+      <chart>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>timechart max(send_queue) as send_queue by host</query>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trellis.splitBy">host</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>State information</title>
+      <chart>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>| stats count by state</query>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.placement">bottom</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Send Queue != 0</title>
+      <table>
+        <title>For the following Ports: 8088, 8089,8191, 9887, 9997</title>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>| search src_port IN (8088, 8089,8191, 9887, 9997) OR dest_port IN (8088, 8089,8191, 9887, 9997) 
+| where send_queue != 0 
+| stats count by src_ip dest_ip src_port dest_port state send_queue 
+| table src_ip dest_ip src_port dest_port state send_queue 
+| sort 0 - send_queue 
+| rename src_ip AS "Source IP" dest_ip AS "Destination IP" src_port AS "Source Port" dest_port AS "Destination Port" state AS State send_queue AS "Send Queue"</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="State">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Send Queue">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Receive Queue != 0</title>
+      <table>
+        <title>For the following Ports: 8088, 8089,8191, 9887, 9997</title>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>| search src_port IN (8088, 8089,8191, 9887, 9997) OR dest_port IN (8088, 8089,8191, 9887, 9997) 
+`gmc_comment("| where receive_queue != 0 ")`
+| stats count by src_ip dest_ip src_port dest_port state receive_queue 
+| table src_ip dest_ip src_port dest_port state receive_queue 
+| sort 0 - receive_queue 
+| rename src_ip AS "Source IP" dest_ip AS "Destination IP" src_port AS "Source Port" dest_port AS "Destination Port" state AS State receive_queue AS "Receive Queue"</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="State">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Receive Queue">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>By Source Port</title>
+      <chart>
+        <title>Ports 8088, 8089, 8191, 9887, 9997</title>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>search src_port IN (8088, 8089, 8191, 9887, 9997)
+                  | timechart count(src_port) by host
+               </query>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">1</option>
+        <option name="trellis.scales.shared">1</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>By Destination Port</title>
+      <chart>
+        <title>Ports 8088, 8089, 8191, 9887, 9997</title>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>search dest_port IN (8088,8089, 8191, 9887, 9997) 
+                  | timechart count(dest_port) by host
+               </query>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">1</option>
+      </chart>
+    </panel>
+  </row>
+</form>

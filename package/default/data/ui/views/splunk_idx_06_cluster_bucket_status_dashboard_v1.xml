@@ -1,0 +1,88 @@
+<form theme="dark">
+  <label>IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v1.5.15</label>
+  <search id="splunk_idx_07_indexer_cluster_bucket_status_dashboard_v1">
+    <query>
+      index=_internal search_group=dmc_group_cluster_master component=Metrics sourcetype=splunkd name=cmmaster_* group=subtask_* event_message="*fix*" (to_fix_search_factor&gt;0 OR to_fix_rep_factor&gt;0)
+| fields _time host splunk_server to_fix_search_factor to_fix_rep_factor 
+| `get_idxcluster_label(splunk_server)` 
+| eval to_fix_total_in_Thousandths = round((to_fix_search_factor + to_fix_rep_factor) / 1000, 0), to_fix_search_factor=round(to_fix_search_factor), to_fix_rep_factor=round(to_fix_rep_factor) 
+| fields _time host idxcluster_label splunk_server to_fix_search_factor to_fix_rep_factor to_fix_total_in_Thousandths
+| search idxcluster_label="$idxcluster_label$"
+      
+    </query>
+    <earliest>$TimeRangePkr.earliest$</earliest>
+    <latest>$TimeRangePkr.latest$</latest>
+  </search>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
+      <label>IDX Cluster</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>idxcluster_label</fieldForLabel>
+      <fieldForValue>idxcluster_label</fieldForValue>
+      <search base="splunk_idx_07_indexer_cluster_bucket_status_dashboard_v1">
+        <query>| stats count by idxcluster_label</query>
+      </search>
+    </input>
+    <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+      <label>Time Range</label>
+      <default>
+        <earliest>-15m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="span_period" searchWhenChanged="true">
+      <label>Span Period</label>
+      <default></default>
+      <choice value="">Automatic</choice>
+      <choice value="span=1s">1 seconds</choice>
+      <choice value="span=5s">5 seconds</choice>
+      <choice value="span=10s">10 seconds</choice>
+      <choice value="span=15s">15 seconds</choice>
+      <choice value="span=30s">30 seconds</choice>
+      <choice value="span=1m">1 minute</choice>
+      <choice value="span=5m">5 minutes</choice>
+      <choice value="span=10m">10 minutes</choice>
+      <choice value="span=15m">15 minutes</choice>
+      <choice value="span=30m">30 minutes</choice>
+      <choice value="span=45m">45 minutes</choice>
+      <choice value="span=1h">1 hour</choice>
+      <choice value="span=2h">2 hours</choice>
+      <choice value="span=3h">3 hours</choice>
+      <choice value="span=4h">4 hours</choice>
+      <choice value="span=6h">6 hours</choice>
+      <choice value="span=8h">8 hours</choice>
+      <choice value="span=12h">12 hours</choice>
+      <choice value="span=1d">1 day</choice>
+      <choice value="span=1w">1 week</choice>
+      <choice value="span=1mon">1 month</choice>
+      <choice value="span=12mon">1 year</choice>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Number of buckets in Fixup is in Thousandths</title>
+      <chart>
+        <title>$env:page$</title>
+        <search base="splunk_idx_07_indexer_cluster_bucket_status_dashboard_v1">
+          <query>| timechart useother=f fixedrange=f usenull=f limit=0 $span_period$
+    max(to_fix_total_in_Thousandths) as to_fix_total_in_Thousandths
+    by idxcluster_label</query>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="height">590</option>
+        <option name="refresh.display">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+</form>

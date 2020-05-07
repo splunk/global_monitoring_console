@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "2.0.0", 
+  "info": {
+    "title": "Splunk Global Monitoring Console", 
+    "id": {
+      "group": null, 
+      "name": "splunk_global_monitoring_console", 
+      "version": "1.5.15"
+    }, 
+    "author": [
+      {
+        "name": "Amir Khamis - akhamis@splunk.com", 
+        "email": "akhamis@splunk.com", 
+        "company": "Splunk"
+      }
+    ], 
+    "releaseDate": null, 
+    "description": "Splunk Global Monitoring Console", 
+    "classification": {
+      "intendedAudience": null, 
+      "categories": [], 
+      "developmentStatus": null
+    }, 
+      "commonInformationModels": null,
+    "license": {
+      "name": "ASL2",
+      "text": "LICENSE-Apache-2.0",
+      "uri": "http://www.apache.org/licenses/LICENSE-2.0"
+    },
+   "privacyPolicy": {
+      "name": "Splunk Privacy Policy",
+      "text": null,
+      "uri": "https://www.splunk.com/en_us/legal/privacy/privacy-policy.html"
+    },
+   "releaseNotes": {
+      "name": "Readme",
+      "text": "README.md",
+      "uri": null
+    }
+  }, 
+  "dependencies": {
+    "Splunk_SA_CIM": {
+      "version": ">=4.10.0",
+      "optional": false,
+      "package": null,
+      "targetOS": [
+        "*"
+      ]
+    },
+      "Splunk_SA_Scientific_Python_linux_x86_64": {
+      "version": "=1.4",
+      "optional": false,
+      "package": null,
+      "targetOS": [
+        "*"
+      ]
+    },
+      "Splunk_ML_Toolkit": {
+      "version": "=4.5.0",
+      "optional": false,
+      "package": null,
+      "targetOS": [
+        "*"
+      ]
+    },
+    "splunk_monitoring_console": {
+      "version": ">=7.3.0",
+      "optional": false,
+      "package": null,
+      "targetOS": [
+        "*"
+      ]
+    }
+  }, 
+  "tasks": null, 
+  "inputGroups": null, 
+  "incompatibleApps": null, 
+  "platformRequirements": null, 
+  "supportedDeployments": [
+    "_standalone", 
+    "_distributed",
+    "_search_head_clustering"
+  ], 
+  "targetWorkloads": [
+    "_search_heads"
+  ]
+}
