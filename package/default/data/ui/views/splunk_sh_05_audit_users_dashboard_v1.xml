@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>SH - 05 - Audit Users - Dashboard - v1.5.15</label>
+  <label>SH - 05 - Audit Users - Dashboard - v1.5.50</label>
   <search id="splunk_sh_05_audit_users_dashboard_v1">
     <query>
 | from lookup:splunk_index_audit_user_login_tracker_sh_kv_store_lookup 
@@ -10,7 +10,7 @@
 | eval Days_Latest_Access = round((now() - Latest_Access) / 86400 )
 | `strftime_format(Earliest_Access)` 
 | `strftime_format(Latest_Access)` 
-| `get_identity_info(User)` | `strftime_format(last_successful_login)`
+| `get_identity_info(shcluster_label,User)` | `strftime_format(last_successful_login)`
 | `set_geo_defaults` 
 | fields shcluster_label User Earliest_Access Latest_Access Login_Source Splunk_Roles Splunk_Instance first last emp_name email phone managedBy bunit startDate endDate work_city work_region work_country work_lat work_long emp_ttl emp_lob emp_dep emp_type emp_status emp_cc emp_loc emp_floor Contractor_Expiration Days_Latest_Access Days_Since_Earliest_Login splunk_role_map ldap_group_name ldap_group_type last_successful_login OS_Name OS_Version Browser_Name Browser_Version
 | eval shcluster_label = if(isnull(shcluster_label), Splunk_Instance, shcluster_label) 
@@ -297,18 +297,18 @@
       <html>
         <ol>
             <li>GMC Jobs / GMC Gen Jobs / 
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
           </li>
            <li> GMC Jobs / GMC Tracking Jobs / 
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_index_audit_user_login_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Users Activity (every 5 minutes)</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_index_audit_user_login_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Users Activity (every 5 minutes)</a>
           </li>
           <li> GMC Jobs / GMC Gen Jobs / GMC Identities / 
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_identities_custom_sh_csv_gap_lookup_gen" target="_blank" rel="noopener">Append new users to Custom Identities Table</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_identities_custom_sh_csv_gap_lookup_gen" target="_blank" rel="noopener">Append new users to Custom Identities Table</a>
           </li>
           </ol>
           <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_identities_custom_sh_csv.csv&amp;type=csv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=global_monitoring_console&amp;lookup=splunk_identities_custom_sh_csv.csv&amp;type=csv">
                      Edit Custom Identities
                      <i class="icon-data icon-modal-medium icon-color-searchfu m-left"/>
                   </a>
@@ -322,7 +322,7 @@
             </div>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_identities_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_identities_kv_store&amp;type=kv">
                      View Identities KV Store
                      <i class="icon-data icon-modal-medium icon-color-searchfu m-left"/>
                   </a>
@@ -336,7 +336,7 @@
             </div>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_index_audit_user_login_tracker_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_index_audit_user_login_tracker_sh_kv_store&amp;type=kv">
                      View User Activity Tracker KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -360,7 +360,7 @@
         </search>
         <option name="colorMode">block</option>
         <option name="drilldown">all</option>
-        <option name="height">161</option>
+        <option name="height">200</option>
         <option name="rangeColors">["0x53a051","0x006d9c"]</option>
         <option name="rangeValues">[0]</option>
         <option name="refresh.display">none</option>

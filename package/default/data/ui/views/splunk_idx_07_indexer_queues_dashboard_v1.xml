@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>IDX - 07 - Indexer Queues - Dashboard - v1.5.15</label>
+  <label>IDX - 07 - Indexer Queues - Dashboard - v1.5.50</label>
   <search id="splunk_idx_07_indexer_queues_dashboard_v1">
     <query>index=_internal sourcetype=splunkd component=Metrics splunk_server_group=dmc_group_indexer group=queue name IN (parsingqueue, indexqueue, aggqueue, tcpin_queue, httpinputq, splunktcpin, typingqueue, udp_queue)
     | fields _time host name ingest_pipe current_size current_size_kb smallest_size largest_size max_size max_size_kb blocked
@@ -103,7 +103,7 @@
         </search>
         <option name="Splunk_ML_Toolkit.LinesViz.showNavigator">true</option>
         <option name="drilldown">none</option>
-        <option name="height">448</option>
+        <option name="height">500</option>
         <option name="refresh.display">progressbar</option>
       </viz>
     </panel>

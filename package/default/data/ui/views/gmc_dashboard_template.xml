@@ -239,10 +239,10 @@
             
             <ol>
             <li>
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Dashboards Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Dashboards Gen Job</a>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_data_ui_views_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_ui_views_sh_kv_store&amp;type=kv">
                      View Dashboards KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -256,10 +256,10 @@
             </div>
           </li>
             <li>
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
          <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store&amp;type=kv">
                      View Reports/Alerts Access Tracker KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -530,10 +530,10 @@
       <html>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
             <ol>
-          <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts Gen Job</a>
+          <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts Gen Job</a>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_saved_searches_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_saved_searches_sh_kv_store&amp;type=kv">
                      View Reports/Alerts KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -890,11 +890,11 @@
            <ol>
           <li>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Table Files Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Table Files Gen Job</a>
           </li>
           <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_admin_lookup_table_files_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_admin_lookup_table_files_sh_kv_store&amp;type=kv">
                      View Lookup Files KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -1176,10 +1176,10 @@
       <title>Associated GMC Job(s) - $env:page$</title>
       <html>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Automatic Lookups Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Automatic Lookups Gen Job</a>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_data_props_lookups_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_props_lookups_sh_kv_store&amp;type=kv">
                      View Automatic Lookups KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>

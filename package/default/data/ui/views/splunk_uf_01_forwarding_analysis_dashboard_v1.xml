@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>UF - 01 - Forwarding Analysis - Dashboard - v1.5.15</label>
+  <label>UF - 01 - Forwarding Analysis - Dashboard - v1.5.50</label>
   <search id="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
     <query>
 
@@ -511,7 +511,7 @@
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
-        <option name="height">467</option>
+        <option name="height">500</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>

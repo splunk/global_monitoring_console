@@ -1,5 +1,5 @@
 <form theme="dark" script="tabs.js" stylesheet="tabs.css">
-  <label>SH - 04 - Audit Search Activity - Dashboard - v1.5.15</label>
+  <label>SH - 04 - Audit Search Activity - Dashboard - v1.5.50</label>
   <description>Audit all Splunk Search Activities using one normalized Data Model for Audit, Introspection &amp; Internal</description>
   <search id="splunk_sh_04_audit_search_activity_dashboard_audit_search">
     <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
@@ -27,7 +27,7 @@
 | `get_rest_reference(search)`
 | `get_instance_info(host)` 
 | `get_shcluster_info(host)` 
-| `get_identity_info(user)`
+| `get_identity_info(shcluster_label,user)`
 | `get_saved_searches_info(shcluster_label,savedsearch_name)`
 | `get_cron_schedule(cron_schedule)`
 | fillnull value="no-search_id" search_id_normalized 
@@ -58,7 +58,7 @@
 | `get_datamodel_fields(savedsearch_name)`
 | `get_instance_info(host)` 
 | `get_shcluster_info(host)`
-| `get_identity_info(user)`
+| `get_identity_info(shcluster_label,user)`
 | `get_saved_searches_info(shcluster_label,app,savedsearch_name)`
 | `get_memory_tracker_fields`
 | `get_cron_schedule(cron_schedule)`
@@ -100,7 +100,7 @@
 | `get_dashboards_info(shcluster_label,app,Provenance_KO)` 
 | `get_dashboards_info(shcluster_label,Provenance_KO)`
 | `get_dashboards_usage(shcluster_label,app,Provenance_KO)`
-| `get_identity_info(user)`
+| `get_identity_info(shcluster_label,user)`
 | `get_cron_schedule(cron_schedule)`
 | fillnull value="no-search_id" search_id_normalized 
 | fillnull value=999999 Days_Latest_Dashboard_Access 
@@ -133,10 +133,10 @@
       <title>1. Introspection Search Usage</title>
       <input type="checkbox" token="Exclutions3" searchWhenChanged="true">
         <label>1. Exclude GMC Searches ?</label>
-        <choice value="Search_Activity.Introspection_Search_Usage.app3!=&quot;splunk_global_monitoring_console&quot;">Yes</choice>
+        <choice value="Search_Activity.Introspection_Search_Usage.app3!=&quot;global_monitoring_console&quot;">Yes</choice>
         <choice value="">No</choice>
-        <default>"Search_Activity.Introspection_Search_Usage.app3!=""splunk_global_monitoring_console"""</default>
-        <initialValue>Search_Activity.Introspection_Search_Usage.app3!="splunk_global_monitoring_console"</initialValue>
+        <default>"Search_Activity.Introspection_Search_Usage.app3!=""global_monitoring_console"""</default>
+        <initialValue>Search_Activity.Introspection_Search_Usage.app3!="global_monitoring_console"</initialValue>
       </input>
       <input type="time" token="IntrospectionTimeRangePkr" searchWhenChanged="true">
         <label>2. Introspection Time Range</label>
@@ -688,7 +688,7 @@
           <scale type="sharedCategory"></scale>
         </format>
         <drilldown>
-          <link target="_blank">/app/splunk_global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.title=$click.value2$</link>
+          <link target="_blank">/app/global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.title=$click.value2$</link>
         </drilldown>
       </table>
     </panel>
@@ -710,7 +710,7 @@
           <scale type="sharedCategory"></scale>
         </format>
         <drilldown>
-          <link target="_blank">/app/splunk_global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.savedsearch_name=$click.value2$</link>
+          <link target="_blank">/app/global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.savedsearch_name=$click.value2$</link>
         </drilldown>
       </table>
     </panel>
@@ -723,7 +723,7 @@
           <query>| stats count AS "# of Searches"</query>
         </search>
         <option name="drilldown">none</option>
-        <option name="height">202</option>
+        <option name="height">200</option>
         <option name="rangeColors">["0x53a051","0xf8be34"]</option>
         <option name="rangeValues">[0]</option>
         <option name="refresh.display">none</option>
@@ -746,7 +746,6 @@
         <option name="wrap">true</option>
         <format field="trend" type="sparkline">
           <option name="type">bar</option>
-          <option name="height">40px</option>
           <option name="colorMap">
             <option name="2000:">#5379AF</option>
             <option name=":1999">#9ac23c</option>
@@ -771,19 +770,58 @@
   </row>
   <row id="Introspection_Panel5">
     <panel>
-      <title>8. Top N CPU Intensive Scheduled Reports/Alerts</title>
+      <title>8. Top N CPU Intensive Searches</title>
       <input type="text" token="top_tok1" searchWhenChanged="true">
         <label>Timechart IN top:</label>
         <default>10</default>
         <initialValue>10</initialValue>
       </input>
+      <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
+        <label>Split By</label>
+        <choice value="app">App</choice>
+        <choice value="user">User</choice>
+        <choice value="savedsearch_name">Report/Alert</choice>
+        <choice value="host">Splunk Instance</choice>
+        <choice value="search_type">Search Type</choice>
+        <choice value="provenance">Provenance</choice>
+        <fieldForLabel>split_by_tok_1</fieldForLabel>
+        <fieldForValue>split_by_tok_1</fieldForValue>
+        <default>app</default>
+        <initialValue>app</initialValue>
+      </input>
+      <input type="dropdown" token="span_period" searchWhenChanged="true">
+        <label>3. Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
       <chart>
         <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
-          <query>| where savedsearch_name!="Undefined" 
-| eval normalized_pct_cpu=round(normalized_pct_cpu) 
+          <query>| eval normalized_pct_cpu=round(normalized_pct_cpu) 
 | timechart $span_period$ useother=f
     Max(normalized_pct_cpu) as "Normalized CPU %" 
-    By savedsearch_name 
+    By $split_by_tok_1$ 
     Where max in top$top_tok1$</query>
         </search>
         <option name="charting.axisTitleX.visibility">collapsed</option>
@@ -797,28 +835,31 @@
         <option name="charting.drilldown">none</option>
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.placement">bottom</option>
-        <option name="height">558</option>
+        <option name="height">600</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
   </row>
   <row id="Introspection_Panel4">
     <panel>
-      <title>9. Top N Memory Intensive Scheduled Reports/Alerts (in GB)</title>
+      <title>9. Top N Memory Intensive Searches (in GB)</title>
       <input type="text" token="top_tok2" searchWhenChanged="true">
         <label>Timechart IN top:</label>
         <default>10</default>
         <initialValue>10</initialValue>
       </input>
-      <input type="dropdown" token="unit_tok2" searchWhenChanged="true">
-        <label>Unit</label>
-        <choice value="MB">MB</choice>
-        <choice value="GB">GB</choice>
-        <choice value="TB">TB</choice>
-        <default>GB</default>
-        <initialValue>GB</initialValue>
-        <fieldForLabel>unit_tok2</fieldForLabel>
-        <fieldForValue>unit_tok2</fieldForValue>
+      <input type="dropdown" token="split_by_tok_2" searchWhenChanged="true">
+        <label>Split By</label>
+        <choice value="app">App</choice>
+        <choice value="user">User</choice>
+        <choice value="savedsearch_name">Report/Alert</choice>
+        <choice value="host">Splunk Instance</choice>
+        <choice value="search_type">Search Type</choice>
+        <choice value="provenance">Provenance</choice>
+        <fieldForLabel>split_by_tok_2</fieldForLabel>
+        <fieldForValue>split_by_tok_2</fieldForValue>
+        <default>app</default>
+        <initialValue>app</initialValue>
       </input>
       <input type="dropdown" token="round_tok2" searchWhenChanged="true">
         <label>Rounding</label>
@@ -831,12 +872,39 @@
         <fieldForLabel>round_tok2</fieldForLabel>
         <fieldForValue>round_tok2</fieldForValue>
       </input>
+      <input type="dropdown" token="span_period" searchWhenChanged="true">
+        <label>3. Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
       <chart>
         <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
           <query>| where savedsearch_name!="Undefined" 
 | timechart $span_period$ useother=f
     eval(round(sum(mem_used),$round_tok2$)) as "Memory Used/GB" 
-    By savedsearch_name 
+    By $split_by_tok_2$ 
     Where max in top$top_tok2$</query>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -852,7 +920,7 @@
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
-        <option name="height">588</option>
+        <option name="height">600</option>
         <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
       </chart>
@@ -863,10 +931,10 @@
       <title>1. Audit Search Usage</title>
       <input type="checkbox" token="Exclutions1" searchWhenChanged="true">
         <label>1. Exclude GMC Searches ?</label>
-        <choice value="NOT Search_Activity.Audit_Search.savedsearch_name1 IN (&quot;*splunk_global_monitoring_console*&quot;, &quot;splunk_*_dashboard*&quot;, &quot;splunk_*_*_lookup_*&quot;, &quot;splunk_*_*_audit_search_activity_*&quot;)">Yes</choice>
+        <choice value="NOT Search_Activity.Audit_Search.savedsearch_name1 IN (&quot;*global_monitoring_console*&quot;, &quot;splunk_*_dashboard*&quot;, &quot;splunk_*_*_lookup_*&quot;, &quot;splunk_*_*_audit_search_activity_*&quot;)">Yes</choice>
         <choice value="">No</choice>
-        <default>"NOT Search_Activity.Audit_Search.savedsearch_name1 IN (""*splunk_global_monitoring_console*"", ""splunk_*_dashboard*"", ""splunk_*_*_lookup_*"", ""splunk_*_*_audit_search_activity_*"")"</default>
-        <initialValue>NOT Search_Activity.Audit_Search.savedsearch_name1 IN ("*splunk_global_monitoring_console*",splunk_*_dashboard*,splunk_*_*_lookup_*,splunk_*_*_audit_search_activity_*</initialValue>
+        <default>"NOT Search_Activity.Audit_Search.savedsearch_name1 IN (""*global_monitoring_console*"", ""splunk_*_dashboard*"", ""splunk_*_*_lookup_*"", ""splunk_*_*_audit_search_activity_*"")"</default>
+        <initialValue>NOT Search_Activity.Audit_Search.savedsearch_name1 IN ("*global_monitoring_console*",splunk_*_dashboard*,splunk_*_*_lookup_*,splunk_*_*_audit_search_activity_*</initialValue>
         <search>
           <query/>
         </search>
@@ -1291,7 +1359,7 @@
           <query>| eval search_type=case(search_type="adhoc", "Ad-Hoc", search_type="scheduled", "Scheduled Reports/Alerts", search_type="datamodel_acceleration", "Datamodel Acceleration", search_type="report_acceleration", "Report Acceleration", search_type="summary_indexing", "Summary Indexing", search_type="realtime", "Realtime", search_type="subsearch", "Subsearch", search_type="typeahead", "Typeahead", true(), search_type)
 | stats count by search_type</query>
         </search>
-        <option name="height">234</option>
+        <option name="height">300</option>
         <option name="number_display_viz.number_display_viz.bordercolor">#FFFFFF</option>
         <option name="number_display_viz.number_display_viz.bordersize">2</option>
         <option name="number_display_viz.number_display_viz.colorprimary">#ebb839</option>
@@ -1377,7 +1445,7 @@
           <query>| stats count</query>
         </search>
         <option name="drilldown">none</option>
-        <option name="height">175</option>
+        <option name="height">200</option>
         <option name="rangeColors">["0x53a051","0xf1813f"]</option>
         <option name="rangeValues">[0]</option>
         <option name="refresh.display">none</option>
@@ -1488,7 +1556,7 @@
           <scale type="sharedCategory"></scale>
         </format>
         <drilldown>
-          <link target="_blank">/app/splunk_global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.savedsearch_name=$click.value2$</link>
+          <link target="_blank">/app/global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.savedsearch_name=$click.value2$</link>
         </drilldown>
       </table>
     </panel>
@@ -1513,7 +1581,7 @@
           <option name="lineWidth">1</option>
           <option name="maxSpotColor">#A2FFA2</option>
           <option name="spotRadius">3</option>
-          <option name="height">25px</option>
+          <option name="height">200</option>
         </format>
       </table>
     </panel>
@@ -1534,7 +1602,7 @@
           <option name="lineColor">#5379af</option>
           <option name="fillColor">#CCDDFF</option>
           <option name="lineWidth">1</option>
-          <option name="height">25px</option>
+          <option name="height">200</option>
         </format>
       </table>
     </panel>
@@ -1544,10 +1612,10 @@
       <title>1. Internal Scheduler Usage</title>
       <input type="checkbox" token="Exclutions2" searchWhenChanged="true">
         <label>1. Exclude GMC Searches ?</label>
-        <choice value="Search_Activity.Internal_Scheduler.app2!=&quot;splunk_global_monitoring_console&quot;">Yes</choice>
+        <choice value="Search_Activity.Internal_Scheduler.app2!=&quot;global_monitoring_console&quot;">Yes</choice>
         <choice value="Search_Activity.Internal_Scheduler.app2=&quot;*&quot;">No</choice>
-        <default>"Search_Activity.Internal_Scheduler.app2!=""splunk_global_monitoring_console"""</default>
-        <initialValue>Search_Activity.Internal_Scheduler.app2!="splunk_global_monitoring_console"</initialValue>
+        <default>"Search_Activity.Internal_Scheduler.app2!=""global_monitoring_console"""</default>
+        <initialValue>Search_Activity.Internal_Scheduler.app2!="global_monitoring_console"</initialValue>
         <delimiter> </delimiter>
       </input>
       <input type="time" token="InternalTimeRangePkr" searchWhenChanged="true">
@@ -1998,7 +2066,7 @@
         </search>
         <option name="colorMode">block</option>
         <option name="drilldown">none</option>
-        <option name="height">90</option>
+        <option name="height">100</option>
         <option name="rangeColors">["0x53a051","0x006d9c"]</option>
         <option name="rangeValues">[0]</option>
         <option name="refresh.display">none</option>
@@ -2027,7 +2095,7 @@
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
-        <option name="height">217</option>
+        <option name="height">200</option>
         <option name="refresh.display">none</option>
         <option name="charting.chart.showPercent">true</option>
       </chart>
@@ -2092,7 +2160,7 @@
           <scale type="minMidMax" midType="percentile" midValue="50"></scale>
         </format>
         <drilldown>
-          <link target="_blank">/app/splunk_global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.savedsearch_name=$click.value2$</link>
+          <link target="_blank">/app/global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.savedsearch_name=$click.value2$</link>
         </drilldown>
       </table>
     </panel>
@@ -2654,7 +2722,7 @@
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.mode">standard</option>
         <option name="charting.legend.placement">bottom</option>
-        <option name="height">610</option>
+        <option name="height">600</option>
         <option name="refresh.display">none</option>
         <option name="trellis.enabled">0</option>
       </chart>

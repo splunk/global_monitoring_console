@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>SH - 03 - Fields Help - Dashboard - v1.5.15</label>
+  <label>SH - 03 - Fields Help - Dashboard - v1.5.50</label>
   <description>Splunk Fields explanation including a complete guide to fields under Job Inspect</description>
   <search id="Help">
     <query>
@@ -103,7 +103,7 @@
       <html> 
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_fields_all_csv.csv&amp;type=csv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=global_monitoring_console&amp;lookup=splunk_fields_all_csv.csv&amp;type=csv">
                      Edit Fields Help
                      <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
                   </a>

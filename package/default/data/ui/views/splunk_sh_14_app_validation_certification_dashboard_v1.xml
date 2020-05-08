@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>SH - 14 - App Validation &amp; Certification - Dashboard - v1.5.15</label>
+  <label>SH - 14 - App Validation &amp; Certification - Dashboard - v1.5.50</label>
   <description>This Dashboard is based on data generated using the Splunk Add-on Builder Validate &amp; Package feature which validates your add-on against best practices and other rules, and to determine whether your app is ready for Splunk App Certification. The generates an Overall Health Report in the App UI but it also indexes all the findings into the dedicated add_on_builder_index Splunk Index.  To Learn More please read this Splunk Document: https://docs.splunk.com/Documentation/AddonBuilder/latest/UserGuide/Validate</description>
   <search id="splunk_sh_14_app_validation_certification_dashboard_v1">
     <query>index=add_on_builder_index sourcetype=splunk:tabuilder:validation $Exclusions$

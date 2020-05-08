@@ -1,5 +1,5 @@
 <form theme="dark" script="tabs.js" stylesheet="tabs.css">
-  <label>SH - 01 - GMC Assets &amp; Identities - Dashboard - v1.5.15</label>
+  <label>SH - 01 - GMC Assets &amp; Identities - Dashboard - v1.5.50</label>
   <search id="splunk_sh_01_assets_identities_dashboard_tab1">
     <query>| from lookup:splunk_assets_kv_store_lookup
 | fields Splunk_Instance Splunk_Roles serverName host host_short host_fqdn host_resolved host_ip idxcluster_label shcluster_label mode guid version build os_name os_name_extended cpu_arch os_version os_build startup_time kvStoreStatus numberOfCores numberOfVirtualCores physicalMemoryMB rtsearch_enabled master_uri master_guid licenseState isForwarding isTrial license_labels transparent_hugepages_defrag transparent_hugepages_effective_state transparent_hugepages_enabled ulimits_core_file_size ulimits_cpu_time ulimits_data_file_size ulimits_data_segment_size ulimits_nice ulimits_open_files ulimits_resident_memory_size ulimits_stack_size ulimits_user_processes ulimits_virtual_address_space_size SPLUNK_DB SPLUNK_HOME appServerPorts dfsDisabled dfsMasterPort enableSplunkWebSSL httpport kvStoreDisabled kvStorePort mgmtHostPort minFreeSpace sessionTimeout startwebserver trustedIP
@@ -12,8 +12,9 @@
 | fields shcluster_label,identity,prefix,nick,first,last,suffix,email,phone,phone2,managedBy,priority,bunit,category,watchlist,startDate,endDate,work_city,work_country,work_lat,work_long,work_region,emp_cc,emp_dep,emp_floor,emp_lob,emp_loc,emp_name,emp_status,emp_ttl,emp_type,emp_tz,Splunk_Instance,splunk_role_map,ldap_group_name,ldap_group_type,last_successful_login
 | `get_instance_roles(Splunk_Instance)`
 | `get_splunk_roles_info(shcluster_label,splunk_role_map)`
-| fillnull value="undefined" shcluster_label Splunk_Instance Splunk_Roles identity emp_type emp_status work_city work_region work_country emp_loc emp_dep emp_lob emp_cc emp_name splunk_role_map ldap_group_name ldap_group_type last_successful_login
-| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles$" identity="*$identity$*" emp_type="$emp_type$" emp_status="$emp_status$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$" emp_loc="$emp_loc$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" emp_name="$emp_name$" Splunk_Instance="$Splunk_Instance$" splunk_role_map="$splunk_role_map$" ldap_group_name="$ldap_group_name$" ldap_group_type="$ldap_group_type$" last_successful_login="$last_successful_login$"</query>
+| fillnull value="undefined" shcluster_label Splunk_Instance Splunk_Roles identity emp_type emp_status work_city work_region work_country emp_loc emp_dep emp_lob emp_cc emp_name splunk_role_map ldap_group_name ldap_group_type last_successful_login capabilities imported_capabilities
+| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles$" identity="*$identity$*" emp_type="$emp_type$" emp_status="$emp_status$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$" emp_loc="$emp_loc$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" emp_name="$emp_name$" Splunk_Instance="$Splunk_Instance$" splunk_role_map="$splunk_role_map$" ldap_group_name="$ldap_group_name$" ldap_group_type="$ldap_group_type$" last_successful_login="$last_successful_login$" capabilities="$capabilities$" imported_capabilities="$imported_capabilities$"
+</query>
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row id="tabs">
@@ -199,12 +200,12 @@
             <ol>
                <li>
                   GMC Jobs / GMC Gen Jobs
-                  <a href="/app/splunk_global_monitoring_console/search?s=splunk_assets_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Assets Gen Job</a>
+                  <a href="/app/global_monitoring_console/search?s=splunk_assets_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Assets Gen Job</a>
                </li>
             </ol>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_assets_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_assets_kv_store&amp;type=kv">
                      View GMC Assets KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -314,7 +315,7 @@
 | `gmc_convert_runtime(Time_Since_Startup_Time)` 
 | convert ctime(startup_time) 
 | eval Memory = round (physicalMemoryMB / 1024, 2) 
-| table Splunk_Instance Splunk_Roles idxcluster_label shcluster_label host_fqdn guid host_short host_ip version numberOfCores numberOfVirtualCores Memory os_name os_version startup_time Time_Since_Startup_Time isForwarding ulimits_open_files ulimits_stack_size ulimits_user_processes transparent_hugepages_defrag transparent_hugepages_effective_state transparent_hugepages_enabled appServerPorts dfsDisabled dfsMasterPort enableSplunkWebSSL httpport kvStoreDisabled kvStorePort mgmtHostPort minFreeSpace sessionTimeout startwebserver trustedIP SPLUNK_DB SPLUNK_HOME 
+| table Splunk_Instance Splunk_Roles idxcluster_label shcluster_label host_fqdn guid host_short host_ip version numberOfCores numberOfVirtualCores Memory os_name os_version startup_time Time_Since_Startup_Time isForwarding ulimits_open_files ulimits_stack_size ulimits_user_processes transparent_hugepages_defrag transparent_hugepages_effective_state transparent_hugepages_enabled appServerPorts dfsDisabled dfsMasterPort enableSplunkWebSSL httpport kvStoreDisabled kvStorePort mgmtHostPort minFreeSpace sessionTimeout startwebserver trustedIP SPLUNK_DB SPLUNK_HOME
 | `rename_common_fields` 
 | `rename_instance_fields`</query>
         </search>
@@ -577,13 +578,35 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
+      <input type="dropdown" token="capabilities" searchWhenChanged="true">
+        <label>19. Splunk Role Capabilities</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>capabilities</fieldForLabel>
+        <fieldForValue>capabilities</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by capabilities</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="imported_capabilities" searchWhenChanged="true">
+        <label>20. Splunk Inherited Capabilities</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>imported_capabilities</fieldForLabel>
+        <fieldForValue>imported_capabilities</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by imported_capabilities</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
       <input type="text" token="identity" searchWhenChanged="true">
-        <label>19. Identity (User)</label>
+        <label>21. Identity (User)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="last_successful_login" searchWhenChanged="true">
-        <label>20. Lsst Successful Login (From REST)</label>
+        <label>22. Lsst Successful Login (From REST)</label>
         <choice value="*">All</choice>
         <fieldForLabel>last_successful_login_d</fieldForLabel>
         <fieldForValue>last_successful_login</fieldForValue>
@@ -601,16 +624,16 @@
       <title>2. Associated GMC Identities Job(s)</title>
       <html> <ol>
             <li>GMC Jobs / GMC Gen Jobs /
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
           </li>
             <li>
                   GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_authorization_roles_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Search Head Splunk Roles</a>
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_authorization_roles_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Search Head Splunk Roles</a>
                </li>
         </ol>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_identities_custom_sh_csv.csv&amp;type=csv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=global_monitoring_console&amp;lookup=splunk_identities_custom_sh_csv.csv&amp;type=csv">
                      Edit Custom Identities
                      <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
                   </a>
@@ -624,7 +647,7 @@
             </div>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_identities_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_identities_kv_store&amp;type=kv">
                      View Identities KV Store
                      <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
                   </a>
@@ -638,7 +661,7 @@
             </div>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_authorization_roles_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_authorization_roles_sh_kv_store&amp;type=kv">
                      View Splunk Roles KV Store
                      <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
                   </a>
@@ -734,10 +757,12 @@
       <title>9. GMC Identities List with details</title>
       <table>
         <search base="splunk_sh_01_assets_identities_dashboard_tab2">
-          <query>| table identity shcluster_label first last emp_name email last_successful_login phone work_city work_region work_country emp_ttl emp_lob emp_dep emp_type emp_status emp_cc emp_loc emp_floor managedBy bunit startDate endDate Contractor_Expiration last_successful_login locked-out type splunk_role_map cumulativeRTSrchJobsQuota,cumulativeSrchJobsQuota,defaultApp,deleteIndexesAllowed,federatedProviders,grantable_roles,imported_roles,imported_rtSrchJobsQuota,imported_srchDiskQuota,imported_srchFilter,imported_srchIndexesAllowed,imported_srchIndexesDefault,imported_srchJobsQuota,imported_srchTimeWin,rtSrchJobsQuota,srchDiskQuota,srchFilter,srchIndexesAllowed,srchIndexesDefault,srchJobsQuota,srchTimeWin 
+          <query>| table identity shcluster_label first last emp_name email last_successful_login phone work_city work_region work_country emp_ttl emp_lob emp_dep emp_type emp_status emp_cc emp_loc emp_floor managedBy bunit startDate endDate Contractor_Expiration locked-out type splunk_role_map cumulativeRTSrchJobsQuota,cumulativeSrchJobsQuota,defaultApp,deleteIndexesAllowed,federatedProviders,grantable_roles,imported_roles,imported_rtSrchJobsQuota,imported_srchDiskQuota,imported_srchFilter,imported_srchIndexesAllowed,imported_srchIndexesDefault,imported_srchJobsQuota,imported_srchTimeWin,rtSrchJobsQuota,srchDiskQuota,srchFilter,srchIndexesAllowed,srchIndexesDefault,srchJobsQuota,srchTimeWin
+    `gmc_comment("capabilities,imported_capabilities")` 
 | convert ctime(last_successful_login) 
-| `rename_identity_fields`
-| `rename_splunk_roles_fields`</query>
+| `rename_identity_fields` 
+| `rename_splunk_roles_fields` 
+| rename shcluster_label As "SH Cluster Label"</query>
         </search>
         <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
@@ -746,7 +771,7 @@
         <option name="refresh.display">none</option>
         <option name="rowNumbers">true</option>
         <option name="totalsRow">false</option>
-        <option name="wrap">false</option>
+        <option name="wrap">true</option>
         <format type="color" field="Identity">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
@@ -855,6 +880,26 @@
         <option name="mapping.type">marker</option>
         <option name="refresh.display">progressbar</option>
       </map>
+    </panel>
+  </row>
+  <row id="style_settings" depends="$visible$">
+    <panel depends="$alwaysHideCSS$">
+      <title>$env:page$</title>
+      <html>
+            <style>.dashboard-panel h2{
+             background:#f8be34 !important;
+             color:black !important;
+             text-align: center !important;
+             font-weight: bold !important;
+             border-top-right-radius: 15px;
+             border-top-left-radius: 15px; }
+            .dashboard-panel h1.panel-title {
+              font-weight: bold !important;
+              font-size: 100% !important; }
+                .table, th, td {
+              border: 8px solid black !important; }
+            { display: none;  }</style>
+         </html>
     </panel>
   </row>
 </form>

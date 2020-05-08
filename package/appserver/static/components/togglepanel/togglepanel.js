@@ -31,7 +31,7 @@ define(function(require, exports, module) {
 
   // The require-css plugin is inconsistent at determining the path
   // for loading CSS files. We have to hardcode for now,
-  require('css!/static/app/splunk_global_monitoring_console/components/togglepanel/togglepanel.css');
+  require('css!/static/app/global_monitoring_console/components/togglepanel/togglepanel.css');
 
 
   // default settings for TogglePanel object

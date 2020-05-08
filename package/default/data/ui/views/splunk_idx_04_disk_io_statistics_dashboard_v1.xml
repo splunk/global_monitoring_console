@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>IDX - 04 - Disk IO Statistics - Dashboard - v1.5.15</label>
+  <label>IDX - 04 - Disk IO Statistics - Dashboard - v1.5.50</label>
   <description>Disk IO Statistics using the Splunk_TA_nix iostat Scripted Inputs</description>
   <search id="splunk_idx_04_disk_io_statistics_dashboard_v1">
     <query>index=osnixperf sourcetype=iostat splunk_server_group=dmc_group_indexer

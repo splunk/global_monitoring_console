@@ -15,14 +15,14 @@
   // configure the RequrieJS paths
   require.config({
     paths: {
-      "appBase"     : "../app/splunk_global_monitoring_console",
-      "TogglePanel" : "../app/splunk_global_monitoring_console/components/togglepanel/togglepanel",
+      "appBase"     : "../app/global_monitoring_console",
+      "TogglePanel" : "../app/global_monitoring_console/components/togglepanel/togglepanel",
     }
   });
 
   require([
-    "/static/app/splunk_global_monitoring_console/components/dashboardslider/dashboardslider.js",
-    "/static/app/splunk_global_monitoring_console/components/showtokens/showtokens.js"
+    "/static/app/global_monitoring_console/components/dashboardslider/dashboardslider.js",
+    "/static/app/global_monitoring_console/components/showtokens/showtokens.js"
   ], function() { /* do nothing */ }, function(err) {
     // error callback
     // the error has a list of modules that failed
@@ -32,7 +32,7 @@
 }).call(this);
 
 
-// from app/splunk_global_monitoring_console/components/togglepanel/wrapper.js
+// from app/global_monitoring_console/components/togglepanel/wrapper.js
 /*
  * Copyright (c) 2016-2018, OctoInsight Inc., All rights reserved.
  * Authored by Ryan Thibodeaux

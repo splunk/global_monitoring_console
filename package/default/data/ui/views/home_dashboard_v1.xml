@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>Home - Dashboard - v1.5.15</label>
+  <label>Home - Dashboard - v1.5.50</label>
   <description>Splunk Global Monitoring Console (GMC) - Written By Amir Khamis / Splunk PS / akhamis@splunk.com - GitHub: https://github.com/amir-khamis/gmc</description>
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
@@ -8,7 +8,7 @@
             <div class="floatright" id="DemoModeSwitch"/>
             <div data-translate-id="home-div-welcometext" style="max-width: 1200px">
                Welcome $env:user_realname$ to Splunk Global Monitoring Console! Below you can find documentation on the App's various knowledge objects like Dashboards and Lookups. The App can be downloaded here:
-               <a href="https://github.com/amir-khamis/gmc" target="_blank">https://github.com/amir-khamis/gmc</a>
+               <a href="https://github.com/splunk/global_monitoring_console" target="_blank">https://github.com/amir-khamis/gmc</a>
                Happy Splunking!
             </div>
          </html>
@@ -28,7 +28,7 @@
 | makemv delim="|" Browser_Version 
 | search Splunk_Instance=`gmc_instance_name` 
 | table _time Splunk_Instance User Login_Source Latest_Access OS_Name OS_Version Browser_Name Browser_Version 
-| `get_identity_info_simple(User)` 
+| `get_identity_info_simple(shcluster_label,User)` 
 | stats latest(Latest_Access) as Latest_Access values(Splunk_Instance) as Splunk_Instance latest(Login_Source) as Login_Source latest(OS_Name) as OS_Name latest(OS_Version) as OS_Version latest(emp_name) as Name latest(Browser_Name) as Browser_Name latest(Browser_Version) as Browser_Version
     by User 
 | sort 0 - Latest_Access 
@@ -76,18 +76,8 @@
       <single>
         <search>
           <query>index=`gmc_summary_index` search_name="splunk_audit_user_login_idx_summary_tracker" 
-| makemv delim="|" Splunk_Instance 
-| makemv delim="|" Login_Source 
-| makemv delim="|" OS_Name 
-| makemv delim="|" OS_Version 
-| makemv delim="|" Browser_Name 
-| makemv delim="|" Browser_Version 
 | search Splunk_Instance=`gmc_instance_name` 
-| table _time Splunk_Instance User Login_Source Latest_Access OS_Name OS_Version Browser_Name Browser_Version 
-| `get_identity_info_simple(User)` 
-| stats latest(Latest_Access) as Latest_Access values(Splunk_Instance) as Splunk_Instance latest(Login_Source) as Login_Source latest(OS_Name) as OS_Name latest(OS_Version) as OS_Version latest(emp_name) as Name latest(Browser_Name) as Browser_Name latest(Browser_Version) as Browser_Version
-    by User 
-| stats count</query>
+| stats dc(User) as Users</query>
           <earliest>@d</earliest>
           <latest>now</latest>
         </search>
@@ -106,7 +96,7 @@
       <title>App Data Model</title>
       <table>
         <search>
-          <query>| inputlookup splunk_rest_data_models_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+          <query>| inputlookup splunk_rest_data_models_sh_kv_store_lookup where app="global_monitoring_console" 
 | table Splunk_Instance title disabled description acceleration cron_schedule earliest_time allow_skew updated
 | `strftime_format(updated)`
 | rename title AS "Data Model" , disabled AS Disabled acceleration AS Accelerated earliest_time AS "Summary Range" cron_schedule AS "Summarization Period"</query>
@@ -151,7 +141,7 @@
       <title>App Dashboards</title>
       <table>
         <search>
-          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup where app="global_monitoring_console" 
 | eval Splunk_Tier = case ( match(label, "IDX"), "Indexer", match(label, "SH"), "Search Head", match(label, "UF"), "Forwarder", true(), "Other") 
 | table Splunk_Instance Splunk_Tier label description updated 
 | `strftime_format(updated)` 
@@ -178,7 +168,7 @@
       <title>Number of Dashboards</title>
       <single>
         <search>
-          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup where app="global_monitoring_console" 
 
 | stats count</query>
           <earliest>$earliest$</earliest>
@@ -200,7 +190,7 @@
       <title>App Reports/Alerts</title>
       <table>
         <search>
-          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup where app="global_monitoring_console" 
 | fields Splunk_Instance app savedsearch_name description updated cron_schedule cron_schedule_described Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew 
 | stats values(scheduled_times) as scheduled_times values(next_scheduled_time) as next_scheduled_time last(*) as * by Splunk_Instance app savedsearch_name 
 | `strftime_format(updated)` 
@@ -254,7 +244,7 @@
       <single>
         <search>
           <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup 
-| where app="splunk_global_monitoring_console"
+| where app="global_monitoring_console"
 | stats count AS "Number of Scheduled Jobs"</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
@@ -275,7 +265,7 @@
       <title>App Lookups</title>
       <table>
         <search>
-          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="global_monitoring_console" 
 | `strftime_format(updated)` 
 | eval Description = case (
     Lookup="abc", "abc",
@@ -325,7 +315,7 @@
       <title>Number of Lookups</title>
       <single>
         <search>
-          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="global_monitoring_console" 
 | stats  count</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
@@ -352,7 +342,7 @@
         <fieldForLabel>Macro_Class</fieldForLabel>
         <fieldForValue>Macro_Class</fieldForValue>
         <search>
-          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="global_monitoring_console" 
 | eval Macro_Class = case ( 
     match(title, "_reference"), "Gather Reference Info", 
     match(title, "_usage"), "Gather Usage Info", 
@@ -375,7 +365,7 @@
       </input>
       <table>
         <search>
-          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="splunk_global_monitoring_console" 
+          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="global_monitoring_console" 
 | eval Macro_Class = case ( 
     match(title, "_reference"), "Gather Reference Info", 
     match(title, "_usage"), "Gather Usage Info", 
@@ -421,7 +411,7 @@
       <title>Number of Macros</title>
       <single>
         <search>
-          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="splunk_global_monitoring_console" | search title="*$title$*" 
+          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="global_monitoring_console" | search title="*$title$*" 
 | stats count AS "Number of Macros"</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
