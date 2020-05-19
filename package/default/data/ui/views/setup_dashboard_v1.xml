@@ -5,7 +5,7 @@
       <title>$env:page$</title>
       <html>
             <h2>
-               <strong>The App needs to run on a dedicated Splunk Monitoring Console for the entire enterprise.  Also export the Splunk Monitoring Console App Globally and set read for everyone and write for just admin</strong>
+               <strong>The App needs to run on a dedicated Global Monitoring Console for the entire enterprise.  Also export the Splunk Monitoring Console App Globally and set read for everyone and write for just admin</strong>
             </h2>
             <h1>
                <strong>Required Splunkbase Apps:</strong>
@@ -85,6 +85,14 @@
                   GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts</a>
                </li>
+               <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=global_monitoring_console&amp;lookup=cron_schedule_map_csv.csv&amp;type=csv">
+                     Cron Schedule Translated
+                     <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
+                  </a>
+               </div>
+            </div>
                <li>
                   GMC Jobs / GMC Gen Jobs / IDX Tier Gen Jobs /
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Indexes</a>
@@ -152,7 +160,7 @@
             </ol>
             <p>If you run a dashboard and find no data, please run the corresponding Job(s) assicoated with the dashboard from the GMC Jobs dropdown otherwise all jobs will execute between 12AM and 6AM every day.  The above are needed to get you started right now.</p>
             <p>
-               <strong>Accelerate the Splunk Global Monitoring Console (GMC) Data Model with at least 7 days. Set the Summary Range to at least 7 days, recommended 3-month so we don't lose important search statistics from the internal indexes.</strong>
+               <strong>Accelerate the Global Monitoring Console (GMC) Data Model with at least 7 days. Set the Summary Range to at least 7 days, recommended to follow the highest retention you have configured for either _audit, _internal or _interospection.</strong>
             </p>
             <p>
                <strong>Adjust the following Macros:</strong>
@@ -202,12 +210,6 @@
                   <strong>gmc_summary_index</strong>
                   <ul>
                      <li>Create a new index and call it gmc_summary and then adjust the eval statement with your custom summary index otherwise GMC will default to the summary index</li>
-                  </ul>
-               </li>
-               <li>
-                  <strong>geostats_field</strong>
-                  <ul>
-                     <li>Adjust the eval statements with your custom group by in the Users Activity Dashboard Geo Map, the default is full name</li>
                   </ul>
                </li>
             </ol>

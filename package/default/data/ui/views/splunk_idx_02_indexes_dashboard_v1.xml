@@ -52,7 +52,6 @@
 | fillnull value="auto" maxDataSize minHotIdleSecsBeforeForceRoll 
 | fillnull value="event" datatype 
 | fillnull value="undefined"
-| search Splunk_Roles="*$Splunk_Roles$*" coldToFrozenDir="$coldToFrozenDir$" datatype="$datatype$" HotWarm_Volume="$HotWarm_Volume$" Cold_Volume="$Cold_Volume$" DM_Volume="$DM_Volume$" Retention_Days="$Retention_Days$" maxDataSize="$maxDataSize$" coldToFrozenDir="$coldToFrozenDir$" thawedPath="$thawedPath$"tstatsHomePath="$tstatsHomePath$" app="$app$" isInternal="$isInternal$" homePath="*$homePath$*" coldPath="*$coldPath$*" coldPath_maxDataSizeMB="$coldPath_maxDataSizeMB$" homePath_maxDataSizeMB="$homePath_maxDataSizeMB$" maxTotalDataSizeMB="$maxTotalDataSizeMB$" maxWarmDBCount="$maxWarmDBCount$" currentDBSizeMB &gt;=$currentDBSizeMB$ License_Usage_MB &gt;= $License_Usage_MB$
 </query>
   </search>
   <!--splunk_internal_license_rollover_summary_idx_summary_tracker-->
@@ -115,7 +114,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
-    <panel id="panel_accordion_togglepanel_true_2" depends="$gadget_lib_loaded$">
+    <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
       <title>01. Index Deep Analysis including Index Size &amp; Yesterday's License Ingestion By Cluster By Index</title>
       <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
         <label>1. Indexer Cluster</label>
@@ -342,17 +341,17 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="text" token="Index_Name" searchWhenChanged="true">
-        <label>22. Indexes Name (Contains)</label>
+        <label>22. Index Name (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="text" token="currentDBSizeMB" searchWhenChanged="true">
-        <label>23. Index Size IN MB (&gt;=)</label>
+      <input type="text" searchWhenChanged="true" token="currentDBSize">
+        <label>23. Index Size IN $unit_tok7$ (&gt;=)</label>
         <default>0</default>
         <initialValue>0</initialValue>
       </input>
-      <input type="text" token="License_Usage_MB" searchWhenChanged="true">
-        <label>24. License Usage Size MB (&gt;=)</label>
+      <input type="text" token="License_Usage" searchWhenChanged="true">
+        <label>24. License Usage Size $unit_tok7$ (&gt;=)</label>
         <default>0</default>
         <initialValue>0</initialValue>
       </input>
@@ -380,8 +379,9 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
       <table>
         <title>Unit of Measurement: $unit_tok7$ / Earliest: $earliest$ / Latest: $latest$</title>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
-          <query>| noop 
-| sort 0 - currentDBSize
+          <query>| search currentDBSize_$unit_tok7$ &gt;= $currentDBSize$ Splunk_Roles="*$Splunk_Roles$*" coldToFrozenDir="$coldToFrozenDir$" datatype="$datatype$" HotWarm_Volume="$HotWarm_Volume$" Cold_Volume="$Cold_Volume$" DM_Volume="$DM_Volume$" Retention_Days="$Retention_Days$" maxDataSize="$maxDataSize$" coldToFrozenDir="$coldToFrozenDir$" thawedPath="$thawedPath$"tstatsHomePath="$tstatsHomePath$" app="$app$" isInternal="$isInternal$" homePath="*$homePath$*" coldPath="*$coldPath$*" coldPath_maxDataSizeMB="$coldPath_maxDataSizeMB$" homePath_maxDataSizeMB="$homePath_maxDataSizeMB$" maxTotalDataSizeMB="$maxTotalDataSizeMB$" maxWarmDBCount="$maxWarmDBCount$" License_Usage_$unit_tok7$ &gt;= $License_Usage$ 
+| noop 
+| sort 0 - currentDBSize 
 | table idxcluster_label app Index_Name HotWarm_Volume Cold_Volume Retention_Days currentDBSize_$unit_tok7$ License_Usage_$unit_tok7$ warm_bucket_size_$unit_tok7$ cold_bucket_size_$unit_tok7$ datamodel_summary_size_$unit_tok7$ total_bucket_count_avg totalEventCount homePath_maxDataSize$unit_tok7$ coldPath_maxDataSize$unit_tok7$ "Earliest Event" "Latest Event" Time_Diff_Days Days_Diff_From_Retention maxDataSize maxHotBuckets maxWarmDBCount "Quarantine Past Days" "Quarantine Future Days" maxHotSpanSecs Num_Splunk_Instances datatype disabled updated 
 | `rename_indexes_fields` 
 | `rename_license_fields`</query>
@@ -399,7 +399,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
           <scale type="sharedCategory"></scale>
         </format>
         <format type="color" field="Index">
-          <colorPalette type="expression">case(match(value,"^os"),"#FFDB00",match(value,"^_"),"#5CC05C", match(value,"summary"),"#DA2647", match(value,"^app"),"#6F2DA8", match(value,"^aws"),"rgb(246,114,17)", true(),"#4F86F7")</colorPalette>
+          <colorPalette type="expression">case(match(value,"^os"),"#FFDB00",match(value,"^_"),"#5CC05C", match(value,"summary"),"#DA2647", match(value,"^app"),"#6F2DA8", match(value,"^aws"),"rgb(246,114,17)",match(value,"^net"),"#B2F302", true(),"#4F86F7")</colorPalette>
         </format>
         <format type="number" field="Data Model Summary Size">
           <option name="unit">MB</option>
@@ -575,8 +575,15 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
           <option name="precision">3</option>
           <option name="unit">TB</option>
         </format>
+        <format type="number" field="Cold Bucket Size (GB)">
+          <option name="unit">GB</option>
+        </format>
+        <format type="number" field="Warm Bucket Size (GB)">
+          <option name="unit">GB</option>
+        </format>
       </table>
       <single>
+        <title>Total Number of Indexes</title>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
           <query>| stats count</query>
         </search>
@@ -594,17 +601,40 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
   <row>
     <panel id="panel_accordion_togglepanel_true_1" depends="$gadget_lib_loaded$">
       <title>02. Index Volume Details By Cluster</title>
+      <input type="dropdown" token="unit_tok9" searchWhenChanged="true">
+        <label>25. Unit (Index &amp; License Usage)</label>
+        <choice value="MB">MB</choice>
+        <choice value="GB">GB</choice>
+        <choice value="TB">TB</choice>
+        <default>GB</default>
+        <initialValue>GB</initialValue>
+        <fieldForLabel>unit_tok9</fieldForLabel>
+        <fieldForValue>unit_tok9</fieldForValue>
+      </input>
+      <input type="dropdown" token="round_tok9" searchWhenChanged="true">
+        <label>26. Rounding (Index &amp; License Usage)</label>
+        <default>2</default>
+        <initialValue>2</initialValue>
+        <choice value="0">0</choice>
+        <choice value="1">1</choice>
+        <choice value="2">2</choice>
+        <choice value="3">3</choice>
+        <fieldForLabel>round_tok9</fieldForLabel>
+        <fieldForValue>round_tok9</fieldForValue>
+      </input>
       <table>
         <search>
-          <query>
-| from lookup:splunk_rest_data_index_volumes_idx_kv_store_lookup 
+          <query>| from lookup:splunk_rest_data_index_volumes_idx_kv_store_lookup 
 | stats max(max_size) as max_size max(total_size) as total_size last(volume_path) as volume_path by idxcluster_label title 
 | eval total_size_perc= round(total_size/max_size * 100, 2) 
-| `gmc_mb2gb(total_size)` 
-| `gmc_mb2gb(max_size)` 
-| table idxcluster_label title max_size_GB total_size_GB total_size_perc volume_path total_size_GB
-| sort - total_size_GB
-| rename title AS "Volume" volume_path AS Path max_size_GB AS "Capacity (GB)" total_size_GB AS "Used (GB)" total_size_perc as "Used %"</query>
+| `gmc_mb2human(total_size,$round_tok9$)` 
+| `gmc_mb2human(max_size,$round_tok9$)` 
+| rename total_size As total_size_MB max_size As max_size_MB 
+| table idxcluster_label title volume_path max_size_$unit_tok9$ total_size_$unit_tok9$ total_size_perc 
+| sort - total_size_GB 
+| rename title AS "Volume" volume_path AS Path max_size_GB AS "Capacity (GB)" total_size_GB AS "Used (GB)" max_size_MB AS "Capacity (MB)" total_size_MB AS "Used (MB)" max_size_TB AS "Capacity (TB)" total_size_TB AS "Used (TB)" total_size_perc as "Used %"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
         </search>
         <option name="count">10</option>
         <option name="drilldown">none</option>
@@ -627,6 +657,20 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <format type="color" field="Used %">
           <colorPalette type="list">[#53A051,#006D9C,#F8BE34,#F1813F,#DC4E41]</colorPalette>
           <scale type="threshold">0,60,70,80</scale>
+        </format>
+        <format type="number" field="Capacity (MB)">
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="Used (MB)">
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="Capacity (TB)">
+          <option name="precision">3</option>
+          <option name="unit">TB</option>
+        </format>
+        <format type="number" field="Used (TB)">
+          <option name="precision">3</option>
+          <option name="unit">TB</option>
         </format>
       </table>
     </panel>
@@ -779,7 +823,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <search base="splunk_internal_license_rollover_summary_idx_summary_tracker">
           <query>| bin _time span=1d 
 | stats latest(License_Usage_$unit_tok4$) AS License_Usage_$unit_tok4$ by _time idxcluster_label Lic_Pool 
-| timechart span=1d fixedrange=f
+| timechart span=1d FixedRange=f UseNull=f UseOther=f limit=0
     Sum(eval(round(License_Usage_$unit_tok4$,$round_tok4$))) As License_Usage_$unit_tok4$ by idxcluster_label 
 | join type=outer _time 
     [ search index=`gmc_summary_index` search_name=splunk_internal_license_rollover_summary_idx_summary_tracker earliest=-30d@d 
@@ -873,7 +917,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
 | stats 
     Sum(License_Usage_$unit_tok1$) As License_Usage_$unit_tok1$
     By _time idxcluster_label Index_Name 
-| timechart span=1d fixedrange=f usenull=f useother=f
+| timechart span=1d fixedrange=f usenull=f useother=f limit=0
     sum(eval(round(License_Usage_$unit_tok1$, $round_tok1$))) AS License_Usage_$unit_tok1$
     by Index_Name where max in top$top_tok2$ 
 | addtotals fieldname="Total License Usage"</query>
@@ -1259,7 +1303,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
       </input>
       <chart>
         <search base="splunk_introspection_volume_size_idx_summary_tracker">
-          <query>| timechart Span=1d FixedRange=f UseNull=f UseOther=f
+          <query>| timechart Span=1d FixedRange=f UseNull=f UseOther=f limit=0
     Max(eval(round(Volume_Usage_$unit_tok8$, $round_tok8$))) As Volume_Usage_$unit_tok8$ BY Volume</query>
         </search>
         <option name="charting.axisTitleX.visibility">collapsed</option>
@@ -1327,7 +1371,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
       </input>
       <chart>
         <search base="splunk_introspection_index_size_idx_summary_tracker">
-          <query>| timechart span=1d fixedrange=f
+          <query>| timechart span=1d FixedRange=f UseNull=f UseOther=f limit=0
     sum(eval(round(total_size_$unit_tok3$,$round_tok3$))) AS total_size_$unit_tok3$
     by idxcluster_label</query>
         </search>
@@ -1400,7 +1444,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
 | bin _time span=1d 
 | stats max(total_size_$unit_tok2$) as total_size_$unit_tok2$ by _time idxcluster_label Index_Name 
 | stats max(total_size_$unit_tok2$) as total_size_$unit_tok2$ by _time Index_Name 
-| timechart span=1d fixedrange=f usenull=f useother=f
+| timechart span=1d FixedRange=f UseNull=f UseOther=f limit=0
     max(eval(round(total_size_$unit_tok2$,$round_tok2$))) as total_size_$unit_tok2$ by Index_Name where max in top$top_tok1$ 
 | rename VALUE_* AS *</query>
         </search>

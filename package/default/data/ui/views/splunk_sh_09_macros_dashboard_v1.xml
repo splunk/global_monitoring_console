@@ -295,7 +295,7 @@
 | `rename_rest_fields` 
 | rename title AS "Macro Name" definition AS "Macro Definition" args AS "Macro Arguments" errormsg AS "Validation Error Message" iseval AS "Uses eval-based definition"</query>
         </search>
-        <option name="count">5</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>

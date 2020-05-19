@@ -283,7 +283,7 @@
       <title>6. All Configurations</title>
       <table>
         <search base="splunk_sh_20_config_files_dashboard_v1">
-          <query>| table shcluster_label Splunk_Roles config_file updated app stanza Property title Value sharing author 
+          <query>| table shcluster_label config_file updated app stanza Property title Value sharing author 
 | sort shcluster_label app stanza Property 
 | `rename_common_fields`
 | `rename_rest_fields`

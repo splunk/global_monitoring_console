@@ -260,14 +260,14 @@
       <title>Event Types</title>
       <table>
         <search base="splunk_sh_15_event_types_dashboard_v1">
-          <query>| table shcluster_label Splunk_Roles app sharing title author description updated disabled color priority tags search emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status endDate 
+          <query>| table shcluster_label app sharing title author description updated disabled color priority tags search emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status endDate 
 | sort 0 shcluster_label app stanza name 
 | `rename_common_fields`
 | `rename_identity_fields`
 | `rename_rest_fields`
 | rename name AS "Eventtype" title AS "Event Type" color AS Color priority AS Priority tags AS Tags search AS Search</query>
         </search>
-        <option name="count">5</option>
+        <option name="count">10</option>
         <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>

@@ -27,10 +27,21 @@
 | makemv delim="|" Browser_Name 
 | makemv delim="|" Browser_Version 
 | search Splunk_Instance=`gmc_instance_name` 
-| table _time Splunk_Instance User Login_Source Latest_Access OS_Name OS_Version Browser_Name Browser_Version 
-| `get_identity_info_simple(shcluster_label,User)` 
-| stats latest(Latest_Access) as Latest_Access values(Splunk_Instance) as Splunk_Instance latest(Login_Source) as Login_Source latest(OS_Name) as OS_Name latest(OS_Version) as OS_Version latest(emp_name) as Name latest(Browser_Name) as Browser_Name latest(Browser_Version) as Browser_Version
-    by User 
+| fields _time Splunk_Instance User Login_Source Latest_Access OS_Name OS_Version Browser_Name Browser_Version 
+| `get_shcluster_label(Splunk_Instance)` 
+| `get_identity_info(shcluster_label,User)` 
+| stats 
+    latest(Latest_Access) as Latest_Access 
+    latest(Login_Source) as Login_Source 
+    latest(OS_Name) as OS_Name 
+    latest(OS_Version) as OS_Version 
+    latest(emp_name) as Name 
+    latest(Browser_Name) as Browser_Name 
+    latest(Browser_Version) as Browser_Version
+    latest(work_city) as work_city
+    latest(work_region) as work_region
+    latest(work_country) as work_country
+    By User 
 | sort 0 - Latest_Access 
 | `strftime_format(Latest_Access)` 
 | `get_iplocation_info(Login_Source)` 

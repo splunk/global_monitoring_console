@@ -181,7 +181,7 @@ index=_internal sourcetype=splunkd log_level IN (WARN,ERROR) component IN (Aggre
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
         </search>
-        <option name="count">5</option>
+        <option name="count">10</option>
         <option name="drilldown">cell</option>
         <option name="refresh.display">none</option>
         <option name="rowNumbers">true</option>

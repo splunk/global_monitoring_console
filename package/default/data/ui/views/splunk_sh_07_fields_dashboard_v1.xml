@@ -53,13 +53,13 @@
       <html>
                 <ul id="tabs" class="nav nav-tabs">
                     <li class="active">
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Dashboards_Inputs,Dashboards_Panel1,Dashboards_Panel2,Dashboards_Panel3">Calculated Fields</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Dashboards_Inputs,Dashboards_Panel1,Dashboards_Panel2,Dashboards_Panel3">1. Calculated Fields</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Reports_Alerts_Inputs,Reports_Alerts_Panel1,Reports_Alerts_Panel2,Reports_Alerts_Panel3">Field Extractions/Transformations</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Reports_Alerts_Inputs,Reports_Alerts_Panel1,Reports_Alerts_Panel2,Reports_Alerts_Panel3">2. Field Extractions/Transformations</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Lookups_Inputs,Lookups_Panel1,Lookups_Panel2,Lookups_Panel3,Lookups_Panel4">Field Aliases</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Lookups_Inputs,Lookups_Panel1,Lookups_Panel2,Lookups_Panel3,Lookups_Panel4">3. Field Aliases</a>
                     </li>
                 </ul>
             </html>

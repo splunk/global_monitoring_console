@@ -8,7 +8,7 @@
       <a href="/app/global_monitoring_console/splunk_idx_02_indexes_dashboard_v1" target="_blank" rel="noopener">IDX-02 Splunk Indexes</a>
       <a href="/app/global_monitoring_console/splunk_sh_03_field_help_dashboard_v1" target="_blank" rel="noopener">SH-03 GMC Fileds Help</a>
       <a href="/app/global_monitoring_console/splunk_sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a>
-      <a href="/app/global_monitoring_console/splunk_sh_05_audit_users_dashboard_v1" target="_blank" rel="noopener">SH-05 Audit Users Activity</a>
+      <a href="/app/global_monitoring_console/splunk_sh_05_audit_users_activity_dashboard_v1" target="_blank" rel="noopener">SH-05 Audit Users Activity</a>
       <a href="/app/global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1" target="_blank" rel="noopener">SH-06 Dashboards, Reports and Lookups Analysis</a>
    </collection>
    <collection label="GMC Dashboards">
@@ -114,11 +114,20 @@
             <saved source="all" match="_tracker" />
          </collection>
       </collection>
-      <collection label="GMC Reports">
-         <saved source="all" match="_report" />
-      </collection>
       <collection label="GMC Alerts">
-         <saved source="all" match="_alert" />
+         <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_drift_monitoring" target="_blank" rel="noopener">1. Monitor Reports/Alerts Configuration Drift</a>
+         <a href="/app/global_monitoring_console/search?s=splunk_saved_searches_drift_alert" target="_blank" rel="noopener">2. Monitor Reports/Alerts Configuration Drift via Index/Rest</a>
+         <collection label="All GMC Alerts">
+            <saved source="all" match="_alert" />
+         </collection>
+      </collection>
+      <collection label="GMC Reports">
+         <a href="/app/global_monitoring_console/search?s=splunk_cities_geo_sh_csv_lookup_report" target="_blank" rel="noopener">1. splunk_cities_geo_sh_csv_lookup_report</a>
+         <a href="/app/global_monitoring_console/search?s=Generate_Random_Daily_License_Usage_Data_for_ML_Forecasting" target="_blank" rel="noopener">2. Generate Random Daily License Usage Data for ML Forecasting</a>
+         <a href="/app/global_monitoring_console/search?s=Report_on_highest_number_of_events_by_sourcetype_enriched_with_sourcetype_metadata" target="_blank" rel="noopener">3.  Report on highest number of events by sourcetype enriched with sourcetype metadata</a>
+         <collection label="All GMC Reports">
+            <saved source="all" match="_report" />
+         </collection>
       </collection>
       <collection label="GMC Tools">
          <collection label="Backup Jobs">
@@ -131,8 +140,7 @@
             <a href="/app/global_monitoring_console/search?s=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store_lookup_restore_gen" target="_blank" rel="noopener">2. Reports/Alerts Executions KV Store Restore</a>
             <a href="/app/global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_restore_gen" target="_blank" rel="noopener">3. Dashboards Executions KV Store Restore</a>
          </collection>
-           <collection label="Other Jobs">
-         </collection>
+         <collection label="Other Jobs" />
       </collection>
    </collection>
    <collection label="Monitoring Console Dashboards">
