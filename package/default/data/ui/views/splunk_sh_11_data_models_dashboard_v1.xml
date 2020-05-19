@@ -267,16 +267,15 @@
       <title>Data Models</title>
       <table>
         <search base="splunk_sh_11_data_models_dashboard_v1">
-          <query>| table shcluster_label Splunk_Roles app sharing title updated disabled acceleration allow_old_summaries allow_skew cron_schedule earliest_time manual_rebuilds max_concurrent max_time poll_buckets_until_maxtime emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status endDate 
+          <query>| table shcluster_label app sharing title updated disabled acceleration allow_old_summaries allow_skew cron_schedule earliest_time manual_rebuilds max_concurrent max_time poll_buckets_until_maxtime emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status endDate 
 | sort 0 shcluster_label app title 
 | `rename_common_fields`
 | `rename_identity_fields`
 | `rename_rest_fields`
 | rename title AS "Data Model" acceleration AS Accelerated manual_rebuilds AS "Manual Rebuilds" max_concurrent AS "Maximum Concurrent Summarization Searches" max_time AS "Custom Max Time" poll_buckets_until_maxtime AS "Poll Buckets For Data To Summarize" earliest_time AS "Summary Range" cron_schedule AS "Summarization Period" allow_skew AS "Allow Skew" allow_old_summaries AS "Allow Old Summaries"</query>
         </search>
-        <option name="count">5</option>
+        <option name="count">10</option>
         <option name="drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="wrap">false</option>
         <format type="color" field="Splunk_Instance">

@@ -1,7 +1,7 @@
 {
     "modelName": "GMC",
-    "displayName": "Splunk Global Monitoring Console (GMC)",
-    "description": "Splunk Global Monitoring Console (GMC)",
+    "displayName": "Global Monitoring Console (GMC)",
+    "description": "Global Monitoring Console (GMC)",
     "objectSummary": {
         "Event-Based": 8,
         "Transaction-Based": 0,

@@ -1,24 +1,14 @@
 <form theme="dark">
   <label>UF - 01 - Forwarding Analysis - Dashboard - v1.5.50</label>
   <search id="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
-    <query>
-
-(index=_internal sourcetype=splunkd search_group=dmc_group_indexer fwdType=* group=tcpin_connections guid=* connectionType IN (cooked, cookedSSL) ) ( host="$host$" hostname="*$hostname$*" sourceIp="*$sourceIp$*" os="$os$" version="$version$" fwdType="$fwdType$" connectionType="$connectionType$" arch="$arch$" ack="$ack$" ingest_pipe="$ingest_pipe$" ssl="$ssl$" kb&gt;="$kb$ * 1024" )
-
+    <query>(index=_internal sourcetype=splunkd search_group=dmc_group_indexer fwdType=* group=tcpin_connections guid=* connectionType IN (cooked, cookedSSL) )
 | fields _time splunk_server host hostname sourceHost sourceIp os version fwdType connectionType kb arch ack destPort ingest_pipe ssl lastIndexer chan_new_kBps process_time_ms *_avg_thruput *_Kprocessed *_eps *_KBps
-
 | `get_idxcluster_label(splunk_server)`
-
 `gmc_comment("| lookup dnslookup clientip AS sourceIp OUTPUTNEW clienthost AS host_fqdn")`
-
 | eval sum_mb = round (kb / 1024, 2) , sum_gb = round (kb / 1024 / 1024, 2)
-
-| fillnull value=0 kb chan_new_kBps process_time_ms tcp_avg_thruput tcp_Kprocessed tcp_eps tcp_KBps udp_avg_thruput udp_Kprocessed udp_eps udp_KBps
+| fillnull value=0 kb chan_new_kBps process_time_ms tcp_avg_thruput tcp_Kprocessed tcp_eps tcp_KBps udp_avg_thruput udp_Kprocessed udp_eps udp_KBps ingest_pipe 
 | fillnull value="Undefined"
-| search idxcluster_label="$idxcluster_label$"
-
-
-    </query>
+| search idxcluster_label="$idxcluster_label$" host="$host$" hostname="*$hostname$*" sourceIp="*$sourceIp$*" os="$os$" version="$version$" fwdType="$fwdType$" connectionType="$connectionType$" arch="$arch$" ack="$ack$" ingest_pipe="$ingest_pipe$" ssl="$ssl$" kb&gt;="$kb$ * 1024"</query>
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
   </search>
@@ -491,6 +481,7 @@
   </row>
   <row>
     <panel>
+      <title>Data Distribution accross the indexer tier</title>
       <chart>
         <search>
           <query>| tstats count 

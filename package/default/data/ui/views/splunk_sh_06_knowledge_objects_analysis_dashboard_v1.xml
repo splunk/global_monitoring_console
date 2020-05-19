@@ -1,5 +1,6 @@
 <form theme="dark" script="tabs.js" stylesheet="tabs.css">
   <label>SH - 06 - Dashboards, Reports/Alerts &amp; Lookups Analysis - Dashboard - v1.5.50</label>
+  <description>add total number of authors</description>
   <search id="splunk_sh_06_knowledge_objects_analysis_dashboard1">
     <query>
 | from lookup:splunk_rest_data_ui_views_sh_kv_store_lookup 
@@ -15,34 +16,26 @@
     <query>
 | from lookup:splunk_rest_saved_searches_sh_kv_store_lookup 
 | fields shcluster_label Splunk_Instance app savedsearch_name description savedsearch_type sharing author owner updated disabled is_visible is_scheduled cron_schedule scheduled_times next_scheduled_time auto_summarize dispatch_earliest_time dispatch_latest_time schedule_priority max_concurrent schedule_window allow_skew realtime_schedule alert_severity alert_track alert_type removable run_n_times run_on_startup action_email_to Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference search action_email action_logevent action_logevent_param_event action_lookup action_lookup_append action_lookup_filename action_output_message action_output_message_param_msgid action_output_message_param_name action_populate_lookup action_script action_script_filename action_summary_index action_summary_index_name auto_summarize_cron_schedule auto_summarize_dispatch_earliest_time auto_summarize_dispatch_latest_time auto_summarize_max_concurrent dispatch_ttl qualifiedSearch action_correlationsearch_enabled action_correlationsearch_label action_correlationsearch_related_searches
-
 | `get_instance_roles(Splunk_Instance)`
-
 | `get_saved_searches_usage(shcluster_label, app, savedsearch_name)` 
 | `get_identity_info(shcluster_label,author)` 
 | `get_cron_schedule(cron_schedule)`
 | `strftime_format(updated)`
 | `strftime_format(scheduled_times)`
 | fillnull value=0 action_summary_index action_correlationsearch_enabled
-
 | fillnull value="Undefined" Splunk_Roles Splunk_Instance app savedsearch_name description savedsearch_type sharing author owner disabled is_visible is_scheduled cron_schedule scheduled_times next_scheduled_time auto_summarize dispatch_earliest_time dispatch_latest_time schedule_priority max_concurrent schedule_window allow_skew realtime_schedule alert_severity alert_track alert_type removable run_n_times run_on_startup search action_email_to cron_schedule_described emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status action_summary_index_name
-
 | search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles2$" Splunk_Instance="$Splunk_Instance2$" app="$app2$" author=$author2$ sharing=$sharing2$ disabled="$is_disabled$" is_scheduled="$is_scheduled$" savedsearch_name="*$savedsearch_name$*" savedsearch_type="$savedsearch_type$" Days_Latest_Access &lt;= "$Days_Latest_Access3$" Days_Latest_Access &gt;= "$Days_Latest_Access4$" search="*$search2$*" Lookup_Reference="*$Lookup_Reference2$*" Datamodel_Reference="*$Datamodel_Reference2$*" Macro_Reference="*$Macro_Reference2$*" Index_Reference="*$Index_Reference2$*" Sourcetype_Reference="*$Sourcetype_Reference2$*" Source_Reference="*$Source_Reference2$*" Eventtype_Reference="*$Eventtype_Reference2$*" Rest_Reference="*$Rest_Reference2$*" action_email_to="$action_email_to$" auto_summarize="$auto_summarize$" schedule_priority="$schedule_priority$" schedule_window="$schedule_window$" realtime_schedule="$realtime_schedule$" run_on_startup="$run_on_startup$" allow_skew="$allow_skew$" action_correlationsearch_enabled="$action_correlationsearch_enabled$" action_summary_index="$action_summary_index$" cron_schedule_described="$cron_schedule_described$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$"</query>
   </search>
   <search id="splunk_sh_06_knowledge_objects_analysis_dashboard3">
     <query>
 | from lookup:splunk_rest_admin_transforms_lookup_sh_kv_store_lookup 
 | fields shcluster_label Splunk_Instance app Lookup author sharing Filename Type Collection updated disabled Match_Type Replicate Allow_Caching Filter Index_Fields_List Min_Matches Max_Matches Fields_List case_sensitive_match
-
 | join shcluster_label app sharing Filename type=left 
     [| from lookup:splunk_rest_admin_lookup_table_files_sh_kv_store_lookup 
     | fields shcluster_label Splunk_Instance Splunk_Roles app sharing author disabled updated Filename Lookup_File_Path ]
-
 | `get_instance_roles(Splunk_Instance)`
-
 | `get_identity_info(shcluster_label,author)`
 | `strftime_format(updated)`
-
 | eval Type = if(match(Lookup_File,".csv"), "file", Type) , if(isnull(Lookup_File), "file", Type) , Lookup = if(isnull(Lookup), "NO-DEFINITION", Lookup)
 | fillnull value="0" Min_Matches disabled
 | fillnull value="100" Max_Matches 
@@ -56,29 +49,35 @@
     <query>
 | from lookup:splunk_rest_data_props_lookups_sh_kv_store_lookup 
 | fields shcluster_label Splunk_Instance Splunk_Roles app sharing stanza attribute transform overwrite value author updated
-
 | `get_instance_roles(Splunk_Instance)`
-
-|	`get_identity_info_simple(shcluster_label,author)`
+|	`get_identity_info(shcluster_label,author)`
 | `strftime_format(updated)`
-
 | rex field=attribute mode=sed "s/LOOKUP-//g"
+| lookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup shcluster_label app Lookup As transform OUTPUT Filename Type Fields_List Collection
 | fillnull value="Undefined" Splunk_Instance Splunk_Roles app sharing stanza attribute transform overwrite value author
-
 | search shcluster_label="$shcluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" app="$app$" author="$author$" attribute="*$attribute$*" stanza="$stanza$" emp_name="$emp_name$" emp_ttl="$emp_ttl$" emp_lob="$emp_lob$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$" overwrite="$overwrite$" transform="$transform$"
       </query>
   </search>
   <search id="splunk_sh_06_knowledge_objects_analysis_dashboard5">
     <query>
-index=_internal sourcetype=splunk_web_access method=GET status=200
-    NOT view IN ("home" , "search" , "dashboard*", "alert*" , "check_alerts", "report*" , "field_extractor" , "job_manager" , "dataset*" , "pivot" , "show_source" , "charting" , "data_model*" , "flashtimeline" , "integrity_check_of_installed_files" , "licenseusage" , "live_tail" , "mod_setup" , "orphaned_scheduled_searches") 
-    user!="-" 
-| rename view As title host As Splunk_Instance
-| fields _time Splunk_Instance app title user spent 
+index=`gmc_summary_index` search_name=splunk_internal_web_access_idx_summary_tracker 
+| fields _time User Splunk_Instance App OS_Name avg_spent Dashboard_Name Latest_Access 
 | `get_instance_roles(Splunk_Instance)` 
 | `get_shcluster_label(Splunk_Instance)` 
-| `get_dashboards_info(shcluster_label,app,title)`
-| search shcluster_label="$shcluster_label$" Splunk_Instance="$Splunk_Instance1$" Splunk_Roles="$Splunk_Roles1$" app="$app1$" title="$title$"</query>
+| `get_dashboards_info(shcluster_label,app,Dashboard_Name)`
+| search shcluster_label="$shcluster_label_tok1$" Splunk_Instance="$Splunk_Instance_tok1$" Splunk_Roles="$Splunk_Roles_tok1$" App="$app_tok1$" Dashboard_Name="$Dashboard_Name_tok1$"</query>
+    <earliest>$TimeRangePkr.earliest$</earliest>
+    <latest>$TimeRangePkr.latest$</latest>
+  </search>
+  <search id="splunk_sh_06_knowledge_objects_analysis_dashboard6">
+    <query>
+index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary_tracker 
+| fields _time search_name Splunk_Instance Savedsearch_Name App User Scheduled_Time Dispatch_Time Priority Window_Time Run_Time Result_Count
+| `get_instance_roles(Splunk_Instance)` 
+| `get_shcluster_label(Splunk_Instance)` 
+| `get_saved_searches_info(shcluster_label,App,Savedsearch_Name)`
+| search shcluster_label="$shcluster_label_tok2$" Splunk_Instance="$Splunk_Instance_tok2$" Splunk_Roles="$Splunk_Roles_tok2$" App="$app_tok2$" Savedsearch_Name="$Savedsearch_Name_tok2$"
+</query>
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
   </search>
@@ -88,16 +87,16 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       <html>
                 <ul id="tabs" class="nav nav-tabs">
                     <li class="active">
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Dashboards_Inputs,Dashboards_Panel1,Dashboards_Panel2,Dashboards_Panel3">Dashboards</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Dashboards_Inputs,Dashboards_Panel1,Dashboards_Panel2,Dashboards_Panel3,Dashboards_Panel4">1. Dashboards</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Reports_Alerts_Inputs,Reports_Alerts_Panel1,Reports_Alerts_Panel2,Reports_Alerts_Panel3">Reports/Alerts</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Reports_Alerts_Inputs,Reports_Alerts_Panel1,Reports_Alerts_Panel2,Reports_Alerts_Panel3">2. Reports/Alerts</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Lookups_Inputs,Lookups_Panel1,Lookups_Panel2,Lookups_Panel3,Lookups_Panel4">Lookups</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Lookups_Inputs,Lookups_Panel1,Lookups_Panel2,Lookups_Panel3,Lookups_Panel4">3. Lookups</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Auto_Lookups_Inputs,Auto_Lookups_Panel1,Auto_Lookups_Panel2,Auto_Lookups_Panel3,Auto_Lookups_Panel4">Automatic Lookups</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Auto_Lookups_Inputs,Auto_Lookups_Panel1,Auto_Lookups_Panel2,Auto_Lookups_Panel3,Auto_Lookups_Panel4">4. Automatic Lookups</a>
                     </li>
                 </ul>
             </html>
@@ -415,6 +414,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
         <fieldForValue>Days_Latest_Access</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
           <query>| stats count by Days_Latest_Access 
+| sort Days_Latest_Access 
 | `get_latest_access_human(Days_Latest_Access)`</query>
         </search>
       </input>
@@ -427,6 +427,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
         <fieldForValue>Days_Latest_Access</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
           <query>| stats count by Days_Latest_Access 
+| sort Days_Latest_Access 
 | `get_latest_access_human(Days_Latest_Access)`</query>
         </search>
       </input>
@@ -450,23 +451,6 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-    </panel>
-  </row>
-  <row depends="$alwaysHideCSSPanel$">
-    <panel>
-      <title>Post-process searches or Base Searches: It is highly recommended to use this feature. Follow the example here: https://docs.splunk.com/Documentation/Splunk/latest/Viz/Savedsearches</title>
-      <html>
-         <style>
-           .dashboard-panel h2{
-             background:#177843 !important;
-             color:white !important;
-             text-align: center !important;
-             font-weight: bold !important;
-             border-top-right-radius: 15px;
-             border-top-left-radius: 15px;
-           }
-         </style>
-       </html>
     </panel>
   </row>
   <row id="Dashboards_Panel1">
@@ -511,6 +495,9 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
                </div>
             </div>
           </li>
+         <li>
+            <a href="/app/global_monitoring_console/search?s=splunk_internal_web_access_idx_summary_tracker" target="_blank" rel="noopener">Track Dashboards Executions (Summary Indexing)</a>
+          </li>
         </ol>
          </html>
     </panel>
@@ -530,7 +517,22 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       </single>
     </panel>
     <panel>
-      <title>4. Number of Dashboards By Author</title>
+      <title>4. Total Number of Authors</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
+          <query>| stats dc(author) As Num_Authors</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x555","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">preview</option>
+        <option name="unit">Authors</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>5. Number of Dashboards By Author</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
           <query>| stats count AS "Number of Dashboards" by author
@@ -540,6 +542,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
         <option name="drilldown">none</option>
         <option name="refresh.display">preview</option>
         <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
         <option name="wrap">false</option>
         <format type="color" field="author">
           <colorPalette type="sharedList"></colorPalette>
@@ -549,10 +552,13 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
+        <format type="number" field="Number of Dashboards">
+          <option name="precision">0</option>
+        </format>
       </table>
     </panel>
     <panel>
-      <title>5. Number of Dashboards By Employee LOB</title>
+      <title>6. Number of Dashboards By Employee LOB</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
           <query>| stats count AS "Number of Dashboards" by emp_lob 
@@ -574,20 +580,25 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
+        <format type="number" field="Number of Dashboards">
+          <option name="precision">0</option>
+        </format>
       </table>
     </panel>
   </row>
   <row id="Dashboards_Panel2">
     <panel>
-      <title>6. Dashboards List</title>
+      <title>7. Dashboards List</title>
       <table>
+        <title>Post-process searches or Base Searches: It is highly recommended to use this feature. Follow the example here: https://docs.splunk.com/Documentation/Splunk/latest/Viz/Savedsearches</title>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
           <query>| eval search=mvdedup(mvsort(search)) 
 | `get_latest_access_human(Days_Latest_Access)` 
-| fields shcluster_label app sharing title label Days_Latest_Access_Display Latest_Access description type dashboard_size author location updated Report_Reference Dashboard_Reference Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference BaseSearch search 
+| fields shcluster_label app sharing title label Days_Latest_Access_Display Latest_Access description type dashboard_size author location updated Report_Reference Dashboard_Reference Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference BaseSearch search emp_* 
 | stats values(*) as * dc(search) as Num_Searches count by shcluster_label app title 
+| eval search = mvindex(search, 0, 4) 
 | eval #=1 
-| table # shcluster_label app sharing title label Days_Latest_Access_Display Latest_Access description type dashboard_size author location updated Report_Reference Dashboard_Reference Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference BaseSearch Num_Searches search 
+| table # shcluster_label app sharing title label author emp_name emp_ttl emp_dep emp_lob emp_type emp_status Days_Latest_Access_Display Latest_Access description type dashboard_size location updated Report_Reference Dashboard_Reference Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference BaseSearch Num_Searches search 
 | `rename_common_fields` 
 | `rename_identity_fields` 
 | `rename_reference_fields` 
@@ -642,7 +653,208 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
           <option name="precision">0</option>
           <option name="unit">Bytes</option>
         </format>
+        <format type="color" field="Dashboard App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Report Reference">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Dashboard Reference">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup Reference">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Datamodel Reference">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Macro Reference">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Index Reference">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Sourcetype Reference">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Source Reference">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Eventtype Reference">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Rest Reference">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Dashboard Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Dashboard App Sharing">
+          <colorPalette type="map">{"user":#DC4E41,"global":#F8BE34,"app":#53A051}</colorPalette>
+        </format>
       </table>
+    </panel>
+  </row>
+  <row id="Dashboards_Panel4">
+    <panel>
+      <title>8. Dashboards Searches</title>
+      <table>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
+          <query>| eval search=mvdedup(mvsort(search)) 
+| stats values(search) as search dc(search) as Num_Searches count by shcluster_label app title 
+| eval search = mvindex(search, 0, 4) 
+| table search
+| rename search As "Dashboard Searches"</query>
+        </search>
+        <option name="count">3</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Dashboard Searches">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Dashboards_Panel3">
+    <panel>
+      <title>9. Top N Most Used Dashboards Over Time</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>Time Range</label>
+        <default>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="span_period" searchWhenChanged="true">
+        <label>Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
+      <input type="dropdown" token="shcluster_label_tok1" searchWhenChanged="true">
+        <label>Splunk SH (Cluster/Instance)</label>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles_tok1" searchWhenChanged="true">
+        <label>Splunk Roles</label>
+        <fieldForLabel>Splunk_Roles1</fieldForLabel>
+        <fieldForValue>Splunk_Roles1</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
+          <query>| stats count by Splunk_Roles
+| rename Splunk_Roles AS Splunk_Roles1</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance_tok1" searchWhenChanged="true">
+        <label>Splunk Instance</label>
+        <fieldForLabel>Splunk_Instance1</fieldForLabel>
+        <fieldForValue>Splunk_Instance1</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
+          <query>| stats count by Splunk_Instance
+| rename Splunk_Instance AS Splunk_Instance1</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app_tok1" searchWhenChanged="true">
+        <label>App</label>
+        <fieldForLabel>App</fieldForLabel>
+        <fieldForValue>App</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
+          <query>| stats count by App</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Dashboard_Name_tok1" searchWhenChanged="true">
+        <label>Dashboard Name</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Dashboard_Name</fieldForLabel>
+        <fieldForValue>Dashboard_Name</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
+          <query>| stats count by Dashboard_Name</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
+        <label>Split By</label>
+        <choice value="App">App</choice>
+        <choice value="User">User</choice>
+        <choice value="Dashboard_Name">Dashboard Name</choice>
+        <choice value="Splunk_Instance">Splunk Instance</choice>
+        <fieldForLabel>split_by_tok_1</fieldForLabel>
+        <fieldForValue>split_by_tok_1</fieldForValue>
+        <default>Dashboard_Name</default>
+        <initialValue>Dashboard_Name</initialValue>
+      </input>
+      <input type="text" token="top_tok2" searchWhenChanged="true">
+        <label>Timechart IN top:</label>
+        <default>10</default>
+        <initialValue>10</initialValue>
+      </input>
+      <chart>
+        <title>|  timechart limit=0 dc(user) by label useother=false"  / Most Used Dashboards In Time Period :  "| stats latest(_time) AS latest_access_time dc(user) as "# of Users" values(user) as user values(label) as label count by view app</title>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
+          <query>| timechart useother=f fixedrange=f usenull=f limit=0 $span_period$
+    dc(User) As Num_Users by $split_by_tok_1$ where max in top$top_tok2$</query>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="height">600</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
     </panel>
   </row>
   <row id="Reports_Alerts_Inputs">
@@ -848,7 +1060,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
         <fieldForValue>sharing2</fieldForValue>
       </input>
       <input type="dropdown" token="cron_schedule_described" searchWhenChanged="true">
-        <label>19. Cron Schedule Described</label>
+        <label>19. Job Schedule Human</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>cron_schedule_described</fieldForLabel>
@@ -859,7 +1071,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
         <default>*</default>
       </input>
       <input type="dropdown" token="cron_schedule" searchWhenChanged="true">
-        <label>20. Cron Schedule (No Search)</label>
+        <label>20. Job Schedule (No Search)</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>cron_schedule</fieldForLabel>
@@ -1106,6 +1318,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
         <fieldForValue>Days_Latest_Access</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
           <query>| stats count by Days_Latest_Access 
+| sort Days_Latest_Access
 | `get_latest_access_human(Days_Latest_Access)`</query>
         </search>
       </input>
@@ -1118,6 +1331,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
         <fieldForValue>Days_Latest_Access</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
           <query>| stats count by Days_Latest_Access 
+| sort Days_Latest_Access 
 | `get_latest_access_human(Days_Latest_Access)`</query>
         </search>
       </input>
@@ -1129,7 +1343,9 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       <html>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
             <ol>
-          <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts Gen Job</a>
+          <li>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts Gen Job</a>
+          </li>
             <div class="btn-group1">
                <div id="mod_info">
                   <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_saved_searches_sh_kv_store&amp;type=kv">
@@ -1145,7 +1361,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
                </div>
             </div>
                         <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (KV Store)</a>
          <div class="btn-group1">
                <div id="mod_info">
                   <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_index_internal_web_access_tracker_sh_kv_store&amp;type=kv">
@@ -1160,6 +1376,9 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
                   </a>
                </div>
             </div>
+          </li>
+          <li>
+            <a href="/app/global_monitoring_console/search?s=splunk_internal_scheduler_jobs_idx_summary_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (Summary Indexing)</a>
           </li>
         </ol>
          </html>
@@ -1179,7 +1398,22 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       </single>
     </panel>
     <panel>
-      <title>4. Reports/Alerts By Author</title>
+      <title>4. Total Number of Authors</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
+          <query>| stats dc(author) As Num_Authors</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x555","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">Authors</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>5. Reports/Alerts By Author</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
           <query>| stats count AS "Number of Reports/Alerts" by author
@@ -1202,7 +1436,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       </table>
     </panel>
     <panel>
-      <title>5. Reports/Alerts By App</title>
+      <title>6. Reports/Alerts By App</title>
       <chart>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
           <query>| stats count by app</query>
@@ -1214,7 +1448,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       </chart>
     </panel>
     <panel>
-      <title>6. Top 10 Job Cron Schedules</title>
+      <title>7. Top 10 Job Cron Schedules</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
           <query>| search cron_schedule!="" | top cron_schedule
@@ -1237,16 +1471,17 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
   </row>
   <row id="Reports_Alerts_Panel2">
     <panel>
-      <title>7. List of Reports/Alerts</title>
+      <title>8. List of Reports/Alerts</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
           <query>| eval #=1 
-|  `get_latest_access_human(Days_Latest_Access)`
-| table # shcluster_label app author sharing savedsearch_name savedsearch_type Days_Latest_Access_Display disabled is_scheduled cron_schedule cron_schedule_described scheduled_times schedule_priority schedule_window realtime_schedule allow_skew max_concurrent auto_summarize dispatch_earliest_time dispatch_latest_time run_n_times run_on_startup action_email_to Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference updated action_email action_logevent action_logevent_param_event action_lookup action_lookup_append action_lookup_filename action_output_message action_output_message_param_msgid action_output_message_param_name action_populate_lookup action_script action_script_filename action_summary_index action_summary_index_name auto_summarize_cron_schedule auto_summarize_dispatch_earliest_time auto_summarize_dispatch_latest_time auto_summarize_max_concurrent dispatch_ttl action_correlationsearch_enabled action_correlationsearch_label action_correlationsearch_related_searches search 
-`gmc_comment("qualifiedSearch ")`
-| rename Splunk_Instance AS "Splunk Instance" Splunk_Roles AS "Splunk Roles" shcluster_label AS "Splunk SH (Cluster/Instance)"
+| `get_latest_access_human(Days_Latest_Access)` 
+| table # shcluster_label app sharing author emp_name emp_ttl emp_dep emp_lob emp_type emp_status savedsearch_name savedsearch_type Days_Latest_Access_Display disabled is_scheduled cron_schedule cron_schedule_described scheduled_times schedule_priority schedule_window realtime_schedule allow_skew max_concurrent auto_summarize dispatch_earliest_time dispatch_latest_time run_n_times run_on_startup action_email_to Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference updated action_email action_logevent action_logevent_param_event action_lookup action_lookup_append action_lookup_filename action_output_message action_output_message_param_msgid action_output_message_param_name action_populate_lookup action_script action_script_filename action_summary_index action_summary_index_name auto_summarize_cron_schedule auto_summarize_dispatch_earliest_time auto_summarize_dispatch_latest_time auto_summarize_max_concurrent dispatch_ttl action_correlationsearch_enabled action_correlationsearch_label action_correlationsearch_related_searches search 
+    `gmc_comment("qualifiedSearch ")` 
+| rename Splunk_Instance AS "Splunk Instance" Splunk_Roles AS "Splunk Roles" shcluster_label AS "Splunk SH (Cluster/Instance)" 
 | `rename_reference_fields` 
-| `rename_saved_searches_fields`</query>
+| `rename_saved_searches_fields` 
+| `rename_identity_fields`</query>
         </search>
         <option name="count">10</option>
         <option name="drilldown">none</option>
@@ -1340,6 +1575,140 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
           <scale type="sharedCategory"></scale>
         </format>
       </table>
+    </panel>
+  </row>
+  <row id="Reports_Alerts_Panel3">
+    <panel>
+      <title>8. Top N Most Used Reports/Alerts Over Time</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>Time Range</label>
+        <default>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="span_period" searchWhenChanged="true">
+        <label>Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
+      <input type="dropdown" token="shcluster_label_tok2" searchWhenChanged="true">
+        <label>Splunk SH (Cluster/Instance)</label>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard6">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles_tok2" searchWhenChanged="true">
+        <label>Splunk Roles</label>
+        <fieldForLabel>Splunk_Roles1</fieldForLabel>
+        <fieldForValue>Splunk_Roles1</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard6">
+          <query>| stats count by Splunk_Roles
+| rename Splunk_Roles AS Splunk_Roles1</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance_tok2" searchWhenChanged="true">
+        <label>Splunk Instance</label>
+        <fieldForLabel>Splunk_Instance1</fieldForLabel>
+        <fieldForValue>Splunk_Instance1</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard6">
+          <query>| stats count by Splunk_Instance
+| rename Splunk_Instance AS Splunk_Instance1</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app_tok2" searchWhenChanged="true">
+        <label>App</label>
+        <fieldForLabel>App</fieldForLabel>
+        <fieldForValue>App</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard6">
+          <query>| stats count by App</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Savedsearch_Name_tok2" searchWhenChanged="true">
+        <label>Report/Alert Name</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Savedsearch_Name</fieldForLabel>
+        <fieldForValue>Savedsearch_Name</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard6">
+          <query>| stats count by Savedsearch_Name</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="split_by_tok_2" searchWhenChanged="true">
+        <label>Split By</label>
+        <choice value="App">App</choice>
+        <choice value="User">User</choice>
+        <choice value="Savedsearch_Name">Report/Alert</choice>
+        <choice value="Splunk_Instance">Splunk Instance</choice>
+        <fieldForLabel>split_by_tok_1</fieldForLabel>
+        <fieldForValue>split_by_tok_1</fieldForValue>
+        <default>Savedsearch_Name</default>
+        <initialValue>Savedsearch_Name</initialValue>
+      </input>
+      <input type="text" token="exclusion_tok2" searchWhenChanged="true">
+        <label>Exclude</label>
+        <default>none</default>
+        <initialValue>none</initialValue>
+      </input>
+      <input type="text" token="top_tok2" searchWhenChanged="true">
+        <label>Timechart IN top:</label>
+        <default>10</default>
+        <initialValue>10</initialValue>
+      </input>
+      <chart>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard6">
+          <query>| search NOT Savedsearch_Name IN ("*$exclusion_tok2$*") 
+| timechart useother=f fixedrange=f usenull=f limit=0 $span_period$
+    dc(User) As Num_Users
+    By $split_by_tok_2$ where Max in top$top_tok2$</query>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="height">600</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
     </panel>
   </row>
   <row id="Lookups_Inputs">
@@ -1685,7 +2054,22 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       </single>
     </panel>
     <panel>
-      <title>4. By Type</title>
+      <title>4. Total Number of Authors</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
+          <query>| stats dc(author) As Num_Authors</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x555","0xf8be34"]</option>
+        <option name="rangeValues">[100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">Authors</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>5. By Type</title>
       <chart>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
           <query>| stats count by Type</query>
@@ -1697,7 +2081,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       </chart>
     </panel>
     <panel>
-      <title>5. By Replicate</title>
+      <title>6. By Replicate</title>
       <chart>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
           <query>| stats count by Replicate</query>
@@ -1711,12 +2095,13 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
   </row>
   <row id="Lookups_Panel2">
     <panel>
-      <title>6. Lookups List</title>
+      <title>7. Lookups List</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
           <query>| eval #=1 
-| table # shcluster_label app author sharing Type Lookup Filename Lookup_File_Path Collection updated Match_Type Replicate Allow_Caching Filter Index_Fields_List Min_Matches Max_Matches Fields_List case_sensitive_match
-| `rename_lookup_fields`</query>
+| table # shcluster_label app sharing author emp_name emp_ttl emp_dep emp_lob emp_type emp_status Type Lookup Filename Lookup_File_Path Collection updated Match_Type Replicate Allow_Caching Filter Index_Fields_List Min_Matches Max_Matches Fields_List case_sensitive_match 
+| `rename_lookup_fields` 
+| `rename_identity_fields`</query>
         </search>
         <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
@@ -1742,7 +2127,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
           <scale type="sharedCategory"></scale>
         </format>
         <format type="color" field="App Sharing">
-          <colorPalette type="sharedList"></colorPalette>
+          <colorPalette type="map">{"user":#DC4E41,"global":#F8BE34,"app":#53A051}</colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
         <format type="color" field="Author">
@@ -1757,6 +2142,14 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
           <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
         </format>
         <format type="color" field="Last_Updated">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup File Path">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
@@ -1958,12 +2351,16 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       </input>
     </panel>
   </row>
-  <row id="Auto_Lookups_Panel1">
+  <row id="Auto_Lookups_Panel2">
     <panel>
       <title>Associated GMC Job(s) - $env:page$</title>
       <html>
+            <ol>
+          <li>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
             <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Automatic Lookups Gen Job</a>
+          </li>
+        </ol>
             <div class="btn-group1">
                <div id="mod_info">
                   <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_props_lookups_sh_kv_store&amp;type=kv">
@@ -1980,8 +2377,6 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
             </div>
          </html>
     </panel>
-  </row>
-  <row id="Auto_Lookups_Panel2">
     <panel>
       <title>2. Total Number of Automatic Lookups</title>
       <single>
@@ -1997,7 +2392,22 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       </single>
     </panel>
     <panel>
-      <title>3. By App</title>
+      <title>3. Total Number of Authors</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard4">
+          <query>| stats dc(author) As Num_Authors</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">Authors</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>4. By App</title>
       <chart>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard4">
           <query>| stats count by app</query>
@@ -2011,16 +2421,16 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
   </row>
   <row id="Auto_Lookups_Panel3">
     <panel>
-      <title>4. Automatic Lookups</title>
+      <title>5. Automatic Lookups List</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard4">
-          <query>| table shcluster_label attribute app stanza updated transform overwrite value author sharing emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status endDate 
-| `rename_common_fields`
-| `rename_identity_fields`
-| `rename_rest_fields`
-| rename attribute AS "Automatic Lookup" transform AS "Lookup Definition" overwrite AS "Overwrite Field Values"</query>
+          <query>| table shcluster_label attribute app sharing sharing author emp_name emp_ttl emp_dep emp_lob emp_type emp_status stanza updated Type transform Filename Collection value Fields_List overwrite author emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status 
+| `rename_common_fields` 
+| `rename_identity_fields` 
+| `rename_auto_lookup_fields` 
+| `rename_lookup_fields`</query>
         </search>
-        <option name="count">5</option>
+        <option name="count">10</option>
         <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
@@ -2045,124 +2455,19 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
+        <format type="color" field="Supported Fields (Lookup Definitions)">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
       </table>
-    </panel>
-  </row>
-  <row id="Dashboards_Panel3">
-    <panel>
-      <title>7. Users by Dashboard Usage over time</title>
-      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-        <label>Time Range</label>
-        <default>
-          <earliest>-15m</earliest>
-          <latest>now</latest>
-        </default>
-      </input>
-      <input type="dropdown" token="span_period" searchWhenChanged="true">
-        <label>Span Period</label>
-        <default></default>
-        <choice value="">Automatic</choice>
-        <choice value="span=1s">1 seconds</choice>
-        <choice value="span=5s">5 seconds</choice>
-        <choice value="span=10s">10 seconds</choice>
-        <choice value="span=15s">15 seconds</choice>
-        <choice value="span=30s">30 seconds</choice>
-        <choice value="span=1m">1 minute</choice>
-        <choice value="span=5m">5 minutes</choice>
-        <choice value="span=10m">10 minutes</choice>
-        <choice value="span=15m">15 minutes</choice>
-        <choice value="span=30m">30 minutes</choice>
-        <choice value="span=45m">45 minutes</choice>
-        <choice value="span=1h">1 hour</choice>
-        <choice value="span=2h">2 hours</choice>
-        <choice value="span=3h">3 hours</choice>
-        <choice value="span=4h">4 hours</choice>
-        <choice value="span=6h">6 hours</choice>
-        <choice value="span=8h">8 hours</choice>
-        <choice value="span=12h">12 hours</choice>
-        <choice value="span=1d">1 day</choice>
-        <choice value="span=1w">1 week</choice>
-        <choice value="span=1mon">1 month</choice>
-        <choice value="span=12mon">1 year</choice>
-      </input>
-      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
-        <label>Splunk SH (Cluster/Instance)</label>
-        <fieldForLabel>shcluster_label</fieldForLabel>
-        <fieldForValue>shcluster_label</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
-          <query>| stats count by shcluster_label</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="Splunk_Roles1" searchWhenChanged="true">
-        <label>Splunk Roles</label>
-        <fieldForLabel>Splunk_Roles1</fieldForLabel>
-        <fieldForValue>Splunk_Roles1</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
-          <query>| stats count by Splunk_Roles
-| rename Splunk_Roles AS Splunk_Roles1</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="Splunk_Instance1" searchWhenChanged="true">
-        <label>Splunk Instance</label>
-        <fieldForLabel>Splunk_Instance1</fieldForLabel>
-        <fieldForValue>Splunk_Instance1</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
-          <query>| stats count by Splunk_Instance
-| rename Splunk_Instance AS Splunk_Instance1</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="app1" searchWhenChanged="true">
-        <label>App</label>
-        <fieldForLabel>app1</fieldForLabel>
-        <fieldForValue>app1</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
-          <query>| stats count by app | rename app as app1</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="title" searchWhenChanged="true">
-        <label>Dashboard Title</label>
-        <choice value="*">All</choice>
-        <initialValue>*</initialValue>
-        <fieldForLabel>title</fieldForLabel>
-        <fieldForValue>title</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
-          <query>| stats count by title</query>
-        </search>
-        <default>*</default>
-      </input>
-      <input type="text" token="top_tok2" searchWhenChanged="true">
-        <label>Timechart IN top:</label>
-        <default>10</default>
-        <initialValue>10</initialValue>
-      </input>
-      <chart>
-        <title>Top 10 Most Viewed Dashboards over the selected Time Period: "|  timechart limit=0 dc(user) by label useother=false"  / Most Used Dashboards In Time Period :  "| stats latest(_time) AS latest_access_time dc(user) as "# of Users" values(user) as user values(label) as label count by view app"</title>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
-          <query>| timechart useother=f fixedrange=f usenull=f $span_period$
-    dc(user) As Num_Users by title where max in top$top_tok2$</query>
-        </search>
-        <option name="charting.axisTitleX.visibility">collapsed</option>
-        <option name="charting.axisTitleY.visibility">collapsed</option>
-        <option name="charting.chart">column</option>
-        <option name="charting.chart.showDataLabels">all</option>
-        <option name="charting.chart.stackMode">stacked</option>
-        <option name="charting.drilldown">none</option>
-        <option name="charting.legend.placement">bottom</option>
-        <option name="height">600</option>
-        <option name="refresh.display">progressbar</option>
-      </chart>
     </panel>
   </row>
 </form>
