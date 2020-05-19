@@ -1,4 +1,4 @@
-he App needs to run on a dedicated Global Monitoring Console for the entire enterprise. Also export the Splunk Monitoring Console App Globally and set read for everyone and write for just admin
+The App needs to run on a dedicated Global Monitoring Console for the entire enterprise. Also export the Splunk Monitoring Console App Globally and set read for everyone and write for just admin
 Required Splunkbase Apps:
 
     Splunk Common Information Model (CIM): https://splunkbase.splunk.com/app/1621
