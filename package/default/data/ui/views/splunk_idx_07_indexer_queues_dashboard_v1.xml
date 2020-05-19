@@ -13,14 +13,14 @@
   </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-      <label>Time Range</label>
+      <label>1. Time Range</label>
       <default>
         <earliest>-15m</earliest>
         <latest>now</latest>
       </default>
     </input>
     <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
-      <label>Indexer Cluster</label>
+      <label>2. Indexer Cluster</label>
       <fieldForLabel>idxcluster_label</fieldForLabel>
       <fieldForValue>idxcluster_label</fieldForValue>
       <search base="splunk_idx_07_indexer_queues_dashboard_v1">
@@ -31,7 +31,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="host" searchWhenChanged="true">
-      <label>Indexer</label>
+      <label>3. Indexer</label>
       <fieldForLabel>host</fieldForLabel>
       <fieldForValue>host</fieldForValue>
       <search base="splunk_idx_07_indexer_queues_dashboard_v1">
@@ -42,7 +42,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="blocked" searchWhenChanged="true">
-      <label>Queue Blocked?</label>
+      <label>4. Queue Blocked?</label>
       <fieldForLabel>blocked</fieldForLabel>
       <fieldForValue>blocked</fieldForValue>
       <choice value="*">No</choice>
@@ -51,7 +51,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="multiselect" token="name" searchWhenChanged="true">
-      <label>Queue Name</label>
+      <label>5. Queue Name</label>
       <fieldForLabel>name</fieldForLabel>
       <fieldForValue>name</fieldForValue>
       <search base="splunk_idx_07_indexer_queues_dashboard_v1">
@@ -60,14 +60,15 @@
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
+      <delimiter> </delimiter>
     </input>
     <input type="text" token="fill_perc" searchWhenChanged="true">
-      <label>Full Ratio (%)</label>
+      <label>6. Full Ratio (%)</label>
       <default>0</default>
       <initialValue>0</initialValue>
     </input>
     <input type="dropdown" token="span_period" searchWhenChanged="true">
-      <label>3. Span Period</label>
+      <label>7. Span Period</label>
       <default></default>
       <choice value="">Automatic</choice>
       <choice value="span=1s">1 seconds</choice>
@@ -103,7 +104,7 @@
         </search>
         <option name="Splunk_ML_Toolkit.LinesViz.showNavigator">true</option>
         <option name="drilldown">none</option>
-        <option name="height">500</option>
+        <option name="height">675</option>
         <option name="refresh.display">progressbar</option>
       </viz>
     </panel>
@@ -144,6 +145,7 @@
         <option name="charting.legend.mode">standard</option>
         <option name="charting.legend.placement">right</option>
         <option name="charting.lineWidth">2</option>
+        <option name="height">504</option>
         <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>

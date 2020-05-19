@@ -87,9 +87,9 @@
   AND Search_Activity.Introspection_Search_Usage.mode = "$mode$"
   AND host="$host$"
   $Exclutions3$
-  BY Search_Activity.Introspection_Search_Usage.search_id Search_Activity.Introspection_Search_Usage.pid
+  BY _time Search_Activity.Introspection_Search_Usage.search_id Search_Activity.Introspection_Search_Usage.pid $span_period$
 | `gmc_drop_dm_object_name(Search_Activity.Introspection_Search_Usage)`
-| fields _time host search_id search_head app user acceleration_id delta_scan_count total_run_time fd_used mem_used normalized_pct_cpu page_faults pid ppid provenance read_mb savedsearch_name scan_count search_type t_count written_mb mode
+| fields _time host search_id search_head app user acceleration_id delta_scan_count total_run_time fd_used mem_used normalized_pct_cpu pct_cpu page_faults pid ppid provenance read_mb savedsearch_name scan_count search_type t_count written_mb mode
 | `gmc_convert_runtime('total_run_time')`
 | `get_normalized_search_id(search_id)`
 | `get_provenance_fields(provenance)`
@@ -104,7 +104,7 @@
 | `get_cron_schedule(cron_schedule)`
 | fillnull value="no-search_id" search_id_normalized 
 | fillnull value=999999 Days_Latest_Dashboard_Access 
-| fillnull value=0 total_run_time mem_used normalized_pct_cpu 
+| fillnull value=0 total_run_time mem_used normalized_pct_cpu pct_cpu
 | fillnull value="Undefined" shcluster_label Splunk_Roles search_id_normalized datamodel Provenance_Type Provenance_KO_Type Provenance_KO emp_lob emp_dep work_city work_region work_country savedsearch_type Lookup_Reference Datamodel_Reference
 | search shcluster_label="$shcluster_label$" search_id_normalized="*$search_id_normalized$*" datamodel="$datamodel$" Provenance_Type="$Provenance_Type$" Provenance_KO_Type="$Provenance_KO_Type$" Provenance_KO="$Provenance_KO$" emp_lob="$emp_lob$" emp_dep="$emp_dep$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$" Splunk_Roles="$Splunk_Roles$" savedsearch_type="$savedsearch_type$" Lookup_Reference="*$Lookup_Reference$*" Datamodel_Reference="*$Datamodel_Reference$*"</query>
     <earliest>$IntrospectionTimeRangePkr.earliest$</earliest>
@@ -116,13 +116,13 @@
       <html>
             <ul id="tabs" class="nav nav-tabs">
                <li class="active">
-                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Introspection_Inputs,Introspection_Panel0,Introspection_Panel1,Introspection_Panel2,Introspection_Panel3,Introspection_Panel4,Introspection_Panel5">Introspection (Mem/CPU)</a>
+                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Introspection_Inputs,Introspection_Panel0,Introspection_Panel1,Introspection_Panel2,Introspection_Panel3,Introspection_Panel4,Introspection_Panel5,Introspection_Panel6">1. Introspection (Mem/CPU)</a>
                </li>
                <li>
-                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Audit_Inputs,Audit_Panel0,Audit_Panel1,Audit_Panel2,Audit_Panel3">Audit (Everything)</a>
+                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Audit_Inputs,Audit_Panel0,Audit_Panel1,Audit_Panel2,Audit_Panel3">2. Audit (Everything)</a>
                </li>
                <li>
-                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Internal_Inputs,Internal_Panel0,Internal_Panel1,Internal_Panel2,Internal_Panel3,Internal_Panel4,Internal_Panel5,Internal_Panel6,Internal_Panel7,Internal_Panel10">Internal (Jobs + Skips)</a>
+                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Internal_Inputs,Internal_Panel0,Internal_Panel1,Internal_Panel2,Internal_Panel3,Internal_Panel4,Internal_Panel5,Internal_Panel6,Internal_Panel7,Internal_Panel10">3. Internal (Jobs + Skips)</a>
                </li>
             </ul>
          </html>
@@ -137,6 +137,7 @@
         <choice value="">No</choice>
         <default>"Search_Activity.Introspection_Search_Usage.app3!=""global_monitoring_console"""</default>
         <initialValue>Search_Activity.Introspection_Search_Usage.app3!="global_monitoring_console"</initialValue>
+        <delimiter> </delimiter>
       </input>
       <input type="time" token="IntrospectionTimeRangePkr" searchWhenChanged="true">
         <label>2. Introspection Time Range</label>
@@ -460,7 +461,9 @@
       <title>2. To Drilldown on a Normalized Search ID to see information on it from _audit &amp; _internal click inside the field value of  the "Normalized Search ID" Field</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
-          <query>| table search_id_normalized shcluster_label search_head host search_type mode Provenance_Type Provenance_KO_Type Provenance_KO app user emp_name pid savedsearch_name savedsearch_type _time 'total_run_time' total_run_time mem_used physicalMemoryGB normalized_pct_cpu max_hist_searches max_searches_per_cpu numberOfCores base_max_searches numberOfVirtualCores t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_ttl emp_lob work_city work_region work_country cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches 
+          <query>| fields search_id_normalized pid shcluster_label search_head host search_type mode mem_used normalized_pct_cpu Provenance_Type Provenance_KO_Type Provenance_KO app savedsearch_name savedsearch_type user emp_name _time 'total_run_time' total_run_time physicalMemoryGB pct_cpu page_faults max_hist_searches max_searches_per_cpu numberOfCores base_max_searches numberOfVirtualCores t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_ttl emp_lob work_city work_region work_country cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches 
+| stats max(*) as * latest(_time) as _time By search_id_normalized pid
+| table search_id_normalized pid shcluster_label search_head host search_type mode mem_used normalized_pct_cpu Provenance_Type Provenance_KO_Type Provenance_KO app savedsearch_name savedsearch_type user emp_name _time 'total_run_time' total_run_time physicalMemoryGB pct_cpu page_faults max_hist_searches max_searches_per_cpu numberOfCores base_max_searches numberOfVirtualCores t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_ttl emp_lob work_city work_region work_country cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches 
 | sort 0 - mem_used 
 | `normalize_search_type(search_type)` 
 | `rename_common_fields` 
@@ -650,6 +653,17 @@
           <colorPalette type="minMidMax" maxColor="#F1813F" midColor="#F8BE34" minColor="#006D9C"></colorPalette>
           <scale type="minMidMax" midType="percentile" midValue="90"></scale>
         </format>
+        <format type="number" field="CPU %">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Dashboard">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
         <drilldown>
           <set token="form.search_id_normalized">$row.search_id_normalized$</set>
         </drilldown>
@@ -671,7 +685,8 @@
         <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
           <query>| where Provenance_KO!="Undefined" 
 | stats values(search) AS Search by host Provenance_KO 
-| rename Provenance_KO as "Dashboard" 
+| eval Search = mvindex(Search, 0, 4) 
+| rename Provenance_KO as "Dashboard" Search As "Sample Searches" 
 | fields - count</query>
         </search>
         <option name="count">1</option>
@@ -768,85 +783,26 @@
       </chart>
     </panel>
   </row>
-  <row id="Introspection_Panel5">
+  <row id="Introspection_Panel6">
     <panel>
-      <title>8. Top N CPU Intensive Searches</title>
-      <input type="text" token="top_tok1" searchWhenChanged="true">
-        <label>Timechart IN top:</label>
-        <default>10</default>
-        <initialValue>10</initialValue>
-      </input>
-      <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
-        <label>Split By</label>
-        <choice value="app">App</choice>
-        <choice value="user">User</choice>
-        <choice value="savedsearch_name">Report/Alert</choice>
-        <choice value="host">Splunk Instance</choice>
-        <choice value="search_type">Search Type</choice>
-        <choice value="provenance">Provenance</choice>
-        <fieldForLabel>split_by_tok_1</fieldForLabel>
-        <fieldForValue>split_by_tok_1</fieldForValue>
-        <default>app</default>
-        <initialValue>app</initialValue>
-      </input>
-      <input type="dropdown" token="span_period" searchWhenChanged="true">
-        <label>3. Span Period</label>
-        <default></default>
-        <choice value="">Automatic</choice>
-        <choice value="span=1s">1 seconds</choice>
-        <choice value="span=5s">5 seconds</choice>
-        <choice value="span=10s">10 seconds</choice>
-        <choice value="span=15s">15 seconds</choice>
-        <choice value="span=30s">30 seconds</choice>
-        <choice value="span=1m">1 minute</choice>
-        <choice value="span=5m">5 minutes</choice>
-        <choice value="span=10m">10 minutes</choice>
-        <choice value="span=15m">15 minutes</choice>
-        <choice value="span=30m">30 minutes</choice>
-        <choice value="span=45m">45 minutes</choice>
-        <choice value="span=1h">1 hour</choice>
-        <choice value="span=2h">2 hours</choice>
-        <choice value="span=3h">3 hours</choice>
-        <choice value="span=4h">4 hours</choice>
-        <choice value="span=6h">6 hours</choice>
-        <choice value="span=8h">8 hours</choice>
-        <choice value="span=12h">12 hours</choice>
-        <choice value="span=1d">1 day</choice>
-        <choice value="span=1w">1 week</choice>
-        <choice value="span=1mon">1 month</choice>
-        <choice value="span=12mon">1 year</choice>
-      </input>
-      <chart>
-        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
-          <query>| eval normalized_pct_cpu=round(normalized_pct_cpu) 
-| timechart $span_period$ useother=f
-    Max(normalized_pct_cpu) as "Normalized CPU %" 
-    By $split_by_tok_1$ 
-    Where max in top$top_tok1$</query>
-        </search>
-        <option name="charting.axisTitleX.visibility">collapsed</option>
-        <option name="charting.axisTitleY.visibility">collapsed</option>
-        <option name="charting.axisY.abbreviation">auto</option>
-        <option name="charting.axisY.scale">linear</option>
-        <option name="charting.chart">column</option>
-        <option name="charting.chart.nullValueMode">connect</option>
-        <option name="charting.chart.showDataLabels">all</option>
-        <option name="charting.chart.stackMode">stacked</option>
-        <option name="charting.drilldown">none</option>
-        <option name="charting.layout.splitSeries">0</option>
-        <option name="charting.legend.placement">bottom</option>
-        <option name="height">600</option>
-        <option name="refresh.display">progressbar</option>
-      </chart>
-    </panel>
-  </row>
-  <row id="Introspection_Panel4">
-    <panel>
-      <title>9. Top N Memory Intensive Searches (in GB)</title>
-      <input type="text" token="top_tok2" searchWhenChanged="true">
-        <label>Timechart IN top:</label>
-        <default>10</default>
-        <initialValue>10</initialValue>
+      <title>6. Top N Reports</title>
+      <input type="dropdown" token="field_tok_2" searchWhenChanged="true">
+        <label>Group By Field</label>
+        <choice value="total_run_time">Total Run Time (Minutes)</choice>
+        <choice value="fd_used">File Descriptors Used</choice>
+        <choice value="page_faults">Page Faults</choice>
+        <choice value="scan_count">Scan Count</choice>
+        <choice value="delta_scan_count">Delta Scan Count</choice>
+        <choice value="t_count">Thread Count</choice>
+        <choice value="normalized_pct_cpu">Normalized CPU %</choice>
+        <choice value="mem_used">Memory (GB)</choice>
+        <choice value="pct_cpu">CPU %</choice>
+        <choice value="read_mb">Read (MB)</choice>
+        <choice value="written_mb">Written (MB)</choice>
+        <fieldForLabel>field_tok_2</fieldForLabel>
+        <fieldForValue>field_tok_2</fieldForValue>
+        <default>total_run_time</default>
+        <initialValue>total_run_time</initialValue>
       </input>
       <input type="dropdown" token="split_by_tok_2" searchWhenChanged="true">
         <label>Split By</label>
@@ -856,6 +812,8 @@
         <choice value="host">Splunk Instance</choice>
         <choice value="search_type">Search Type</choice>
         <choice value="provenance">Provenance</choice>
+        <choice value="shcluster_label">SH Cluster Label</choice>
+        <choice value="savedsearch_type">Saved Search Type</choice>
         <fieldForLabel>split_by_tok_2</fieldForLabel>
         <fieldForValue>split_by_tok_2</fieldForValue>
         <default>app</default>
@@ -873,7 +831,7 @@
         <fieldForValue>round_tok2</fieldForValue>
       </input>
       <input type="dropdown" token="span_period" searchWhenChanged="true">
-        <label>3. Span Period</label>
+        <label>Span Period</label>
         <default></default>
         <choice value="">Automatic</choice>
         <choice value="span=1s">1 seconds</choice>
@@ -899,28 +857,32 @@
         <choice value="span=1mon">1 month</choice>
         <choice value="span=12mon">1 year</choice>
       </input>
+      <input type="text" token="top_tok2" searchWhenChanged="true">
+        <label>Timechart IN top:</label>
+        <default>10</default>
+        <initialValue>10</initialValue>
+      </input>
       <chart>
         <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
-          <query>| where savedsearch_name!="Undefined" 
-| timechart $span_period$ useother=f
-    eval(round(sum(mem_used),$round_tok2$)) as "Memory Used/GB" 
+          <query>| eval total_run_time=total_run_time/60 | where savedsearch_name!="Undefined" 
+| timechart $span_period$ useother=f usenull=f fixedrange=f
+    eval(round(Sum($field_tok_2$),$round_tok2$)) as $field_tok_2$
     By $split_by_tok_2$ 
     Where max in top$top_tok2$</query>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
-        <option name="charting.axisTitleY.text">GB</option>
-        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisY.abbreviation">auto</option>
         <option name="charting.axisY.scale">linear</option>
         <option name="charting.chart">column</option>
         <option name="charting.chart.nullValueMode">connect</option>
-        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.showDataLabels">none</option>
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
-        <option name="height">600</option>
+        <option name="height">749</option>
         <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
       </chart>
@@ -1287,7 +1249,7 @@
       <title>2. Audit - List of searches matching the above filter</title>
       <table depends="$search_id_normalized$">
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
-          <query>| table search_id_normalized shcluster_label host search_type info savedsearch_name savedsearch_type dispatch_time total_run_time 'total_run_time' _time search_et search_lt Time_Diff user emp_name emp_dep emp_lob emp_ttl work_city work_region work_country datamodel scan_count event_count result_count available_count considered_events searched_buckets total_slices decompressed_slices cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Eventtype_Reference 
+          <query>| table search_id_normalized shcluster_label host search_type info savedsearch_name savedsearch_type dispatch_time total_run_time 'total_run_time' _time search_et search_lt Time_Diff user emp_name emp_dep emp_lob emp_ttl work_city work_region work_country datamodel scan_count event_count result_count available_count considered_events searched_buckets total_slices decompressed_slices cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Eventtype_Reference search
 | `normalize_search_type(search_type)`
 | `rename_common_fields`
 | `rename_reference_fields`
@@ -1941,7 +1903,7 @@
       <title>2. Internal - List of searches matching the above filter</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
-          <query>| table search_id_normalized shcluster_label host search_type info savedsearch_name _time cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule scheduled_time dispatch_time total_run_time 'total_run_time' app user emp_dep emp_lob work_city work_region work_country datamodel result_count concurrency_category concurrency_context concurrency_limit skipped_count reason alert_actions Memory_Usage Memory_Threshold Lookup_Reference Datamodel_Reference Macro_Reference action_summary_index_name Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference savedsearch_search
+          <query>| table search_id_normalized shcluster_label host search_type info savedsearch_name _time cron_schedule cron_schedule_described  dispatch_earliest_time dispatch_latest_time schedule_priority max_concurrent schedule_window allow_skew realtime_schedule scheduled_time dispatch_time total_run_time 'total_run_time' app user emp_dep emp_lob work_city work_region work_country datamodel result_count concurrency_category concurrency_context concurrency_limit skipped_count reason alert_actions Memory_Usage Memory_Threshold Lookup_Reference Datamodel_Reference Macro_Reference action_summary_index_name Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference savedsearch_search 
 | `normalize_search_type(search_type)` 
 | `rename_common_fields` 
 | `rename_reference_fields` 
@@ -2726,26 +2688,6 @@
         <option name="refresh.display">none</option>
         <option name="trellis.enabled">0</option>
       </chart>
-    </panel>
-  </row>
-  <row id="style_settings" depends="$visible$">
-    <panel depends="$alwaysHideCSS$">
-      <title>$env:page$</title>
-      <html>
-            <style>.dashboard-panel h2{
-             background:#f8be34 !important;
-             color:black !important;
-             text-align: center !important;
-             font-weight: bold !important;
-             border-top-right-radius: 15px;
-             border-top-left-radius: 15px; }
-            .dashboard-panel h1.panel-title {
-              font-weight: bold !important;
-              font-size: 100% !important; }
-                .table, th, td {
-              border: 8px solid black !important; }
-            { display: none;  }</style>
-         </html>
     </panel>
   </row>
   <row id="Internal_Panel10">

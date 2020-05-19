@@ -51,7 +51,7 @@ detailed explanations and performance tips to optimize your system.</description
 | eval compare_usage = usage." / ".capacity 
 | eval pct_usage = round(usage / capacity * 100, 2) 
 | stats first(fs_type) as fs_type first(compare_usage) as compare_usage first(pct_usage) as pct_usage, first(iops) as iops, first(cpu_pct) as
-    cpu_pct by mount_point 
+    cpu_pct by splunk_server mount_point 
 | rename mount_point as "Mount Point", fs_type as "File System Type", compare_usage as "Disk Usage (GB)", capacity as "Capacity (GB)",pct_usage as "Disk Usage (%)", iops as "I/O operations per second", cpu_pct as "I/O Bandwidth Utilization(%)"</query>
           <earliest>$TimeRangePkr.earliest$</earliest>
           <latest>$TimeRangePkr.latest$</latest>

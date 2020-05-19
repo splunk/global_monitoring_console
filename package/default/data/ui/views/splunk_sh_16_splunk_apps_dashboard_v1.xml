@@ -239,12 +239,12 @@
       <title>Apps</title>
       <table>
         <search base="splunk_sh_16_splunk_apps_dashboard_v1">
-          <query>| table shcluster_label Splunk_Roles App_Type label title version build disabled sharing description author check_for_updates visible configured show_in_nav state_change_requires_restart details updated
+          <query>| table shcluster_label App_Type label title version build disabled sharing description author check_for_updates visible configured show_in_nav state_change_requires_restart details updated
 | `rename_common_fields`
 | `rename_rest_fields`
 | rename label AS Name title AS "Folder Name" App_Type AS Type version AS Version configured AS Configured show_in_nav AS "Show in Navigation Menu" build AS Build visible AS Visible check_for_updates AS "Update Checking" details AS Details state_change_requires_restart AS "State Change Requires Restart"</query>
         </search>
-        <option name="count">5</option>
+        <option name="count">10</option>
         <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
