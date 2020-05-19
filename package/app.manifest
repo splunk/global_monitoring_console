@@ -1,11 +1,11 @@
 {
   "schemaVersion": "2.0.0", 
   "info": {
-    "title": "Global Monitoring Console", 
+    "title": "Global Monitoring Console App for Splunk", 
     "id": {
       "group": null, 
       "name": "global_monitoring_console", 
-      "version": "1.5.15"
+      "version": "1.5.50"
     }, 
     "author": [
       {
@@ -15,7 +15,7 @@
       }
     ], 
     "releaseDate": null, 
-    "description": "Global Monitoring Console", 
+    "description": "Global Monitoring Console App for Splunk", 
     "classification": {
       "intendedAudience": null, 
       "categories": [], 

@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>SH - 08 - Event Types - Dashboard - v1.5.15</label>
+  <label>SH - 08 - Event Types - Dashboard - v1.5.50</label>
   <search id="splunk_sh_15_event_types_dashboard_v1">
     <query>
 | from lookup:splunk_rest_admin_eventtypes_sh_kv_store_lookup
@@ -9,7 +9,7 @@
 
 | makemv delim="|" tags
 
-|	`get_identity_info_simple(author)`
+|	`get_identity_info_simple(shcluster_label,author)`
 | `strftime_format(updated)`
 
 | fillnull value="Undefined" Splunk_Instance Splunk_Roles app sharing title author description disabled color priority tags search
@@ -209,10 +209,10 @@
       <title>Associated GMC Job(s) - $env:page$</title>
       <html>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Event Types Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Event Types Gen Job</a>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_admin_eventtypes_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_admin_eventtypes_sh_kv_store&amp;type=kv">
                      View Eventtypes KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>

@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v1.5.15</label>
+  <label>IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v1.5.50</label>
   <search id="splunk_idx_07_indexer_cluster_bucket_status_dashboard_v1">
     <query>
       index=_internal search_group=dmc_group_cluster_master component=Metrics sourcetype=splunkd name=cmmaster_* group=subtask_* event_message="*fix*" (to_fix_search_factor&gt;0 OR to_fix_rep_factor&gt;0)
@@ -77,7 +77,7 @@
         <option name="charting.chart.stackMode">default</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
-        <option name="height">590</option>
+        <option name="height">600</option>
         <option name="refresh.display">none</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>

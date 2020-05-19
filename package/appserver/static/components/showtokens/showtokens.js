@@ -19,7 +19,7 @@
     "underscore",
     "backbone",
     "splunkjs/mvc",
-    "css!/static/app/splunk_global_monitoring_console/components/showtokens/showtokens.css",
+    "css!/static/app/global_monitoring_console/components/showtokens/showtokens.css",
     "splunkjs/mvc/simplexml/ready!"
   ], function($, _, Backbone, mvc) {
 

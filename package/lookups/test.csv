@@ -1,2 +1,0 @@
-bunit,email,"emp_cc","emp_dep","emp_floor","emp_lob","emp_loc","emp_name","emp_status","emp_ttl","emp_type","emp_tz",endDate,first,identity,last,managedBy,nick,phone,phone2,prefix,priority,startDate,suffix,"work_city","work_country","work_lat","work_long","work_region"
-,Splunk,,Splunk,,Splunk,,"Splunk Admin",Active,Splunk,Default,,,Splunk,admin,"Admin User",,,,,,,,,"San Francisco","United States",,,CA

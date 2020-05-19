@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>UF - 03 - Forwarding Analysis Summary Index - Dashboard - v1.5.15</label>
+  <label>UF - 03 - Forwarding Analysis Summary Index - Dashboard - v1.5.50</label>
   <search id="splunk_uf_01_forwarding_analysis_dashboard_v1">
     <query>
 index=`gmc_summary_index` search_name="splunk_internal_forwarder_stats_idx_summary_tracker" ( idxcluster_label="$idxcluster_label$" Indexers="$Indexers$" hostname="*$hostname$*" sourceIp="*$sourceIp$*" os="$os$" version="$version$" fwdType="$fwdType$" connectionType="$connectionType$" arch="$arch$" ack="$ack$" ingest_pipe="$ingest_pipe$" ssl="$ssl$" kb&gt;="$kb$ * 1024" )
@@ -494,7 +494,7 @@ index=`gmc_summary_index` search_name="splunk_internal_forwarder_stats_idx_summa
             <ol>
                <li>
                   GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/splunk_global_monitoring_console/search?s=splunk_internal_forwarder_stats_idx_summary_tracker" target="_blank" rel="noopener">Track Forwarder Ingestion Stats Daily</a>
+                  <a href="/app/global_monitoring_console/search?s=splunk_internal_forwarder_stats_idx_summary_tracker" target="_blank" rel="noopener">Track Forwarder Ingestion Stats Daily</a>
                </li>
             </ol>
          </html>

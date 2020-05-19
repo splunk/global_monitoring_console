@@ -1,12 +1,12 @@
 <form theme="dark" script="tabs.js" stylesheet="tabs.css">
-  <label>SH - 06 - Dashboards, Reports/Alerts &amp; Lookups Analysis - Dashboard - v1.5.15</label>
+  <label>SH - 06 - Dashboards, Reports/Alerts &amp; Lookups Analysis - Dashboard - v1.5.50</label>
   <search id="splunk_sh_06_knowledge_objects_analysis_dashboard1">
     <query>
 | from lookup:splunk_rest_data_ui_views_sh_kv_store_lookup 
 | fields shcluster_label Splunk_Instance app sharing title label description type dashboard_size author location updated Report_Reference Dashboard_Reference Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference search BaseSearch
 | `get_instance_roles(Splunk_Instance)`
 | `get_dashboards_usage(shcluster_label,app,title)` 
-| `get_identity_info(author)` 
+| `get_identity_info(shcluster_label,author)` 
 | `strftime_format(updated)`
 | fillnull value="Undefined" Splunk_Roles Splunk_Instance app sharing title label description type dashboard_size author search BaseSearch emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status work_city work_region work_country
 | search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles1$" Splunk_Instance="$Splunk_Instance1$" app="$app1$" author=$author1$ sharing=$sharing1$ title="*$title$*" label="*$label$*" Report_Reference="*$Report_Reference1$*" Dashboard_Reference="*$Dashboard_Reference1$*" Lookup_Reference="*$Lookup_Reference1$*" Datamodel_Reference="*$Datamodel_Reference1$*" Macro_Reference="*$Macro_Reference1$*" Index_Reference="*$Index_Reference1$*" Sourcetype_Reference="*$Sourcetype_Reference1$*" Source_Reference="*$Source_Reference1$*" Eventtype_Reference="*$Eventtype_Reference1$*" Rest_Reference="*$Rest_Reference1$*" BaseSearch="$BaseSearch$" dashboard_size &lt;= $dashboard_size$ search="*$search$*" Days_Latest_Access &lt;= "$Days_Latest_Access1$" Days_Latest_Access &gt;= "$Days_Latest_Access2$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$"</query>
@@ -19,7 +19,7 @@
 | `get_instance_roles(Splunk_Instance)`
 
 | `get_saved_searches_usage(shcluster_label, app, savedsearch_name)` 
-| `get_identity_info(author)` 
+| `get_identity_info(shcluster_label,author)` 
 | `get_cron_schedule(cron_schedule)`
 | `strftime_format(updated)`
 | `strftime_format(scheduled_times)`
@@ -40,7 +40,7 @@
 
 | `get_instance_roles(Splunk_Instance)`
 
-| `get_identity_info(author)`
+| `get_identity_info(shcluster_label,author)`
 | `strftime_format(updated)`
 
 | eval Type = if(match(Lookup_File,".csv"), "file", Type) , if(isnull(Lookup_File), "file", Type) , Lookup = if(isnull(Lookup), "NO-DEFINITION", Lookup)
@@ -59,7 +59,7 @@
 
 | `get_instance_roles(Splunk_Instance)`
 
-|	`get_identity_info_simple(author)`
+|	`get_identity_info_simple(shcluster_label,author)`
 | `strftime_format(updated)`
 
 | rex field=attribute mode=sed "s/LOOKUP-//g"
@@ -478,10 +478,10 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
             
             <ol>
             <li>
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Dashboards Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Dashboards Gen Job</a>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_data_ui_views_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_ui_views_sh_kv_store&amp;type=kv">
                      View Dashboards KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -495,10 +495,10 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
             </div>
           </li>
             <li>
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
          <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store&amp;type=kv">
                      View Reports/Alerts Access Tracker KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -1129,10 +1129,10 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       <html>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
             <ol>
-          <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts Gen Job</a>
+          <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts Gen Job</a>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_saved_searches_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_saved_searches_sh_kv_store&amp;type=kv">
                      View Reports/Alerts KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -1145,10 +1145,10 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
                </div>
             </div>
                         <li>
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
          <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_index_internal_web_access_tracker_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_index_internal_web_access_tracker_sh_kv_store&amp;type=kv">
                      View Dashboard Access Tracker KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -1633,11 +1633,11 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
            <ol>
           <li>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Table Files Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Table Files Gen Job</a>
           </li>
           <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_admin_lookup_table_files_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_admin_lookup_table_files_sh_kv_store&amp;type=kv">
                      View Lookup Files KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -1651,11 +1651,11 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
             </div>
           <li>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Definitions Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Definitions Gen Job</a>
           </li>
           <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen&amp;type=kv">
                      View Lookup Definition KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -1963,10 +1963,10 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
       <title>Associated GMC Job(s) - $env:page$</title>
       <html>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Automatic Lookups Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Automatic Lookups Gen Job</a>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_data_props_lookups_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_props_lookups_sh_kv_store&amp;type=kv">
                      View Automatic Lookups KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -2160,7 +2160,7 @@ index=_internal sourcetype=splunk_web_access method=GET status=200
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
-        <option name="height">680</option>
+        <option name="height">600</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>

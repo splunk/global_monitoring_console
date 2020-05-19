@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>IDX - 01 - Data Quality - Dashboard - v1.5.15</label>
+  <label>IDX - 01 - Data Quality - Dashboard - v1.5.50</label>
   <description>Source Type Data Quality issues &amp; All Source Type definitions</description>
   <search id="splunk_idx_01_data_quality_dashboard_v1">
     <query>

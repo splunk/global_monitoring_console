@@ -33,7 +33,7 @@
     "backbone",
     "splunkjs/mvc",
     "splunkjs/mvc/checkboxgroupview",
-    "css!/static/app/splunk_global_monitoring_console/components/dashboardslider/dashboardslider.css",
+    "css!/static/app/global_monitoring_console/components/dashboardslider/dashboardslider.css",
     "splunkjs/mvc/simplexml/ready!"
   ], function($, _, Backbone, mvc, CheckboxGroupView) {
 

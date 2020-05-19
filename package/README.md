@@ -1,4 +1,4 @@
-Splunk Global Monitoring Console (GMC) version 1.0.0
+Global Monitoring Console App for Splunk (GMC)
 Copyright (C) 2005-2020 Splunk Inc. All Rights Reserved.
 
-For documentation, see: https://github.com/amir-khamis/gmc
+For documentation, see: https://github.com/splunk/global_monitoring_console

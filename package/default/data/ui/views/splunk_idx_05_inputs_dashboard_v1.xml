@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>IDX - 05 - Data Inputs - Dashboard - v1.5.15</label>
+  <label>IDX - 05 - Data Inputs - Dashboard - v1.5.50</label>
   <description>All Splunk Servers Data Inputs with tons of filters</description>
   <search id="splunk_idx_05_inputs_dashboard_v1">
     <query>
@@ -7,7 +7,7 @@
 | fields shcluster_label Splunk_Instance app title disabled sharing author type description source sourcetype index location acceleration whitelist blacklist crcSalt interval
 
 | `get_instance_roles(Splunk_Instance)`
-|	`get_identity_info_simple(author)`
+|	`get_identity_info_simple(shcluster_label,author)`
 
 | fillnull value="Undefined" Splunk_Instance Splunk_Roles app title disabled sharing author type description source sourcetype index location acceleration whitelist blacklist crcSalt interval
 
@@ -246,10 +246,10 @@
       <title>Associated GMC Job(s) - $env:page$</title>
       <html>
             GMC Jobs / GMC Gen Jobs / All Tiers Gen Jobs /
-            <a href="/app/splunk_global_monitoring_console/search?s=splunk_rest_data_inputs_all_kv_store_lookup_gen" target="_blank" rel="noopener">Data Inputs Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_all_kv_store_lookup_gen" target="_blank" rel="noopener">Data Inputs Gen Job</a>
              <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_global_monitoring_console&amp;lookup=splunk_rest_data_inputs_all_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_inputs_all_kv_store&amp;type=kv">
                      View Splunk Data Inputs KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
