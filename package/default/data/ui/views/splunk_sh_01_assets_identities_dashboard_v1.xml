@@ -1,5 +1,5 @@
-<form theme="dark" script="tabs.js" stylesheet="tabs.css">
-  <label>SH - 01 - GMC Assets &amp; Identities - Dashboard - v1.5.50</label>
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>SH - 01 - GMC Assets &amp; Identities - Dashboard - v1.5.66</label>
   <search id="splunk_sh_01_assets_identities_dashboard_tab1">
     <query>| from lookup:splunk_assets_kv_store_lookup
 | fields Splunk_Instance Splunk_Roles serverName host host_short host_fqdn host_resolved host_ip idxcluster_label shcluster_label mode guid version build os_name os_name_extended cpu_arch os_version os_build startup_time kvStoreStatus numberOfCores numberOfVirtualCores physicalMemoryMB rtsearch_enabled master_uri master_guid licenseState isForwarding isTrial license_labels transparent_hugepages_defrag transparent_hugepages_effective_state transparent_hugepages_enabled ulimits_core_file_size ulimits_cpu_time ulimits_data_file_size ulimits_data_segment_size ulimits_nice ulimits_open_files ulimits_resident_memory_size ulimits_stack_size ulimits_user_processes ulimits_virtual_address_space_size SPLUNK_DB SPLUNK_HOME appServerPorts dfsDisabled dfsMasterPort enableSplunkWebSSL httpport kvStoreDisabled kvStorePort mgmtHostPort minFreeSpace sessionTimeout startwebserver trustedIP
@@ -12,9 +12,61 @@
 | fields shcluster_label,identity,prefix,nick,first,last,suffix,email,phone,phone2,managedBy,priority,bunit,category,watchlist,startDate,endDate,work_city,work_country,work_lat,work_long,work_region,emp_cc,emp_dep,emp_floor,emp_lob,emp_loc,emp_name,emp_status,emp_ttl,emp_type,emp_tz,Splunk_Instance,splunk_role_map,ldap_group_name,ldap_group_type,last_successful_login
 | `get_instance_roles(Splunk_Instance)`
 | `get_splunk_roles_info(shcluster_label,splunk_role_map)`
-| fillnull value="undefined" shcluster_label Splunk_Instance Splunk_Roles identity emp_type emp_status work_city work_region work_country emp_loc emp_dep emp_lob emp_cc emp_name splunk_role_map ldap_group_name ldap_group_type last_successful_login capabilities imported_capabilities
-| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles$" identity="*$identity$*" emp_type="$emp_type$" emp_status="$emp_status$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$" emp_loc="$emp_loc$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" emp_name="$emp_name$" Splunk_Instance="$Splunk_Instance$" splunk_role_map="$splunk_role_map$" ldap_group_name="$ldap_group_name$" ldap_group_type="$ldap_group_type$" last_successful_login="$last_successful_login$" capabilities="$capabilities$" imported_capabilities="$imported_capabilities$"
-</query>
+| stats 
+    Max(cumulativeRTSrchJobsQuota) As cumulativeRTSrchJobsQuota
+    Max(cumulativeSrchJobsQuota) As cumulativeSrchJobsQuota
+    Max(imported_rtSrchJobsQuota) As imported_rtSrchJobsQuota
+    Max(imported_srchDiskQuota) As imported_srchDiskQuota
+    Max(imported_srchJobsQuota) As imported_srchJobsQuota
+    Max(rtSrchJobsQuota) As rtSrchJobsQuota
+    Max(srchDiskQuota) As srchDiskQuota
+    Max(srchJobsQuota) As srchJobsQuota
+    Values(imported_srchFilter) As imported_srchFilter
+    Values(imported_srchIndexesAllowed) As imported_srchIndexesAllowed
+    Values(imported_srchIndexesDefault) As imported_srchIndexesDefault
+    Values(imported_srchTimeWin) As imported_srchTimeWin
+    Values(bunit) As bunit
+    Values(Contractor_Expiration) As Contractor_Expiration
+    Values(defaultApp) As defaultApp
+    Values(deleteIndexesAllowed) As deleteIndexesAllowed
+    Values(email) As email
+    Values(emp_cc) As emp_cc
+    Values(emp_dep) As emp_dep
+    Values(emp_floor) As emp_floor
+    Values(emp_lob) As emp_lob
+    Values(emp_loc) As emp_loc
+    Values(emp_name) As emp_name
+    Values(emp_status) As emp_status
+    Values(emp_ttl) As emp_ttl
+    Values(emp_type) As emp_type
+    Values(endDate) As endDate
+    Values(federatedProviders) As federatedProviders
+    Values(first) As first
+    Values(grantable_roles) As grantable_roles
+    Values(imported_roles) As imported_roles
+    Values(last) As last
+    Values(last_successful_login) As last_successful_login
+    Values(locked-out) As locked-out
+    Values(managedBy) As managedBy
+    Values(phone) As phone
+    Values(splunk_role_map) As splunk_role_map
+    Values(srchFilter) As srchFilter
+    Values(srchIndexesAllowed) As srchIndexesAllowed
+    Values(srchIndexesDefault) As srchIndexesDefault
+    Values(srchTimeWin) As srchTimeWin
+    Values(startDate) As startDate
+    Values(type) As type
+    Values(work_city) As work_city
+    Values(work_country) As work_country
+    Values(work_region) As work_region
+    Values(capabilities) As capabilities
+    Values(imported_capabilities) As imported_capabilities
+    Values(ldap_group_name) As ldap_group_name
+    Values(ldap_group_type) As ldap_group_type
+    By shcluster_label identity
+  | eval srchJobsQuota_Final = if(imported_srchJobsQuota &gt; srchJobsQuota, imported_srchJobsQuota ,srchJobsQuota)
+| fillnull value="undefined" shcluster_label Splunk_Instance Splunk_Roles identity emp_type emp_status work_city work_region work_country emp_loc emp_dep emp_lob emp_cc emp_name splunk_role_map ldap_group_name ldap_group_type last_successful_login capabilities imported_capabilities imported_roles
+| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles$" identity="*$identity$*" emp_type="$emp_type$" emp_status="$emp_status$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$" emp_loc="$emp_loc$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" emp_name="$emp_name$" Splunk_Instance="$Splunk_Instance$" splunk_role_map="$splunk_role_map$" ldap_group_name="$ldap_group_name$" ldap_group_type="$ldap_group_type$" last_successful_login="$last_successful_login$" capabilities="$capabilities$" imported_capabilities="$imported_capabilities$" imported_roles="$imported_roles$"</query>
   </search>
   <search id="splunk_sh_01_assets_identities_dashboard_tab2_2">
     <query>index=_introspection sourcetype=splunk_disk_objects component=Partitions search_group=*
@@ -28,8 +80,7 @@
 | `gmc_mb2human(capacity,$round_tok2$)` 
 | `gmc_mb2human(free,$round_tok2$)`
 | rename free As free_MB capacity As capacity_MB
-| search idxcluster_label="$idxcluster_label2$" Splunk_Instance="$Splunk_Instance2$" mount_point="$mount_point$"
-</query>
+| search idxcluster_label="$idxcluster_label2$" Splunk_Instance="$Splunk_Instance2$" mount_point="$mount_point$"</query>
     <earliest>$TimeRangePkr2.earliest$</earliest>
     <latest>$TimeRangePkr2.latest$</latest>
   </search>
@@ -39,17 +90,17 @@
       <html>
             <ul id="tabs" class="nav nav-tabs">
                <li class="active">
-                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Assets_Inputs,Assets_Panel1,Assets_Panel2,Assets_Panel3,Assets_Panel4,Assets_Panel5">1. Assets</a>
+                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Assets_Inputs,Assets_Panel1,Assets_Panel2,Assets_Panel3,Assets_Panel4,Assets_Panel5,Assets_Panel6">1. Assets</a>
                </li>
                <li>
-                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Identities_Inputs,Identities_Panel1,Identities_Panel2,Identities_Panel3,Identities_Panel4">2. Identities</a>
+                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Identities_Inputs,Identities_Panel1,Identities_Panel2,Identities_Panel3,Identities_Panel4,Identities_Panel5,Identities_Panel6,Identities_Panel7">2. Identities</a>
                </li>
             </ul>
          </html>
     </panel>
   </row>
   <row id="Assets_Inputs">
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. GMC Assets Filters</title>
       <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
         <label>1. Splunk Roles</label>
@@ -194,139 +245,8 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-    </panel>
-  </row>
-  <row id="Assets_Panel1">
-    <panel>
-      <title>2. Number of Splunk Instances</title>
-      <single>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
-          <query>| stats count</query>
-        </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">all</option>
-        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
-        <option name="rangeValues">[0]</option>
-        <option name="refresh.display">none</option>
-        <option name="useColors">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>3. Associated GMC Assets Job(s)</title>
-      <html>
-            <ol>
-               <li>
-                  GMC Jobs / GMC Gen Jobs
-                  <a href="/app/global_monitoring_console/search?s=splunk_assets_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Assets Gen Job</a>
-               </li>
-            </ol>
-            <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_assets_kv_store&amp;type=kv">
-                     View GMC Assets KV Store
-                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-            </div>
-         </html>
-    </panel>
-  </row>
-  <row id="Assets_Panel2">
-    <panel>
-      <title>4. Splunk SHC Captains</title>
       <table>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
-          <query>| stats values(Splunk_Roles) AS Splunk_Roles by Splunk_Instance  
-| where Splunk_Roles="shc_captain"
-| eval Splunk_Roles = mvfilter(match(Splunk_Roles,"shc_captain|SHC"))
-| eval Splunk_Instance=upper(Splunk_Instance)
-| table Splunk_Roles Splunk_Instance</query>
-        </search>
-        <option name="drilldown">none</option>
-        <option name="refresh.display">none</option>
-        <option name="rowNumbers">true</option>
-        <option name="wrap">false</option>
-        <format type="color" field="Splunk_Instance">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-      </table>
-    </panel>
-    <panel>
-      <title>5. Instances By Splunk Version</title>
-      <chart>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
-          <query>| stats count by version</query>
-        </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">all</option>
-        <option name="charting.legend.placement">right</option>
-        <option name="refresh.display">none</option>
-      </chart>
-    </panel>
-    <panel>
-      <title>6. Instances By Forwarding Status</title>
-      <chart>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
-          <query>| stats count by isForwarding
-| where isForwarding!="N/A"
-| eval isForwarding=if(isForwarding=1, "Yes", "No")</query>
-        </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">all</option>
-        <option name="charting.legend.placement">right</option>
-        <option name="refresh.display">none</option>
-      </chart>
-    </panel>
-  </row>
-  <row id="Assets_Panel3">
-    <panel>
-      <title>7. Instances By OS Version</title>
-      <table>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
-          <query>| stats count AS "# of Instances" by os_version 
-| sort - count</query>
-        </search>
-        <option name="count">3</option>
-        <option name="drilldown">none</option>
-        <option name="refresh.display">none</option>
-        <format type="color" field="os_version">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-      </table>
-    </panel>
-    <panel>
-      <title>8. Instances By OS</title>
-      <table>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
-          <query>| stats count AS "# of Instances" by os_name
-| rename os_name AS OS</query>
-        </search>
-        <option name="count">4</option>
-        <option name="drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
-        <option name="rowNumbers">true</option>
-        <option name="wrap">false</option>
-        <format type="color" field="OS">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-      </table>
-    </panel>
-  </row>
-  <row id="Assets_Panel4">
-    <panel>
-      <title>9. GMC Assets List with details</title>
-      <table>
+        <title>GMC Assets List</title>
         <search base="splunk_sh_01_assets_identities_dashboard_tab1">
           <query>| eval Time_Since_Startup_Time = now() - startup_time 
 | `gmc_convert_runtime(Time_Since_Startup_Time)` 
@@ -338,7 +258,6 @@
         </search>
         <option name="count">10</option>
         <option name="drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="wrap">false</option>
         <format type="number" field="Memory">
@@ -392,11 +311,111 @@
           <colorPalette type="map">{"0":#DC4E41,"1":#53A051,"N/A":#294E70}</colorPalette>
         </format>
       </table>
+      <single>
+        <title>Total Number of Splunk Instances</title>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="unit">Indexes</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row id="Assets_Panel2">
+    <panel id="panel_accordion_togglepanel_true_4" depends="$gadget_lib_loaded$">
+      <title>4. Splunk SHC Captains</title>
+      <table>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
+          <query>| stats values(Splunk_Roles) AS Splunk_Roles by Splunk_Instance  
+| where Splunk_Roles="shc_captain"
+| eval Splunk_Roles = mvfilter(match(Splunk_Roles,"shc_captain|SHC"))
+| eval Splunk_Instance=upper(Splunk_Instance)
+| table Splunk_Roles Splunk_Instance</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Splunk_Instance">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="panel_accordion_togglepanel_true_5" depends="$gadget_lib_loaded$">
+      <title>5. Instances By Splunk Version</title>
+      <chart>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
+          <query>| stats count by version</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">none</option>
+      </chart>
+    </panel>
+    <panel id="panel_accordion_togglepanel_true_6" depends="$gadget_lib_loaded$">
+      <title>6. Instances By Forwarding Status</title>
+      <chart>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
+          <query>| stats count by isForwarding
+| where isForwarding!="N/A"
+| eval isForwarding=if(isForwarding=1, "Yes", "No")</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="Assets_Panel3">
+    <panel id="panel_accordion_togglepanel_true_7" depends="$gadget_lib_loaded$">
+      <title>7. Instances By OS Version</title>
+      <table>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
+          <query>| stats count AS "# of Instances" by os_version 
+| sort - count</query>
+        </search>
+        <option name="count">3</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <format type="color" field="os_version">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="panel_accordion_togglepanel_true_8" depends="$gadget_lib_loaded$">
+      <title>8. Instances By OS</title>
+      <table>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab1">
+          <query>| stats count AS "# of Instances" by os_name
+| rename os_name AS OS</query>
+        </search>
+        <option name="count">4</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="OS">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
     </panel>
   </row>
   <row id="Assets_Panel5">
-    <panel>
-      <title>10. Indexer Mount Points Capacity</title>
+    <panel id="panel_accordion_togglepanel_true_10" depends="$gadget_lib_loaded$">
+      <title>9. Indexer Mount Points Capacity</title>
       <input type="time" token="TimeRangePkr2" searchWhenChanged="true">
         <label>1. Time Range</label>
         <default>
@@ -504,8 +523,35 @@
       </table>
     </panel>
   </row>
+  <row id="Assets_Panel6">
+    <panel id="panel_accordion_togglepanel_true_3" depends="$gadget_lib_loaded$">
+      <title>11. Associated GMC Assets Job(s)</title>
+      <html>
+            <ol>
+               <li>
+                  GMC Jobs / GMC Gen Jobs
+                  <a href="/app/global_monitoring_console/search?s=splunk_assets_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Assets Gen Job</a>
+               </li>
+            </ol>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_assets_kv_store&amp;type=kv">
+                     View GMC Assets KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+         </html>
+    </panel>
+  </row>
   <row id="Identities_Inputs">
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_11" depends="$gadget_lib_loaded$">
       <title>1. GMC Identities Filters</title>
       <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
         <label>1. Splunk SH (Cluster/Instance)</label>
@@ -674,7 +720,7 @@
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="splunk_role_map" searchWhenChanged="true">
-        <label>16. Splunk Role Maping</label>
+        <label>16. Splunk Role Mapping</label>
         <choice value="*">All</choice>
         <fieldForLabel>splunk_role_map</fieldForLabel>
         <fieldForValue>splunk_role_map</fieldForValue>
@@ -684,8 +730,19 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
+      <input type="dropdown" token="imported_roles" searchWhenChanged="true">
+        <label>17. Splunk Inherited Role Mapping</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>imported_roles</fieldForLabel>
+        <fieldForValue>imported_roles</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by imported_roles</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
       <input type="dropdown" token="ldap_group_name" searchWhenChanged="true">
-        <label>17. LDAP Group Name</label>
+        <label>18. LDAP Group Name</label>
         <choice value="*">All</choice>
         <fieldForLabel>ldap_group_name</fieldForLabel>
         <fieldForValue>ldap_group_name</fieldForValue>
@@ -696,7 +753,7 @@
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="ldap_group_type" searchWhenChanged="true">
-        <label>18. LDAP Group Type</label>
+        <label>19. LDAP Group Type</label>
         <choice value="*">All</choice>
         <fieldForLabel>ldap_group_type</fieldForLabel>
         <fieldForValue>ldap_group_type</fieldForValue>
@@ -707,7 +764,7 @@
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="capabilities" searchWhenChanged="true">
-        <label>19. Splunk Role Capabilities</label>
+        <label>20. Splunk Role Capabilities</label>
         <choice value="*">All</choice>
         <fieldForLabel>capabilities</fieldForLabel>
         <fieldForValue>capabilities</fieldForValue>
@@ -718,7 +775,7 @@
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="imported_capabilities" searchWhenChanged="true">
-        <label>20. Splunk Inherited Capabilities</label>
+        <label>21. Splunk Inherited Capabilities</label>
         <choice value="*">All</choice>
         <fieldForLabel>imported_capabilities</fieldForLabel>
         <fieldForValue>imported_capabilities</fieldForValue>
@@ -729,12 +786,12 @@
         <initialValue>*</initialValue>
       </input>
       <input type="text" token="identity" searchWhenChanged="true">
-        <label>21. Identity (User)</label>
+        <label>22. Identity (User)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="last_successful_login" searchWhenChanged="true">
-        <label>22. Lsst Successful Login (From REST)</label>
+        <label>23. Last Successful Login (From REST)</label>
         <choice value="*">All</choice>
         <fieldForLabel>last_successful_login_d</fieldForLabel>
         <fieldForValue>last_successful_login</fieldForValue>
@@ -745,147 +802,10 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-    </panel>
-  </row>
-  <row id="Identities_Panel1">
-    <panel>
-      <title>2. Associated GMC Identities Job(s)</title>
-      <html> <ol>
-            <li>GMC Jobs / GMC Gen Jobs /
-            <a href="/app/global_monitoring_console/search?s=splunk_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
-          </li>
-            <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_authorization_roles_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Search Head Splunk Roles</a>
-               </li>
-        </ol>
-            <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=global_monitoring_console&amp;lookup=splunk_identities_custom_sh_csv.csv&amp;type=csv">
-                     Edit Custom Identities
-                     <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-severe m-left"/>
-                  </a>
-               </div>
-            </div>
-            <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_identities_kv_store&amp;type=kv">
-                     View Identities KV Store
-                     <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-severe m-left"/>
-                  </a>
-               </div>
-            </div>
-            <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_authorization_roles_sh_kv_store&amp;type=kv">
-                     View Splunk Roles KV Store
-                     <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-severe m-left"/>
-                  </a>
-               </div>
-            </div>
-         </html>
-    </panel>
-    <panel>
-      <title>3. Total Number of Identities</title>
-      <single>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
-          <query>| stats count</query>
-        </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
-        <option name="rangeColors">["0x53a051","0x53a051"]</option>
-        <option name="rangeValues">[0]</option>
-        <option name="refresh.display">preview</option>
-        <option name="useColors">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>4. By Employee LOB</title>
-      <chart>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
-          <query>| stats count by emp_lob</query>
-        </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">none</option>
-        <option name="refresh.display">preview</option>
-      </chart>
-    </panel>
-    <panel>
-      <title>5. By Employee Department</title>
-      <chart>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
-          <query>| stats count by emp_dep</query>
-        </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">none</option>
-        <option name="refresh.display">preview</option>
-      </chart>
-    </panel>
-  </row>
-  <row id="Identities_Panel2">
-    <panel>
-      <title>6. By Employee Country</title>
-      <chart>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
-          <query>| stats count by work_country</query>
-        </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">none</option>
-        <option name="refresh.display">preview</option>
-      </chart>
-    </panel>
-    <panel>
-      <title>7. By Employee Region/State</title>
-      <chart>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
-          <query>| stats count by work_region</query>
-        </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">none</option>
-        <option name="refresh.display">preview</option>
-      </chart>
-    </panel>
-    <panel>
-      <title>8. By Employee City</title>
-      <chart>
-        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
-          <query>| stats count by work_city</query>
-        </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">none</option>
-        <option name="refresh.display">preview</option>
-      </chart>
-    </panel>
-  </row>
-  <row id="Identities_Panel3">
-    <panel>
-      <title>9. GMC Identities List with details</title>
       <table>
+        <title>GMC Identities List with details</title>
         <search base="splunk_sh_01_assets_identities_dashboard_tab2">
-          <query>| table identity shcluster_label first last emp_name email last_successful_login phone work_city work_region work_country emp_ttl emp_lob emp_dep emp_type emp_status emp_cc emp_loc emp_floor managedBy bunit startDate endDate Contractor_Expiration locked-out type splunk_role_map cumulativeRTSrchJobsQuota,cumulativeSrchJobsQuota,defaultApp,deleteIndexesAllowed,federatedProviders,grantable_roles,imported_roles,imported_rtSrchJobsQuota,imported_srchDiskQuota,imported_srchFilter,imported_srchIndexesAllowed,imported_srchIndexesDefault,imported_srchJobsQuota,imported_srchTimeWin,rtSrchJobsQuota,srchDiskQuota,srchFilter,srchIndexesAllowed,srchIndexesDefault,srchJobsQuota,srchTimeWin
+          <query>| table identity shcluster_label emp_name email last_successful_login work_city work_region work_country emp_ttl emp_lob emp_dep emp_type emp_status emp_cc emp_loc emp_floor managedBy bunit startDate endDate Contractor_Expiration locked-out first last phone
     `gmc_comment("capabilities,imported_capabilities")` 
 | convert ctime(last_successful_login) 
 | `rename_identity_fields` 
@@ -983,11 +903,509 @@
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
+        <format type="color" field="User LOB">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
       </table>
+      <single>
+        <title>Total Number of Identities</title>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x53a051"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">preview</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row id="Identities_Panel1">
+    <panel id="panel_accordion_togglepanel_true_12" depends="$gadget_lib_loaded$">
+      <title>2. Associated GMC Identities Job(s)</title>
+      <html>
+            <ol>
+               <li>
+                  GMC Jobs / GMC Gen Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
+               </li>
+               <li>
+                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_authorization_roles_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Search Head Splunk Roles</a>
+               </li>
+            </ol>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=global_monitoring_console&amp;lookup=splunk_identities_custom_sh_csv.csv&amp;type=csv">
+                     Edit Custom Identities
+                     <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-severe m-left"/>
+                  </a>
+               </div>
+            </div>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_identities_kv_store&amp;type=kv">
+                     View Identities KV Store
+                     <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-severe m-left"/>
+                  </a>
+               </div>
+            </div>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_authorization_roles_sh_kv_store&amp;type=kv">
+                     View Splunk Roles KV Store
+                     <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-severe m-left"/>
+                  </a>
+               </div>
+            </div>
+            <a href="https://docs.splunk.com/Documentation/Splunk/latest/RESTREF/RESTaccess#authorization.2Froles" target="_blank">REST API Reference Access endpoint for authorization/roles</a>
+         </html>
+    </panel>
+    <panel id="panel_accordion_togglepanel_true_14" depends="$gadget_lib_loaded$">
+      <title>3. By Employee LOB</title>
+      <chart>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by emp_lob</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+    <panel id="panel_accordion_togglepanel_true_15" depends="$gadget_lib_loaded$">
+      <title>4. By Employee Department</title>
+      <chart>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by emp_dep</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="Identities_Panel2">
+    <panel id="panel_accordion_togglepanel_true_16" depends="$gadget_lib_loaded$">
+      <title>5. By Employee Country</title>
+      <chart>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by work_country</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+    <panel id="panel_accordion_togglepanel_true_17" depends="$gadget_lib_loaded$">
+      <title>6. By Employee Region/State</title>
+      <chart>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by work_region</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+    <panel id="panel_accordion_togglepanel_true_18" depends="$gadget_lib_loaded$">
+      <title>7. By Employee City</title>
+      <chart>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by work_city</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
     </panel>
   </row>
   <row id="Identities_Panel4">
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_21" depends="$gadget_lib_loaded$">
+      <title>8. GMC Identities Concurrency Details</title>
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+        <label>1. Splunk SH (Cluster/Instance)</label>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2. Splunk Roles</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
+        <label>3. Splunk Instance</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Splunk_Instance</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by Splunk_Instance
+| where Splunk_Instance!="Undefined"</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="identity" searchWhenChanged="true">
+        <label>4. Identity (User)</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>identity</fieldForLabel>
+        <fieldForValue>identity</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by identity</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_name" searchWhenChanged="true">
+        <label>5. Full Name</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>emp_name</fieldForLabel>
+        <fieldForValue>emp_name</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by emp_name</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_ttl" searchWhenChanged="true">
+        <label>6. Employee Title</label>
+        <fieldForLabel>emp_ttl</fieldForLabel>
+        <fieldForValue>emp_ttl</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by emp_ttl</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_type" searchWhenChanged="true">
+        <label>7. Employee Type</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>emp_type</fieldForLabel>
+        <fieldForValue>emp_type</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by emp_type</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_status" searchWhenChanged="true">
+        <label>8. Employee Status</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>emp_status</fieldForLabel>
+        <fieldForValue>emp_status</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by emp_status</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_dep" searchWhenChanged="true">
+        <label>9. Employee Department</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>emp_dep</fieldForLabel>
+        <fieldForValue>emp_dep</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by emp_dep</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob" searchWhenChanged="true">
+        <label>10. Employee LOB</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>emp_lob</fieldForLabel>
+        <fieldForValue>emp_lob</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by emp_lob</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_cc" searchWhenChanged="true">
+        <label>11. Cost Center</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>emp_cc</fieldForLabel>
+        <fieldForValue>emp_cc</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by emp_cc</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_city" searchWhenChanged="true">
+        <label>12. City</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_city</fieldForLabel>
+        <fieldForValue>work_city</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by work_city</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_region" searchWhenChanged="true">
+        <label>13. Region/State</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_region</fieldForLabel>
+        <fieldForValue>work_region</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by work_region</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_country" searchWhenChanged="true">
+        <label>14. Country</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>work_country</fieldForLabel>
+        <fieldForValue>work_country</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by work_country</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="splunk_role_map" searchWhenChanged="true">
+        <label>16. Splunk Role Mapping</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>splunk_role_map</fieldForLabel>
+        <fieldForValue>splunk_role_map</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by splunk_role_map</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="imported_roles" searchWhenChanged="true">
+        <label>17. Splunk Inherited Role Mapping</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>imported_roles</fieldForLabel>
+        <fieldForValue>imported_roles</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by imported_roles</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="ldap_group_name" searchWhenChanged="true">
+        <label>18. LDAP Group Name</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>ldap_group_name</fieldForLabel>
+        <fieldForValue>ldap_group_name</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by ldap_group_name</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="ldap_group_type" searchWhenChanged="true">
+        <label>19. LDAP Group Type</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>ldap_group_type</fieldForLabel>
+        <fieldForValue>ldap_group_type</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by ldap_group_type</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="capabilities" searchWhenChanged="true">
+        <label>20. Splunk Role Capabilities</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>capabilities</fieldForLabel>
+        <fieldForValue>capabilities</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by capabilities</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="imported_capabilities" searchWhenChanged="true">
+        <label>21. Splunk Inherited Capabilities</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>imported_capabilities</fieldForLabel>
+        <fieldForValue>imported_capabilities</fieldForValue>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| stats count by imported_capabilities</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="identity" searchWhenChanged="true">
+        <label>22. Identity (User)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <table>
+        <search base="splunk_sh_01_assets_identities_dashboard_tab2">
+          <query>| fields identity shcluster_label emp_name emp_type emp_ttl emp_dep emp_lob 
+    splunk_role_map imported_roles 
+    srchDiskQuota imported_srchDiskQuota 
+    srchJobsQuota imported_srchJobsQuota 
+    rtSrchJobsQuota imported_rtSrchJobsQuota 
+    cumulativeSrchJobsQuota cumulativeRTSrchJobsQuota
+    srchIndexesAllowed imported_srchIndexesAllowed 
+    srchIndexesDefault imported_srchIndexesDefault srchJobsQuota_Final
+| table identity shcluster_label emp_name emp_type emp_ttl emp_dep emp_lob 
+    splunk_role_map imported_roles 
+    srchDiskQuota  imported_srchDiskQuota
+    srchJobsQuota_Final srchJobsQuota  imported_srchJobsQuota
+    rtSrchJobsQuota  imported_rtSrchJobsQuota
+    cumulativeSrchJobsQuota cumulativeRTSrchJobsQuota
+    srchIndexesAllowed  imported_srchIndexesAllowed
+    srchIndexesDefault  imported_srchIndexesDefault
+| `rename_identity_fields` 
+| `rename_splunk_roles_fields` 
+| rename shcluster_label As "SH Cluster Label"</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format type="color" field="Total Search job disk quota (srchDiskQuota)">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User-level Concurrent search job limit (srchJobsQuota)">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Role-level Concurrent Search job limit">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User-level Concurrent real-time Search job limit (rtSrchJobsQuota)">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Identity">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User Full Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User LOB">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User Splunk Roles">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User Employment Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Total Search job disk quota (srchDiskQuota)">
+          <option name="precision">0</option>
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="User-level Concurrent search job limit (srchJobsQuota)">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Role-level Concurrent Search job limit (cumulativeSrchJobsQuota)">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Role-level Concurrent Real-Time Search job limit (cumulativeRTSrchJobsQuota)">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="User-level Concurrent real-time Search job limit (rtSrchJobsQuota)">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="User-level Concurrent RT Search job limit (rtSrchJobsQuota)">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Role-level Concurrent Search job limit (cumulativeSrchJobsQuota)">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Role-level Concurrent RT Search job limit (cumulativeRTSrchJobsQuota)">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Inherited User-level Concurrent search job limit (imported_srchJobsQuota)">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Inherited User-level Concurrent RT Search job limit (imported_rtSrchJobsQuota)">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Inherited Total Search job disk quota (imported_srchDiskQuota)">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Identities_Panel6">
+    <panel id="panel_accordion_togglepanel_true_23" depends="$gadget_lib_loaded$">
+      <title>9. Concurrency Field Descriptions from authorization/roles REST API Response keys</title>
+      <table>
+        <search>
+          <query>| from lookup:splunk_fields_all_csv_lookup 
+| where Index="REST" 
+| table Component Sub_Component Field_Name Field_Display_Name Field_Description
+| sort Field_Name</query>
+          <earliest>-1s</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Field_Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Identities_Panel5">
+    <panel id="panel_accordion_togglepanel_true_20" depends="$gadget_lib_loaded$">
       <title>10. Geographical Location by User rendered on a world map</title>
       <map>
         <search base="splunk_sh_01_assets_identities_dashboard_tab2">
@@ -1012,6 +1430,54 @@
         <option name="mapping.type">marker</option>
         <option name="refresh.display">progressbar</option>
       </map>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$alwaysHideCSS$">
+      <html>
+            <style>
+               <!--.dashboard-body {-->
+               <!--    background: #a6a6a6 !important;-->
+               <!--}-->
+               .dashboard-panel h2{
+             background:#214FC6 !important;
+             color:white !important;
+             text-align: left !important;
+             font-weight: bold !important;
+             border-top-right-radius: 15px;
+             border-top-left-radius: 15px; }
+            .dashboard-panel h1.panel-title {
+              font-weight: bold !important;
+              font-size: 100% !important; }
+                .table, th, td {
+              border: 8px solid black !important; }
+            { display: none;  }
+
+#panel_accordion_togglepanel_true_21 .table th:nth-child(1),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(2), 
+#panel_accordion_togglepanel_true_21 .table th:nth-child(3),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(4),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(5),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(6),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(7),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(8),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(9),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(10),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(11),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(12),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(13),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(14),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(15),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(16),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(17),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(18),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(19),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(20),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(21),
+#panel_accordion_togglepanel_true_21 .table th:nth-child(22)
+{ font-size: 12px;  text-align: center !important; color:#00CC99; font-weight: bold !important;}
+            </style>
+         </html>
     </panel>
   </row>
 </form>

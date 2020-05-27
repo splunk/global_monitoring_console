@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>SH - 08 - Event Types - Dashboard - v1.5.50</label>
+  <label>SH - 08 - Event Types - Dashboard - v1.5.66</label>
   <search id="splunk_sh_15_event_types_dashboard_v1">
     <query>
 | from lookup:splunk_rest_admin_eventtypes_sh_kv_store_lookup
@@ -19,7 +19,7 @@
   </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
-      <label>Splunk SH (Cluster/Instance)</label>
+      <label>1. Splunk SH (Cluster/Instance)</label>
       <fieldForLabel>shcluster_label</fieldForLabel>
       <fieldForValue>shcluster_label</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -30,7 +30,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-      <label>Splunk Roles</label>
+      <label>2. Splunk Roles</label>
       <fieldForLabel>Splunk_Roles</fieldForLabel>
       <fieldForValue>Splunk_Roles</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -41,7 +41,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
-      <label>Splunk Instance</label>
+      <label>3. Splunk Instance</label>
       <fieldForLabel>Splunk_Instance</fieldForLabel>
       <fieldForValue>Splunk_Instance</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -52,7 +52,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="app" searchWhenChanged="true">
-      <label>App</label>
+      <label>4. App</label>
       <fieldForLabel>app</fieldForLabel>
       <fieldForValue>app</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -63,7 +63,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="sharing" searchWhenChanged="true">
-      <label>App Sharing</label>
+      <label>5. App Sharing</label>
       <fieldForLabel>sharing</fieldForLabel>
       <fieldForValue>sharing</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -74,7 +74,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="title" searchWhenChanged="true">
-      <label>Event Type</label>
+      <label>6. Event Type</label>
       <fieldForLabel>title</fieldForLabel>
       <fieldForValue>title</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -85,7 +85,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="tags" searchWhenChanged="true">
-      <label>Tags</label>
+      <label>7. Tags</label>
       <fieldForLabel>tags</fieldForLabel>
       <fieldForValue>tags</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -96,7 +96,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="priority" searchWhenChanged="true">
-      <label>Priority</label>
+      <label>8. Priority</label>
       <fieldForLabel>priority</fieldForLabel>
       <fieldForValue>priority</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -107,7 +107,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="author" searchWhenChanged="true">
-      <label>Owner</label>
+      <label>9. Owner</label>
       <fieldForLabel>author</fieldForLabel>
       <fieldForValue>author</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -118,7 +118,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_name" searchWhenChanged="true">
-      <label>Employee Full Name</label>
+      <label>10. Employee Full Name</label>
       <fieldForLabel>emp_name</fieldForLabel>
       <fieldForValue>emp_name</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -129,7 +129,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_ttl" searchWhenChanged="true">
-      <label>Employee Title</label>
+      <label>11. Employee Title</label>
       <fieldForLabel>emp_ttl</fieldForLabel>
       <fieldForValue>emp_ttl</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -140,7 +140,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_dep" searchWhenChanged="true">
-      <label>Employee Department</label>
+      <label>12. Employee Department</label>
       <fieldForLabel>emp_dep</fieldForLabel>
       <fieldForValue>emp_dep</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -151,7 +151,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_lob" searchWhenChanged="true">
-      <label>Employee LOB</label>
+      <label>13. Employee LOB</label>
       <fieldForLabel>emp_lob</fieldForLabel>
       <fieldForValue>emp_lob</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -162,7 +162,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_type" searchWhenChanged="true">
-      <label>Employee Type</label>
+      <label>14. Employee Type</label>
       <fieldForLabel>emp_type</fieldForLabel>
       <fieldForValue>emp_type</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -173,7 +173,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_status" searchWhenChanged="true">
-      <label>Employee Status</label>
+      <label>15. Employee Status</label>
       <fieldForLabel>emp_status</fieldForLabel>
       <fieldForValue>emp_status</fieldForValue>
       <search base="splunk_sh_15_event_types_dashboard_v1">
@@ -184,22 +184,22 @@
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="Splunk_Roles" searchWhenChanged="true">
-      <label>Splunk Roles (Contains)</label>
+      <label>16.  Splunk Roles (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="Splunk_Instance" searchWhenChanged="true">
-      <label>Splunk Instance (Contains)</label>
+      <label>17. Splunk Instance (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="title" searchWhenChanged="true">
-      <label>Event Types (Contains)</label>
+      <label>18. Event Types (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="search" searchWhenChanged="true">
-      <label>Event Type Search (Contains)</label>
+      <label>19. Event Type Search (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>

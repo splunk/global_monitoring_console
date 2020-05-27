@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>SH - 03 - Fields Help - Dashboard - v1.5.50</label>
+  <label>SH - 03 - Fields Help - Dashboard - v1.5.66</label>
   <description>Splunk Fields explanation including a complete guide to fields under Job Inspect</description>
   <search id="Help">
     <query>
@@ -11,7 +11,7 @@
   </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="multiselect" token="Index" searchWhenChanged="true">
-      <label>Category</label>
+      <label>1. Category</label>
       <choice value="*">All</choice>
       <fieldForLabel>Index</fieldForLabel>
       <fieldForValue>Index</fieldForValue>
@@ -25,7 +25,7 @@
       <delimiter>,</delimiter>
     </input>
     <input type="multiselect" token="Component" searchWhenChanged="true">
-      <label>Component</label>
+      <label>2. Component</label>
       <fieldForLabel>Component</fieldForLabel>
       <fieldForValue>Component</fieldForValue>
       <search base="Help">
@@ -39,7 +39,7 @@
       <valuePrefix>"</valuePrefix>
     </input>
     <input type="dropdown" token="Sub_Component" searchWhenChanged="true">
-      <label>Subcomponent</label>
+      <label>3. Subcomponent</label>
       <choice value="*">All</choice>
       <fieldForLabel>Sub_Component</fieldForLabel>
       <fieldForValue>Sub_Component</fieldForValue>
@@ -50,7 +50,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="Field_Name" searchWhenChanged="true">
-      <label>Field Name</label>
+      <label>4. Field Name</label>
       <choice value="*">All</choice>
       <fieldForLabel>Field_Name</fieldForLabel>
       <fieldForValue>Field_Name</fieldForValue>
@@ -61,7 +61,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="Field_Display_Name" searchWhenChanged="true">
-      <label>Field Display Name (Dashboards)</label>
+      <label>5. Field Display Name (Dashboards)</label>
       <choice value="*">All</choice>
       <fieldForLabel>Field_Display_Name</fieldForLabel>
       <fieldForValue>Field_Display_Name</fieldForValue>
@@ -72,7 +72,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="Field_Description" searchWhenChanged="true">
-      <label>Field Description</label>
+      <label>6. Field Description</label>
       <choice value="*">All</choice>
       <fieldForLabel>Field_Description</fieldForLabel>
       <fieldForValue>Field_Description</fieldForValue>
@@ -83,17 +83,17 @@
       <initialValue>*</initialValue>
     </input>
     <input type="text" searchWhenChanged="true" token="Field_Display_Name">
-      <label>Field Display Name (Contains)</label>
+      <label>7. Field Display Name (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" searchWhenChanged="true" token="Field_Name">
-      <label>Field Name (Contains)</label>
+      <label>8. Field Name (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" searchWhenChanged="true" token="Field_Description">
-      <label>Field Description (Contains)</label>
+      <label>9. Field Description (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>

@@ -1,5 +1,5 @@
 <dashboard theme="dark">
-  <label>Setup - Dashboard - v1.5.50</label>
+  <label>Setup - Dashboard - v1.5.66</label>
   <row>
     <panel>
       <title>$env:page$</title>

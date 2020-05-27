@@ -1,5 +1,5 @@
 <form onunloadCancelJobs="true" stylesheet="load.css" script="load.js" theme="dark">
-  <label>SH - 05 - Audit Users Activity - Dashboard - v1.5.50</label>
+  <label>SH - 05 - Audit Users Activity - Dashboard - v1.5.66</label>
   <search id="splunk_sh_05_audit_users_dashboard_v1">
     <query>| from lookup:splunk_index_audit_user_login_tracker_sh_kv_store_lookup 
 | fields User Earliest_Access Latest_Access Login_Source Splunk_Instance OS_Name OS_Version Browser_Name Browser_Version
@@ -367,7 +367,7 @@
         </drilldown>
       </table>
       <single>
-        <title>2. Total Number of Users Accessing the Platform</title>
+        <title>Total Number of Users Accessing the Platform</title>
         <search base="splunk_sh_05_audit_users_dashboard_v1">
           <query>| stats count</query>
         </search>
@@ -384,7 +384,7 @@
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_true_2" depends="$gadget_lib_loaded$">
-      <title>3. Drilldown By Employee</title>
+      <title>2. Drilldown By Employee</title>
       <table>
         <search base="splunk_sh_05_audit_users_dashboard_v1">
           <query>| stats count by User| fields - count</query>
@@ -417,7 +417,7 @@
       </table>
     </panel>
     <panel id="panel_accordion_togglepanel_true_4" depends="$gadget_lib_loaded$">
-      <title>4. Drilldown By Employee Type</title>
+      <title>3. Drilldown By Employee Type</title>
       <table>
         <search base="splunk_sh_05_audit_users_dashboard_v1">
           <query>| stats count by emp_type| fields - count</query>
@@ -434,7 +434,7 @@
       </table>
     </panel>
     <panel id="panel_accordion_togglepanel_true_5" depends="$gadget_lib_loaded$">
-      <title>5. Drilldown By Employee LOB</title>
+      <title>4. Drilldown By Employee LOB</title>
       <table>
         <search base="splunk_sh_05_audit_users_dashboard_v1">
           <query>| stats count by emp_lob| fields - count
@@ -452,7 +452,7 @@
       </table>
     </panel>
     <panel id="panel_accordion_togglepanel_true_6" depends="$gadget_lib_loaded$">
-      <title>6. Drilldown By  Employee Department</title>
+      <title>5. Drilldown By  Employee Department</title>
       <table>
         <search base="splunk_sh_05_audit_users_dashboard_v1">
           <query>| stats count by emp_dep| fields - count
@@ -488,7 +488,7 @@
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_true_7" depends="$gadget_lib_loaded$">
-      <title>7. Drilldown By Login Source (Client IP)</title>
+      <title>6. Drilldown By Login Source (Client IP)</title>
       <table>
         <search base="splunk_sh_05_audit_users_dashboard_v1">
           <query>| stats last(City) AS City last(Region) AS Region last(Country) AS Country by Login_Source 
@@ -521,7 +521,7 @@
       </table>
     </panel>
     <panel id="panel_accordion_togglepanel_true_8" depends="$gadget_lib_loaded$">
-      <title>8. Drilldown By Employee City</title>
+      <title>7. Drilldown By Employee City</title>
       <table>
         <search base="splunk_sh_05_audit_users_dashboard_v1">
           <query>| stats count by work_city
@@ -541,7 +541,7 @@
       </table>
     </panel>
     <panel id="panel_accordion_togglepanel_true_9" depends="$gadget_lib_loaded$">
-      <title>9. Drilldown By Employee Region/State</title>
+      <title>8. Drilldown By Employee Region/State</title>
       <table>
         <search base="splunk_sh_05_audit_users_dashboard_v1">
           <query>| stats count by work_region| fields - count
@@ -560,7 +560,7 @@
       </table>
     </panel>
     <panel id="panel_accordion_togglepanel_true_10" depends="$gadget_lib_loaded$">
-      <title>10. Drilldown By Employee Country</title>
+      <title>9. Drilldown By Employee Country</title>
       <table>
         <search base="splunk_sh_05_audit_users_dashboard_v1">
           <query>| stats count by work_country| fields - count
@@ -580,8 +580,8 @@
     </panel>
   </row>
   <row>
-    <panel id="panel_accordion_togglepanel_true_12" depends="$gadget_lib_loaded$">
-      <title>11. User Login Over Time (From Summary Indexing Tracking)</title>
+    <panel id="panel_accordion_togglepanel_false_12" depends="$gadget_lib_loaded$">
+      <title>10. User Login Over Time (From Summary Indexing Tracking)</title>
       <input type="dropdown" token="shcluster_label2" searchWhenChanged="true">
         <label>1. Splunk SH (Cluster/Instance)</label>
         <fieldForLabel>shcluster_label</fieldForLabel>
@@ -681,7 +681,6 @@
       </input>
       <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
         <label>9. Split By</label>
-        <choice value="">None</choice>
         <choice value="By User">User</choice>
         <choice value="By OS_Name">OS Name</choice>
         <choice value="By Browser_Name">Browser Name</choice>
@@ -689,17 +688,24 @@
         <choice value="By Splunk_Instance">Search Head</choice>
         <fieldForLabel>split_by_tok_1</fieldForLabel>
         <fieldForValue>split_by_tok_1</fieldForValue>
-        <default></default>
+        <default>By shcluster_label</default>
+        <initialValue>By shcluster_label</initialValue>
       </input>
       <input type="text" token="User2" searchWhenChanged="true">
         <label>10. User (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
+      <input type="text" token="top_tok" searchWhenChanged="true">
+        <label>4. Timechart IN top:</label>
+        <default>10</default>
+        <initialValue>10</initialValue>
+      </input>
       <chart>
         <search base="splunk_sh_05_audit_users_dashboard_v1_2">
-          <query>| timechart useother=f usenull=f fixedrange=f $span_period$
-    dc(User) As Num_Users $split_by_tok_1$</query>
+          <query>| timechart useother=f usenull=f fixedrange=f limit=0 $span_period$
+    Dc(User) As Num_Users $split_by_tok_1$ 
+    Where Max in top$top_tok$</query>
         </search>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
@@ -721,7 +727,7 @@
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_true_13" depends="$gadget_lib_loaded$">
-      <title>12. Geographical Location by User rendered on a world map</title>
+      <title>11. Geographical Location by User rendered on a world map</title>
       <input type="dropdown" token="split_by_tok_2" searchWhenChanged="true">
         <label>Split By</label>
         <choice value="User">Identity</choice>
@@ -760,7 +766,7 @@
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_true_3" depends="$gadget_lib_loaded$">
-      <title>13. Associated GMC Job(s) - $env:page$</title>
+      <title>12. Associated GMC Job(s)</title>
       <html>
             <ol>
                <li>

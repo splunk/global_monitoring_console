@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>IDX - 08 - Splunk Core Sizing Calculator - Dashboard - v1.5.50</label>
+  <label>IDX - 08 - Splunk Core Sizing Calculator - Dashboard - v1.5.66</label>
   <description>Splunk Core Sizing Calculator assists you in scaling your Splunk Enterprise deployment without premium apps to meet your data usage
 requirements. If you also have premium apps such as Enterprise Security (ES) app and ITSI (Splunk IT Service Intelligence) app installed and
 implemented in your Splunk environment, use the corresponding sizing calculator instead or consult Splunk Services.

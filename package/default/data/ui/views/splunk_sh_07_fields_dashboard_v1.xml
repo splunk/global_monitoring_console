@@ -1,5 +1,5 @@
 <form theme="dark" script="tabs.js" stylesheet="tabs.css">
-  <label>SH - 07 - Fields - Dashboard - v1.5.50</label>
+  <label>SH - 07 - Fields - Dashboard - v1.5.66</label>
   <search id="splunk_sh_07_fields_dashboard_calculated_fields">
     <query>
   | from lookup:splunk_rest_data_props_calcfields_sh_kv_store_lookup 

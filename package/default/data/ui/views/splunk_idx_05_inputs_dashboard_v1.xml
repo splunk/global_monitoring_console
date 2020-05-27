@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>IDX - 05 - Data Inputs - Dashboard - v1.5.50</label>
+  <label>IDX - 05 - Data Inputs - Dashboard - v1.5.66</label>
   <description>All Splunk Servers Data Inputs with tons of filters</description>
   <search id="splunk_idx_05_inputs_dashboard_v1">
     <query>
@@ -16,7 +16,7 @@
   </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
-      <label>Splunk SH (Cluster/Instance)</label>
+      <label>1. Splunk SH (Cluster/Instance)</label>
       <fieldForLabel>shcluster_label</fieldForLabel>
       <fieldForValue>shcluster_label</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -27,7 +27,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-      <label>Splunk Roles</label>
+      <label>2. Splunk Roles</label>
       <fieldForLabel>Splunk_Roles</fieldForLabel>
       <fieldForValue>Splunk_Roles</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -38,7 +38,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
-      <label>Splunk Instance</label>
+      <label>3. Splunk Instance</label>
       <fieldForLabel>Splunk_Instance</fieldForLabel>
       <fieldForValue>Splunk_Instance</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -49,7 +49,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="app" searchWhenChanged="true">
-      <label>App</label>
+      <label>4. App</label>
       <fieldForLabel>app</fieldForLabel>
       <fieldForValue>app</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -60,7 +60,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="sharing" searchWhenChanged="true">
-      <label>App Sharing</label>
+      <label>5. App Sharing</label>
       <fieldForLabel>sharing</fieldForLabel>
       <fieldForValue>sharing</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -71,7 +71,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="disabled" searchWhenChanged="true">
-      <label>Enabled</label>
+      <label>6. Enabled</label>
       <fieldForLabel>disabled</fieldForLabel>
       <fieldForValue>disabled</fieldForValue>
       <choice value="*">All</choice>
@@ -80,7 +80,7 @@
       <default>*</default>
     </input>
     <input type="dropdown" token="type" searchWhenChanged="true">
-      <label>Input Type</label>
+      <label>7. Input Type</label>
       <fieldForLabel>type</fieldForLabel>
       <fieldForValue>type</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -90,7 +90,7 @@
       <default>*</default>
     </input>
     <input type="dropdown" token="title" searchWhenChanged="true">
-      <label>Inputs Name</label>
+      <label>8. Inputs Name</label>
       <fieldForLabel>title</fieldForLabel>
       <fieldForValue>title</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -101,7 +101,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="description" searchWhenChanged="true">
-      <label>Description</label>
+      <label>9. Description</label>
       <fieldForLabel>description</fieldForLabel>
       <fieldForValue>description</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -112,7 +112,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="index" searchWhenChanged="true">
-      <label>Index</label>
+      <label>10. Index</label>
       <fieldForLabel>index</fieldForLabel>
       <fieldForValue>index</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -123,7 +123,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="sourcetype" searchWhenChanged="true">
-      <label>Source Type</label>
+      <label>11. Source Type</label>
       <fieldForLabel>sourcetype</fieldForLabel>
       <fieldForValue>sourcetype</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -133,7 +133,7 @@
       <default>*</default>
     </input>
     <input type="dropdown" token="source" searchWhenChanged="true">
-      <label>Source</label>
+      <label>12. Source</label>
       <fieldForLabel>source</fieldForLabel>
       <fieldForValue>source</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -144,7 +144,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="author" searchWhenChanged="true">
-      <label>Owner</label>
+      <label>13. Owner</label>
       <fieldForLabel>author</fieldForLabel>
       <fieldForValue>author</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -155,7 +155,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_name" searchWhenChanged="true">
-      <label>Employee Full Name</label>
+      <label>14. Employee Full Name</label>
       <fieldForLabel>emp_name</fieldForLabel>
       <fieldForValue>emp_name</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -166,7 +166,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_ttl" searchWhenChanged="true">
-      <label>Employee Title</label>
+      <label>15. Employee Title</label>
       <fieldForLabel>emp_ttl</fieldForLabel>
       <fieldForValue>emp_ttl</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -177,7 +177,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_dep" searchWhenChanged="true">
-      <label>Employee Department</label>
+      <label>16. Employee Department</label>
       <fieldForLabel>emp_dep</fieldForLabel>
       <fieldForValue>emp_dep</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -188,7 +188,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_lob" searchWhenChanged="true">
-      <label>Employee LOB</label>
+      <label>17. Employee LOB</label>
       <fieldForLabel>emp_lob</fieldForLabel>
       <fieldForValue>emp_lob</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -199,7 +199,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_type" searchWhenChanged="true">
-      <label>Employee Type</label>
+      <label>18. Employee Type</label>
       <fieldForLabel>emp_type</fieldForLabel>
       <fieldForValue>emp_type</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -210,7 +210,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_status" searchWhenChanged="true">
-      <label>Employee Status</label>
+      <label>19. Employee Status</label>
       <fieldForLabel>emp_status</fieldForLabel>
       <fieldForValue>emp_status</fieldForValue>
       <search base="splunk_idx_05_inputs_dashboard_v1">
@@ -221,22 +221,22 @@
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="Splunk_Roles" searchWhenChanged="true">
-      <label>Splunk Roles (Contains)</label>
+      <label>20. Splunk Roles (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="Splunk_Instance" searchWhenChanged="true">
-      <label>Splunk Instance (Contains)</label>
+      <label>21. Splunk Instance (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="title" searchWhenChanged="true">
-      <label>Inputs Name (Contains)</label>
+      <label>22. Inputs Name (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="description" searchWhenChanged="true">
-      <label>Description (Contains)</label>
+      <label>23. Description (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>

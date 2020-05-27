@@ -1,32 +1,70 @@
 <form theme="dark">
-  <label>UF - 01 - Forwarding Analysis - Dashboard - v1.5.66</label>
-  <search id="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
-    <query>(index=_internal sourcetype=splunkd search_group=dmc_group_indexer fwdType=* group=tcpin_connections guid=* connectionType IN (cooked, cookedSSL) )
-| fields _time splunk_server host hostname sourceHost sourceIp os version fwdType connectionType kb arch ack destPort ingest_pipe ssl lastIndexer chan_new_kBps process_time_ms *_avg_thruput *_Kprocessed *_eps *_KBps
-| `get_idxcluster_label(splunk_server)`
-`gmc_comment("| lookup dnslookup clientip AS sourceIp OUTPUTNEW clienthost AS host_fqdn")`
-| eval sum_mb = round (kb / 1024, 2) , sum_gb = round (kb / 1024 / 1024, 2)
-| fillnull value=0 kb chan_new_kBps process_time_ms tcp_avg_thruput tcp_Kprocessed tcp_eps tcp_KBps udp_avg_thruput udp_Kprocessed udp_eps udp_KBps ingest_pipe 
-| fillnull value="Undefined"
-| search idxcluster_label="$idxcluster_label$" host="$host$" hostname="*$hostname$*" sourceIp="*$sourceIp$*" os="$os$" version="$version$" fwdType="$fwdType$" connectionType="$connectionType$" arch="$arch$" ack="$ack$" ingest_pipe="$ingest_pipe$" ssl="$ssl$" kb&gt;="$kb$ * 1024"</query>
-    <earliest>$TimeRangePkr.earliest$</earliest>
-    <latest>$TimeRangePkr.latest$</latest>
-  </search>
-  <search id="splunk_uf_01_forwarding_analysis_dashboard_v1_2" base="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
-    <query>| stats avg(chan_new_kBps) AS chan_new_kBps avg(process_time_ms) AS process_time_ms avg(tcp_avg_thruput) AS tcp_avg_thruput avg(tcp_Kprocessed) AS tcp_Kprocessed avg(tcp_eps) AS tcp_eps avg(tcp_KBps) AS tcp_KBps avg(udp_avg_thruput) AS udp_avg_thruput avg(udp_Kprocessed) AS udp_Kprocessed avg(udp_eps) AS udp_eps avg(udp_KBps) AS udp_KBps sum(kb) AS sum_kb values(Forwarder_Splunk_Roles) AS Forwarder_Splunk_Roles values(Splunk_Roles) AS "Splunk_Roles" max(_time) as last_connected values(host) AS host last(*) as * values(splunk_server) as splunk_server by hostname
+  <label>UF - 03 - Forwarding Analysis Summary Index - Dashboard - v1.5.66</label>
+  <search id="splunk_uf_01_forwarding_analysis_dashboard_v1">
+    <query>
+index=`gmc_summary_index` search_name="splunk_internal_forwarder_stats_idx_summary_tracker" ( idxcluster_label="$idxcluster_label$" Indexers="$Indexers$" hostname="*$hostname$*" sourceIp="*$sourceIp$*" os="$os$" version="$version$" fwdType="$fwdType$" connectionType="$connectionType$" arch="$arch$" ack="$ack$" ingest_pipe="$ingest_pipe$" ssl="$ssl$" kb&gt;="$kb$ * 1024" )
+| fields _time search_name idxcluster_label Indexers hostname sourceHost sourceIp ack arch chan_new_kBps connectionType destPort evt_fields_kBps evt_fn_kBps evt_fn_meta_dyn_kBps evt_fn_meta_predef_kBps evt_fn_meta_str_kBps evt_fn_str_kBps evt_fv_fp_kBps evt_fv_kBps evt_fv_num_kBps evt_fv_offlen_kBps evt_fv_predef_kBps evt_fv_str_kBps evt_misc_kBps evt_raw_kBps fwdType guid ingest_pipe kb lastIndexer os process_time_ms sourcePort ssl tcp_avg_thruput tcp_Bps tcp_eps tcp_KBps tcp_Kprocessed udp_avg_thruput udp_Bps udp_eps udp_KBps udp_Kprocessed tz_kBps version
 
-| eval Time_Since_Last_Connection = now() - last_connected 
-| eval sum_mb = round (sum_kb / 1024, 2) , sum_gb = round (sum_kb / 1024 / 1024, 2)
-| `gmc_convert_runtime(Time_Since_Last_Connection)` 
-| eval last_connected=strftime(last_connected, "%m/%d/%Y %H:%M:%S")
+| makemv delim="," ingest_pipe | makemv delim="," lastIndexer | makemv delim="," destPort | makemv delim="," Indexers
+| stats 
+    Avg(chan_new_kBps) AS chan_new_kBps
+    Avg(evt_fields_kBps) AS evt_fields_kBps
+    Avg(evt_fn_kBps) AS evt_fn_kBps
+    Avg(evt_fn_meta_dyn_kBps) AS evt_fn_meta_dyn_kBps
+    Avg(evt_fn_meta_predef_kBps) AS evt_fn_meta_predef_kBps
+    Avg(evt_fn_meta_str_kBps) AS evt_fn_meta_str_kBps
+    Avg(evt_fn_str_kBps) AS evt_fn_str_kBps
+    Avg(evt_fv_fp_kBps) AS evt_fv_fp_kBps
+    Avg(evt_fv_kBps) AS evt_fv_kBps
+    Avg(evt_fv_num_kBps) AS evt_fv_num_kBps
+    Avg(evt_fv_offlen_kBps) AS evt_fv_offlen_kBps
+    Avg(evt_fv_predef_kBps) AS evt_fv_predef_kBps
+    Avg(evt_fv_str_kBps) AS evt_fv_str_kBps
+    Avg(evt_misc_kBps) AS evt_misc_kBps
+    Avg(evt_raw_kBps) AS evt_raw_kBps
+    Avg(process_time_ms) AS process_time_ms
+    Avg(tcp_avg_thruput) AS tcp_avg_thruput
+    Avg(tcp_Bps) AS tcp_Bps
+    Avg(tcp_eps) AS tcp_eps
+    Avg(tcp_KBps) AS tcp_KBps
+    Avg(tcp_Kprocessed) AS tcp_Kprocessed
+    Avg(tz_kBps) AS tz_kBps
+    Avg(udp_avg_thruput) AS udp_avg_thruput
+    Avg(udp_Bps) AS udp_Bps
+    Avg(udp_eps) AS udp_eps
+    Avg(udp_KBps) AS udp_KBps
+    Avg(udp_Kprocessed) AS udp_Kprocessed
+    Latest(ack) AS ack
+    Latest(arch) AS arch
+    Latest(connectionType) AS connectionType
+    Latest(fwdType) AS fwdType
+    Latest(guid) AS guid
+    Latest(os) AS os
+    Latest(sourceHost) AS sourceHost
+    Latest(sourceIp) AS sourceIp
+    Latest(sourcePort) AS sourcePort
+    Latest(ssl) AS ssl
+    Latest(version) AS version
+    Values(ingest_pipe) AS ingest_pipe
+    Values(lastIndexer) AS lastIndexer
+    Values(destPort) AS destPort
+    Values(Indexers) AS Indexers
+    Sum(kb) AS sum_kb
+    by _time idxcluster_label hostname 
+
+`gmc_comment("| lookup dnslookup clientip AS sourceIp OUTPUTNEW clienthost AS host_fqdn")`
+| eval sum_mb=sum_kb/1024 , sum_gb=sum_mb/1024
+
 
     </query>
+    <earliest>$TimeRangePkr.earliest$</earliest>
+    <latest>$TimeRangePkr.latest$</latest>
   </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="time" token="TimeRangePkr" searchWhenChanged="true">
       <label>1. Time Range</label>
       <default>
-        <earliest>-15m</earliest>
+        <earliest>-7d@h</earliest>
         <latest>now</latest>
       </default>
     </input>
@@ -34,26 +72,37 @@
       <label>2. Indexer Cluster</label>
       <fieldForLabel>idxcluster_label</fieldForLabel>
       <fieldForValue>idxcluster_label</fieldForValue>
-      <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_2">
+      <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
         <query>| stats count by idxcluster_label</query>
       </search>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
-    <input type="dropdown" token="host" searchWhenChanged="true">
+    <input type="dropdown" token="Indexers" searchWhenChanged="true">
       <label>3. Indexer</label>
-      <fieldForLabel>host</fieldForLabel>
-      <fieldForValue>host</fieldForValue>
-      <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_2">
-        <query>| stats count by host</query>
+      <fieldForLabel>Indexers</fieldForLabel>
+      <fieldForValue>Indexers</fieldForValue>
+      <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
+        <query>| stats count by Indexers</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="ingest_pipe" searchWhenChanged="true">
+      <label>4. Indexers Ingest Pipeline</label>
+      <fieldForLabel>ingest_pipe</fieldForLabel>
+      <fieldForValue>ingest_pipe</fieldForValue>
+      <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
+        <query>| stats count by ingest_pipe</query>
       </search>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="fwdType" searchWhenChanged="true">
-      <label>4. Forwarder Type</label>
+      <label>5. Forwarder Type</label>
       <fieldForLabel>fwdType</fieldForLabel>
       <fieldForValue>fwdType</fieldForValue>
       <choice value="*">All</choice>
@@ -63,19 +112,19 @@
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
-    <input type="dropdown" token="ingest_pipe" searchWhenChanged="true">
-      <label>5. Indexers Ingest Pipeline</label>
-      <fieldForLabel>ingest_pipe</fieldForLabel>
-      <fieldForValue>ingest_pipe</fieldForValue>
-      <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_2">
-        <query>| stats count by ingest_pipe</query>
+    <input type="dropdown" token="version" searchWhenChanged="true">
+      <label>6. Forwarder  Version</label>
+      <fieldForLabel>version</fieldForLabel>
+      <fieldForValue>version</fieldForValue>
+      <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
+        <query>| stats count by version</query>
       </search>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="os" searchWhenChanged="true">
-      <label>6. Forwarder  Operating System</label>
+      <label>7. Forwarder  Operating System</label>
       <fieldForLabel>os</fieldForLabel>
       <fieldForValue>os</fieldForValue>
       <choice value="*">All</choice>
@@ -86,7 +135,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="arch" searchWhenChanged="true">
-      <label>7. Forwarder Architecture</label>
+      <label>8. Forwarder Architecture</label>
       <fieldForLabel>arch</fieldForLabel>
       <fieldForValue>arch</fieldForValue>
       <choice value="*">All</choice>
@@ -97,7 +146,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="connectionType" searchWhenChanged="true">
-      <label>8. Forwarder Connection Type</label>
+      <label>9. Forwarder Connection Type</label>
       <fieldForLabel>connectionType</fieldForLabel>
       <fieldForValue>connectionType</fieldForValue>
       <choice value="*">All</choice>
@@ -107,7 +156,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="ssl" searchWhenChanged="true">
-      <label>9. Forwarding with SSL?</label>
+      <label>10. Forwarding with SSL?</label>
       <fieldForLabel>ssl</fieldForLabel>
       <fieldForValue>ssl</fieldForValue>
       <choice value="*">All</choice>
@@ -117,23 +166,12 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="ack" searchWhenChanged="true">
-      <label>10. Forwarder Acknowledgment</label>
+      <label>11. Forwarder Acknowledgment</label>
       <fieldForLabel>ack</fieldForLabel>
       <fieldForValue>ack</fieldForValue>
       <choice value="*">All</choice>
       <choice value="true">True</choice>
       <choice value="false">False</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="version" searchWhenChanged="true">
-      <label>11. Forwarder  Version</label>
-      <fieldForLabel>version</fieldForLabel>
-      <fieldForValue>version</fieldForValue>
-      <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_2">
-        <query>| stats count by version</query>
-      </search>
-      <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
@@ -154,7 +192,7 @@
     </input>
     <input type="dropdown" token="span_period" searchWhenChanged="true">
       <label>15. Span Period</label>
-      <default>span=1m</default>
+      <default></default>
       <choice value="">Automatic</choice>
       <choice value="span=1s">1 seconds</choice>
       <choice value="span=5s">5 seconds</choice>
@@ -178,15 +216,14 @@
       <choice value="span=1w">1 week</choice>
       <choice value="span=1mon">1 month</choice>
       <choice value="span=12mon">1 year</choice>
-      <initialValue>span=1m</initialValue>
     </input>
   </fieldset>
   <row>
     <panel>
-      <title>1. Total Number of Forwarders</title>
+      <title>Total Forwarders</title>
       <single>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_2">
-          <query>| stats count</query>
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
+          <query>| stats dc(hostname)</query>
         </search>
         <option name="colorMode">block</option>
         <option name="drilldown">none</option>
@@ -197,9 +234,9 @@
       </single>
     </panel>
     <panel>
-      <title>2. By OS</title>
+      <title>By OS</title>
       <chart>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_2">
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
           <query>stats count by os</query>
         </search>
         <option name="charting.chart">pie</option>
@@ -209,9 +246,9 @@
       </chart>
     </panel>
     <panel>
-      <title>3. By Version</title>
+      <title>By Version</title>
       <chart>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_2">
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
           <query>stats count by version</query>
         </search>
         <option name="charting.chart">pie</option>
@@ -221,9 +258,9 @@
       </chart>
     </panel>
     <panel>
-      <title>4. By Type</title>
+      <title>By Type</title>
       <chart>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_2">
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
           <query>| stats count by fwdType</query>
         </search>
         <option name="charting.chart">pie</option>
@@ -231,9 +268,9 @@
       </chart>
     </panel>
     <panel>
-      <title>5. By Ingest Parallel Data Pipelines</title>
+      <title>By Ingest Parallel Data Pipelines</title>
       <chart>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_2">
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
           <query>stats count by ingest_pipe</query>
         </search>
         <option name="charting.chart">pie</option>
@@ -243,30 +280,26 @@
       </chart>
     </panel>
     <panel>
-      <title>6. By Indexer (Balance)</title>
+      <title>By Acknowledgment</title>
       <chart>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
-          <query>| stats count by splunk_server</query>
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
+          <query>stats count by ack</query>
         </search>
-        <option name="charting.axisY.abbreviation">auto</option>
-        <option name="charting.axisY.scale">linear</option>
         <option name="charting.chart">pie</option>
-        <option name="charting.chart.nullValueMode">connect</option>
-        <option name="charting.chart.showDataLabels">none</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
-        <option name="charting.legend.placement">bottom</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
   </row>
   <row>
     <panel>
-      <title>7. Ingestion Volume IN MB (Megabytes transmitted during the metrics interval) - $env:page$</title>
+      <title>Ingestion Volume IN MB (Megabytes transmitted during the metrics interval) - $env:page$</title>
       <chart>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
-          <query>| timechart $span_period$
-    eval(round(sum(kb)/1024,2)) AS "Volume IN MB"</query>
+        <title>$env:page$</title>
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
+          <query>| timechart $span_period$ 
+    eval(round(sum(sum_kb)/1024,2)) AS "Volume IN MB"</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
         <option name="charting.chart">area</option>
@@ -282,15 +315,16 @@
   </row>
   <row>
     <panel>
-      <title>8. Complete List of forwarders</title>
       <table>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_2">
-          <query>| table hostname fwdType sourceIp host_fqdn  last_connected Time_Since_Last_Connection os version arch ack connectionType ssl sum_kb sum_mb sum_gb chan_new_kBps process_time_ms tcp_avg_thruput tcp_Kprocessed ingest_pipe lastIndexer destPort 
-| `rename_common_fields`
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
+          <query>| fields _time hostname fwdType sourceIp host_fqdn last_connected Time_Since_Last_Connection os version arch ack connectionType ssl sum_kb sum_mb sum_gb chan_new_kBps process_time_ms tcp_avg_thruput tcp_Kprocessed  destPort 
+| stats latest(*) as * by hostname
+| `rename_common_fields` 
 | rename sum_kb AS "Volume Received (KB)" sum_mb AS "Volume Received (MB)" sum_gb AS "Volume Received (GB)" version AS Version os AS OS arch AS "OS Architecture" last_connected AS "Last Connection" fwdType AS "Type" ack AS "IDX Acknowledgment" host_fqdn AS "FQDN" sourceIp AS "IP" ingest_pipe AS "Parallel Data Pipelines" tcp_avg_thruput AS "AVG TCP Thruput" tcp_Kprocessed AS "AVG TCP Kprocessed" Time_Since_Last_Connection AS "Time Since Last Connection" Forwarder_Splunk_Roles AS "Splunk Forwarder Roles" connectionType AS "Connection Type" chan_new_kBps AS "Chan New (kBps)" process_time_ms AS "Process Time (MS)" ssl AS "Forwarding with SSL" lastIndexer AS "Last Indexer" destPort AS "Recieving Port" hostname AS "Forwarder Name"</query>
         </search>
         <option name="count">12</option>
         <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="wrap">false</option>
         <format type="number" field="Volume (KB)"></format>
@@ -315,6 +349,9 @@
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
+        <format type="color" field="Type">
+          <colorPalette type="map">{"full":#F8BE34,"uf":#53A051}</colorPalette>
+        </format>
         <format type="color" field="Version">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
@@ -338,27 +375,15 @@
         <format type="color" field="Forwarding with SSL">
           <colorPalette type="map">{"true":#53A051,"false":#DC4E41}</colorPalette>
         </format>
-        <format type="color" field="Forwarder Name">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-        <format type="color" field="IP">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-        <format type="color" field="Last Connection">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
       </table>
     </panel>
   </row>
   <row>
     <panel>
-      <title>9. Average rate of bytes sent since the last time the tcp or udp output processor was reinitialized/reconfigured. Typically this means an average since Splunk started</title>
+      <title>Average rate of bytes sent since the last time the tcp or udp output processor was reinitialized/reconfigured. Typically this means an average since Splunk started</title>
       <chart>
         <title>tcp_avg_thruput / udp_avg_thruput</title>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
           <query>| timechart $span_period$ eval(round(avg(tcp_avg_thruput),2)) AS "Average TCP Thruput"  eval(round(avg(udp_avg_thruput),2)) AS "Average UDP Thruput"</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -372,10 +397,10 @@
       </chart>
     </panel>
     <panel>
-      <title>10. Kilobytes transmitted during the metrics interval divided by the duration of the interval (in seconds)</title>
+      <title>Kilobytes transmitted during the metrics interval divided by the duration of the interval (in seconds)</title>
       <chart>
         <title>tcp_KBps / udp_KBps (kilobytes per specond)</title>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
           <query>| timechart $span_period$ eval(round(avg(tcp_KBps),2)) AS "Average TCP KBps" eval(round(avg(udp_KBps),2)) AS "Average UDP KBps"</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -390,10 +415,10 @@
   </row>
   <row>
     <panel>
-      <title>11. Total Number of bytes written since the processor was reinitialized/reconfigured, divided by 1024</title>
+      <title>Total Number of bytes written since the processor was reinitialized/reconfigured, divided by 1024</title>
       <chart>
         <title>tcp_Kprocessed / udp_Kprocessed</title>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
           <query>| timechart $span_period$ eval(round(avg(tcp_Kprocessed),2)) AS "Average TCP Kprocessed" eval(round(avg(udp_Kprocessed),2)) AS "Average UDP Kprocessed"</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -407,10 +432,10 @@
       </chart>
     </panel>
     <panel>
-      <title>12. Number of items transmitted during the interval divided by the direction of the interval (in seconds). Note that items will frequently not be events for universal/light forwarders (instead, data chunks)</title>
+      <title>Number of items transmitted during the interval divided by the direction of the interval (in seconds). Note that items will frequently not be events for universal/light forwarders (instead, data chunks)</title>
       <chart>
         <title>tcp_eps / udp_eps (events (packets) per second)</title>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
           <query>| timechart $span_period$ eval(round(avg(tcp_eps),2)) AS "TCP Events/S" eval(round(avg(udp_eps),2)) AS "UDP Events/S"</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -425,10 +450,10 @@
   </row>
   <row>
     <panel>
-      <title>13. New Channel Kilobytes transmission (in seconds)</title>
+      <title>New Channel Kilobytes transmission (in seconds)</title>
       <chart>
         <title>chan_new_kBps (kilobytes per specond)</title>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
           <query>| timechart $span_period$ eval(round(avg(chan_new_kBps),2)) AS "Average Chanel New kBps"</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -442,11 +467,12 @@
       </chart>
     </panel>
     <panel>
-      <title>14. Processing Time in MS</title>
+      <title>Processing Time in MS</title>
       <chart>
         <title>process_time_ms</title>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
-          <query>| timechart $span_period$ eval(round(avg(process_time_ms),2)) AS "Average Process Time/MS"</query>
+        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1">
+          <query>| timechart $span_period$
+    eval(round(avg(process_time_ms),2)) AS "Average Process Time/MS"</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
         <option name="charting.axisY.scale">linear</option>
@@ -461,50 +487,16 @@
   </row>
   <row>
     <panel>
-      <title>15. By Indexer (Balance)</title>
-      <chart>
-        <search base="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
-          <query>| timechart $span_period$ sum(sum_gb) as sum_gb by splunk_server</query>
-        </search>
-        <option name="charting.axisY.abbreviation">auto</option>
-        <option name="charting.axisY.scale">linear</option>
-        <option name="charting.chart">column</option>
-        <option name="charting.chart.nullValueMode">connect</option>
-        <option name="charting.chart.showDataLabels">all</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.chart.stackMode">stacked100</option>
-        <option name="charting.drilldown">none</option>
-        <option name="charting.legend.placement">bottom</option>
-        <option name="refresh.display">progressbar</option>
-      </chart>
-    </panel>
-  </row>
-  <row>
-    <panel>
-      <title>Data Distribution accross the indexer tier</title>
-      <chart>
-        <search>
-          <query>| tstats count 
-    Where index=* 
-    By span=1m _time splunk_server 
-| eval Num_Events=round(count/1000,0)
-| timechart span=1m limit=9999
-    Sum(Num_Events) as Num_Events by splunk_server</query>
-          <earliest>-15m@m</earliest>
-          <latest>-5m@m</latest>
-        </search>
-        <option name="charting.axisTitleX.visibility">collapsed</option>
-        <option name="charting.axisTitleY.text">Thousads</option>
-        <option name="charting.axisTitleY.visibility">visible</option>
-        <option name="charting.axisY.abbreviation">auto</option>
-        <option name="charting.chart">column</option>
-        <option name="charting.chart.showDataLabels">all</option>
-        <option name="charting.chart.stackMode">stacked</option>
-        <option name="charting.drilldown">none</option>
-        <option name="charting.legend.placement">bottom</option>
-        <option name="height">500</option>
-        <option name="refresh.display">progressbar</option>
-      </chart>
+      <title>Link to Associated GMC Job(s) - $env:page$</title>
+      <html>
+            <strong>Track Forwarder Ingestion Stats Daily</strong>
+            <ol>
+               <li>
+                  GMC Jobs / GMC Tracking Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_internal_forwarder_stats_idx_summary_tracker" target="_blank" rel="noopener">Track Forwarder Ingestion Stats Daily</a>
+               </li>
+            </ol>
+         </html>
     </panel>
   </row>
 </form>

@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v1.5.50</label>
+  <label>IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v1.5.66</label>
   <search id="splunk_idx_07_indexer_cluster_bucket_status_dashboard_v1">
     <query>
       index=_internal search_group=dmc_group_cluster_master component=Metrics sourcetype=splunkd name=cmmaster_* group=subtask_* event_message="*fix*" (to_fix_search_factor&gt;0 OR to_fix_rep_factor&gt;0)
@@ -15,7 +15,7 @@
   </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
-      <label>IDX Cluster</label>
+      <label>1. IDX Cluster</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -26,14 +26,14 @@
       </search>
     </input>
     <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-      <label>Time Range</label>
+      <label>2. Time Range</label>
       <default>
         <earliest>-15m</earliest>
         <latest>now</latest>
       </default>
     </input>
     <input type="dropdown" token="span_period" searchWhenChanged="true">
-      <label>Span Period</label>
+      <label>3. Span Period</label>
       <default></default>
       <choice value="">Automatic</choice>
       <choice value="span=1s">1 seconds</choice>

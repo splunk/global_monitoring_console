@@ -1,0 +1,4 @@
+identity,prefix,suffix,nick,first,last,"emp_name","emp_ttl","emp_dep","emp_lob","emp_cc",email,"work_city","work_region","work_country","emp_type","emp_status",phone,phone2,managedBy,priority,bunit,startDate,endDate,"emp_loc","emp_floor","emp_tz","work_lat","work_long"
+admin,,,,Splunk,Admin,"Splunk Admin",Splunk,Splunk,Splunk,Splunk,"changeme@company.com","San Francisco",CA,"United States",Default,Active,,,,,,,,,,,,
+"splunk-system-user",,,,Splunk,User,"Splunk System User",Splunk,Splunk,Splunk,Splunk,"changeme@company.com","San Francisco",CA,"United States",Default,Active,,,,,,,,,,,,
+system,,,,Splunk,User,"Splunk System User",Splunk,Splunk,Splunk,Splunk,"changeme@company.com","San Francisco",CA,"United States",Default,Active,,,,,,,,,,,,
