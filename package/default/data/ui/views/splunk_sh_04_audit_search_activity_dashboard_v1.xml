@@ -1,5 +1,5 @@
-<form theme="dark" script="tabs.js" stylesheet="tabs.css">
-  <label>SH - 04 - Audit Search Activity - Dashboard - v1.5.50</label>
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>SH - 04 - Audit Search Activity - Dashboard - v1.5.66</label>
   <description>Audit all Splunk Search Activities using one normalized Data Model for Audit, Introspection &amp; Internal</description>
   <search id="splunk_sh_04_audit_search_activity_dashboard_audit_search">
     <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
@@ -129,7 +129,7 @@
     </panel>
   </row>
   <row id="Introspection_Inputs">
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. Introspection Search Usage</title>
       <input type="checkbox" token="Exclutions3" searchWhenChanged="true">
         <label>1. Exclude GMC Searches ?</label>
@@ -454,16 +454,12 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-    </panel>
-  </row>
-  <row id="Introspection_Panel0">
-    <panel>
-      <title>2. To Drilldown on a Normalized Search ID to see information on it from _audit &amp; _internal click inside the field value of  the "Normalized Search ID" Field</title>
       <table>
+        <title>To Drilldown on a Normalized Search ID to see information on it from _audit &amp; _internal click inside the field value of  the "Normalized Search ID" Field</title>
         <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
-          <query>| fields search_id_normalized pid shcluster_label search_head host search_type mode mem_used normalized_pct_cpu Provenance_Type Provenance_KO_Type Provenance_KO app savedsearch_name savedsearch_type user emp_name _time 'total_run_time' total_run_time physicalMemoryGB pct_cpu page_faults max_hist_searches max_searches_per_cpu numberOfCores base_max_searches numberOfVirtualCores t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_ttl emp_lob work_city work_region work_country cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches 
-| stats max(*) as * latest(_time) as _time By search_id_normalized pid
-| table search_id_normalized pid shcluster_label search_head host search_type mode mem_used normalized_pct_cpu Provenance_Type Provenance_KO_Type Provenance_KO app savedsearch_name savedsearch_type user emp_name _time 'total_run_time' total_run_time physicalMemoryGB pct_cpu page_faults max_hist_searches max_searches_per_cpu numberOfCores base_max_searches numberOfVirtualCores t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_ttl emp_lob work_city work_region work_country cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches 
+          <query>| fields search_id_normalized pid shcluster_label search_head host search_type mode mem_used normalized_pct_cpu 'total_run_time' total_run_time Provenance_Type Provenance_KO_Type Provenance_KO app savedsearch_name savedsearch_type user emp_name _time physicalMemoryGB pct_cpu page_faults max_hist_searches max_searches_per_cpu numberOfCores base_max_searches numberOfVirtualCores t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_ttl emp_lob work_city work_region work_country cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches 
+| stats max(*) as * latest(_time) as _time By search_id_normalized pid 
+| table search_id_normalized pid shcluster_label search_head host search_type mode mem_used normalized_pct_cpu 'total_run_time' total_run_time Provenance_Type Provenance_KO_Type Provenance_KO app savedsearch_name savedsearch_type user emp_name _time physicalMemoryGB pct_cpu page_faults max_hist_searches max_searches_per_cpu numberOfCores base_max_searches numberOfVirtualCores t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_ttl emp_lob work_city work_region work_country cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches 
 | sort 0 - mem_used 
 | `normalize_search_type(search_type)` 
 | `rename_common_fields` 
@@ -671,16 +667,16 @@
     </panel>
   </row>
   <row id="Introspection_Panel1">
-    <panel>
-      <title>3. Before you can drildown to look at running jobs, select the host from the dropdown above and then click the link below.   https://$host$:8000/en-US/app/search/job_manager?owner=&amp;app=&amp;jobStatus=running</title>
+    <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
+      <title>Before you can drildown to look at running jobs, select the host from the dropdown above and then click the link below.   https://$host$:8000/en-US/app/search/job_manager?owner=&amp;app=&amp;jobStatus=running</title>
       <html>
             <a href="https://$host$:8000/en-US/app/search/job_manager?owner=&amp;app=&amp;jobStatus=running" target="_blank">Splunk Job Manager</a>
          </html>
     </panel>
   </row>
   <row id="Introspection_Panel2">
-    <panel>
-      <title>6. Dashboard Drilldown</title>
+    <panel id="panel_accordion_togglepanel_true_4" depends="$gadget_lib_loaded$">
+      <title>2. Dashboard Drilldown</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
           <query>| where Provenance_KO!="Undefined" 
@@ -689,7 +685,7 @@
 | rename Provenance_KO as "Dashboard" Search As "Sample Searches" 
 | fields - count</query>
         </search>
-        <option name="count">1</option>
+        <option name="count">3</option>
         <option name="drilldown">cell</option>
         <option name="refresh.display">none</option>
         <option name="rowNumbers">false</option>
@@ -702,13 +698,17 @@
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
+        <format type="color" field="Dashboard">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
         <drilldown>
           <link target="_blank">/app/global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1?form.title=$click.value2$</link>
         </drilldown>
       </table>
     </panel>
-    <panel>
-      <title>7. Report/Alert Drilldown</title>
+    <panel id="panel_accordion_togglepanel_true_5" depends="$gadget_lib_loaded$">
+      <title>3. Report/Alert Drilldown</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
           <query>| where savedsearch_name!="Undefined" 
@@ -731,7 +731,7 @@
     </panel>
   </row>
   <row id="Introspection_Panel3">
-    <panel>
+    <panel id="panel_accordion_togglepanel_true_6" depends="$gadget_lib_loaded$">
       <title>4. Introspection Count</title>
       <single>
         <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
@@ -745,8 +745,8 @@
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel>
-      <title>10. By Search Type with Sparkline Bar &amp; Color Map</title>
+    <panel id="panel_accordion_togglepanel_true_7" depends="$gadget_lib_loaded$">
+      <title>5. By Search Type with Sparkline Bar &amp; Color Map</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
           <query>| chart count sparkline(count, 1h) as trend by search_type 
@@ -759,6 +759,13 @@
         <option name="drilldown">cell</option>
         <option name="rowNumbers">true</option>
         <option name="wrap">true</option>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="search_type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
         <format field="trend" type="sparkline">
           <option name="type">bar</option>
           <option name="colorMap">
@@ -769,8 +776,8 @@
         </format>
       </table>
     </panel>
-    <panel>
-      <title>5. Count By Search Type</title>
+    <panel id="panel_accordion_togglepanel_true_8" depends="$gadget_lib_loaded$">
+      <title>6. Count By Search Type</title>
       <chart>
         <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
           <query>| stats count by search_type</query>
@@ -784,10 +791,28 @@
     </panel>
   </row>
   <row id="Introspection_Panel6">
-    <panel>
-      <title>6. Top N Reports</title>
+    <panel id="panel_accordion_togglepanel_false_9" depends="$gadget_lib_loaded$">
+      <title>7. Top N Reports</title>
+      <input type="time" token="IntrospectionTimeRangePkr" searchWhenChanged="true">
+        <label>1. Introspection Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+        <label>2. Splunk SH (Cluster/Instance)</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="splunk_sh_04_audit_search_activity_dashboard_introspection_search_usage">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
       <input type="dropdown" token="field_tok_2" searchWhenChanged="true">
-        <label>Group By Field</label>
+        <label>3. Group By Field</label>
         <choice value="total_run_time">Total Run Time (Minutes)</choice>
         <choice value="fd_used">File Descriptors Used</choice>
         <choice value="page_faults">Page Faults</choice>
@@ -805,7 +830,7 @@
         <initialValue>total_run_time</initialValue>
       </input>
       <input type="dropdown" token="split_by_tok_2" searchWhenChanged="true">
-        <label>Split By</label>
+        <label>4. Split By</label>
         <choice value="app">App</choice>
         <choice value="user">User</choice>
         <choice value="savedsearch_name">Report/Alert</choice>
@@ -820,7 +845,7 @@
         <initialValue>app</initialValue>
       </input>
       <input type="dropdown" token="round_tok2" searchWhenChanged="true">
-        <label>Rounding</label>
+        <label>5. Rounding</label>
         <default>0</default>
         <initialValue>0</initialValue>
         <choice value="0">0</choice>
@@ -831,7 +856,7 @@
         <fieldForValue>round_tok2</fieldForValue>
       </input>
       <input type="dropdown" token="span_period" searchWhenChanged="true">
-        <label>Span Period</label>
+        <label>6. Span Period</label>
         <default></default>
         <choice value="">Automatic</choice>
         <choice value="span=1s">1 seconds</choice>
@@ -858,7 +883,7 @@
         <choice value="span=12mon">1 year</choice>
       </input>
       <input type="text" token="top_tok2" searchWhenChanged="true">
-        <label>Timechart IN top:</label>
+        <label>7. Timechart IN top:</label>
         <default>10</default>
         <initialValue>10</initialValue>
       </input>
@@ -889,7 +914,7 @@
     </panel>
   </row>
   <row id="Audit_Inputs">
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_10" depends="$gadget_lib_loaded$">
       <title>1. Audit Search Usage</title>
       <input type="checkbox" token="Exclutions1" searchWhenChanged="true">
         <label>1. Exclude GMC Searches ?</label>
@@ -1242,12 +1267,8 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-    </panel>
-  </row>
-  <row id="Audit_Panel0">
-    <panel>
-      <title>2. Audit - List of searches matching the above filter</title>
       <table depends="$search_id_normalized$">
+        <title>Audit - List of searches matching the above filter</title>
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
           <query>| table search_id_normalized shcluster_label host search_type info savedsearch_name savedsearch_type dispatch_time total_run_time 'total_run_time' _time search_et search_lt Time_Diff user emp_name emp_dep emp_lob emp_ttl work_city work_region work_country datamodel scan_count event_count result_count available_count considered_events searched_buckets total_slices decompressed_slices cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Eventtype_Reference search
 | `normalize_search_type(search_type)`
@@ -1315,8 +1336,12 @@
           <unset token="form.search_id_normalized"></unset>
         </drilldown>
       </table>
+    </panel>
+  </row>
+  <row id="Audit_Panel0">
+    <panel id="panel_accordion_togglepanel_false_11" depends="$gadget_lib_loaded$">
+      <title>2. Search Types</title>
       <viz type="number_display_viz.number_display_viz">
-        <title>3. Search Types</title>
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
           <query>| eval search_type=case(search_type="adhoc", "Ad-Hoc", search_type="scheduled", "Scheduled Reports/Alerts", search_type="datamodel_acceleration", "Datamodel Acceleration", search_type="report_acceleration", "Report Acceleration", search_type="summary_indexing", "Summary Indexing", search_type="realtime", "Realtime", search_type="subsearch", "Subsearch", search_type="typeahead", "Typeahead", true(), search_type)
 | stats count by search_type</query>
@@ -1400,8 +1425,8 @@
     </panel>
   </row>
   <row id="Audit_Panel1">
-    <panel>
-      <title>4. Audit Search Count</title>
+    <panel id="panel_accordion_togglepanel_true_12" depends="$gadget_lib_loaded$">
+      <title>3. Audit Search Count</title>
       <single>
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
           <query>| stats count</query>
@@ -1414,8 +1439,8 @@
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel>
-      <title>5. Count By Search Status</title>
+    <panel id="panel_accordion_togglepanel_true_13" depends="$gadget_lib_loaded$">
+      <title>4. Count By Search Status</title>
       <chart>
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
           <query>| stats count by info</query>
@@ -1427,8 +1452,8 @@
         <option name="charting.chart.showPercent">true</option>
       </chart>
     </panel>
-    <panel>
-      <title>6. Searches by LOB</title>
+    <panel id="panel_accordion_togglepanel_true_14" depends="$gadget_lib_loaded$">
+      <title>5. Searches by LOB</title>
       <chart>
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
           <query>| stats count by emp_lob</query>
@@ -1440,8 +1465,8 @@
         <option name="charting.chart.showPercent">true</option>
       </chart>
     </panel>
-    <panel>
-      <title>7. Searches by Department</title>
+    <panel id="panel_accordion_togglepanel_true_15" depends="$gadget_lib_loaded$">
+      <title>6. Searches by Department</title>
       <chart>
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
           <query>| stats count by emp_dep</query>
@@ -1456,8 +1481,8 @@
         <option name="charting.chart.showPercent">true</option>
       </chart>
     </panel>
-    <panel>
-      <title>8. Searches by Title</title>
+    <panel id="panel_accordion_togglepanel_true_16" depends="$gadget_lib_loaded$">
+      <title>7. Searches by Title</title>
       <chart>
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
           <query>| stats count by emp_ttl</query>
@@ -1471,8 +1496,8 @@
     </panel>
   </row>
   <row id="Audit_Panel2">
-    <panel>
-      <title>9. Search Code from Event</title>
+    <panel id="panel_accordion_togglepanel_true_17" depends="$gadget_lib_loaded$">
+      <title>8. Search Code from Event</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
           <query>| eval search_org=search 
@@ -1501,8 +1526,8 @@
         </format>
       </table>
     </panel>
-    <panel>
-      <title>10. Search Code from Report/Alert</title>
+    <panel id="panel_accordion_togglepanel_true_18" depends="$gadget_lib_loaded$">
+      <title>9. Search Code from Report/Alert</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
           <query>| where savedsearch_name!="Undefined" 
@@ -1524,8 +1549,8 @@
     </panel>
   </row>
   <row id="Audit_Panel3">
-    <panel>
-      <title>11. Search Type with basic Sparkline &amp; Max Value Indicator</title>
+    <panel id="panel_accordion_togglepanel_true_19" depends="$gadget_lib_loaded$">
+      <title>10. Search Type with basic Sparkline &amp; Max Value Indicator</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
           <query>| chart count sparkline(count, 1h) as trend by search_type 
@@ -1547,8 +1572,8 @@
         </format>
       </table>
     </panel>
-    <panel>
-      <title>12. Search Status with basic Sparkline &amp; line options</title>
+    <panel id="panel_accordion_togglepanel_true_20" depends="$gadget_lib_loaded$">
+      <title>11. Search Status with basic Sparkline &amp; line options</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_audit_search">
           <query>| chart count sparkline by info 
@@ -1570,7 +1595,7 @@
     </panel>
   </row>
   <row id="Internal_Inputs">
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_21" depends="$gadget_lib_loaded$">
       <title>1. Internal Scheduler Usage</title>
       <input type="checkbox" token="Exclutions2" searchWhenChanged="true">
         <label>1. Exclude GMC Searches ?</label>
@@ -1896,12 +1921,8 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-    </panel>
-  </row>
-  <row id="Internal_Panel0">
-    <panel>
-      <title>2. Internal - List of searches matching the above filter</title>
       <table>
+        <title>Internal - List of searches matching the above filter</title>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| table search_id_normalized shcluster_label host search_type info savedsearch_name _time cron_schedule cron_schedule_described  dispatch_earliest_time dispatch_latest_time schedule_priority max_concurrent schedule_window allow_skew realtime_schedule scheduled_time dispatch_time total_run_time 'total_run_time' app user emp_dep emp_lob work_city work_region work_country datamodel result_count concurrency_category concurrency_context concurrency_limit skipped_count reason alert_actions Memory_Usage Memory_Threshold Lookup_Reference Datamodel_Reference Macro_Reference action_summary_index_name Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference savedsearch_search 
 | `normalize_search_type(search_type)` 
@@ -2020,8 +2041,8 @@
     </panel>
   </row>
   <row id="Internal_Panel1">
-    <panel>
-      <title>3. Search Count</title>
+    <panel id="panel_accordion_togglepanel_true_23" depends="$gadget_lib_loaded$">
+      <title>2. Search Count</title>
       <single>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| stats count</query>
@@ -2035,8 +2056,8 @@
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel>
-      <title>4. By Search Type</title>
+    <panel id="panel_accordion_togglepanel_true_24" depends="$gadget_lib_loaded$">
+      <title>3. By Search Type</title>
       <chart>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| stats count by search_type</query>
@@ -2048,8 +2069,8 @@
         <option name="charting.chart.showPercent">true</option>
       </chart>
     </panel>
-    <panel>
-      <title>5. By Search Status</title>
+    <panel id="panel_accordion_togglepanel_true_25" depends="$gadget_lib_loaded$">
+      <title>4. By Search Status</title>
       <chart>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| stats count by info</query>
@@ -2062,8 +2083,8 @@
         <option name="charting.chart.showPercent">true</option>
       </chart>
     </panel>
-    <panel>
-      <title>6. Top 10 Apps</title>
+    <panel id="panel_accordion_togglepanel_true_26" depends="$gadget_lib_loaded$">
+      <title>5. Top 10 Apps</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| top app
@@ -2093,8 +2114,8 @@
     </panel>
   </row>
   <row id="Internal_Panel2">
-    <panel>
-      <title>7. Top 10 Reports/Alerts</title>
+    <panel id="panel_accordion_togglepanel_true_27" depends="$gadget_lib_loaded$">
+      <title>6. Top 10 Reports/Alerts</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| where savedsearch_name!="Undefined" 
@@ -2126,8 +2147,8 @@
         </drilldown>
       </table>
     </panel>
-    <panel>
-      <title>8. Top 10 Schedules</title>
+    <panel id="panel_accordion_togglepanel_true_28" depends="$gadget_lib_loaded$">
+      <title>7. Top 10 Schedules</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| where savedsearch_name!="Undefined" 
@@ -2164,8 +2185,8 @@
         </format>
       </table>
     </panel>
-    <panel>
-      <title>9. Top 10 Allow Skew</title>
+    <panel id="panel_accordion_togglepanel_true_29" depends="$gadget_lib_loaded$">
+      <title>8. Top 10 Allow Skew</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| top allow_skew 
@@ -2199,8 +2220,8 @@
     </panel>
   </row>
   <row id="Internal_Panel3">
-    <panel>
-      <title>10. Top 10 Data Models</title>
+    <panel id="panel_accordion_togglepanel_true_30" depends="$gadget_lib_loaded$">
+      <title>9. Top 10 Data Models</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| top datamodel 
@@ -2228,8 +2249,8 @@
         </format>
       </table>
     </panel>
-    <panel>
-      <title>11. Top 10 Summary Index</title>
+    <panel id="panel_accordion_togglepanel_true_31" depends="$gadget_lib_loaded$">
+      <title>10. Top 10 Summary Index</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| top action_summary_index_name 
@@ -2259,8 +2280,8 @@
     </panel>
   </row>
   <row id="Internal_Panel4">
-    <panel>
-      <title>12. Top 10 Skip Reasons</title>
+    <panel id="panel_accordion_togglepanel_true_32" depends="$gadget_lib_loaded$">
+      <title>11. Top 10 Skip Reasons</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| where reason!="no-skipps" 
@@ -2293,8 +2314,8 @@
         </format>
       </table>
     </panel>
-    <panel>
-      <title>13. Top 10 Concurrency Context</title>
+    <panel id="panel_accordion_togglepanel_true_33" depends="$gadget_lib_loaded$">
+      <title>12. Top 10 Concurrency Context</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| where concurrency_context!="no-skipps" 
@@ -2323,8 +2344,8 @@
         </format>
       </table>
     </panel>
-    <panel>
-      <title>14. Top 10 Concurrency Limit</title>
+    <panel id="panel_accordion_togglepanel_true_34" depends="$gadget_lib_loaded$">
+      <title>13. Top 10 Concurrency Limit</title>
       <table>
         <search base="splunk_sh_04_audit_search_activity_dashboard_internal_scheduler">
           <query>| where concurrency_limit!="no-skipps" 
@@ -2367,8 +2388,8 @@
     </panel>
   </row>
   <row id="Internal_Panel5">
-    <panel>
-      <title>15. Total Executions / Skipped Executions / Skip Ratio</title>
+    <panel id="panel_accordion_togglepanel_false_35" depends="$gadget_lib_loaded$">
+      <title>14. Total Executions / Skipped Executions / Skip Ratio</title>
       <table>
         <title>Search Type=$search_type2$ / App=$app$ / User= $user$ / Splunk Instance=$host$ /  Splunk Roles="$Splunk_Roles$" / Savedsearch="$savedsearch_name$"  /      Note: In a Splunk Search Head Cluster environment we need to just look at the captain, set the Splunk Roles filter above to shc_captain which represents the current captain.</title>
         <search>
@@ -2571,8 +2592,8 @@
     </panel>
   </row>
   <row id="Internal_Panel7">
-    <panel>
-      <title>16. Skip Ratio Over Time</title>
+    <panel id="panel_accordion_togglepanel_false_36" depends="$gadget_lib_loaded$">
+      <title>15. Skip Ratio Over Time</title>
       <input type="time" token="InternalTimeRangePkr" searchWhenChanged="true">
         <label>Internal Time Range</label>
         <default>
@@ -2712,6 +2733,18 @@
           width:20% !important;
         }</style>
          </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <search>
+          <query>noop</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
     </panel>
   </row>
 </form>

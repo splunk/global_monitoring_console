@@ -1,5 +1,5 @@
-<form theme="dark" script="tabs.js" stylesheet="tabs.css">
-  <label>SH - 06 - Dashboards, Reports/Alerts &amp; Lookups Analysis - Dashboard - v1.5.50</label>
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>SH - 06 - Dashboards, Reports/Alerts &amp; Lookups Analysis - Dashboard - v1.5.66</label>
   <description>add total number of authors</description>
   <search id="splunk_sh_06_knowledge_objects_analysis_dashboard1">
     <query>
@@ -32,7 +32,7 @@
 | fields shcluster_label Splunk_Instance app Lookup author sharing Filename Type Collection updated disabled Match_Type Replicate Allow_Caching Filter Index_Fields_List Min_Matches Max_Matches Fields_List case_sensitive_match
 | join shcluster_label app sharing Filename type=left 
     [| from lookup:splunk_rest_admin_lookup_table_files_sh_kv_store_lookup 
-    | fields shcluster_label Splunk_Instance Splunk_Roles app sharing author disabled updated Filename Lookup_File_Path ]
+    | fields shcluster_label,Splunk_Instance,app,sharing,author,disabled,updated,Filename,Lookup_File_Path ]
 | `get_instance_roles(Splunk_Instance)`
 | `get_identity_info(shcluster_label,author)`
 | `strftime_format(updated)`
@@ -41,7 +41,7 @@
 | fillnull value="100" Max_Matches 
 | fillnull value="true" Allow_Caching Replicate case_sensitive_match
 | fillnull value="EXACT" Match_Type
-| fillnull value="Undefined" Splunk_Instance Splunk_Roles app author sharing Lookup Filename Type Collection Lookup_File_Path emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status
+| fillnull value="Undefined" Splunk_Instance Splunk_Roles app author sharing Lookup Filename Type Collection Lookup_File_Path emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status Fields_List
 | search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles3$" Splunk_Instance="$Splunk_Instance3$" app="$app3$" Lookup="*$Lookup$*" author="$author3$" sharing="$sharing3$" Filename="*$Filename$*" Lookup_File_Path="*$Lookup_File_Path$*" Collection="*$Collection$*" Match_Type="*$Match_Type$*" Type="$Type3$" case_sensitive_match="$case_sensitive_match$"  emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$" Fields_List="*$Fields_List$*"
 </query>
   </search>
@@ -87,23 +87,23 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       <html>
                 <ul id="tabs" class="nav nav-tabs">
                     <li class="active">
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Dashboards_Inputs,Dashboards_Panel1,Dashboards_Panel2,Dashboards_Panel3,Dashboards_Panel4">1. Dashboards</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Dashboards_Inputs,Dashboards_Panel1,Dashboards_Panel2,Dashboards_Panel3,Dashboards_Panel4,Dashboards_Panel5">1. Dashboards</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Reports_Alerts_Inputs,Reports_Alerts_Panel1,Reports_Alerts_Panel2,Reports_Alerts_Panel3">2. Reports/Alerts</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Reports_Alerts_Inputs,Reports_Alerts_Panel1,Reports_Alerts_Panel2,Reports_Alerts_Panel3,Reports_Alerts_Panel4,Reports_Alerts_Panel5">2. Reports/Alerts</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Lookups_Inputs,Lookups_Panel1,Lookups_Panel2,Lookups_Panel3,Lookups_Panel4">3. Lookups</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Lookups_Inputs,Lookups_Panel1,Lookups_Panel2,Lookups_Panel3,Lookups_Panel4,Lookups_Panel5">3. Lookups</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Auto_Lookups_Inputs,Auto_Lookups_Panel1,Auto_Lookups_Panel2,Auto_Lookups_Panel3,Auto_Lookups_Panel4">4. Automatic Lookups</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Auto_Lookups_Inputs,Auto_Lookups_Panel1,Auto_Lookups_Panel2,Auto_Lookups_Panel3,Auto_Lookups_Panel4,Auto_Lookups_Panel5">4. Automatic Lookups</a>
                     </li>
                 </ul>
             </html>
     </panel>
   </row>
   <row id="Dashboards_Inputs">
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. Dashboards Filters</title>
       <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
         <label>1. Splunk SH (Cluster/Instance)</label>
@@ -451,144 +451,6 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-    </panel>
-  </row>
-  <row id="Dashboards_Panel1">
-    <panel>
-      <title>2. Associated GMC Job(s) - $env:page$</title>
-      <html>
-            
-            GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-            
-            <ol>
-            <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Dashboards Gen Job</a>
-            <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_ui_views_sh_kv_store&amp;type=kv">
-                     View Dashboards KV Store
-                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-            </div>
-          </li>
-            <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
-         <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store&amp;type=kv">
-                     View Reports/Alerts Access Tracker KV Store
-                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-            </div>
-          </li>
-         <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_internal_web_access_idx_summary_tracker" target="_blank" rel="noopener">Track Dashboards Executions (Summary Indexing)</a>
-          </li>
-        </ol>
-         </html>
-    </panel>
-    <panel>
-      <title>3. Total Number of Dashboard</title>
-      <single>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
-          <query>| stats count</query>
-        </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
-        <option name="rangeColors">["0x555","0x006d9c"]</option>
-        <option name="rangeValues">[100]</option>
-        <option name="refresh.display">preview</option>
-        <option name="unit">Dashboards</option>
-        <option name="useColors">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>4. Total Number of Authors</title>
-      <single>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
-          <query>| stats dc(author) As Num_Authors</query>
-        </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
-        <option name="rangeColors">["0x555","0xf8be34"]</option>
-        <option name="rangeValues">[0]</option>
-        <option name="refresh.display">preview</option>
-        <option name="unit">Authors</option>
-        <option name="useColors">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>5. Number of Dashboards By Author</title>
-      <table>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
-          <query>| stats count AS "Number of Dashboards" by author
-| sort 0 - "Number of Dashboards"</query>
-        </search>
-        <option name="count">5</option>
-        <option name="drilldown">none</option>
-        <option name="refresh.display">preview</option>
-        <option name="rowNumbers">true</option>
-        <option name="totalsRow">false</option>
-        <option name="wrap">false</option>
-        <format type="color" field="author">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-        <format type="color" field="Name">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-        <format type="number" field="Number of Dashboards">
-          <option name="precision">0</option>
-        </format>
-      </table>
-    </panel>
-    <panel>
-      <title>6. Number of Dashboards By Employee LOB</title>
-      <table>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
-          <query>| stats count AS "Number of Dashboards" by emp_lob 
-| sort 0 - "Number of Dashboards"</query>
-        </search>
-        <option name="count">5</option>
-        <option name="drilldown">none</option>
-        <option name="refresh.display">preview</option>
-        <option name="rowNumbers">true</option>
-        <format type="color" field="Author_Name">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-        <format type="color" field="Author">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-        <format type="color" field="emp_lob">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-        <format type="number" field="Number of Dashboards">
-          <option name="precision">0</option>
-        </format>
-      </table>
-    </panel>
-  </row>
-  <row id="Dashboards_Panel2">
-    <panel>
-      <title>7. Dashboards List</title>
       <table>
         <title>Post-process searches or Base Searches: It is highly recommended to use this feature. Follow the example here: https://docs.splunk.com/Documentation/Splunk/latest/Viz/Savedsearches</title>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
@@ -707,9 +569,95 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </table>
     </panel>
   </row>
-  <row id="Dashboards_Panel4">
-    <panel>
-      <title>8. Dashboards Searches</title>
+  <row id="Dashboards_Panel1">
+    <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
+      <title>2. Total Number of Dashboard</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x555","0xFF355E"]</option>
+        <option name="rangeValues">[100]</option>
+        <option name="refresh.display">preview</option>
+        <option name="unit">Dashboards</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
+      <title>3. Total Number of Authors</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
+          <query>| stats dc(author) As Num_Authors</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x555","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">preview</option>
+        <option name="unit">Authors</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_5" depends="$gadget_lib_loaded$">
+      <title>4. Number of Dashboards By Author</title>
+      <table>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
+          <query>| stats count AS "Number of Dashboards" by author
+| sort 0 - "Number of Dashboards"</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="author">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Number of Dashboards">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_6" depends="$gadget_lib_loaded$">
+      <title>5. Number of Dashboards By Employee LOB</title>
+      <table>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
+          <query>| stats count AS "Number of Dashboards" by emp_lob 
+| sort 0 - "Number of Dashboards"</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">true</option>
+        <format type="color" field="Author_Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Author">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="emp_lob">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Number of Dashboards">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Dashboards_Panel2">
+    <panel id="panel_accordion_togglepanel_true_7" depends="$gadget_lib_loaded$">
+      <title>6. Dashboards Searches</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard1">
           <query>| eval search=mvdedup(mvsort(search)) 
@@ -730,17 +678,17 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
     </panel>
   </row>
   <row id="Dashboards_Panel3">
-    <panel>
-      <title>9. Top N Most Used Dashboards Over Time</title>
+    <panel id="panel_accordion_togglepanel_false_8" depends="$gadget_lib_loaded$">
+      <title>7. Top N Most Used Dashboards Over Time</title>
       <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-        <label>Time Range</label>
+        <label>1. Time Range</label>
         <default>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
         </default>
       </input>
       <input type="dropdown" token="span_period" searchWhenChanged="true">
-        <label>Span Period</label>
+        <label>2. Span Period</label>
         <default></default>
         <choice value="">Automatic</choice>
         <choice value="span=1s">1 seconds</choice>
@@ -767,7 +715,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <choice value="span=12mon">1 year</choice>
       </input>
       <input type="dropdown" token="shcluster_label_tok1" searchWhenChanged="true">
-        <label>Splunk SH (Cluster/Instance)</label>
+        <label>3. Splunk SH (Cluster/Instance)</label>
         <fieldForLabel>shcluster_label</fieldForLabel>
         <fieldForValue>shcluster_label</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
@@ -778,7 +726,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="Splunk_Roles_tok1" searchWhenChanged="true">
-        <label>Splunk Roles</label>
+        <label>4. Splunk Roles</label>
         <fieldForLabel>Splunk_Roles1</fieldForLabel>
         <fieldForValue>Splunk_Roles1</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
@@ -790,7 +738,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="Splunk_Instance_tok1" searchWhenChanged="true">
-        <label>Splunk Instance</label>
+        <label>5. Splunk Instance</label>
         <fieldForLabel>Splunk_Instance1</fieldForLabel>
         <fieldForValue>Splunk_Instance1</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
@@ -802,7 +750,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="app_tok1" searchWhenChanged="true">
-        <label>App</label>
+        <label>6. App</label>
         <fieldForLabel>App</fieldForLabel>
         <fieldForValue>App</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard5">
@@ -813,7 +761,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="Dashboard_Name_tok1" searchWhenChanged="true">
-        <label>Dashboard Name</label>
+        <label>7. Dashboard Name</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>Dashboard_Name</fieldForLabel>
@@ -824,7 +772,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
-        <label>Split By</label>
+        <label>8. Split By</label>
         <choice value="App">App</choice>
         <choice value="User">User</choice>
         <choice value="Dashboard_Name">Dashboard Name</choice>
@@ -835,7 +783,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>Dashboard_Name</initialValue>
       </input>
       <input type="text" token="top_tok2" searchWhenChanged="true">
-        <label>Timechart IN top:</label>
+        <label>9. Timechart IN top:</label>
         <default>10</default>
         <initialValue>10</initialValue>
       </input>
@@ -857,8 +805,57 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </chart>
     </panel>
   </row>
+  <row id="Dashboards_Panel4">
+    <panel id="panel_accordion_togglepanel_true_2" depends="$gadget_lib_loaded$">
+      <title>8. Dashboards Associated GMC Job(s)</title>
+      <html>
+            
+            GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
+            
+            <ol>
+            <li>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Dashboards Gen Job</a>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_ui_views_sh_kv_store&amp;type=kv">
+                     View Dashboards KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+          </li>
+            <li>
+            <a href="/app/global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
+         <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_index_internal_web_access_tracker_sh_kv_store&amp;type=kv">
+                     View Dashboard Access Tracker KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+          </li>
+         <li>
+            <a href="/app/global_monitoring_console/search?s=splunk_internal_web_access_idx_summary_tracker" target="_blank" rel="noopener">Track Dashboards Executions (Summary Indexing)</a>
+          </li>
+        </ol>
+         </html>
+    </panel>
+  </row>
   <row id="Reports_Alerts_Inputs">
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_31" depends="$gadget_lib_loaded$">
       <title>1. Reports/Alerts Filters</title>
       <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
         <label>1. Splunk SH (Cluster/Instance)</label>
@@ -1335,144 +1332,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
 | `get_latest_access_human(Days_Latest_Access)`</query>
         </search>
       </input>
-    </panel>
-  </row>
-  <row id="Reports_Alerts_Panel1">
-    <panel>
-      <title>2. Associated GMC Job(s)</title>
-      <html>
-            GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-            <ol>
-          <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts Gen Job</a>
-          </li>
-            <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_saved_searches_sh_kv_store&amp;type=kv">
-                     View Reports/Alerts KV Store
-                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-            </div>
-                        <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (KV Store)</a>
-         <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_index_internal_web_access_tracker_sh_kv_store&amp;type=kv">
-                     View Dashboard Access Tracker KV Store
-                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-            </div>
-          </li>
-          <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_internal_scheduler_jobs_idx_summary_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (Summary Indexing)</a>
-          </li>
-        </ol>
-         </html>
-    </panel>
-    <panel>
-      <title>3. Number of Reports/Alerts</title>
-      <single>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
-          <query>| stats count</query>
-        </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
-        <option name="rangeColors">["0x555","0x53a051"]</option>
-        <option name="rangeValues">[100]</option>
-        <option name="unit">Reports/Alerts</option>
-        <option name="useColors">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>4. Total Number of Authors</title>
-      <single>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
-          <query>| stats dc(author) As Num_Authors</query>
-        </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
-        <option name="rangeColors">["0x555","0xf8be34"]</option>
-        <option name="rangeValues">[0]</option>
-        <option name="refresh.display">progressbar</option>
-        <option name="unit">Authors</option>
-        <option name="useColors">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>5. Reports/Alerts By Author</title>
       <table>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
-          <query>| stats count AS "Number of Reports/Alerts" by author
-| sort 0 - "Number of Reports/Alerts"</query>
-        </search>
-        <option name="count">5</option>
-        <option name="drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
-        <format type="color" field="author">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-        <format type="number" field="Number of Reports/Alerts">
-          <option name="precision">0</option>
-        </format>
-        <format type="color" field="Number of Reports/Alerts">
-          <colorPalette type="minMidMax" maxColor="#B6C75A" midColor="#FFFFFF" minColor="#294E70"></colorPalette>
-          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
-        </format>
-      </table>
-    </panel>
-    <panel>
-      <title>6. Reports/Alerts By App</title>
-      <chart>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
-          <query>| stats count by app</query>
-        </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
-      </chart>
-    </panel>
-    <panel>
-      <title>7. Top 10 Job Cron Schedules</title>
-      <table>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
-          <query>| search cron_schedule!="" | top cron_schedule
-| rename percent as %</query>
-        </search>
-        <option name="count">5</option>
-        <option name="drilldown">none</option>
-        <option name="rowNumbers">false</option>
-        <option name="wrap">false</option>
-        <format type="color" field="cron_schedule">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-        <format type="number" field="%">
-          <option name="precision">0</option>
-          <option name="unit">%</option>
-        </format>
-      </table>
-    </panel>
-  </row>
-  <row id="Reports_Alerts_Panel2">
-    <panel>
-      <title>8. List of Reports/Alerts</title>
-      <table>
+        <title>List of Reports/Alerts</title>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
           <query>| eval #=1 
 | `get_latest_access_human(Days_Latest_Access)` 
@@ -1577,18 +1438,105 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </table>
     </panel>
   </row>
+  <row id="Reports_Alerts_Panel1">
+    <panel id="panel_accordion_togglepanel_false_32" depends="$gadget_lib_loaded$">
+      <title>2. Number of Reports/Alerts</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x555","0x66FF66"]</option>
+        <option name="rangeValues">[100]</option>
+        <option name="unit">Reports/Alerts</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_33" depends="$gadget_lib_loaded$">
+      <title>3. Total Number of Authors</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
+          <query>| stats dc(author) As Num_Authors</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x555","0xD98695"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">Authors</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_34" depends="$gadget_lib_loaded$">
+      <title>4. Reports/Alerts By Author</title>
+      <table>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
+          <query>| stats count AS "Number of Reports/Alerts" by author
+| sort 0 - "Number of Reports/Alerts"</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="color" field="author">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Number of Reports/Alerts">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Number of Reports/Alerts">
+          <colorPalette type="minMidMax" maxColor="#B6C75A" midColor="#FFFFFF" minColor="#294E70"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_35" depends="$gadget_lib_loaded$">
+      <title>5. Reports/Alerts By App</title>
+      <chart>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
+          <query>| stats count by app</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_36" depends="$gadget_lib_loaded$">
+      <title>6. Top 10 Job Cron Schedules</title>
+      <table>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard2">
+          <query>| search cron_schedule!="" | top cron_schedule
+| rename percent as %</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="cron_schedule">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="%">
+          <option name="precision">0</option>
+          <option name="unit">%</option>
+        </format>
+      </table>
+    </panel>
+  </row>
   <row id="Reports_Alerts_Panel3">
-    <panel>
-      <title>8. Top N Most Used Reports/Alerts Over Time</title>
+    <panel id="panel_accordion_togglepanel_false_37" depends="$gadget_lib_loaded$">
+      <title>7. Top N Most Used Reports/Alerts Over Time</title>
       <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-        <label>Time Range</label>
+        <label>1. Time Range</label>
         <default>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
         </default>
       </input>
       <input type="dropdown" token="span_period" searchWhenChanged="true">
-        <label>Span Period</label>
+        <label>2. Span Period</label>
         <default></default>
         <choice value="">Automatic</choice>
         <choice value="span=1s">1 seconds</choice>
@@ -1615,7 +1563,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <choice value="span=12mon">1 year</choice>
       </input>
       <input type="dropdown" token="shcluster_label_tok2" searchWhenChanged="true">
-        <label>Splunk SH (Cluster/Instance)</label>
+        <label>3. Splunk SH (Cluster/Instance)</label>
         <fieldForLabel>shcluster_label</fieldForLabel>
         <fieldForValue>shcluster_label</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard6">
@@ -1626,7 +1574,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="Splunk_Roles_tok2" searchWhenChanged="true">
-        <label>Splunk Roles</label>
+        <label>4. Splunk Roles</label>
         <fieldForLabel>Splunk_Roles1</fieldForLabel>
         <fieldForValue>Splunk_Roles1</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard6">
@@ -1638,7 +1586,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="Splunk_Instance_tok2" searchWhenChanged="true">
-        <label>Splunk Instance</label>
+        <label>5. Splunk Instance</label>
         <fieldForLabel>Splunk_Instance1</fieldForLabel>
         <fieldForValue>Splunk_Instance1</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard6">
@@ -1650,7 +1598,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="app_tok2" searchWhenChanged="true">
-        <label>App</label>
+        <label>6. App</label>
         <fieldForLabel>App</fieldForLabel>
         <fieldForValue>App</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard6">
@@ -1661,7 +1609,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="Savedsearch_Name_tok2" searchWhenChanged="true">
-        <label>Report/Alert Name</label>
+        <label>7. Report/Alert Name</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>Savedsearch_Name</fieldForLabel>
@@ -1672,7 +1620,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="split_by_tok_2" searchWhenChanged="true">
-        <label>Split By</label>
+        <label>8. Split By</label>
         <choice value="App">App</choice>
         <choice value="User">User</choice>
         <choice value="Savedsearch_Name">Report/Alert</choice>
@@ -1683,12 +1631,12 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>Savedsearch_Name</initialValue>
       </input>
       <input type="text" token="exclusion_tok2" searchWhenChanged="true">
-        <label>Exclude</label>
+        <label>9. Exclude</label>
         <default>none</default>
         <initialValue>none</initialValue>
       </input>
       <input type="text" token="top_tok2" searchWhenChanged="true">
-        <label>Timechart IN top:</label>
+        <label>10. Timechart IN top:</label>
         <default>10</default>
         <initialValue>10</initialValue>
       </input>
@@ -1711,8 +1659,55 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </chart>
     </panel>
   </row>
+  <row id="Reports_Alerts_Panel4">
+    <panel id="panel_accordion_togglepanel_true_31" depends="$gadget_lib_loaded$">
+      <title>8. Reports/Alerts Associated GMC Job(s)</title>
+      <html>
+            GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
+            <ol>
+          <li>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts Gen Job</a>
+          </li>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_saved_searches_sh_kv_store&amp;type=kv">
+                     View Reports/Alerts KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+                        <li>
+            <a href="/app/global_monitoring_console/search?s=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (KV Store)</a>
+         <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store&amp;type=kv">
+                     View Reports/Alerts Access Tracker KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+          </li>
+          <li>
+            <a href="/app/global_monitoring_console/search?s=splunk_internal_scheduler_jobs_idx_summary_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (Summary Indexing)</a>
+          </li>
+        </ol>
+         </html>
+    </panel>
+  </row>
   <row id="Lookups_Inputs">
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_61" depends="$gadget_lib_loaded$">
       <title>1. Lookup Files &amp; KV Stores Filters</title>
       <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
         <label>1. Splunk SH (Cluster/Instance)</label>
@@ -1993,113 +1988,11 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <label>33. Fields_List (Contains)</label>
         <default>*</default>
       </input>
-    </panel>
-  </row>
-  <row id="Lookups_Panel1">
-    <panel>
-      <title>2. Associated GMC Job(s)</title>
-      <html>
-           <ol>
-          <li>
-            GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Table Files Gen Job</a>
-          </li>
-          <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_admin_lookup_table_files_sh_kv_store&amp;type=kv">
-                     View Lookup Files KV Store
-                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-            </div>
-          <li>
-            GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Definitions Gen Job</a>
-          </li>
-          <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen&amp;type=kv">
-                     View Lookup Definition KV Store
-                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-            </div>
-          </ol>
-         </html>
-    </panel>
-    <panel>
-      <title>3. Number of Lookups</title>
-      <single>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
-          <query>| stats count</query>
-        </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
-        <option name="rangeColors">["0x555","0xf8be34"]</option>
-        <option name="rangeValues">[100]</option>
-        <option name="unit">Lookups</option>
-        <option name="useColors">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>4. Total Number of Authors</title>
-      <single>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
-          <query>| stats dc(author) As Num_Authors</query>
-        </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
-        <option name="rangeColors">["0x555","0xf8be34"]</option>
-        <option name="rangeValues">[100]</option>
-        <option name="refresh.display">progressbar</option>
-        <option name="unit">Authors</option>
-        <option name="useColors">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>5. By Type</title>
-      <chart>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
-          <query>| stats count by Type</query>
-        </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
-      </chart>
-    </panel>
-    <panel>
-      <title>6. By Replicate</title>
-      <chart>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
-          <query>| stats count by Replicate</query>
-        </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
-      </chart>
-    </panel>
-  </row>
-  <row id="Lookups_Panel2">
-    <panel>
-      <title>7. Lookups List</title>
       <table>
+        <title>Lookups List</title>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
           <query>| eval #=1 
-| table # shcluster_label app sharing author emp_name emp_ttl emp_dep emp_lob emp_type emp_status Type Lookup Filename Lookup_File_Path Collection updated Match_Type Replicate Allow_Caching Filter Index_Fields_List Min_Matches Max_Matches Fields_List case_sensitive_match 
+| table # shcluster_label app sharing Type Lookup Filename Lookup_File_Path Collection Match_Type Fields_List Replicate Allow_Caching Filter Index_Fields_List Min_Matches Max_Matches case_sensitive_match updated author emp_name emp_ttl emp_dep emp_lob emp_type emp_status 
 | `rename_lookup_fields` 
 | `rename_identity_fields`</query>
         </search>
@@ -2153,11 +2046,131 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
+        <format type="color" field="Lookup Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="shcluster_label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup Filename">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup Collection Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
       </table>
     </panel>
   </row>
+  <row id="Lookups_Panel1">
+    <panel id="panel_accordion_togglepanel_false_62" depends="$gadget_lib_loaded$">
+      <title>2. Number of Lookups</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x555","0x5DADEC"]</option>
+        <option name="rangeValues">[100]</option>
+        <option name="unit">Lookups</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_63" depends="$gadget_lib_loaded$">
+      <title>3. Total Number of Authors</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
+          <query>| stats dc(author) As Num_Authors</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x555","0x933709"]</option>
+        <option name="rangeValues">[1]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">Authors</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_64" depends="$gadget_lib_loaded$">
+      <title>4. By Type</title>
+      <chart>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
+          <query>| stats count by Type</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_65" depends="$gadget_lib_loaded$">
+      <title>5. By Replicate</title>
+      <chart>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard3">
+          <query>| stats count by Replicate</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="Lookups_Panel5">
+    <panel id="panel_accordion_togglepanel_true_61" depends="$gadget_lib_loaded$">
+      <title>6. Lookups Associated GMC Job(s)</title>
+      <html>
+           <ol>
+          <li>
+            GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Table Files Gen Job</a>
+          </li>
+          <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_admin_lookup_table_files_sh_kv_store&amp;type=kv">
+                     View Lookup Files KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+          <li>
+            GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Definitions Gen Job</a>
+          </li>
+          <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen&amp;type=kv">
+                     View Lookup Definition KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+          </ol>
+         </html>
+    </panel>
+  </row>
   <row id="Auto_Lookups_Inputs">
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_81" depends="$gadget_lib_loaded$">
       <title>1. Automatic Lookups Filters</title>
       <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
         <label>1. Splunk SH (Cluster/Instance)</label>
@@ -2349,80 +2362,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-    </panel>
-  </row>
-  <row id="Auto_Lookups_Panel2">
-    <panel>
-      <title>Associated GMC Job(s) - $env:page$</title>
-      <html>
-            <ol>
-          <li>
-            GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Automatic Lookups Gen Job</a>
-          </li>
-        </ol>
-            <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_props_lookups_sh_kv_store&amp;type=kv">
-                     View Automatic Lookups KV Store
-                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-            </div>
-         </html>
-    </panel>
-    <panel>
-      <title>2. Total Number of Automatic Lookups</title>
-      <single>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard4">
-          <query>| stats count</query>
-        </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
-        <option name="rangeColors">["0x53a051","0x53a051"]</option>
-        <option name="rangeValues">[0]</option>
-        <option name="refresh.display">progressbar</option>
-        <option name="useColors">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>3. Total Number of Authors</title>
-      <single>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard4">
-          <query>| stats dc(author) As Num_Authors</query>
-        </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
-        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
-        <option name="rangeValues">[0]</option>
-        <option name="refresh.display">progressbar</option>
-        <option name="unit">Authors</option>
-        <option name="useColors">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>4. By App</title>
-      <chart>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard4">
-          <query>| stats count by app</query>
-        </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
-      </chart>
-    </panel>
-  </row>
-  <row id="Auto_Lookups_Panel3">
-    <panel>
-      <title>5. Automatic Lookups List</title>
       <table>
+        <title>Automatic Lookups List</title>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboard4">
           <query>| table shcluster_label attribute app sharing sharing author emp_name emp_ttl emp_dep emp_lob emp_type emp_status stanza updated Type transform Filename Collection value Fields_List overwrite author emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status 
 | `rename_common_fields` 
@@ -2468,6 +2409,76 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
           <scale type="sharedCategory"></scale>
         </format>
       </table>
+    </panel>
+  </row>
+  <row id="Auto_Lookups_Panel2">
+    <panel id="panel_accordion_togglepanel_false_82" depends="$gadget_lib_loaded$">
+      <title>2. Total Number of Automatic Lookups</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard4">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x9C51B6"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_83" depends="$gadget_lib_loaded$">
+      <title>3. Total Number of Authors</title>
+      <single>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard4">
+          <query>| stats dc(author) As Num_Authors</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0xDA2647"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">Authors</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_84" depends="$gadget_lib_loaded$">
+      <title>4. By App</title>
+      <chart>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboard4">
+          <query>| stats count by app</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="Auto_Lookups_Panel5">
+    <panel id="panel_accordion_togglepanel_true_81" depends="$gadget_lib_loaded$">
+      <title>5. Automatic Lookups Associated GMC Job(s)</title>
+      <html>
+            <ol>
+          <li>
+            GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Automatic Lookups Gen Job</a>
+          </li>
+        </ol>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_props_lookups_sh_kv_store&amp;type=kv">
+                     View Automatic Lookups KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+         </html>
     </panel>
   </row>
 </form>

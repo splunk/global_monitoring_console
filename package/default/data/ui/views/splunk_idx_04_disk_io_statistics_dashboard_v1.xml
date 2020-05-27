@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>IDX - 04 - Disk IO Statistics - Dashboard - v1.5.50</label>
+  <label>IDX - 04 - Disk IO Statistics - Dashboard - v1.5.66</label>
   <description>Disk IO Statistics using the Splunk_TA_nix iostat Scripted Inputs</description>
   <search id="splunk_idx_04_disk_io_statistics_dashboard_v1">
     <query>index=osnixperf sourcetype=iostat splunk_server_group=dmc_group_indexer
@@ -12,14 +12,14 @@
   </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-      <label>Time Range</label>
+      <label>1. Time Range</label>
       <default>
         <earliest>-15m</earliest>
         <latest>now</latest>
       </default>
     </input>
     <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-      <label>Splunk_Roles</label>
+      <label>2. Splunk_Roles</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -30,7 +30,7 @@
       </search>
     </input>
     <input type="dropdown" token="host" searchWhenChanged="true">
-      <label>Splunk Instance</label>
+      <label>3. Splunk Instance</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>

@@ -1,0 +1,349 @@
+<form onunloadCancelJobs="true" stylesheet="load.css" script="load.js" theme="dark">
+  <label>GMC Accordion Dashboard Template</label>
+  <description>gmc_dashboard_template2</description>
+  <search id="splunk_rest_data_indexes_idx_kv_store_lookup">
+    <query>
+</query>
+  </search>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_2" depends="$gadget_lib_loaded$">
+      <title>01. Panel 1</title>
+      <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
+        <label>1. Indexer Cluster</label>
+        <fieldForLabel>idxcluster_label</fieldForLabel>
+        <fieldForValue>idxcluster_label</fieldForValue>
+        <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
+          <query>| stats count by idxcluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2. Splunk Roles</label>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app" searchWhenChanged="true">
+        <label>3. App</label>
+        <fieldForLabel>app</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
+          <query>| stats count by app</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Index_Name" searchWhenChanged="true">
+        <label>4. Index Name</label>
+        <fieldForLabel>Index_Name</fieldForLabel>
+        <fieldForValue>Index_Name</fieldForValue>
+        <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
+          <query>| stats count by Index_Name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <table>
+        <title>Unit of Measurement: $unit_tok7$ / Earliest: $earliest$ / Latest: $latest$</title>
+        <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
+          <query>| table 123</query>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Indexer Cluster">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Index">
+          <colorPalette type="expression">case(match(value,"^os"),"#FFDB00",match(value,"^_"),"#5CC05C", match(value,"summary"),"#DA2647", match(value,"^app"),"#6F2DA8", match(value,"^aws"),"rgb(246,114,17)",match(value,"^net"),"#B2F302", true(),"#4F86F7")</colorPalette>
+        </format>
+        <format type="number" field="Data Model Summary Size">
+          <option name="unit">MB</option>
+        </format>
+        <format type="color" field="Retention IN Days">
+          <colorPalette type="minMidMax" maxColor="#5A4575" midColor="#006D9C" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="color" field="Earliest Event">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Time Diff IN Years">
+          <option name="unit">Years</option>
+        </format>
+        <format type="number" field="Days Diff From Retention">
+          <option name="unit">Days</option>
+        </format>
+        <format type="number" field="Buckets">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Buckets">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="Max Warm DB Count">
+          <option name="precision">0</option>
+          <option name="unit">Buckets</option>
+        </format>
+        <format type="number" field="Average Event Count">
+          <option name="precision">0</option>
+          <option name="unit">Events</option>
+        </format>
+        <format type="number" field="Retention IN Days">
+          <option name="precision">0</option>
+          <option name="unit">Days</option>
+        </format>
+        <format type="number" field="Average Bucket Count">
+          <option name="precision">0</option>
+          <option name="unit">Buckets</option>
+        </format>
+        <format type="number" field="Index Size (MB)">
+          <option name="precision">3</option>
+          <option name="unit">MB</option>
+        </format>
+        <format type="color" field="Index Size (GB)">
+          <colorPalette type="minMidMax" maxColor="#5A4575" midColor="#708794" minColor="#4FA484"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="Index Size (GB)">
+          <option name="precision">3</option>
+          <option name="unit">GB</option>
+        </format>
+        <format type="number" field="Index Size (TB)">
+          <option name="precision">3</option>
+          <option name="unit">TB</option>
+        </format>
+        <format type="number" field="Max Hot Buckets">
+          <option name="precision">0</option>
+          <option name="unit">Buckets</option>
+        </format>
+        <format type="color" field="Time Diff IN Years">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="Time Diff IN Days">
+          <option name="unit">Days</option>
+        </format>
+        <format type="color" field="Time Diff IN Month">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="Time Diff IN Month">
+          <option name="unit">Month</option>
+        </format>
+        <format type="number" field="Quarantine Past Days">
+          <option name="unit">Days</option>
+        </format>
+        <format type="number" field="Quarantine Future Days">
+          <option name="unit">Days</option>
+        </format>
+        <format type="number" field="Hot/Warm Bucket Retention IN Days">
+          <option name="unit">Days</option>
+        </format>
+        <format type="number" field="# of Indexers">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Disabled">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+        <format type="number" field="License Usage (MB)">
+          <option name="precision">3</option>
+          <option name="unit">MB</option>
+        </format>
+        <format type="color" field="IDX Cluster">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="License Usage (GB)">
+          <option name="precision">3</option>
+          <option name="unit">GB</option>
+        </format>
+        <format type="number" field="License_Usage_MB">
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="Cold Bucket Size">
+          <option name="precision">3</option>
+        </format>
+        <format type="number" field="Warm Bucket Size">
+          <option name="precision">3</option>
+        </format>
+        <format type="number" field="Data Model Summary Size (MB)">
+          <option name="precision">3</option>
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="Max Hot/Warm Size (MB)">
+          <option name="precision">3</option>
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="Cold Bucket Size (MB)">
+          <option name="precision">3</option>
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="Warm Bucket Size (MB)">
+          <option name="precision">3</option>
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="Max Cold Size (MB)">
+          <option name="precision">3</option>
+          <option name="unit">MB</option>
+        </format>
+        <format type="number" field="License Usage (TB)">
+          <option name="precision">3</option>
+          <option name="unit">TB</option>
+        </format>
+        <format type="color" field="License Usage (GB)">
+          <colorPalette type="minMidMax" maxColor="#5A4575" midColor="#FFFFFF" minColor="#708794"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="color" field="License Usage (MB)">
+          <colorPalette type="minMidMax" maxColor="#B6C75A" midColor="#FFFFFF" minColor="#294E70"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="color" field="Index Size (MB)">
+          <colorPalette type="minMidMax" maxColor="#5A4575" midColor="#FFFFFF" minColor="#708794"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="color" field="License Usage (TB)">
+          <colorPalette type="minMidMax" maxColor="#B6C75A" midColor="#FFFFFF" minColor="#294E70"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="color" field="Index Size (TB)">
+          <colorPalette type="minMidMax" maxColor="#5A4575" midColor="#FFFFFF" minColor="#708794"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+        <format type="number" field="Avg Bucket Count">
+          <option name="precision">0</option>
+          <option name="unit">Buckets</option>
+        </format>
+        <format type="number" field="Data Model Summary Size (GB)">
+          <option name="precision">3</option>
+          <option name="unit">GB</option>
+        </format>
+        <format type="number" field="Warm Bucket Size (TB)">
+          <option name="precision">3</option>
+          <option name="unit">TB</option>
+        </format>
+        <format type="number" field="Cold Bucket Size (TB)">
+          <option name="precision">3</option>
+          <option name="unit">TB</option>
+        </format>
+        <format type="number" field="Data Model Summary Size (TB)">
+          <option name="precision">3</option>
+          <option name="unit">TB</option>
+        </format>
+      </table>
+      <single>
+        <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="unit">Indexes</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_14" depends="$gadget_lib_loaded$">
+      <title>02. Panel 2</title>
+      <html>
+            <ol>
+               <li>
+                  GMC Jobs / GMC Gen Jobs / IDX Tier Gen Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_cluster_config_idx_kv_store_lookup_gen" target="_blank" rel="noopener">IDX Cluster Configuration Gen Job</a>
+               </li>
+               <li>
+                  GMC Jobs / GMC Gen Jobs / IDX Tier Gen Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Indexes Gen Job</a>
+               </li>
+               <li>
+                  GMC Jobs / GMC Gen Jobs / IDX Tier Gen Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_index_volumes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">IDX Cluster Indexes Volumes Gen Job</a>
+               </li>
+               <li>
+                  GMC Jobs / GMC Tracking Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_internal_index_license_usage_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster By Index Daily</a>
+               </li>
+               <li>
+                  GMC Jobs / GMC Tracking Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_internal_license_rollover_summary_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster Daily</a>
+               </li>
+               <li>
+                  GMC Jobs / GMC Tracking Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_introspection_index_size_idx_summary_tracker" target="_blank" rel="noopener">Track Index Size Daily</a>
+               </li>
+               <li>
+                  GMC Jobs / GMC Tracking Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_introspection_volume_size_idx_summary_tracker" target="_blank" rel="noopener">Track Index Volume Size Daily</a>
+               </li>
+            </ol>
+            <li>docs.splunk.com Admin/indexes.conf: <a href="https://docs.splunk.com/Documentation/Splunk/latest/Admin/Indexesconf" target="_blank" rel="noopener">indexes.conf</a>
+        </li>
+            <li>StateSpaceForecast is a forecasting algorithm for time series data in the MLTK: <a href="https://docs.splunk.com/Documentation/MLApp/latest/User/Algorithms#StateSpaceForecast" target="_blank" rel="noopener">State Space Forecast</a>
+        </li>
+        <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_index_volumes_idx_kv_store&amp;type=kv">
+                     View Volumes KV Store
+                     <i class="icon-data icon-modal-medium icon-color-searchfu m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-severe m-left"/>
+                  </a>
+               </div>
+            </div>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_cluster_config_idx_kv_store&amp;type=kv">
+                     View IDX Cluster KV Store
+                     <i class="icon-data icon-modal-medium icon-color-searchfu m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-severe m-left"/>
+                  </a>
+               </div>
+            </div>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_indexes_idx_kv_store&amp;type=kv">
+                     View Indexes KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+         </html>
+    </panel>
+  </row>
+</form>

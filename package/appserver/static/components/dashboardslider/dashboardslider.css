@@ -6,14 +6,20 @@
 
 .db-slider-container {
   font-family: Arial, Helvetica, Arial, sans-serif;
-  border-top: 3px solid orange;
-  border-right: 3px solid orange;
-  border-left: 1px solid orange;
+  
+  /* border-top: 3px solid slateblue;
+  border-right: 3px solid slateblue;
+  border-left: 1px solid slateblue; */
+
+  border-top: 3px solid #FFFF38;
+  border-right: 3px solid #FFFF38;
+  border-left: 1px solid #FFFF38;
+
   position: fixed;
   width: 150px;
   z-index: 10000;
   height: 125px;
-  color: #FFC0CB;
+  color: #000;
   display: flex;
   background: #b2b6ba;
   border-top-left-radius: 25px;
@@ -71,7 +77,7 @@
 
 .db-slider-content label {
   font-size: 12px;
-  color: #FFC0CB;
+  color: #000;
 }
 
 .db-slider-content div[class*="main_Box_"] {

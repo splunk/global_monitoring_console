@@ -1,0 +1,131 @@
+"Index_Name",App,"Index_Type","Data_Source","Used_By",Retention,"Index_Description"
+"_audit",system,event,Splunk,"Internal Indexes",365,"Contains events related to the file system change monitor, auditing, and all user search history."
+"_internal",system,event,Splunk,"Internal Indexes",90,"Stores Splunk Enterprise internal logs and processing metrics."
+"_introspection",system,event,Splunk,"Internal Indexes",90,"Tracks system performance and Splunk resource usage data.  Generates data about your Splunk instance and environment and writes that data to log files to aid in reporting on system resource utilization and troubleshooting problems with your Splunk Enterprise deployment."
+"_telemetry",system,event,Splunk,"Internal Indexes",7,"After license usage reporting is enabled, the first time product instrumentation runs, it creates a new file in $SPLUNK_HOME/var/log/splunk. The file is called license_usage_summary.log and is limited in size to 25 MB.  The file is indexed to a new internal index _telemetry.  The _telemetry index is retained for two years by default and is limited in size to 256 MB."
+"_metrics",system,metric,Splunk,"Internal Indexes",90,"New _metrics Index"
+"_internal_forwarder",system,event,Splunk,"Internal Indexes",90,"https://www.rfaircloth.com/2019/03/20/redirecting-_internal-for-a-large-uf-deployment"
+main,system,event,Splunk,"Default Indexes",90,"This is the default Splunk Enterprise index. All processed data is stored here unless otherwise specified."
+summary,system,event,Splunk,"Default Indexes",30,"In Splunk, summary indexing is an alert option for scheduled saved searches. When you run a saved search with summary indexing turned on, its search results are temporarily stored in a file ($SPLUNK_HOME/var/spool/splunk/<savedsearch_name>_<random-number>.stash). From the file, Splunk uses the addinfo command to add general information about the current search and the fields you specify during configuration to each result. Splunk then indexes the resulting event data in the summary index that you've designated for it (index=summary by default).  Note: Use the addinfo command to add fields containing general information about the current search to the search results going into a summary index. General information added about the search helps you run reports on results you place in a summary index."
+"add_on_builder_index","splunk_app_addon-builder",event,Splunk,"Default Indexes",30,"Index for Splunk Add-On Builder. This is used to index manual log file upload for TA development."
+dbx,DBConnect,event,Splunk,"Default Indexes",30,
+eventgen,"SA-Eventgen",event,Splunk,"Default Indexes",30,
+"access_summary","SA-AccessProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Created/used by ES"
+"access_summary2","SA-AccessProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Created/used by ES"
+"audit_summary","SA-AuditAndDataProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Created/used by ES"
+"audit_summary2","SA-AuditAndDataProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Created/used by ES product"
+"endpoint_summary","SA-EndpointProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Endpoint protection summary index."
+"endpoint_summary2","SA-EndpointProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Created/used by ES product"
+"gia_summary","DA-ESS-ThreatIntelligence",event,Splunk,"Splunk Enterprise Security Indexes",30,
+ioc,"DA-ESS-ThreatIntelligence",event,Splunk,"Splunk Enterprise Security Indexes",30,
+"network_summary","SA-NetworkProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Created/used by ES"
+"network_summary2","SA-NetworkProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Created/used by ES"
+"network_summary3","SA-NetworkProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Created/used by ES"
+notable,"SA-ThreatIntelligence",event,Splunk,"Splunk Enterprise Security Indexes",365,"Contains the notable events."
+"notable_summary","SA-ThreatIntelligence",event,Splunk,"Splunk Enterprise Security Indexes",365,"Contains a stats summary of notable events used on select dashboards."
+pci,"Splunk_DA-ESS_PCICompliance",event,Splunk,"Splunk Enterprise Security Indexes",30,"PCI Event Data Index"
+"pci_posture_summary","Splunk_DA-ESS_PCICompliance",event,Splunk,"Splunk Enterprise Security Indexes",30,"PCI Posture Summary"
+"pci_summary","Splunk_DA-ESS_PCICompliance",event,Splunk,"Splunk Enterprise Security Indexes",30,"General PCI Summary"
+"proxy_center_summary","SA-NetworkProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Created/used by ES"
+"proxy_center_summary2","SA-NetworkProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Created/used by ES"
+risk,"SA-ThreatIntelligence",event,Splunk,"Splunk Enterprise Security Indexes",30,"Contains the risk modifier events."
+"threat_activity","DA-ESS-ThreatIntelligence",event,Splunk,"Splunk Enterprise Security Indexes",30,"Contains events that result from a threat list match."
+"traffic_center_summary","SA-NetworkProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"ES product"
+"traffic_center_summary2","SA-NetworkProtection",event,Splunk,"Splunk Enterprise Security Indexes",30,"Created/used by ES"
+ubaroute,"Splunk_TA_ueba",event,Splunk,"Splunk Enterprise Security Indexes",30,
+ueba,"Splunk_TA_ueba",event,Splunk,"Splunk Enterprise Security Indexes",30,
+"xtreme_contexts","Splunk_SA_ExtremeSearch",event,Splunk,"Splunk Enterprise Security Indexes",30,"Contains the contexts for Extreme search."
+"cim_modactions","Splunk_SA_CIM",event,Splunk,"Splunk SAs",30,"Index definition is used with the common action model alerts and auditing. Assign the appropriate Roles to search the index.  In ES Contains the adaptive response action events."
+"cim_summary","Splunk_SA_CIM",event,Splunk,"Splunk SAs",30,"Common Information Model Summary Index.  This index is deprecated, but is included for backwards compatibility with upgraded versions of Splunk Enterprise Security and the Splunk App for PCI Compliance. If you are not using this index definition, remove this default/indexes.conf before installation."
+"em_metrics","splunk_app_infrastructure",metric,Splunk,"Legacy Indexes",30,
+"infra_alerts","splunk_app_infrastructure",metric,Splunk,"Legacy Indexes",30,
+"vmware-esxilog","Splunk_TA_esxilogs",event,Splunk,"Splunk TAs",30,
+"vmware-inv","Splunk_TA_vmware",event,Splunk,"Splunk TAs",30,
+"vmware-perf","Splunk_TA_vmware",event,Splunk,DS022Performance,14,
+"vmware-taskevent","Splunk_TA_vmware",event,Splunk,"Splunk TAs",30,
+"vmware-vclog","Splunk_TA_vcenter",event,Splunk,"Splunk TAs",30,
+appcasso,SEC,event,Other,"Application Security Indexes",30,"CA Single Sign-On  formally CA SiteMiner"
+appcassoweb,SEC,event,Other,"Application Security Indexes",90,"CA Single Sign-On  formally CA SiteMiner web log component"
+appdbserver,SEC,event,Other,"Application Security Indexes",30,"Database Servers.  SQL/Oracle etc"
+appext,SEC,event,Other,"Application Security Indexes",30,"App Servers for external-facing apps.  External app server logs external means subject to attack from the internet"
+appextmsexchange,SEC,event,Other,"Application Security Indexes",30,"Logs from the external facing exchange application servers"
+appextwebmsexchange,SEC,event,Other,"Application Security Indexes",90,"Logs from the external facing exchange web application servers"
+appint,SEC,event,Other,"Application Security Indexes",30,"App Servers for internal-facing apps.  Internal app server logs internal means not acessible from the internet"
+appintmsexchange,SEC,event,DS001MAIL,"Application Security Indexes",30,"Logs from the internal facing exchange application servers"
+appmsad,SEC,event,Other,"Application Security Indexes",30,"Contains information generally useful for windows active directory operations and in some cases with security relevance. Generally not required to retain for long term records retention compliance"
+appmsadmon,SEC,event,Other,"Application Security Indexes",400,"Contains information generally generated when active directory objects change this may contain sensitive data when products integrate with active directory and store additional protected values in the schema. This information is useful for audit as well as assets and identities in both ES and ITSI.  Active Directory Monitoring for Assets & Identities.  Deployed on 1 Directory Controller per domain to load the baseline can be removed when complete.  Deployed on 2 Directory Controllers per domain per data center and then"
+appmsadsec,SEC,event,DS003Authentication,"Application Security Indexes",30,"AD Security Logs"
+appmsgserver,SEC,event,Other,"Application Security Indexes",90,"Messaging Servers.  Message bus server logs i.e. kafka or websphere"
+appmssql,SEC,event,Other,"Application Security Indexes",30,"Contains Microsoft SQL Data"
+appwebcdn,SEC,event,DS005WebProxyRequest,"Application Security Indexes",90,"CDN logs for your website.  Content distribution logs like Akami"
+appwebext,SEC,event,DS005WebProxyRequest,"Application Security Indexes",90,"External WebApp Access Logs.  Web server logs for external apps"
+appwebextmsexchange,SEC,event,DS005WebProxyRequest,"Application Security Indexes",30,
+appwebextrp,SEC,event,DS005WebProxyRequest,"Application Security Indexes",90,"External-facing Web App Load Balancers.  Reverse proxy (load balancer logs ) for external apps"
+appwebint,SEC,event,DS005WebProxyRequest,"Application Security Indexes",90,"Internal WebApp Access Logs.  Internal version of appwebext.  IIS, Apache etc…"
+appwebintrp,SEC,event,DS005WebProxyRequest,"Application Security Indexes",90,"Internal-facing Web App Load Balancers.  Internal version of appwebint"
+epav,SEC,event,DS004EndPointAntiMalware,"Endpoint Indexes",30,"Contains information generated by signature detection type antivirus that can provide a detection category and signature for each detection event. This index is used regardless of the antivirus product."
+epfw,SEC,event,DS010NetworkCommunication,"Endpoint Indexes",30,
+ephids,SEC,event,Other,"Endpoint Indexes",30,
+epintel,SEC,event,DS004EndPointAntiMalware,"Endpoint Indexes",30,"Contains information generated by multiple change detection technologies for endpoints."
+epnet,SEC,event,Other,"Endpoint Indexes",30,"client firewall logs rarely used"
+epproxy,SEC,event,Other,"Endpoint Indexes",30,"Local Proxy Activity"
+epweb,SEC,event,Other,"Endpoint Indexes",90,"client webproxy logs rarely used"
+osnix,SEC,event,Other,"Endpoint Indexes",30,"Contains information generally useful for nixoperations and in some cases with security relevance. Generally not required to retain for long term records retention compliance"
+osnixbash,SEC,event,Other,"Endpoint Indexes",30,"UNIX/Linux Bash"
+osnixetc,SEC,event,Other,"Endpoint Indexes",30,"Contains the following files: *release, cron.d/*, cron*, dnsmasq.conf, dnsmasq.d/*, hosts, issue, logrotate.conf, logrotate.d/*, profile, profile.d/*, resolve.conf, rsyslog.conf, rsyslog.d/*, ssh/*.pub, ssh/sshd_config, sudo.conf, sudoers, sudoers.d/*, tuned.d/*, yum.conf, yum.repos.d/*"
+osnixperf,SEC,event,Other,DS022Performance,14,"Contains performance counter information useful for ITSI and other IT operations use cases. Some security detection value where abnormally high cpu memory disk or network can be detected the data is rarely sensitive"
+osnixscript,SEC,event,Other,"Endpoint Indexes",30,"Contains information generally useful for nix operations and in some cases with security relevance. Generally not required to retain for long term records retention compliance. The information is generated by scripts developed by Splunk"
+osnixmetrics,SEC,metric,Other,"Endpoint Indexes",30,"Nix Metrics OS Collection"
+osnixsec,SEC,event,DS003Authentication,"Endpoint Indexes",30,"Contains information generally useful for nix security and in some cases with operations relevance. Generally required to retain for long term records retention compliance"
+oswin,SEC,event,Other,"Endpoint Indexes",30,"Contains information generally useful for windows operations and in some cases with security relevance. Generally not required to retain for long term records retention compliance"
+oswinperf,SEC,event,Other,DS022Performance,14,"Contains performance counter information useful for ITSI and other IT operations use cases. Some security detection value where abnormally high cpu memory disk or network can be detected the data is rarely sensitive"
+oswinreg,SEC,event,Other,"Endpoint Indexes",30,"Contains Windows Registry data other than what is used by Splunk Enterprise Security epintel index"
+oswinmetrics,SEC,metric,Other,"Endpoint Indexes",30,"Win Metrics OS Collection"
+oswinscript,SEC,event,Other,"Endpoint Indexes",30,"Contains information generally useful for windows operations and in some cases with security relevance. Generally not required to retain for long term records retention compliance. The information is generated by scripts developed by Splunk"
+oswinsec,SEC,event,DS003Authentication,"Endpoint Indexes",30,"Contains information generally useful for windows security and in some cases with operations relevance. Generally required to retain for long term records retention compliance"
+"unix_summary","SA_nix",event,Other,"Endpoint Indexes",30,"The Splunk Supporting Add-on for Unix and Linux creates two indexes: unix_summary and firedalerts. It uses these indexes to maintain the list of triggered alert events."
+history,system,event,Splunk,"Default Indexes",7,
+mail,SEC,event,DS001MAIL,"Network Indexes",365,"Mail Index"
+mailgw,SEC,event,DS001MAIL,"Network Indexes",365,"outbount email server logs"
+mailmta,SEC,event,DS001MAIL,"Network Indexes",365,"inbound email server logs"
+netacl,SEC,event,Other,"Network Indexes",30,"Legacy Network ACL rule interaction, allow deny etc events generated by NONT stateful packet inspection solutions. ACL events log in both request and response patterns.  logs from non stateful firewalls such as those in cisco switches."
+netauth,SEC,event,Other,"Network Indexes",30,"For network authentication sources.  Network authentication nac like cisco ISE and microsoft NPS"
+netdlp,SEC,event,Other,"Network Indexes",30,
+netdns,SEC,event,Other,"Network Indexes",90,"Contains information network dns query and operational logs.  dns query logs usualy stream based. Can also contain DNS operational logs"
+netflow,SEC,event,Other,"Network Indexes",30,"Contains information network flow sampled or full generated by flow collecting systems in the organization. In special cases where syslog over netflow is in use transform routing or some other mechanism should be used to ensure the non flow events are placed in the appropriate indexes typically netfw or netops"
+netfw,SEC,event,DS010NetworkCommunication,"Network Indexes",30,"Network firewall rule interaction, allow deny etc events generated by stateful packet inspection solutions. This excludes non stateful events such as switch ACLs"
+netids,SEC,event,DS010NetworkCommunication,"Network Indexes",30,"for dedicated Intrusion Detection (IDS) environments"
+netipam,SEC,event,Other,"Network Indexes",30,"For IPAM systems, contains information network ip address management logs, typically dhcp servers, software defined networking and VPN"
+netipm,SEC,event,Other,"Network Indexes",30,"IP management mostly DHCP servers can also be Microsoft IPAM (rare)"
+netips,SEC,event,DS010NetworkCommunication,"Network Indexes",30,"for dedicated Intrusion Prevention (IPS) environments"
+netnlb,SEC,event,Other,"Network Indexes",90,"For non-web server load balancer data (e.g., DNS, SMTP, SIP, etc.).  General network load balancer logs when not dedicated to a single application.  example: Citrix Netscaler with AppFlow is a reverse proxy and should use this index"
+netops,SEC,event,Other,"Network Indexes",30,"or general network system data (such as Cisco iOS non-netflow logs).  Operational or administrative logs from network devices such as operating system health or change activity.  General network operational logs and audits such as those generated by checkpoint and palo alto when admins change config."
+netproxy,SEC,event,Other,"Network Indexes",90,"proxy such as bluecoat"
+netvpn,SEC,event,Other,"Network Indexes",90,"VPN events including session start/stop and communications"
+netvuln,SEC,event,Other,"Network Indexes",30,"For Network Vulnerability Data.  Rapid7, Qualys, etc…"
+"aws_anomaly_detection","splunk_app_aws",event,Other,"Cloud Indexes",30,AWS
+"aws_topology_daily_snapshot","splunk_app_aws",event,Other,"Cloud Indexes",180,AWS
+"aws_topology_history","splunk_app_aws",event,Other,"Cloud Indexes",7,AWS
+"aws_topology_monthly_snapshot","splunk_app_aws",event,Other,"Cloud Indexes",365,AWS
+"aws_topology_playback","splunk_app_aws",event,Other,"Cloud Indexes",180,AWS
+"aws_vpc_flow_logs","splunk_app_aws",event,Other,"Cloud Indexes",7,AWS
+"aws-cloudtrail","aws?",event,Other,"Cloud Indexes",30,AWS
+"aws-config","aws?",event,Other,"Cloud Indexes",30,AWS
+"aws-data","aws?",event,Other,"Cloud Indexes",30,AWS
+"af_wt_bank_trans","Splunk-SE-Fraud-Detection",event,Splunk,"Fraud Indexes",30,"Wire Transfer Fraud"
+"af_wt_fraud_notables","Splunk-SE-Fraud-Detection",event,Splunk,"Fraud Indexes",30,"Wire Transfer Fraud"
+"af_wt_sum_acct_profile_target_acct","Splunk-SE-Fraud-Detection",event,Splunk,"Fraud Indexes",30,"Wire Transfer Fraud"
+"af_wt_sum_fds_stats","Splunk-SE-Fraud-Detection",event,Splunk,"Fraud Indexes",30,"Wire Transfer Fraud"
+"af-cms-drugs","Splunk-SE-Fraud-Detection",event,Splunk,"Fraud Indexes",30,"Wire Transfer Fraud"
+"af-cms-excl","Splunk-SE-Fraud-Detection",event,Splunk,"Fraud Indexes",30,"Wire Transfer Fraud"
+"af-cms-paydocs","Splunk-SE-Fraud-Detection",event,Splunk,"Fraud Indexes",30,"Wire Transfer Fraud"
+"af-cms-summ","Splunk-SE-Fraud-Detection",event,Splunk,"Fraud Indexes",30,"Wire Transfer Fraud"
+"anomaly_detection","SA-IndexCreation",event,DS022Performance,"Legacy Indexes",30,
+"itsi_grouped_alerts","SA-IndexCreation",event,DS022Performance,"Legacy Indexes",30,
+"itsi_notable_archive","SA-IndexCreation",event,DS022Performance,"Legacy Indexes",30,
+"itsi_notable_audit","SA-IndexCreation",event,DS022Performance,"Legacy Indexes",30,
+"itsi_summary","SA-IndexCreation",event,DS022Performance,"Legacy Indexes",30,
+"itsi_tracked_alerts","SA-IndexCreation",event,DS022Performance,"Legacy Indexes",30,
+hydra,VMWare,event,Other,"Legacy Indexes",30,
+"security_getting_started",,event,Other,"Legacy Indexes",30,
+"syslog_unclassified",,event,Other,"Legacy Indexes",30,"when setting up a syslog server that uses actions to set sourcetype/index via multiple files anything that falls out is sent here so this should be empty and if its not empty data is onboaded wrong"

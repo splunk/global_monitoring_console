@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>SH - 10 - Source Types - Dashboard - v1.5.50</label>
+  <label>SH - 10 - Source Types - Dashboard - v1.5.66</label>
   <search id="splunk_sh_10_source_types_dashboard_v1">
     <query>
 | from lookup:splunk_rest_configs_conf_props_sh_kv_store_lookup
@@ -30,7 +30,7 @@
   </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
-      <label>Splunk SH (Cluster/Instance)</label>
+      <label>1. Splunk SH (Cluster/Instance)</label>
       <fieldForLabel>shcluster_label</fieldForLabel>
       <fieldForValue>shcluster_label</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -41,7 +41,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-      <label>Splunk Roles</label>
+      <label>2. Splunk Roles</label>
       <fieldForLabel>Splunk_Roles</fieldForLabel>
       <fieldForValue>Splunk_Roles</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -52,7 +52,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
-      <label>Splunk Instance</label>
+      <label>3. Splunk Instance</label>
       <fieldForLabel>Splunk_Instance</fieldForLabel>
       <fieldForValue>Splunk_Instance</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -63,7 +63,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="title" searchWhenChanged="true">
-      <label>Source Type Name</label>
+      <label>4. Source Type Name</label>
       <fieldForLabel>title</fieldForLabel>
       <fieldForValue>title</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -74,7 +74,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="author" searchWhenChanged="true">
-      <label>Owner</label>
+      <label>5. Owner</label>
       <fieldForLabel>author</fieldForLabel>
       <fieldForValue>author</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -85,7 +85,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="app" searchWhenChanged="true">
-      <label>App</label>
+      <label>6. App</label>
       <fieldForLabel>app</fieldForLabel>
       <fieldForValue>app</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -96,7 +96,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="sharing" searchWhenChanged="true">
-      <label>App Sharing</label>
+      <label>7. App Sharing</label>
       <fieldForLabel>sharing</fieldForLabel>
       <fieldForValue>sharing</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -107,7 +107,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="SHOULD_LINEMERGE" searchWhenChanged="true">
-      <label>Line Merging (index-time)</label>
+      <label>8. Line Merging (index-time)</label>
       <fieldForLabel>SHOULD_LINEMERGE</fieldForLabel>
       <fieldForValue>SHOULD_LINEMERGE</fieldForValue>
       <choice value="*">All</choice>
@@ -117,7 +117,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="LEARN_SOURCETYPE" searchWhenChanged="true">
-      <label>Source Type Learning</label>
+      <label>9. Source Type Learning</label>
       <fieldForLabel>LEARN_SOURCETYPE</fieldForLabel>
       <fieldForValue>LEARN_SOURCETYPE</fieldForValue>
       <choice value="*">All</choice>
@@ -127,7 +127,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="EVENT_BREAKER_ENABLE" searchWhenChanged="true">
-      <label>Event Breaking (ChunkedLBProcessor) UF Only</label>
+      <label>10. Event Breaking (ChunkedLBProcessor) UF Only</label>
       <fieldForLabel>EVENT_BREAKER_ENABLE</fieldForLabel>
       <fieldForValue>EVENT_BREAKER_ENABLE</fieldForValue>
       <choice value="*">All</choice>
@@ -137,7 +137,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="INDEXED_EXTRACTIONS" searchWhenChanged="true">
-      <label>Extraction Method (index-time)</label>
+      <label>11. Extraction Method (index-time)</label>
       <fieldForLabel>INDEXED_EXTRACTIONS</fieldForLabel>
       <fieldForValue>INDEXED_EXTRACTIONS</fieldForValue>
       <choice value="*">All</choice>
@@ -151,7 +151,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="MAX_TIMESTAMP_LOOKAHEAD" searchWhenChanged="true">
-      <label>Timestamp Look Ahead (index-time)</label>
+      <label>12. Timestamp Look Ahead (index-time)</label>
       <fieldForLabel>MAX_TIMESTAMP_LOOKAHEAD</fieldForLabel>
       <fieldForValue>MAX_TIMESTAMP_LOOKAHEAD</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -163,7 +163,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="KV_MODE" searchWhenChanged="true">
-      <label>Field/Value extraction mode (search-time)</label>
+      <label>13. Field/Value extraction mode (search-time)</label>
       <fieldForLabel>KV_MODE</fieldForLabel>
       <fieldForValue>KV_MODE</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -174,7 +174,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="TRUNCATE" searchWhenChanged="true">
-      <label>Maximum Line Length (index-time)</label>
+      <label>14. Maximum Line Length (index-time)</label>
       <fieldForLabel>TRUNCATE</fieldForLabel>
       <fieldForValue>TRUNCATE</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -185,7 +185,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_name" searchWhenChanged="true">
-      <label>Employee Full Name</label>
+      <label>15. Employee Full Name</label>
       <fieldForLabel>emp_name</fieldForLabel>
       <fieldForValue>emp_name</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -196,7 +196,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_ttl" searchWhenChanged="true">
-      <label>Employee Title</label>
+      <label>16. Employee Title</label>
       <fieldForLabel>emp_ttl</fieldForLabel>
       <fieldForValue>emp_ttl</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -207,7 +207,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_dep" searchWhenChanged="true">
-      <label>Employee Department</label>
+      <label>17. Employee Department</label>
       <choice value="*">All</choice>
       <fieldForLabel>emp_dep</fieldForLabel>
       <fieldForValue>emp_dep</fieldForValue>
@@ -219,7 +219,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_lob" searchWhenChanged="true">
-      <label>Employee LOB</label>
+      <label>18. Employee LOB</label>
       <fieldForLabel>emp_lob</fieldForLabel>
       <fieldForValue>emp_lob</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -230,7 +230,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_type" searchWhenChanged="true">
-      <label>Employee Type</label>
+      <label>19. Employee Type</label>
       <fieldForLabel>emp_type</fieldForLabel>
       <fieldForValue>emp_type</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -241,7 +241,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="emp_status" searchWhenChanged="true">
-      <label>Employee Status</label>
+      <label>20. Employee Status</label>
       <fieldForLabel>emp_status</fieldForLabel>
       <fieldForValue>emp_status</fieldForValue>
       <search base="splunk_sh_10_source_types_dashboard_v1">
@@ -252,22 +252,22 @@
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="Splunk_Roles" searchWhenChanged="true">
-      <label>Splunk Roles (Contains)</label>
+      <label>21. Splunk Roles (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="Splunk_Instance" searchWhenChanged="true">
-      <label>Splunk Instance (Contains)</label>
+      <label>22. Splunk Instance (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="title" searchWhenChanged="true">
-      <label>Source Type Name (Contains)</label>
+      <label>23. Source Type Name (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="checkbox" token="Exclusions" searchWhenChanged="true">
-      <label>Exclusions</label>
+      <label>24. Exclusions</label>
       <choice value="app!=&quot;system&quot;">Exclude system App</choice>
       <choice value="app!=&quot;search&quot;">Exclude search App</choice>
       <choice value="*">No Exclusions</choice>

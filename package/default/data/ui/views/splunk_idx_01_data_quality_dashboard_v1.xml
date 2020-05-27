@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>IDX - 01 - Data Quality - Dashboard - v1.5.50</label>
+  <label>IDX - 01 - Data Quality - Dashboard - v1.5.66</label>
   <description>Source Type Data Quality issues &amp; All Source Type definitions</description>
   <search id="splunk_idx_01_data_quality_dashboard_v1">
     <query>
@@ -33,14 +33,14 @@ index=_internal sourcetype=splunkd log_level IN (WARN,ERROR) component IN (Aggre
   </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-      <label>Time Range</label>
+      <label>1. Time Range</label>
       <default>
         <earliest>-60m@m</earliest>
         <latest>now</latest>
       </default>
     </input>
     <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-      <label>Splunk Roless</label>
+      <label>2. Splunk Roless</label>
       <choice value="*">All</choice>
       <initialValue>*</initialValue>
       <fieldForLabel>Splunk_Roles</fieldForLabel>
@@ -51,7 +51,7 @@ index=_internal sourcetype=splunkd log_level IN (WARN,ERROR) component IN (Aggre
       <default>*</default>
     </input>
     <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
-      <label>Splunk Instance</label>
+      <label>3. Splunk Instance</label>
       <choice value="*">All</choice>
       <initialValue>*</initialValue>
       <fieldForLabel>Splunk_Instance</fieldForLabel>
@@ -62,7 +62,7 @@ index=_internal sourcetype=splunkd log_level IN (WARN,ERROR) component IN (Aggre
       <default>*</default>
     </input>
     <input type="dropdown" token="Sourcetype" searchWhenChanged="true">
-      <label>Source Type</label>
+      <label>4. Source Type</label>
       <choice value="*">All</choice>
       <initialValue>*</initialValue>
       <fieldForLabel>Sourcetype</fieldForLabel>
@@ -77,9 +77,9 @@ index=_internal sourcetype=splunkd log_level IN (WARN,ERROR) component IN (Aggre
     <panel depends="$alwaysHideCSS$">
       <html>
                 <style>
-                    <!--.dashboard-body {-->
-                    <!--    background: #a6a6a6 !important;-->
-                    <!--}-->
+                    .dashboard-body
+                    background: #a6a6a6 !important;
+                    }
            .dashboard-panel h2{
              background:#FFA500 !important;
              color:black !important;

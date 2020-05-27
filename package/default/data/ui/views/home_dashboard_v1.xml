@@ -1,14 +1,14 @@
 <form theme="dark">
-  <label>Home - Dashboard - v1.5.50</label>
-  <description>Splunk Global Monitoring Console (GMC) - Written By Amir Khamis / Splunk PS / akhamis@splunk.com - GitHub: https://github.com/amir-khamis/gmc</description>
+  <label>Home - Dashboard - v1.5.66</label>
+  <description>Global Monitoring Console App Splunk (GMC) - Written By Amir Khamis / Splunk PS / akhamis@splunk.com - GitHub: https://github.com/amir-khamis/gmc</description>
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
     <panel>
       <html>
             <div class="floatright" id="DemoModeSwitch"/>
             <div data-translate-id="home-div-welcometext" style="max-width: 1200px">
-               Welcome $env:user_realname$ to Splunk Global Monitoring Console! Below you can find documentation on the App's various knowledge objects like Dashboards and Lookups. The App can be downloaded here:
-               <a href="https://github.com/splunk/global_monitoring_console" target="_blank">https://github.com/amir-khamis/gmc</a>
+               Welcome $env:user_realname$ to Global Monitoring Console App for Splunk (GMC)! Below you can find documentation on the App's various knowledge objects like Dashboards and Lookups. The App can be downloaded here:
+               <a href="https://github.com/amir-khamis/gmc" target="_blank">https://github.com/amir-khamis/gmc</a>
                Happy Splunking!
             </div>
          </html>
@@ -346,7 +346,7 @@
     <panel id="MacrosPanel">
       <title>App Macros</title>
       <input type="dropdown" token="Macro_Class" searchWhenChanged="true">
-        <label>Macro_Class</label>
+        <label>1. Macro_Class</label>
         <choice value="*">All</choice>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -370,7 +370,7 @@
         </search>
       </input>
       <input type="text" token="title" searchWhenChanged="true">
-        <label>Macro  Name  (Contains)</label>
+        <label>2. Macro  Name  (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
