@@ -18,7 +18,8 @@
 }
 
 .toggledopen:before {
-  color: #FF461D;
+  /* color: #551A8B; */
+  color: #B2F302;
   content: "\25B2";
 }
 
@@ -36,7 +37,8 @@
 }
 
 .toggledclosed:before {
-  color: #FF461D;
+  /* color: #551A8B; */
+  color: #FFFF38;
   content: "\25Bc";
 }
 

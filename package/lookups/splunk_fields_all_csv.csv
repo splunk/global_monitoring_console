@@ -455,3 +455,34 @@ Identities,,,ldap_group_name,,Employee Active Directory Group Name
 Identities,,,ldap_group_type,,Employee Active Directory Group Type
 Identities,,,last_successful_login,,Employee Last Successful Login
 Identities,,,locked-out,,Employee Lockout Status
+REST,Authorization,Roles,capabilities,Role-level Capabilities,List of capabilities assigned to this role.
+REST,Authorization,Roles,cumulativeRTSrchJobsQuota,Role-level Concurrent Real-Time Search job limit,Maximum number of concurrently running real-time searches for all role members. A warning message is logged when this limit is reached. Note: If a user belongs to multiple roles then the user first consumes searches from the roles with the largest cumulative search quota. When the quota of a role is completely used up then roles with
+REST,Authorization,Roles,cumulativeSrchJobsQuota,Role-level Concurrent Search job limit,Maximum number of concurrently running searches for all role members. A warning message is logged when this limit is reached. Note: If a user belongs to multiple roles then the user first consumes searches from the roles with the largest cumulative search quota. When the quota of a role is completely used up then roles with lower quotas are examined.
+REST,Authorization,Roles,defaultApp,Default App,Specify the folder name of the default app to use for this role. A user-specific default app overrides this.
+REST,Authorization,Roles,imported_capabilities,Inherited Capabilities,List of capabilities assigned to role made available from imported roles.
+REST,Authorization,Roles,imported_roles,Inherited Roles,"List of imported roles for this role. Importing other roles imports all aspects of that role, such as capabilities and allowed indexes to search. In combining multiple roles, the effective value for each attribute is value with the broadest permissions."
+REST,Authorization,Roles,imported_rtSrchJobsQuota,Inherited User-level Concurrent Real-Time Search job limit,"The maximum number of concurrent real time search jobs for this role. This count is independent from the normal search jobs limit.
+imported_rtSrchJObsQuota specifies the quota imported from other roles."
+REST,Authorization,Roles,imported_srchDiskQuota,Inherited Total Search job disk quota,"The maximum disk space in MB that can be used by a user's search jobs. For example, 100 limits this role to 100 MB total.
+imported_srchDiskQuota specifies the quota for this role that have imported from other roles."
+REST,Authorization,Roles,imported_srchFilter,Inherited Restrictions for Search terms,"Search string, imported from other roles, that restricts the scope of searches run by this role.
+Search results for this role only show events that also match this search string.
+When a user has multiple roles with different search filters, they are combined with an OR."
+REST,Authorization,Roles,imported_srchIndexesAllowed,Inherited Allowed Indexes List,"A list of indexes, imported from other roles, this role has permissions to search."
+REST,Authorization,Roles,imported_srchIndexesDefault,Inherited Indexes Searched By Default,"A list of indexes, imported from other roles, that this role defaults to when no index is specified in a search."
+REST,Authorization,Roles,imported_srchJobsQuota,Inherited User-level Concurrent search job limit,The maximum number of historical searches for this role that are imported from other roles.
+REST,Authorization,Roles,imported_srchTimeWin,Inherited Restrictions for Search time range,"Maximum time span of a search, in seconds. 0 indicates searches are not limited to any specific time window.
+imported_srchTimeWin specifies the limit from imported roles."
+REST,Authorization,Roles,rtSrchJobsQuota,User-level Concurrent real-time Search job limit,The maximum number of concurrent real time search jobs for this role. This count is independent from the normal search jobs limit.
+REST,Authorization,Roles,srchDiskQuota,Total Search job disk quota,"The maximum disk space in MB that can be used by a user's search jobs. For example, 100 limits this role to 100 MB total."
+REST,Authorization,Roles,srchFilter,Restricted Search terms,"Search string that restricts the scope of searches run by this role.
+Search results for this role only show events that also match this search string.
+When a user has multiple roles with different search filters, they are combined with an OR."
+REST,Authorization,Roles,srchIndexesAllowed,Allowed Indexes List,A list of indexes this role has permissions to search.
+REST,Authorization,Roles,srchIndexesDefault,Indexes Searched By Default,List of search indexes that default to this role when no index is specified.
+REST,Authorization,Roles,srchJobsQuota,User-level Concurrent search job limit,"The maximum number of concurrent real time search jobs for this role.
+This count is independent from the normal search jobs limit."
+REST,Authorization,Roles,srchTimeWin,Restrict Search time range,"Maximum time span of a search, in seconds. 0 indicates searches are not limited to any specific time window."
+REST,Authorization,Roles,deleteIndexesAllowed,Delete Indexes Allowed,
+REST,Authorization,Roles,federatedProviders,Role Federated Providers,federated search https://docs.splunk.com/Documentation/DFS/1.1.1/DFS/Setupafederatedsearch
+REST,Authorization,Roles,grantable_roles,Grantable Roles,

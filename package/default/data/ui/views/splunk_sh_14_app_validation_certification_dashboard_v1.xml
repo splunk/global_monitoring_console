@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>SH - 14 - App Validation &amp; Certification - Dashboard - v1.5.50</label>
+  <label>SH - 14 - App Validation &amp; Certification - Dashboard - v1.5.66</label>
   <description>This Dashboard is based on data generated using the Splunk Add-on Builder Validate &amp; Package feature which validates your add-on against best practices and other rules, and to determine whether your app is ready for Splunk App Certification. The generates an Overall Health Report in the App UI but it also indexes all the findings into the dedicated add_on_builder_index Splunk Index.  To Learn More please read this Splunk Document: https://docs.splunk.com/Documentation/AddonBuilder/latest/UserGuide/Validate</description>
   <search id="splunk_sh_14_app_validation_certification_dashboard_v1">
     <query>index=add_on_builder_index sourcetype=splunk:tabuilder:validation $Exclusions$
@@ -83,14 +83,14 @@
   </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-      <label>Time Range</label>
+      <label>1. Time Range</label>
       <default>
         <earliest>-30d@d</earliest>
         <latest>now</latest>
       </default>
     </input>
     <input type="dropdown" token="ta_name" searchWhenChanged="true">
-      <label>App</label>
+      <label>2. App</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -101,7 +101,7 @@
       </search>
     </input>
     <input type="dropdown" token="AoB_Config_File" searchWhenChanged="true">
-      <label>Configuration File</label>
+      <label>3. Configuration File</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -112,7 +112,7 @@
       </search>
     </input>
     <input type="dropdown" token="Source_Type_Name" searchWhenChanged="true">
-      <label>Source / Source Type / Knowledge Objects</label>
+      <label>4. Source / Source Type / Knowledge Objects</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -123,7 +123,7 @@
       </search>
     </input>
     <input type="dropdown" token="validation_id" searchWhenChanged="true">
-      <label>Validation ID</label>
+      <label>5. Validation ID</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -134,7 +134,7 @@
       </search>
     </input>
     <input type="dropdown" token="category" searchWhenChanged="true">
-      <label>Category</label>
+      <label>6. Category</label>
       <choice value="*">All</choice>
       <choice value="App Precertification">App Precertification</choice>
       <choice value="Best Practice">Best Practice</choice>
@@ -146,7 +146,7 @@
       <fieldForValue>category</fieldForValue>
     </input>
     <input type="dropdown" token="sub_category" searchWhenChanged="true">
-      <label>Subcategory</label>
+      <label>7. Subcategory</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -157,7 +157,7 @@
       </search>
     </input>
     <input type="dropdown" token="rule_name" searchWhenChanged="true">
-      <label>Rule Name</label>
+      <label>8. Rule Name</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -168,7 +168,7 @@
       </search>
     </input>
     <input type="dropdown" token="validation_time" searchWhenChanged="true">
-      <label>Validation Time</label>
+      <label>9. Validation Time</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -179,7 +179,7 @@
       </search>
     </input>
     <input type="dropdown" token="status" searchWhenChanged="true">
-      <label>Status</label>
+      <label>10. Status</label>
       <choice value="*">All</choice>
       <choice value="Pass">Passed</choice>
       <choice value="Fail">Failed</choice>
@@ -189,7 +189,7 @@
       <fieldForValue>status</fieldForValue>
     </input>
     <input type="dropdown" token="severity" searchWhenChanged="true">
-      <label>Severity</label>
+      <label>11. Severity</label>
       <choice value="*">All</choice>
       <choice value="Pass">Pass</choice>
       <choice value="Warning">Warning</choice>
@@ -201,7 +201,7 @@
       <fieldForValue>severity</fieldForValue>
     </input>
     <input type="dropdown" token="message_id" searchWhenChanged="true">
-      <label>Message ID</label>
+      <label>12. Message ID</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -212,7 +212,7 @@
       </search>
     </input>
     <input type="dropdown" token="description" searchWhenChanged="true">
-      <label>Description</label>
+      <label>13. Description</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -223,7 +223,7 @@
       </search>
     </input>
     <input type="dropdown" token="solution" searchWhenChanged="true">
-      <label>Solution Suggestion</label>
+      <label>14. Solution Suggestion</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -234,25 +234,25 @@
       </search>
     </input>
     <input type="text" searchWhenChanged="true" token="sub_category">
-      <label>Subcategory (Contains)</label>
+      <label>15. Subcategory (Contains)</label>
     </input>
     <input type="text" searchWhenChanged="true" token="rule_name">
-      <label>Rule Name (Contains)</label>
+      <label>16. Rule Name (Contains)</label>
     </input>
     <input type="text" searchWhenChanged="true" token="description">
-      <label>Description (Contains)</label>
+      <label>17. Description (Contains)</label>
     </input>
     <input type="text" searchWhenChanged="true" token="solution">
-      <label>Solution (Contains)</label>
+      <label>18. Solution (Contains)</label>
     </input>
     <input type="text" searchWhenChanged="true" token="ta_name">
-      <label>App Name (Contains)</label>
+      <label>19. App Name (Contains)</label>
     </input>
     <input type="text" searchWhenChanged="true" token="Source_Type_Name">
-      <label>Source Type (Contains)</label>
+      <label>20. Source Type (Contains)</label>
     </input>
     <input type="checkbox" token="Exclusions" searchWhenChanged="true">
-      <label>Exclusions</label>
+      <label>21. Exclusions</label>
       <choice value="rule_name != &quot;*README*&quot;">Exclude README issues</choice>
       <choice value="description != &quot;*static/appIcon*&quot; AND description != &quot;Check that static* is * or less&quot;">Exclude Icon issues</choice>
       <choice value="rule_name != &quot;No Unnecessary files&quot;">Exclude  Unnecessary files issues</choice>

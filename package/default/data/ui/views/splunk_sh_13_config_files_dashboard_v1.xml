@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>SH - 13 - Config Files - Dashboard - v1.5.50</label>
+  <label>SH - 13 - Config Files - Dashboard - v1.5.66</label>
   <description>limits.conf server.conf distsearch.conf outputs.conf web.conf ui-prefs.conf props.conf transforms.conf</description>
   <search id="splunk_sh_20_config_files_dashboard_v1">
     <query>
@@ -283,10 +283,10 @@
       <title>6. All Configurations</title>
       <table>
         <search base="splunk_sh_20_config_files_dashboard_v1">
-          <query>| table shcluster_label config_file updated app stanza Property title Value sharing author 
+          <query>| table shcluster_label config_file author app sharing stanza Property Value title updated 
 | sort shcluster_label app stanza Property 
-| `rename_common_fields`
-| `rename_rest_fields`
+| `rename_common_fields` 
+| `rename_rest_fields` 
 | rename config_file AS "Config File" title AS "Configuration Entry"</query>
         </search>
         <option name="drilldown">none</option>
@@ -347,15 +347,23 @@
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
-        <format type="color" field="Config File">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
         <format type="color" field="SH Cluster Name">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
         <format type="color" field="Search Head">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="App Sharing">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Value">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>

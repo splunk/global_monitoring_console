@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>SH - 16 - Splunk Apps - Dashboard - v1.5.50</label>
+  <label>SH - 16 - Splunk Apps - Dashboard - v1.5.66</label>
   <search id="splunk_sh_16_splunk_apps_dashboard_v1">
     <query>
 | from lookup:splunk_rest_apps_local_sh_kv_store_lookup
@@ -23,7 +23,7 @@
   </search>
   <fieldset submitButton="false" autoRun="true">
     <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
-      <label>Splunk SH (Cluster/Instance)</label>
+      <label>1. Splunk SH (Cluster/Instance)</label>
       <fieldForLabel>shcluster_label</fieldForLabel>
       <fieldForValue>shcluster_label</fieldForValue>
       <search base="splunk_sh_16_splunk_apps_dashboard_v1">
@@ -34,7 +34,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-      <label>Splunk Roles</label>
+      <label>2. Splunk Roles</label>
       <fieldForLabel>Splunk_Roles</fieldForLabel>
       <fieldForValue>Splunk_Roles</fieldForValue>
       <search base="splunk_sh_16_splunk_apps_dashboard_v1">
@@ -45,7 +45,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
-      <label>Splunk Instance</label>
+      <label>3. Splunk Instance</label>
       <fieldForLabel>Splunk_Instance</fieldForLabel>
       <fieldForValue>Splunk_Instance</fieldForValue>
       <search base="splunk_sh_16_splunk_apps_dashboard_v1">
@@ -56,7 +56,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="App_Type" searchWhenChanged="true">
-      <label>App Type</label>
+      <label>4. App Type</label>
       <fieldForLabel>App_Type</fieldForLabel>
       <fieldForValue>App_Type</fieldForValue>
       <search base="splunk_sh_16_splunk_apps_dashboard_v1">
@@ -67,7 +67,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="label" searchWhenChanged="true">
-      <label>Name</label>
+      <label>5. Name</label>
       <fieldForLabel>label</fieldForLabel>
       <fieldForValue>label</fieldForValue>
       <search base="splunk_sh_16_splunk_apps_dashboard_v1">
@@ -78,7 +78,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="title" searchWhenChanged="true">
-      <label>Folder Name</label>
+      <label>6. Folder Name</label>
       <fieldForLabel>title</fieldForLabel>
       <fieldForValue>title</fieldForValue>
       <search base="splunk_sh_16_splunk_apps_dashboard_v1">
@@ -89,7 +89,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="sharing" searchWhenChanged="true">
-      <label>App Sharing</label>
+      <label>7. App Sharing</label>
       <fieldForLabel>sharing</fieldForLabel>
       <fieldForValue>sharing</fieldForValue>
       <choice value="*">All</choice>
@@ -99,7 +99,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="author" searchWhenChanged="true">
-      <label>Owner</label>
+      <label>8. Owner</label>
       <fieldForLabel>author</fieldForLabel>
       <fieldForValue>author</fieldForValue>
       <search base="splunk_sh_16_splunk_apps_dashboard_v1">
@@ -110,7 +110,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="show_in_nav" searchWhenChanged="true">
-      <label>Show in Navigation Menu?</label>
+      <label>9. Show in Navigation Menu?</label>
       <fieldForLabel>show_in_nav</fieldForLabel>
       <fieldForValue>show_in_nav</fieldForValue>
       <choice value="*">All</choice>
@@ -120,7 +120,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="visible" searchWhenChanged="true">
-      <label>Visible?</label>
+      <label>10. Visible?</label>
       <fieldForLabel>visible</fieldForLabel>
       <fieldForValue>visible</fieldForValue>
       <choice value="*">All</choice>
@@ -130,7 +130,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="check_for_updates" searchWhenChanged="true">
-      <label>Update Checking?</label>
+      <label>11. Update Checking?</label>
       <fieldForLabel>check_for_updates</fieldForLabel>
       <fieldForValue>check_for_updates</fieldForValue>
       <choice value="*">All</choice>
@@ -140,7 +140,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="disabled" searchWhenChanged="true">
-      <label>Disabled?</label>
+      <label>12. Disabled?</label>
       <fieldForLabel>disabled</fieldForLabel>
       <fieldForValue>disabled</fieldForValue>
       <choice value="*">All</choice>
@@ -150,7 +150,7 @@
       <initialValue>*</initialValue>
     </input>
     <input type="dropdown" token="configured" searchWhenChanged="true">
-      <label>Configured?</label>
+      <label>13. Configured?</label>
       <fieldForLabel>configured</fieldForLabel>
       <fieldForValue>configured</fieldForValue>
       <choice value="*">All</choice>
@@ -160,22 +160,22 @@
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="label" searchWhenChanged="true">
-      <label>Name (Contains)</label>
+      <label>14.  Name (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="title" searchWhenChanged="true">
-      <label>Folder Name (Contains)</label>
+      <label>15. Folder Name (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="description" searchWhenChanged="true">
-      <label>Description (Contains)</label>
+      <label>16. Description (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="details" searchWhenChanged="true">
-      <label>Details (Contains)</label>
+      <label>17. Details (Contains)</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>

@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>IDX - 03 - Network Statistics - Dashboard - v1.5.50</label>
+  <label>IDX - 03 - Network Statistics - Dashboard - v1.5.66</label>
   <description>Network Statistics using the Splunk_TA_nix netstat Scripted Inputs</description>
   <search id="splunk_idx_03_network_statistics_dashboard_v1">
     <query>index=osnixperf sourcetype=netstat host="$host$" | multikv | rename Proto as transport, State as state, Recv_Q as receive_queue, Send_Q as send_queue | rex field=LocalAddress "(?&lt;src_ip&gt;\d+.\d+.\d+.\d+):" | rex field=ForeignAddress "(?&lt;dest_ip&gt;\d+.\d+.\d+.\d+):" | rex field=LocalAddress ":(?&lt;src_port&gt;\d+?)$" | rex field=ForeignAddress ":(?&lt;dest_port&gt;\d+?)$" 
@@ -15,14 +15,14 @@
   </search>
   <fieldset submitButton="true" autoRun="true">
     <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-      <label>Time Range</label>
+      <label>1. Time Range</label>
       <default>
         <earliest>-15m</earliest>
         <latest>now</latest>
       </default>
     </input>
     <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-      <label>Splunk_Roles</label>
+      <label>2. Splunk_Roles</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -33,7 +33,7 @@
       </search>
     </input>
     <input type="dropdown" token="host" searchWhenChanged="true">
-      <label>Splunk Instance</label>
+      <label>3. Splunk Instance</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -44,7 +44,7 @@
       </search>
     </input>
     <input type="dropdown" token="src_ip" searchWhenChanged="true">
-      <label>Source IP</label>
+      <label>4. Source IP</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -55,7 +55,7 @@
       </search>
     </input>
     <input type="dropdown" token="src_port" searchWhenChanged="true">
-      <label>Source Port</label>
+      <label>5. Source Port</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -66,7 +66,7 @@
       </search>
     </input>
     <input type="dropdown" token="dest_ip" searchWhenChanged="true">
-      <label>Destination IP</label>
+      <label>6. Destination IP</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -77,7 +77,7 @@
       </search>
     </input>
     <input type="dropdown" token="dest_port" searchWhenChanged="true">
-      <label>Destination Port</label>
+      <label>7. Destination Port</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -88,7 +88,7 @@
       </search>
     </input>
     <input type="dropdown" token="state" searchWhenChanged="true">
-      <label>State</label>
+      <label>8. State</label>
       <choice value="*">All</choice>
       <default>*</default>
       <initialValue>*</initialValue>
@@ -99,22 +99,22 @@
       </search>
     </input>
     <input type="text" token="send_queue" searchWhenChanged="true">
-      <label>Send-Q &gt;= X</label>
+      <label>9. Send-Q &gt;= X</label>
       <default>0</default>
       <initialValue>0</initialValue>
     </input>
     <input type="text" token="receive_queue" searchWhenChanged="true">
-      <label>Recv-Q &gt;= X</label>
+      <label>10. Recv-Q &gt;= X</label>
       <default>0</default>
       <initialValue>0</initialValue>
     </input>
     <input type="text" token="src_port" searchWhenChanged="true">
-      <label>Source Port</label>
+      <label>11. Source Port</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
     <input type="text" token="dest_port" searchWhenChanged="true">
-      <label>Destination Port</label>
+      <label>12. Destination Port</label>
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
@@ -180,11 +180,11 @@
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
         </search>
-        <option name="count">5</option>
+        <option name="count">20</option>
         <option name="drilldown">none</option>
         <option name="refresh.display">preview</option>
         <option name="rowNumbers">true</option>
-        <option name="wrap">false</option>
+        <option name="wrap">true</option>
         <format type="color" field="Component">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>

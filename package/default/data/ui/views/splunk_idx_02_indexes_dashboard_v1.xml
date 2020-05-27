@@ -1,5 +1,5 @@
 <form onunloadCancelJobs="true" stylesheet="load.css" script="load.js" theme="dark">
-  <label>IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v1.5.50</label>
+  <label>IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v1.5.66</label>
   <description>Indexes.conf deep analysis by Indexer Cluster with many filters and important index settings.</description>
   <!--splunk_rest_data_indexes_idx_kv_store_lookup-->
   <search id="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -1463,8 +1463,41 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
     </panel>
   </row>
   <row>
+    <panel id="panel_accordion_togglepanel_true_15" depends="$gadget_lib_loaded$">
+      <title>15. Dashboard Gen &amp; Tracker Job Run Details</title>
+      <table>
+        <search>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE 
+    latest("Search_Activity.Internal_Scheduler.dispatch_time2") as dispatch_time
+    latest("Search_Activity.Internal_Scheduler.total_run_time2") as total_run_time
+    latest("Search_Activity.Internal_Scheduler.scheduled_time") as scheduled_time
+    latest("Search_Activity.Internal_Scheduler.info2") as info 
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Internal_Scheduler
+    AND Search_Activity.Internal_Scheduler.savedsearch_name2 IN ( splunk_rest_cluster_config_idx_kv_store_lookup_gen,splunk_rest_data_indexes_idx_kv_store_lookup_gen,splunk_rest_data_index_volumes_idx_kv_store_lookup_gen,splunk_internal_index_license_usage_idx_summary_tracker,splunk_internal_license_rollover_summary_idx_summary_tracker,splunk_introspection_index_size_idx_summary_tracker,splunk_introspection_volume_size_idx_summary_tracker)
+    AND Search_Activity.Internal_Scheduler.app2 = "global_monitoring_console"
+    BY Search_Activity.Internal_Scheduler.savedsearch_name2 
+| `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)` 
+| table savedsearch_name2 scheduled_time dispatch_time info total_run_time 
+| `ustime_format(scheduled_time)` 
+| `ustime_format(dispatch_time)` 
+| rename savedsearch_name2 AS "Job Name" scheduled_time As "Scheduled Time" dispatch_time As "Dispatch Time" info As Status total_run_time As "Run Time"</query>
+          <earliest>-1d@d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Job Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
     <panel id="panel_accordion_togglepanel_true_14" depends="$gadget_lib_loaded$">
-      <title>15. Link to Associated GMC Job(s)</title>
+      <title>16. Link to Associated GMC Job(s)</title>
       <html>
             <ol>
                <li>
@@ -1543,39 +1576,6 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
                </div>
             </div>
          </html>
-    </panel>
-  </row>
-  <row>
-    <panel id="panel_accordion_togglepanel_true_15" depends="$gadget_lib_loaded$">
-      <title>16. Dashboard Gen &amp; Tracker Job Run Details</title>
-      <table>
-        <search>
-          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE 
-    latest("Search_Activity.Internal_Scheduler.dispatch_time2") as dispatch_time
-    latest("Search_Activity.Internal_Scheduler.total_run_time2") as total_run_time
-    latest("Search_Activity.Internal_Scheduler.scheduled_time") as scheduled_time
-    latest("Search_Activity.Internal_Scheduler.info2") as info 
-    FROM DATAMODEL=GMC
-    WHERE nodename=Search_Activity.Internal_Scheduler
-    AND Search_Activity.Internal_Scheduler.savedsearch_name2 IN ( splunk_rest_cluster_config_idx_kv_store_lookup_gen,splunk_rest_data_indexes_idx_kv_store_lookup_gen,splunk_rest_data_index_volumes_idx_kv_store_lookup_gen,splunk_internal_index_license_usage_idx_summary_tracker,splunk_internal_license_rollover_summary_idx_summary_tracker,splunk_introspection_index_size_idx_summary_tracker,splunk_introspection_volume_size_idx_summary_tracker)
-    AND Search_Activity.Internal_Scheduler.app2 = "global_monitoring_console"
-    BY Search_Activity.Internal_Scheduler.savedsearch_name2 
-| `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)` 
-| table savedsearch_name2 scheduled_time dispatch_time info total_run_time 
-| `ustime_format(scheduled_time)` 
-| `ustime_format(dispatch_time)` 
-| rename savedsearch_name2 AS "Job Name" scheduled_time As "Scheduled Time" dispatch_time As "Dispatch Time" info As Status total_run_time As "Run Time"</query>
-          <earliest>-1d@d</earliest>
-          <latest>now</latest>
-        </search>
-        <option name="refresh.display">none</option>
-        <option name="rowNumbers">true</option>
-        <option name="wrap">false</option>
-        <format type="color" field="Job Name">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-      </table>
     </panel>
   </row>
   <row>
