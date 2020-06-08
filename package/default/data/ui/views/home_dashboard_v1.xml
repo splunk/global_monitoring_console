@@ -1,6 +1,6 @@
 <form theme="dark">
-  <label>Home - Dashboard - v1.5.66</label>
-  <description>Global Monitoring Console App Splunk (GMC) - Written By Amir Khamis / Splunk PS / akhamis@splunk.com - GitHub: https://github.com/amir-khamis/gmc</description>
+  <label>Home - Dashboard - v1.5.90</label>
+  <description>Global Monitoring Console App for Splunk (GMC) - Written By Amir Khamis / Splunk PS / akhamis@splunk.com - GitHub: https://github.com/amir-khamis/gmc</description>
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
     <panel>
@@ -87,6 +87,7 @@
       <single>
         <search>
           <query>index=`gmc_summary_index` search_name="splunk_audit_user_login_idx_summary_tracker" 
+| makemv delim="|" Splunk_Instance 
 | search Splunk_Instance=`gmc_instance_name` 
 | stats dc(User) as Users</query>
           <earliest>@d</earliest>

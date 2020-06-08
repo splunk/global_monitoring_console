@@ -1,5 +1,5 @@
-<form theme="dark">
-  <label>IDX - 07 - Indexer Queues - Dashboard - v1.5.66</label>
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>IDX - 07 - Indexer Queues - Dashboard - v1.5.90</label>
   <search id="splunk_idx_07_indexer_queues_dashboard_v1">
     <query>index=_internal sourcetype=splunkd component=Metrics splunk_server_group=dmc_group_indexer group=queue name IN (parsingqueue, indexqueue, aggqueue, tcpin_queue, httpinputq, splunktcpin, typingqueue, udp_queue)
     | fields _time host name ingest_pipe current_size current_size_kb smallest_size largest_size max_size max_size_kb blocked
@@ -11,92 +11,97 @@
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
   </search>
-  <fieldset submitButton="false" autoRun="true">
-    <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-      <label>1. Time Range</label>
-      <default>
-        <earliest>-15m</earliest>
-        <latest>now</latest>
-      </default>
-    </input>
-    <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
-      <label>2. Indexer Cluster</label>
-      <fieldForLabel>idxcluster_label</fieldForLabel>
-      <fieldForValue>idxcluster_label</fieldForValue>
-      <search base="splunk_idx_07_indexer_queues_dashboard_v1">
-        <query>| stats count by idxcluster_label</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="host" searchWhenChanged="true">
-      <label>3. Indexer</label>
-      <fieldForLabel>host</fieldForLabel>
-      <fieldForValue>host</fieldForValue>
-      <search base="splunk_idx_07_indexer_queues_dashboard_v1">
-        <query>| stats count by host</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="blocked" searchWhenChanged="true">
-      <label>4. Queue Blocked?</label>
-      <fieldForLabel>blocked</fieldForLabel>
-      <fieldForValue>blocked</fieldForValue>
-      <choice value="*">No</choice>
-      <choice value="blocked=true">Yes</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="multiselect" token="name" searchWhenChanged="true">
-      <label>5. Queue Name</label>
-      <fieldForLabel>name</fieldForLabel>
-      <fieldForValue>name</fieldForValue>
-      <search base="splunk_idx_07_indexer_queues_dashboard_v1">
-        <query>| stats count by name</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <delimiter> </delimiter>
-    </input>
-    <input type="text" token="fill_perc" searchWhenChanged="true">
-      <label>6. Full Ratio (%)</label>
-      <default>0</default>
-      <initialValue>0</initialValue>
-    </input>
-    <input type="dropdown" token="span_period" searchWhenChanged="true">
-      <label>7. Span Period</label>
-      <default></default>
-      <choice value="">Automatic</choice>
-      <choice value="span=1s">1 seconds</choice>
-      <choice value="span=5s">5 seconds</choice>
-      <choice value="span=10s">10 seconds</choice>
-      <choice value="span=15s">15 seconds</choice>
-      <choice value="span=30s">30 seconds</choice>
-      <choice value="span=1m">1 minute</choice>
-      <choice value="span=5m">5 minutes</choice>
-      <choice value="span=10m">10 minutes</choice>
-      <choice value="span=15m">15 minutes</choice>
-      <choice value="span=30m">30 minutes</choice>
-      <choice value="span=45m">45 minutes</choice>
-      <choice value="span=1h">1 hour</choice>
-      <choice value="span=2h">2 hours</choice>
-      <choice value="span=3h">3 hours</choice>
-      <choice value="span=4h">4 hours</choice>
-      <choice value="span=6h">6 hours</choice>
-      <choice value="span=8h">8 hours</choice>
-      <choice value="span=12h">12 hours</choice>
-      <choice value="span=1d">1 day</choice>
-      <choice value="span=1w">1 week</choice>
-      <choice value="span=1mon">1 month</choice>
-      <choice value="span=12mon">1 year</choice>
-    </input>
-  </fieldset>
+  <fieldset submitButton="false"></fieldset>
   <row>
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+      <title>1. Indexer Queues Filters</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
+        <label>2. Indexer Cluster</label>
+        <fieldForLabel>idxcluster_label</fieldForLabel>
+        <fieldForValue>idxcluster_label</fieldForValue>
+        <search base="splunk_idx_07_indexer_queues_dashboard_v1">
+          <query>| stats count by idxcluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="host" searchWhenChanged="true">
+        <label>3. Indexer</label>
+        <fieldForLabel>host</fieldForLabel>
+        <fieldForValue>host</fieldForValue>
+        <search base="splunk_idx_07_indexer_queues_dashboard_v1">
+          <query>| stats count by host</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="blocked" searchWhenChanged="true">
+        <label>4. Queue Blocked?</label>
+        <fieldForLabel>blocked</fieldForLabel>
+        <fieldForValue>blocked</fieldForValue>
+        <choice value="*">No</choice>
+        <choice value="blocked=true">Yes</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="multiselect" token="name" searchWhenChanged="true">
+        <label>5. Queue Name</label>
+        <fieldForLabel>name</fieldForLabel>
+        <fieldForValue>name</fieldForValue>
+        <search base="splunk_idx_07_indexer_queues_dashboard_v1">
+          <query>| stats count by name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <delimiter> </delimiter>
+      </input>
+      <input type="text" token="fill_perc" searchWhenChanged="true">
+        <label>6. Full Ratio (%)</label>
+        <default>0</default>
+        <initialValue>0</initialValue>
+      </input>
+      <input type="dropdown" token="span_period" searchWhenChanged="true">
+        <label>7. Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
+      <title>2. Queue2</title>
       <viz type="Splunk_ML_Toolkit.LinesViz">
         <search base="splunk_idx_07_indexer_queues_dashboard_v1">
           <query>| timechart minspan=30s partial=f $span_period$
@@ -110,8 +115,8 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Queue2</title>
+    <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
+      <title>3. Queue2</title>
       <chart>
         <title>$env:page$</title>
         <search base="splunk_idx_07_indexer_queues_dashboard_v1">
@@ -154,9 +159,9 @@
     </panel>
   </row>
   <row>
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
+      <title>4. Queue3</title>
       <table>
-        <title>Queue1</title>
         <search base="splunk_idx_07_indexer_queues_dashboard_v1">
           <query>| dedup host, name 
 | table _time host name current_size_kb max_size_kb fill_perc
@@ -166,7 +171,6 @@
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -175,9 +179,9 @@
     </panel>
   </row>
   <row>
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_5" depends="$gadget_lib_loaded$">
+      <title>5. Queue4</title>
       <table>
-        <title>Queue 3</title>
         <search base="splunk_idx_07_indexer_queues_dashboard_v1">
           <query>| eval is_blocked=if(blocked=="true",1,0), host_queue=host." - ".name 
 | stats sparkline sum(is_blocked) as blocked,count by host_queue 
@@ -189,7 +193,6 @@
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>

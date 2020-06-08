@@ -1,5 +1,5 @@
 <form onunloadCancelJobs="true" stylesheet="load.css" script="load.js" theme="dark">
-  <label>SH - 05 - Audit Users Activity - Dashboard - v1.5.66</label>
+  <label>SH - 05 - Audit Users Activity - Dashboard - v1.5.90</label>
   <search id="splunk_sh_05_audit_users_dashboard_v1">
     <query>| from lookup:splunk_index_audit_user_login_tracker_sh_kv_store_lookup 
 | fields User Earliest_Access Latest_Access Login_Source Splunk_Instance OS_Name OS_Version Browser_Name Browser_Version
