@@ -1,5 +1,5 @@
 <form onunloadCancelJobs="true" stylesheet="load.css" script="load.js" theme="dark">
-  <label>IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v1.5.66</label>
+  <label>IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v1.5.90</label>
   <description>Indexes.conf deep analysis by Indexer Cluster with many filters and important index settings.</description>
   <!--splunk_rest_data_indexes_idx_kv_store_lookup-->
   <search id="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -52,6 +52,7 @@
 | fillnull value="auto" maxDataSize minHotIdleSecsBeforeForceRoll 
 | fillnull value="event" datatype 
 | fillnull value="undefined"
+| search currentDBSize_$unit_tok7$ &gt;= $currentDBSize$ Splunk_Roles="*$Splunk_Roles$*" coldToFrozenDir="$coldToFrozenDir$" datatype="$datatype$" HotWarm_Volume="$HotWarm_Volume$" Cold_Volume="$Cold_Volume$" DM_Volume="$DM_Volume$" Retention_Days="$Retention_Days$" maxDataSize="$maxDataSize$" coldToFrozenDir="$coldToFrozenDir$" thawedPath="$thawedPath$"tstatsHomePath="$tstatsHomePath$" app="$app$" isInternal="$isInternal$" homePath="*$homePath$*" coldPath="*$coldPath$*" coldPath_maxDataSizeMB="$coldPath_maxDataSizeMB$" homePath_maxDataSizeMB="$homePath_maxDataSizeMB$" maxTotalDataSizeMB="$maxTotalDataSizeMB$" maxWarmDBCount="$maxWarmDBCount$" License_Usage_$unit_tok7$ &gt;= $License_Usage$ 
 </query>
   </search>
   <!--splunk_internal_license_rollover_summary_idx_summary_tracker-->
@@ -78,9 +79,8 @@ index=`gmc_summary_index` search_name=splunk_internal_index_license_usage_idx_su
     Values(Lic_Host) AS Lic_Host
     Values(Lic_Pool) AS Lic_Pool 
     Latest(Lic_Pool_Size) AS Lic_Pool_Size 
-    Sum(License_Usage) AS License_Usage
+    Latest(License_Usage) AS License_Usage
     BY _time idxcluster_label Index_Name Lic_Sourcetype
-
 | eval Time=strftime(_time,"%A %B %d, %Y")
 | search Lic_Source="$Lic_Source$" Lic_Host="$Lic_Host$" Lic_Pool_Size="$Lic_Pool_Size$" Lic_Pool="$Lic_Pool$" Time="$Time$"
 | `gmc_byte2human(License_Usage,$round_tok6$)` 
@@ -379,8 +379,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
       <table>
         <title>Unit of Measurement: $unit_tok7$ / Earliest: $earliest$ / Latest: $latest$</title>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
-          <query>| search currentDBSize_$unit_tok7$ &gt;= $currentDBSize$ Splunk_Roles="*$Splunk_Roles$*" coldToFrozenDir="$coldToFrozenDir$" datatype="$datatype$" HotWarm_Volume="$HotWarm_Volume$" Cold_Volume="$Cold_Volume$" DM_Volume="$DM_Volume$" Retention_Days="$Retention_Days$" maxDataSize="$maxDataSize$" coldToFrozenDir="$coldToFrozenDir$" thawedPath="$thawedPath$"tstatsHomePath="$tstatsHomePath$" app="$app$" isInternal="$isInternal$" homePath="*$homePath$*" coldPath="*$coldPath$*" coldPath_maxDataSizeMB="$coldPath_maxDataSizeMB$" homePath_maxDataSizeMB="$homePath_maxDataSizeMB$" maxTotalDataSizeMB="$maxTotalDataSizeMB$" maxWarmDBCount="$maxWarmDBCount$" License_Usage_$unit_tok7$ &gt;= $License_Usage$ 
-| noop 
+          <query>| noop 
 | sort 0 - currentDBSize 
 | table idxcluster_label app Index_Name HotWarm_Volume Cold_Volume Retention_Days currentDBSize_$unit_tok7$ License_Usage_$unit_tok7$ warm_bucket_size_$unit_tok7$ cold_bucket_size_$unit_tok7$ datamodel_summary_size_$unit_tok7$ total_bucket_count_avg totalEventCount homePath_maxDataSize$unit_tok7$ coldPath_maxDataSize$unit_tok7$ "Earliest Event" "Latest Event" Time_Diff_Days Days_Diff_From_Retention maxDataSize maxHotBuckets maxWarmDBCount "Quarantine Past Days" "Quarantine Future Days" maxHotSpanSecs Num_Splunk_Instances datatype disabled updated 
 | `rename_indexes_fields` 

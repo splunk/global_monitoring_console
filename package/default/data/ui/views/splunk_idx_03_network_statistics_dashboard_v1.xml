@@ -1,5 +1,5 @@
-<form theme="dark">
-  <label>IDX - 03 - Network Statistics - Dashboard - v1.5.66</label>
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>IDX - 03 - Network Statistics - Dashboard - v1.5.90</label>
   <description>Network Statistics using the Splunk_TA_nix netstat Scripted Inputs</description>
   <search id="splunk_idx_03_network_statistics_dashboard_v1">
     <query>index=osnixperf sourcetype=netstat host="$host$" | multikv | rename Proto as transport, State as state, Recv_Q as receive_queue, Send_Q as send_queue | rex field=LocalAddress "(?&lt;src_ip&gt;\d+.\d+.\d+.\d+):" | rex field=ForeignAddress "(?&lt;dest_ip&gt;\d+.\d+.\d+.\d+):" | rex field=LocalAddress ":(?&lt;src_port&gt;\d+?)$" | rex field=ForeignAddress ":(?&lt;dest_port&gt;\d+?)$" 
@@ -13,115 +13,119 @@
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
   </search>
-  <fieldset submitButton="true" autoRun="true">
-    <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-      <label>1. Time Range</label>
-      <default>
-        <earliest>-15m</earliest>
-        <latest>now</latest>
-      </default>
-    </input>
-    <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-      <label>2. Splunk_Roles</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>Splunk_Roles</fieldForLabel>
-      <fieldForValue>Splunk_Roles</fieldForValue>
-      <search base="splunk_idx_03_network_statistics_dashboard_v1">
-        <query>| stats count by Splunk_Roles</query>
-      </search>
-    </input>
-    <input type="dropdown" token="host" searchWhenChanged="true">
-      <label>3. Splunk Instance</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>host</fieldForLabel>
-      <fieldForValue>host</fieldForValue>
-      <search base="splunk_idx_03_network_statistics_dashboard_v1">
-        <query>| stats count by host</query>
-      </search>
-    </input>
-    <input type="dropdown" token="src_ip" searchWhenChanged="true">
-      <label>4. Source IP</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>src_ip</fieldForLabel>
-      <fieldForValue>src_ip</fieldForValue>
-      <search base="splunk_idx_03_network_statistics_dashboard_v1">
-        <query>| stats count by src_ip</query>
-      </search>
-    </input>
-    <input type="dropdown" token="src_port" searchWhenChanged="true">
-      <label>5. Source Port</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>src_port</fieldForLabel>
-      <fieldForValue>src_port</fieldForValue>
-      <search base="splunk_idx_03_network_statistics_dashboard_v1">
-        <query>| stats count by src_port</query>
-      </search>
-    </input>
-    <input type="dropdown" token="dest_ip" searchWhenChanged="true">
-      <label>6. Destination IP</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>dest_ip</fieldForLabel>
-      <fieldForValue>dest_ip</fieldForValue>
-      <search base="splunk_idx_03_network_statistics_dashboard_v1">
-        <query>| stats count by dest_ip</query>
-      </search>
-    </input>
-    <input type="dropdown" token="dest_port" searchWhenChanged="true">
-      <label>7. Destination Port</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>dest_port</fieldForLabel>
-      <fieldForValue>dest_port</fieldForValue>
-      <search base="splunk_idx_03_network_statistics_dashboard_v1">
-        <query>| stats count by dest_port</query>
-      </search>
-    </input>
-    <input type="dropdown" token="state" searchWhenChanged="true">
-      <label>8. State</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>state</fieldForLabel>
-      <fieldForValue>state</fieldForValue>
-      <search base="splunk_idx_03_network_statistics_dashboard_v1">
-        <query>| stats count by state</query>
-      </search>
-    </input>
-    <input type="text" token="send_queue" searchWhenChanged="true">
-      <label>9. Send-Q &gt;= X</label>
-      <default>0</default>
-      <initialValue>0</initialValue>
-    </input>
-    <input type="text" token="receive_queue" searchWhenChanged="true">
-      <label>10. Recv-Q &gt;= X</label>
-      <default>0</default>
-      <initialValue>0</initialValue>
-    </input>
-    <input type="text" token="src_port" searchWhenChanged="true">
-      <label>11. Source Port</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="text" token="dest_port" searchWhenChanged="true">
-      <label>12. Destination Port</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-  </fieldset>
+  <fieldset submitButton="false"></fieldset>
   <row>
-    <panel>
-      <title>| table src_ip dest_ip src_port dest_port state send_queue  - $env:page$</title>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+      <title>1. Network Statistics Filters</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2. Splunk_Roles</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+      </input>
+      <input type="dropdown" token="host" searchWhenChanged="true">
+        <label>3. Splunk Instance</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>host</fieldForLabel>
+        <fieldForValue>host</fieldForValue>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>| stats count by host</query>
+        </search>
+      </input>
+      <input type="dropdown" token="src_ip" searchWhenChanged="true">
+        <label>4. Source IP</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>src_ip</fieldForLabel>
+        <fieldForValue>src_ip</fieldForValue>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>| stats count by src_ip</query>
+        </search>
+      </input>
+      <input type="dropdown" token="src_port" searchWhenChanged="true">
+        <label>5. Source Port</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>src_port</fieldForLabel>
+        <fieldForValue>src_port</fieldForValue>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>| stats count by src_port</query>
+        </search>
+      </input>
+      <input type="dropdown" token="dest_ip" searchWhenChanged="true">
+        <label>6. Destination IP</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>dest_ip</fieldForLabel>
+        <fieldForValue>dest_ip</fieldForValue>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>| stats count by dest_ip</query>
+        </search>
+      </input>
+      <input type="dropdown" token="dest_port" searchWhenChanged="true">
+        <label>7. Destination Port</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>dest_port</fieldForLabel>
+        <fieldForValue>dest_port</fieldForValue>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>| stats count by dest_port</query>
+        </search>
+      </input>
+      <input type="dropdown" token="state" searchWhenChanged="true">
+        <label>8. State</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>state</fieldForLabel>
+        <fieldForValue>state</fieldForValue>
+        <search base="splunk_idx_03_network_statistics_dashboard_v1">
+          <query>| stats count by state</query>
+        </search>
+      </input>
+      <input type="text" token="send_queue" searchWhenChanged="true">
+        <label>9. Send-Q &gt;= X</label>
+        <default>0</default>
+        <initialValue>0</initialValue>
+      </input>
+      <input type="text" token="receive_queue" searchWhenChanged="true">
+        <label>10. Recv-Q &gt;= X</label>
+        <default>0</default>
+        <initialValue>0</initialValue>
+      </input>
+      <input type="text" token="src_port" searchWhenChanged="true">
+        <label>11. Source Port</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="dest_port" searchWhenChanged="true">
+        <label>12. Destination Port</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_2" depends="$gadget_lib_loaded$">
+      <title>2. Setup Instructions - $env:page$</title>
       <html>
                 <h1>
                     <strong>Network Statistics</strong>
@@ -170,8 +174,8 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Splunk Ports Definition</title>
+    <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
+      <title>3. Splunk Ports Definition</title>
       <table>
         <search>
           <query>| inputlookup splunk_ports_all_csv_lookup 
@@ -193,8 +197,8 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Recv-Q: The count of bytes not copied by the user program connected to this socket.</title>
+    <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
+      <title>4. Recv-Q: The count of bytes not copied by the user program connected to this socket.</title>
       <chart>
         <search base="splunk_idx_03_network_statistics_dashboard_v1">
           <query>timechart max(receive_queue) as receive_queue by host</query>
@@ -211,8 +215,8 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Send-Q: The count of bytes not acknowledged by the remote host.</title>
+    <panel id="panel_accordion_togglepanel_false_5" depends="$gadget_lib_loaded$">
+      <title>5. Send-Q: The count of bytes not acknowledged by the remote host.</title>
       <chart>
         <search base="splunk_idx_03_network_statistics_dashboard_v1">
           <query>timechart max(send_queue) as send_queue by host</query>
@@ -228,8 +232,8 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>State information</title>
+    <panel id="panel_accordion_togglepanel_false_6" depends="$gadget_lib_loaded$">
+      <title>6. State information</title>
       <chart>
         <search base="splunk_idx_03_network_statistics_dashboard_v1">
           <query>| stats count by state</query>
@@ -244,8 +248,8 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Send Queue != 0</title>
+    <panel id="panel_accordion_togglepanel_false_7" depends="$gadget_lib_loaded$">
+      <title>7. Send Queue != 0</title>
       <table>
         <title>For the following Ports: 8088, 8089,8191, 9887, 9997</title>
         <search base="splunk_idx_03_network_statistics_dashboard_v1">
@@ -272,8 +276,8 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Receive Queue != 0</title>
+    <panel id="panel_accordion_togglepanel_false_8" depends="$gadget_lib_loaded$">
+      <title>8. Receive Queue != 0</title>
       <table>
         <title>For the following Ports: 8088, 8089,8191, 9887, 9997</title>
         <search base="splunk_idx_03_network_statistics_dashboard_v1">
@@ -301,8 +305,8 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>By Source Port</title>
+    <panel id="panel_accordion_togglepanel_false_9" depends="$gadget_lib_loaded$">
+      <title>9. By Source Port</title>
       <chart>
         <title>Ports 8088, 8089, 8191, 9887, 9997</title>
         <search base="splunk_idx_03_network_statistics_dashboard_v1">
@@ -319,8 +323,8 @@
         <option name="trellis.scales.shared">1</option>
       </chart>
     </panel>
-    <panel>
-      <title>By Destination Port</title>
+    <panel id="panel_accordion_togglepanel_false_10" depends="$gadget_lib_loaded$">
+      <title>10. By Destination Port</title>
       <chart>
         <title>Ports 8088, 8089, 8191, 9887, 9997</title>
         <search base="splunk_idx_03_network_statistics_dashboard_v1">

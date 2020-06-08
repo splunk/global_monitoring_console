@@ -1,5 +1,5 @@
 <dashboard theme="dark">
-  <label>Setup - Dashboard - v1.5.66</label>
+  <label>Setup - Dashboard - v1.5.90</label>
   <row>
     <panel>
       <title>$env:page$</title>
@@ -157,6 +157,18 @@
                   GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_data_models_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Data Models Gen Job</a>
                </li>
+              <li>
+                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_index_itsi_summary_sh_kv_store_lookup_gen" target="_blank" rel="noopener">ITSI Search Names with Service/KPI IDs Gen Job</a>
+              </li>
+              <li>
+                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_itoa_interface_service_sh_kv_store_lookup_gen" target="_blank" rel="noopener">ITSI ITOA Interfaces Services Gen Job</a>
+              </li>
+              <li>
+                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_itoa_interface_kpi_base_search_sh_kv_store_lookup_gen" target="_blank" rel="noopener">ITSI ITOA Interfaces KPI Base Searches Gen Job</a>
+              </li>
             </ol>
             <p>If you run a dashboard and find no data, please run the corresponding Job(s) assicoated with the dashboard from the GMC Jobs dropdown otherwise all jobs will execute between 12AM and 6AM every day.  The above are needed to get you started right now.</p>
             <p>
@@ -278,6 +290,8 @@
 <li><a href="/app/global_monitoring_console/splunk_sh_13_config_files_dashboard_v1" target="_blank" rel="noopener">SH-13 Splunk Config Files</a></li>
 <li><a href="/app/global_monitoring_console/splunk_sh_14_app_validation_certification_dashboard_v1" target="_blank" rel="noopener">SH-14 App Validation and Certification</a></li>
 <li><a href="/app/global_monitoring_console/splunk_sh_16_splunk_apps_dashboard_v1" target="_blank" rel="noopener">SH-16 Splunk Apps</a></li>
+<li><a href="/app/global_monitoring_console/splunk_sh_16_splunk_apps_dashboard_v1" target="_blank" rel="noopener">SH-17 Deploying Splunk with Base Configs</a></li>
+<li><a href="/app/global_monitoring_console/splunk_sh_16_splunk_apps_dashboard_v1" target="_blank" rel="noopener">SH-18 Resource Usage</a></li>
 </ol>
 <ol>
 <li><a href="/app/global_monitoring_console/splunk_uf_01_forwarding_analysis_dashboard_v1" target="_blank" rel="noopener">UF-01 Forwarding Analysis</a></li>
@@ -294,6 +308,7 @@
 <li><a href="/app/global_monitoring_console/splunk_idx_06_cluster_bucket_status_dashboard_v1" target="_blank" rel="noopener">IDX-06 Indexer Cluster Bucket Status</a></li>
 <li><a href="/app/global_monitoring_console/splunk_idx_07_indexer_queues_dashboard_v1" target="_blank" rel="noopener">IDX-07 Indexer Queues</a></li>
 <li><a href="/app/global_monitoring_console/splunk_idx_08_core_sizing_calculator_dashboard_v1" target="_blank" rel="noopener">IDX-08 Splunk Core Sizing Calculator</a></li>
+<li><a href="/app/global_monitoring_console/splunk_idx_09_http_event_collector_dashboard_v1" target="_blank" rel="noopener">IDX-09 HTTP Event Collector</a></li>
 </ol>
     </html>
     </panel>

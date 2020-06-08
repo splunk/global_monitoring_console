@@ -1,5 +1,5 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 01 - GMC Assets &amp; Identities - Dashboard - v1.5.66</label>
+  <label>SH - 01 - GMC Assets &amp; Identities - Dashboard - v1.5.90</label>
   <search id="splunk_sh_01_assets_identities_dashboard_tab1">
     <query>| from lookup:splunk_assets_kv_store_lookup
 | fields Splunk_Instance Splunk_Roles serverName host host_short host_fqdn host_resolved host_ip idxcluster_label shcluster_label mode guid version build os_name os_name_extended cpu_arch os_version os_build startup_time kvStoreStatus numberOfCores numberOfVirtualCores physicalMemoryMB rtsearch_enabled master_uri master_guid licenseState isForwarding isTrial license_labels transparent_hugepages_defrag transparent_hugepages_effective_state transparent_hugepages_enabled ulimits_core_file_size ulimits_cpu_time ulimits_data_file_size ulimits_data_segment_size ulimits_nice ulimits_open_files ulimits_resident_memory_size ulimits_stack_size ulimits_user_processes ulimits_virtual_address_space_size SPLUNK_DB SPLUNK_HOME appServerPorts dfsDisabled dfsMasterPort enableSplunkWebSSL httpport kvStoreDisabled kvStorePort mgmtHostPort minFreeSpace sessionTimeout startwebserver trustedIP
@@ -322,14 +322,14 @@
         <option name="rangeColors">["0x53a051","0x006d9c"]</option>
         <option name="rangeValues">[0]</option>
         <option name="refresh.display">none</option>
-        <option name="unit">Indexes</option>
+        <option name="unit">Assets</option>
         <option name="useColors">1</option>
       </single>
     </panel>
   </row>
   <row id="Assets_Panel2">
     <panel id="panel_accordion_togglepanel_true_4" depends="$gadget_lib_loaded$">
-      <title>4. Splunk SHC Captains</title>
+      <title>2. Splunk SHC Captains</title>
       <table>
         <search base="splunk_sh_01_assets_identities_dashboard_tab1">
           <query>| stats values(Splunk_Roles) AS Splunk_Roles by Splunk_Instance  
@@ -349,7 +349,7 @@
       </table>
     </panel>
     <panel id="panel_accordion_togglepanel_true_5" depends="$gadget_lib_loaded$">
-      <title>5. Instances By Splunk Version</title>
+      <title>3. Instances By Splunk Version</title>
       <chart>
         <search base="splunk_sh_01_assets_identities_dashboard_tab1">
           <query>| stats count by version</query>
@@ -362,7 +362,7 @@
       </chart>
     </panel>
     <panel id="panel_accordion_togglepanel_true_6" depends="$gadget_lib_loaded$">
-      <title>6. Instances By Forwarding Status</title>
+      <title>4. Instances By Forwarding Status</title>
       <chart>
         <search base="splunk_sh_01_assets_identities_dashboard_tab1">
           <query>| stats count by isForwarding
@@ -379,7 +379,7 @@
   </row>
   <row id="Assets_Panel3">
     <panel id="panel_accordion_togglepanel_true_7" depends="$gadget_lib_loaded$">
-      <title>7. Instances By OS Version</title>
+      <title>5. Instances By OS Version</title>
       <table>
         <search base="splunk_sh_01_assets_identities_dashboard_tab1">
           <query>| stats count AS "# of Instances" by os_version 
@@ -395,7 +395,7 @@
       </table>
     </panel>
     <panel id="panel_accordion_togglepanel_true_8" depends="$gadget_lib_loaded$">
-      <title>8. Instances By OS</title>
+      <title>6. Instances By OS</title>
       <table>
         <search base="splunk_sh_01_assets_identities_dashboard_tab1">
           <query>| stats count AS "# of Instances" by os_name
@@ -415,7 +415,7 @@
   </row>
   <row id="Assets_Panel5">
     <panel id="panel_accordion_togglepanel_true_10" depends="$gadget_lib_loaded$">
-      <title>9. Indexer Mount Points Capacity</title>
+      <title>7. Assets Mount Points &amp; Capacity</title>
       <input type="time" token="TimeRangePkr2" searchWhenChanged="true">
         <label>1. Time Range</label>
         <default>
@@ -525,7 +525,7 @@
   </row>
   <row id="Assets_Panel6">
     <panel id="panel_accordion_togglepanel_true_3" depends="$gadget_lib_loaded$">
-      <title>11. Associated GMC Assets Job(s)</title>
+      <title>8. Associated GMC Assets Job(s)</title>
       <html>
             <ol>
                <li>
@@ -919,6 +919,7 @@
         <option name="rangeColors">["0x53a051","0x53a051"]</option>
         <option name="rangeValues">[0]</option>
         <option name="refresh.display">preview</option>
+        <option name="unit">Identities</option>
         <option name="useColors">1</option>
       </single>
     </panel>
