@@ -1,28 +1,38 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 10 - Source Types - Dashboard - v1.5.90</label>
+  <label>SH - 10 - Source Types - Dashboard - v1.8.10</label>
+  <description>Splunk  Source Types Information Dashboard</description>
   <search id="splunk_sh_10_source_types_dashboard_v1">
     <query>
 | from lookup:splunk_rest_configs_conf_props_sh_kv_store_lookup
 | search $Exclusions$ (app="$app$" title="*$title$*" sharing="$sharing$" author="$author$")
-| fields shcluster_label Splunk_Instance Splunk_Roles title app sharing author description TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER TRUNCATE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER KV_MODE INDEXED_EXTRACTIONS EVENT_BREAKER_ENABLE EVENT_BREAKER ANNOTATE_PUNCT LEARN_SOURCETYPE LEARN_MODEL MAX_EVENTS maxDist updated
+| fields shcluster_label Splunk_Instance app title sharing author TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER TRUNCATE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER KV_MODE INDEXED_EXTRACTIONS EVENT_BREAKER_ENABLE EVENT_BREAKER ANNOTATE_PUNCT LEARN_SOURCETYPE LEARN_MODEL MAX_EVENTS maxDist updated ADD_EXTRA_TIME_FIELDS AUTO_KV_JSON CHARSET CHECK_FOR_HEADER CHECK_METHOD DEPTH_LIMIT FIELD_DELIMITER FIELD_HEADER_REGEX HEADER_FIELD_DELIMITER HEADER_MODE JSON_TRIM_BRACES_IN_ARRAY_NAMES LINE_BREAKER_LOOKBEHIND MATCH_LIMIT MAX_DAYS_AGO MAX_DAYS_HENCE MAX_DIFF_SECS_AGO MAX_DIFF_SECS_HENCE METRIC-SCHEMA-TRANSFORMS METRICS_PROTOCOL MUST_NOT_BREAK_AFTER MUST_NOT_BREAK_BEFORE NO_BINARY_CHECK PREFIX_SOURCETYPE TIMESTAMP_FIELDS TRANSFORMS TZ category disabled invalid_cause is_valid priority pulldown_type rename 
 
 | `get_instance_roles(Splunk_Instance)`
 
-|	`get_identity_info_simple(shcluster_label,author)`
+| `get_identity_info(shcluster_label,author)` | `get_identity_info(author)` | `fillnull_identity_info`
 | `strftime_format(updated)`
 
 | fillnull value="auto" KV_MODE 
 | fillnull value="128" MAX_TIMESTAMP_LOOKAHEAD 
 | fillnull value="300" maxDist 
 | fillnull value="256" MAX_EVENTS 
-| fillnull value="0" EVENT_BREAKER_ENABLE 
-| fillnull value="1" ANNOTATE_PUNCT LEARN_MODEL SHOULD_LINEMERGE LEARN_SOURCETYPE BREAK_ONLY_BEFORE_DATE 
+| fillnull value="0" EVENT_BREAKER_ENABLE CHECK_FOR_HEADER FIELD_HEADER_REGEX JSON_TRIM_BRACES_IN_ARRAY_NAMES NO_BINARY_CHECK
+| fillnull value="1" ANNOTATE_PUNCT LEARN_MODEL SHOULD_LINEMERGE LEARN_SOURCETYPE BREAK_ONLY_BEFORE_DATE ADD_EXTRA_TIME_FIELDS AUTO_KV_JSON PREFIX_SOURCETYPE is_valid
 | fillnull value="10000" TRUNCATE 
 | fillnull value="^" TIME_PREFIX 
 | fillnull value="([\r\n]+)" LINE_BREAKER 
 | fillnull value="\r\n" EVENT_BREAKER 
 | fillnull value="/etc/datetime.xml" DATETIME_CONFIG 
 | fillnull value="not-set" INDEXED_EXTRACTIONS 
+| fillnull value="UTF-8" CHARSET 
+| fillnull value="endpoint_md5" CHECK_METHOD 
+| fillnull value="1000" DEPTH_LIMIT 
+| fillnull value="100" LINE_BREAKER_LOOKBEHIND 
+| fillnull value="100000" MATCH_LIMIT 
+| fillnull value="2000" MAX_DAYS_AGO 
+| fillnull value="2" MAX_DAYS_HENCE 
+| fillnull value="3600" MAX_DIFF_SECS_AGO 
+| fillnull value="604800" MAX_DIFF_SECS_HENCE 
 
 | search shcluster_label="$shcluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" emp_name="$emp_name$" emp_ttl="$emp_ttl$" emp_lob="$emp_lob$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" MAX_TIMESTAMP_LOOKAHEAD="$MAX_TIMESTAMP_LOOKAHEAD$" SHOULD_LINEMERGE="$SHOULD_LINEMERGE$" EVENT_BREAKER_ENABLE="$EVENT_BREAKER_ENABLE$" TRUNCATE="$TRUNCATE$" LEARN_SOURCETYPE="$LEARN_SOURCETYPE$" KV_MODE="$KV_MODE$" INDEXED_EXTRACTIONS="$INDEXED_EXTRACTIONS$"
 
@@ -283,7 +293,7 @@
       <table>
         <title>Source Types</title>
         <search base="splunk_sh_10_source_types_dashboard_v1">
-          <query>| table shcluster_label title app sharing author description TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER TRUNCATE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER KV_MODE INDEXED_EXTRACTIONS EVENT_BREAKER_ENABLE EVENT_BREAKER ANNOTATE_PUNCT LEARN_SOURCETYPE LEARN_MODEL MAX_EVENTS maxDist updated emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status endDate 
+          <query>| table shcluster_label app title sharing author TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER TRUNCATE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER KV_MODE INDEXED_EXTRACTIONS EVENT_BREAKER_ENABLE EVENT_BREAKER ANNOTATE_PUNCT LEARN_SOURCETYPE LEARN_MODEL MAX_EVENTS maxDist updated ADD_EXTRA_TIME_FIELDS AUTO_KV_JSON CHARSET CHECK_FOR_HEADER CHECK_METHOD DEPTH_LIMIT FIELD_DELIMITER FIELD_HEADER_REGEX HEADER_FIELD_DELIMITER HEADER_MODE JSON_TRIM_BRACES_IN_ARRAY_NAMES LINE_BREAKER_LOOKBEHIND MATCH_LIMIT MAX_DAYS_AGO MAX_DAYS_HENCE MAX_DIFF_SECS_AGO MAX_DIFF_SECS_HENCE METRIC-SCHEMA-TRANSFORMS METRICS_PROTOCOL MUST_NOT_BREAK_AFTER MUST_NOT_BREAK_BEFORE NO_BINARY_CHECK PREFIX_SOURCETYPE TIMESTAMP_FIELDS TRANSFORMS TZ category disabled invalid_cause is_valid priority pulldown_type rename 
 | sort 0 shcluster_label app title 
 | `rename_common_fields` 
 | `rename_identity_fields` 
@@ -359,6 +369,8 @@
         <search base="splunk_sh_10_source_types_dashboard_v1">
           <query>| stats count by app</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
@@ -371,10 +383,10 @@
       <title>4. Associated GMC Job(s) - $env:page$</title>
       <html>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_props_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Source Types Gen Job</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_configs_conf_props_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Source Types Gen Job</a>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_configs_conf_props_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_configs_conf_props_sh_kv_store&amp;type=kv">
                      View Sourcetypes KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>

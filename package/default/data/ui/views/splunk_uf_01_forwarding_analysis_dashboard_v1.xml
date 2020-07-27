@@ -1,7 +1,8 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>UF - 01 - Forwarding Analysis - Index Based - Dashboard - v1.5.90</label>
+  <label>UF - 01 - Forwarding Analysis - Index Based - Dashboard - v1.8.10</label>
+  <description>Splunk Forwarding Analysis Information Index Based Dashboard</description>
   <search id="splunk_uf_01_forwarding_analysis_dashboard_v1_1">
-    <query>(index=_internal sourcetype=splunkd search_group=dmc_group_indexer fwdType=* group=tcpin_connections guid=* connectionType IN (cooked, cookedSSL) )
+    <query>(index=_internal sourcetype=splunkd (search_group=dmc_group_indexer OR host=idx-i-*) fwdType=* group=tcpin_connections guid=* connectionType IN (cooked, cookedSSL) )
 | fields _time splunk_server host hostname sourceHost sourceIp os version fwdType connectionType kb arch ack destPort ingest_pipe ssl lastIndexer chan_new_kBps process_time_ms *_avg_thruput *_Kprocessed *_eps *_KBps
 | `get_idxcluster_label(splunk_server)`
 `gmc_comment("| lookup dnslookup clientip AS sourceIp OUTPUTNEW clienthost AS host_fqdn")`
@@ -503,13 +504,25 @@
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisY.abbreviation">auto</option>
         <option name="charting.chart">column</option>
-        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.showDataLabels">none</option>
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
-        <option name="height">500</option>
+        <option name="height">719</option>
         <option name="refresh.display">progressbar</option>
       </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| noop</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
     </panel>
   </row>
 </form>

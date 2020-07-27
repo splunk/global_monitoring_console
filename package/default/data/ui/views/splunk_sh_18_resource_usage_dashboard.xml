@@ -1,22 +1,23 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 18 - Resource Usage - Dashboard - v1.5.90</label>
+  <label>SH - 18 - Resource Usage - Dashboard - v1.8.10</label>
+  <description>Splunk Resource Usage Information Dashboard</description>
   <search id="splunk_sh_18_resource_usage_dashboard1">
     <query>
 index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IOStats, PerProcess)
 | fields - sourcetype source index linecount
 | rename data.* as * , search_props.* As *
-| eval process_class = case ( 
-    (process == "splunk-optimize"), "Index Service",
-    (((((process == "sh") OR (process == "ksh")) OR (process == "bash")) OR like(process,"python%")) OR (process == "powershell")), "Scripted Input",
-    (process == "mongod"),"KVStore"),
-    process_class = case( 
-    ((process == "splunkd") AND ((like(args,"-p %start%") OR like(args,"service")) OR like(args,"%_internal_launch_under_systemd%"))), "Splunkd Server",
-    ((process == "splunkd") AND isnotnull(sid)),"Search",
-    ((process == "splunkd") AND ((like(args,"fsck%") OR like(args,"recover-metadata%")) OR like(args,"cluster_thing"))), "Index Service",
-    ((process == "splunkd") AND (args == "instrument-resource-usage")), "Scripted Input",
-    ((like(process,"python%") AND like(args,"%/appserver/mrsparkle/root.py%")) OR like(process,"splunkweb")), "Splunk Web",
-    isnotnull(process_class), process_class), 
-    process_class = if(isnull(process_class), "Other", process_class)
+| eval process_class = case( 
+    process=="splunk-optimize","index service", 
+    process=="sh" OR process=="ksh" OR process=="bash" OR like(process,"python%") OR process=="powershell","scripted input", 
+    process=="mongod", "KVStore") 
+| eval process_class = case( 
+    process=="splunkd" AND (like(args,"-p %start%") OR like(args,"service") OR like(args,"%_internal_launch_under_systemd%")),"splunkd server", 
+    process=="splunkd" AND isnotnull(sid),"search", 
+    process=="splunkd" AND (like(args,"fsck%") OR like(args,"recover-metadata%") OR like(args,"cluster_thing")),"index service", 
+    process=="splunkd" AND args=="instrument-resource-usage", "scripted input",
+    (like(process,"python%") AND like(args,"%/appserver/mrsparkle/root.py%")) OR like(process,"splunkweb"),"Splunk Web", 
+    isnotnull(process_class), process_class) 
+| eval process_class = if(isnull(process_class),"other",process_class)
 | `get_instance_info_simple(host)`
 | search host="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$"
 </query>
@@ -26,6 +27,7 @@ index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IO
   <search base="splunk_sh_18_resource_usage_dashboard1" id="splunk_sh_18_resource_usage_dashboard_Hostwide">
     <query>
       | where component="Hostwide"
+      | eval cpu_total_pct=cpu_user_pct+cpu_system_pct
 </query>
   </search>
   <search base="splunk_sh_18_resource_usage_dashboard1" id="splunk_sh_18_resource_usage_dashboard_IOStats">
@@ -42,7 +44,7 @@ index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IO
   </search>
   <search id="splunk_sh_18_resource_usage_dashboard_lookup">
     <query>
-| from lookup:splunk_assets_kv_store_lookup 
+| from lookup:splunk_rest_assets_kv_store_lookup 
 | fields Splunk_Instance Splunk_Roles shcluster_label idxcluster_label serverName host host_short host_fqdn
 | search Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$"
 </query>
@@ -50,7 +52,7 @@ index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IO
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
-      <title>1. $Function1$ $Metric1$ By $Splitby1$ (PerProcess)</title>
+      <title>1. $Function1$ $Metric1$ By $Splitby1$ (PerProcess)   $TimeRangePkr.earliest$ $TimeRangePkr.latest$</title>
       <input type="time" token="TimeRangePkr" searchWhenChanged="true">
         <label>1. Time Range</label>
         <default>
@@ -123,7 +125,7 @@ index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IO
         <choice value="By process_class">Process Class</choice>
         <choice value="By process_type">Process Type</choice>
         <choice value="By process">Process</choice>
-        <choice value="By host">Host</choice>
+        <choice value="By host">Splunk Instance</choice>
         <choice value="By pid">PID</choice>
         <choice value="By user">User</choice>
         <choice value="By app">App</choice>
@@ -163,13 +165,14 @@ index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IO
         <choice value="span=12mon">1 year</choice>
       </input>
       <input type="text" token="top_tok" searchWhenChanged="true">
-        <label>9. Timechart IN top:</label>
+        <label>9. Timechart IN top N (PerProcess)</label>
         <default>10</default>
         <initialValue>10</initialValue>
       </input>
       <chart>
+        <title>$TimeRangePkr.earliest$ $TimeRangePkr.latest$</title>
         <search base="splunk_sh_18_resource_usage_dashboard_PerProcess">
-          <query>| timechart $span_period1$ useother=f usenull=f fixedrange=f limit=0
+          <query>| timechart $span_period1$ usenull=false useother=false fixedrange=false limit=0
     $Function1$($Metric1$) AS "$Metric1$" 
     $Splitby1$
     Where Max in top$top_tok$</query>
@@ -177,13 +180,16 @@ index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IO
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.backgroundColor">FFFF31</option>
         <option name="charting.chart">column</option>
         <option name="charting.chart.nullValueMode">gaps</option>
-        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.chart.showDataLabels">none</option>
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.drilldown">all</option>
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">600</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
@@ -242,13 +248,14 @@ index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IO
         <choice value="swap_used">swap_used</choice>
         <choice value="cpu_system_pct">cpu_system_pct</choice>
         <choice value="cpu_user_pct">cpu_user_pct</choice>
+        <choice value="cpu_total_pct">cpu_total_pct</choice>
         <default>normalized_load_avg_1min</default>
         <initialValue>normalized_load_avg_1min</initialValue>
       </input>
       <input type="dropdown" token="Splitby2" searchWhenChanged="true">
         <label>7. Split By</label>
-        <choice value="By host">Host</choice>
-        <choice value="By splunk_version">splunk_version</choice>
+        <choice value="By host">Splunk Instance</choice>
+        <choice value="By Splunk_Roles">Splunk Roles</choice>
         <choice value="">None</choice>
         <search>
           <query/>
@@ -283,26 +290,28 @@ index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IO
         <choice value="span=12mon">1 year</choice>
       </input>
       <input type="text" token="top_tok" searchWhenChanged="true">
-        <label>9. Timechart IN top:</label>
+        <label>9. Timechart IN top N (Hostwide)</label>
         <default>10</default>
         <initialValue>10</initialValue>
       </input>
       <chart>
         <search base="splunk_sh_18_resource_usage_dashboard_Hostwide">
-          <query>| timechart $span_period2$ useother=f usenull=f fixedrange=f limit=0
+          <query>| timechart $span_period2$ usenull=false useother=false fixedrange=false limit=0
     $Function2$($Metric2$) AS "$Metric2$" 
     $Splitby2$</query>
         </search>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.axisY.abbreviation">auto</option>
-        <option name="charting.chart">column</option>
-        <option name="charting.chart.nullValueMode">gaps</option>
-        <option name="charting.chart.showDataLabels">minmax</option>
-        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
         <option name="charting.drilldown">all</option>
-        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
         <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">600</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
@@ -365,15 +374,15 @@ index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IO
       </input>
       <input type="dropdown" token="Splitby3" searchWhenChanged="true">
         <label>7. Split By</label>
-        <choice value="By host">Host</choice>
+        <choice value="By host">Splunk Instance</choice>
         <choice value="By device">device</choice>
         <choice value="By fs_type">fs_type</choice>
         <choice value="By mount_point">mount_point</choice>
+        <choice value="">None</choice>
         <search>
           <query/>
         </search>
-        <default>By host</default>
-        <initialValue>By host</initialValue>
+        <default></default>
       </input>
       <input type="dropdown" token="span_period3" searchWhenChanged="true">
         <label>8. Span Period</label>
@@ -403,29 +412,43 @@ index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IO
         <choice value="span=12mon">1 year</choice>
       </input>
       <input type="text" token="top_tok" searchWhenChanged="true">
-        <label>9. Timechart IN top:</label>
+        <label>9. Timechart IN top N (IOStats)</label>
         <default>10</default>
         <initialValue>10</initialValue>
       </input>
       <chart>
         <search base="splunk_sh_18_resource_usage_dashboard_IOStats">
-          <query>| timechart $span_period3$ useother=f usenull=f fixedrange=f limit=0
+          <query>| timechart $span_period3$ usenull=false useother=false fixedrange=false limit=0
     $Function3$($Metric3$) AS "$Metric3$" 
-    $Splitby3$
-    Where Max in top$top_tok$</query>
+    $Splitby3$</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.axisY.abbreviation">auto</option>
-        <option name="charting.chart">column</option>
-        <option name="charting.chart.nullValueMode">gaps</option>
-        <option name="charting.chart.showDataLabels">minmax</option>
-        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.drilldown">all</option>
         <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.mode">standard</option>
         <option name="charting.legend.placement">bottom</option>
         <option name="refresh.display">progressbar</option>
+        <option name="height">600</option>
       </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| noop</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
     </panel>
   </row>
 </form>

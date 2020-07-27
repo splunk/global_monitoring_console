@@ -1,31 +1,30 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 06 - Dashboards, Reports/Alerts &amp; Lookups Analysis - Dashboard - v1.5.90</label>
-  <description>add total number of authors</description>
+  <label>SH - 06 - Dashboards, Reports/Alerts &amp; Lookups Analysis - Dashboard - v1.8.10</label>
+  <description>Splunk Dashboards, Reports/Alerts &amp; Lookups Analysis Dashboard</description>
   <search id="splunk_sh_06_knowledge_objects_analysis_dashboards">
     <query>
 | from lookup:splunk_rest_data_ui_views_sh_kv_store_lookup 
 | fields shcluster_label Splunk_Instance app sharing title label description type dashboard_size author location updated Report_Reference Dashboard_Reference Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference search BaseSearch acl_perms_read acl_perms_write
 | `get_instance_roles(Splunk_Instance)`
 | `get_dashboards_usage(shcluster_label,app,title)` 
-| `get_identity_info(shcluster_label,author)` 
+| `get_identity_info(shcluster_label,author)` | `get_identity_info(author)` | `fillnull_identity_info`
 | `strftime_format(updated)`
-| fillnull value="Undefined" Splunk_Roles Splunk_Instance app sharing title label description type dashboard_size author search BaseSearch emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status work_city work_region work_country
-| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles1$" Splunk_Instance="$Splunk_Instance1$" app="$app1$" author=$author1$ sharing=$sharing1$ title="*$title$*" label="*$label$*" Report_Reference="*$Report_Reference1$*" Dashboard_Reference="*$Dashboard_Reference1$*" Lookup_Reference="*$Lookup_Reference1$*" Datamodel_Reference="*$Datamodel_Reference1$*" Macro_Reference="*$Macro_Reference1$*" Index_Reference="*$Index_Reference1$*" Sourcetype_Reference="*$Sourcetype_Reference1$*" Source_Reference="*$Source_Reference1$*" Eventtype_Reference="*$Eventtype_Reference1$*" Rest_Reference="*$Rest_Reference1$*" BaseSearch="$BaseSearch$" dashboard_size &lt;= $dashboard_size$ search="*$search$*" Days_Latest_Access &lt;= "$Days_Latest_Access1$" Days_Latest_Access &gt;= "$Days_Latest_Access2$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$"</query>
+| fillnull value="Undefined" Splunk_Roles Splunk_Instance app sharing title label description type dashboard_size author search BaseSearch
+| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles1$" Splunk_Instance="$Splunk_Instance1$" app="$app1$" author=$author1$ sharing=$sharing1$ title="*$title$*" label="*$label$*" Report_Reference="*$Report_Reference1$*" Dashboard_Reference="*$Dashboard_Reference1$*" Lookup_Reference="*$Lookup_Reference1$*" Datamodel_Reference="*$Datamodel_Reference1$*" Macro_Reference="*$Macro_Reference1$*" Index_Reference="*$Index_Reference1$*" Sourcetype_Reference="*$Sourcetype_Reference1$*" Source_Reference="*$Source_Reference1$*" Eventtype_Reference="*$Eventtype_Reference1$*" Rest_Reference="*$Rest_Reference1$*" BaseSearch="$BaseSearch$" dashboard_size &lt;= $dashboard_size$ search="*$search$*" Days_Latest_Access &lt;= "$Days_Latest_Access1$" Days_Latest_Access &gt;= "$Days_Latest_Access2$" emp_name="$emp_name$" emp_ttl="$emp_ttl$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$"</query>
   </search>
   <search id="splunk_sh_06_knowledge_objects_analysis_savedsearches">
     <query>
 | from lookup:splunk_rest_saved_searches_sh_kv_store_lookup 
-| fields shcluster_label Splunk_Instance app savedsearch_name savedsearch_type description author disabled is_scheduled sharing cron_schedule is_visible max_concurrent next_scheduled_time realtime_schedule run_n_times run_on_startup schedule_priority schedule_window scheduled_times updated allow_skew acl_perms_read acl_perms_write correlationsearch_enabled correlationsearch_label email email_message_alert email_message_report email_to indicator itsi_base_search_id itsi_kpi_id itsi_service_id itsi_eg itsi_eg_param_description itsi_eg_param_drilldown_search_earliest_offset itsi_eg_param_drilldown_search_latest_offset itsi_eg_param_drilldown_search_search itsi_eg_param_drilldown_search_title itsi_eg_param_drilldown_title itsi_eg_param_drilldown_uri itsi_eg_param_entity_lookup_field itsi_eg_param_event_identifier_fields itsi_eg_param_meta_data itsi_eg_param_owner itsi_eg_param_search_type itsi_eg_param_service_ids itsi_eg_param_severity itsi_eg_param_status itsi_eg_param_title kpi kpi_delta kpi_drilldown_uri kpi_group_0_name kpi_group_0_order kpi_group_1_name kpi_group_1_order kpi_invert kpi_subtitle kpi_threshold kpi_title kpi_value kpi_value_suffix makestreams_param_verbose nbtstat_param_verbose nslookup_param_verbose output_message output_message_param_fields output_message_param_msgid output_message_param_name output_message_param_purge outputtelemetry populate_lookup populate_lookup_dest script summary_index summary_index_name webhook webhook_param_url actions alert_comparator alert_condition alert_threshold alert_type alert_severity alert_suppress alert_suppress_fields alert_suppress_period alert_track auto_summarize auto_summarize_cron_schedule auto_summarize_dispatch_earliest_time auto_summarize_dispatch_latest_time auto_summarize_max_concurrent dispatch_auto_cancel dispatch_auto_pause dispatch_buckets dispatch_earliest_time dispatch_index_earliest dispatch_index_latest dispatch_indexedrealtime dispatch_indexedrealtimeoffset dispatch_latest_time dispatch_ttl dispatch_as search logevent logevent_param_event lookup lookup_append lookup_filename script_filename alert_expires Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference
+| fields shcluster_label Splunk_Instance app savedsearch_name savedsearch_type description author disabled is_scheduled sharing cron_schedule is_visible max_concurrent next_scheduled_time realtime_schedule run_n_times run_on_startup schedule_priority schedule_window scheduled_times updated allow_skew acl_perms_read acl_perms_write correlationsearch_enabled correlationsearch_label email email_message_alert email_message_report email_to indicator itsi_base_search_id itsi_kpi_id itsi_service_id itsi_eg itsi_eg_param_description itsi_eg_param_drilldown_search_earliest_offset itsi_eg_param_drilldown_search_latest_offset itsi_eg_param_drilldown_search_search itsi_eg_param_drilldown_search_title itsi_eg_param_drilldown_title itsi_eg_param_drilldown_uri itsi_eg_param_entity_lookup_field itsi_eg_param_event_identifier_fields itsi_eg_param_meta_data itsi_eg_param_owner itsi_eg_param_search_type itsi_eg_param_service_ids itsi_eg_param_severity itsi_eg_param_status itsi_eg_param_title kpi kpi_delta kpi_drilldown_uri kpi_group_0_name kpi_group_0_order kpi_group_1_name kpi_group_1_order kpi_invert kpi_subtitle kpi_threshold kpi_title kpi_value kpi_value_suffix makestreams_param_verbose nbtstat_param_verbose nslookup_param_verbose output_message output_message_param_fields output_message_param_msgid output_message_param_name output_message_param_purge outputtelemetry populate_lookup populate_lookup_dest script summary_index summary_index_name webhook webhook_param_url actions alert_comparator alert_condition alert_threshold alert_type alert_severity alert_suppress alert_suppress_fields alert_suppress_period alert_track auto_summarize auto_summarize_cron_schedule auto_summarize_dispatch_earliest_time auto_summarize_dispatch_latest_time auto_summarize_max_concurrent dispatch_auto_cancel dispatch_auto_pause dispatch_buckets dispatch_earliest_time dispatch_index_earliest dispatch_index_latest dispatch_indexedrealtime dispatch_indexedrealtimeoffset dispatch_latest_time dispatch_ttl dispatch_as savedsearch_search logevent logevent_param_event lookup lookup_append lookup_filename script_filename alert_expires Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference
 | `get_instance_roles(Splunk_Instance)`
 | `get_saved_searches_usage(shcluster_label, app, savedsearch_name)` 
-| `get_identity_info(shcluster_label,author)` 
+| `get_identity_info(shcluster_label,author)` | `get_identity_info(author)` | `fillnull_identity_info`
 | `get_cron_schedule(cron_schedule)`
-| `strftime_format(updated)`
-| `strftime_format(scheduled_times)`
+| `strftime_format(updated)` | `strftime_format(scheduled_times)`
 | makemv delim="," actions
-| fillnull value=0 action_summary_index action_correlationsearch_enabled
-| fillnull value="Undefined" Splunk_Roles Splunk_Instance app savedsearch_name description savedsearch_type sharing author owner disabled is_visible is_scheduled cron_schedule scheduled_times next_scheduled_time auto_summarize dispatch_earliest_time dispatch_latest_time schedule_priority max_concurrent schedule_window allow_skew realtime_schedule alert_severity alert_track alert_type removable run_n_times run_on_startup search action_email_to cron_schedule_described emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status action_summary_index_name
-| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles2$" Splunk_Instance="$Splunk_Instance2$" app="$app2$" author=$author2$ sharing=$sharing2$ disabled="$is_disabled$" is_scheduled="$is_scheduled$" savedsearch_name="*$savedsearch_name$*" savedsearch_type="$savedsearch_type$" Days_Latest_Access &lt;= "$Days_Latest_Access3$" Days_Latest_Access &gt;= "$Days_Latest_Access4$" search="*$search2$*" Lookup_Reference="*$Lookup_Reference2$*" Datamodel_Reference="*$Datamodel_Reference2$*" Macro_Reference="*$Macro_Reference2$*" Index_Reference="*$Index_Reference2$*" Sourcetype_Reference="*$Sourcetype_Reference2$*" Source_Reference="*$Source_Reference2$*" Eventtype_Reference="*$Eventtype_Reference2$*" Rest_Reference="*$Rest_Reference2$*" action_email_to="$action_email_to$" auto_summarize="$auto_summarize$" schedule_priority="$schedule_priority$" schedule_window="$schedule_window$" realtime_schedule="$realtime_schedule$" run_on_startup="$run_on_startup$" allow_skew="$allow_skew$" action_correlationsearch_enabled="$action_correlationsearch_enabled$" action_summary_index="$action_summary_index$" cron_schedule_described="$cron_schedule_described$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$"</query>
+| fillnull value=0 action_summary_index correlationsearch_enabled
+| fillnull value="Undefined" Splunk_Roles Splunk_Instance app savedsearch_name description savedsearch_type sharing author owner disabled is_visible is_scheduled cron_schedule scheduled_times next_scheduled_time auto_summarize dispatch_earliest_time dispatch_latest_time schedule_priority max_concurrent schedule_window allow_skew realtime_schedule alert_severity alert_track alert_type removable run_n_times run_on_startup search action_email_to cron_schedule_described action_summary_index_name
+| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles2$" Splunk_Instance="$Splunk_Instance2$" app="$app2$" author=$author2$ sharing=$sharing2$ disabled="$is_disabled$" is_scheduled="$is_scheduled$" savedsearch_name="*$savedsearch_name$*" savedsearch_type="$savedsearch_type$" Days_Latest_Access &lt;= "$Days_Latest_Access3$" Days_Latest_Access &gt;= "$Days_Latest_Access4$" search="*$search2$*" Lookup_Reference="*$Lookup_Reference2$*" Datamodel_Reference="*$Datamodel_Reference2$*" Macro_Reference="*$Macro_Reference2$*" Index_Reference="*$Index_Reference2$*" Sourcetype_Reference="*$Sourcetype_Reference2$*" Source_Reference="*$Source_Reference2$*" Eventtype_Reference="*$Eventtype_Reference2$*" Rest_Reference="*$Rest_Reference2$*" action_email_to="$action_email_to$" auto_summarize="$auto_summarize$" schedule_priority="$schedule_priority$" schedule_window="$schedule_window$" realtime_schedule="$realtime_schedule$" run_on_startup="$run_on_startup$" allow_skew="$allow_skew$" correlationsearch_enabled="$correlationsearch_enabled$" action_summary_index="$action_summary_index$" cron_schedule_described="$cron_schedule_described$" emp_name="$emp_name$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" emp_ttl="$emp_ttl$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$"</query>
   </search>
   <search id="splunk_sh_06_knowledge_objects_analysis_lookups">
     <query>
@@ -35,15 +34,15 @@
     [| from lookup:splunk_rest_admin_lookup_table_files_sh_kv_store_lookup 
     | fields shcluster_label,Splunk_Instance,app,sharing,author,disabled,updated,Filename,Lookup_File_Path ]
 | `get_instance_roles(Splunk_Instance)`
-| `get_identity_info(shcluster_label,author)`
+| `get_identity_info(shcluster_label,author)` | `get_identity_info(author)` | `fillnull_identity_info`
 | `strftime_format(updated)`
 | eval Type = if(match(Lookup_File,".csv"), "file", Type) , if(isnull(Lookup_File), "file", Type) , Lookup = if(isnull(Lookup), "NO-DEFINITION", Lookup)
 | fillnull value="0" Min_Matches disabled
 | fillnull value="100" Max_Matches 
 | fillnull value="true" Allow_Caching Replicate case_sensitive_match
 | fillnull value="EXACT" Match_Type
-| fillnull value="Undefined" Splunk_Instance Splunk_Roles app author sharing Lookup Filename Type Collection Lookup_File_Path emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status Fields_List
-| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles3$" Splunk_Instance="$Splunk_Instance3$" app="$app3$" Lookup="*$Lookup$*" author="$author3$" sharing="$sharing3$" Filename="*$Filename$*" Lookup_File_Path="*$Lookup_File_Path$*" Collection="*$Collection$*" Match_Type="*$Match_Type$*" Type="$Type3$" case_sensitive_match="$case_sensitive_match$"  emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$" Fields_List="*$Fields_List$*"
+| fillnull value="Undefined" Splunk_Instance Splunk_Roles app author sharing Lookup Filename Type Collection Lookup_File_Path Fields_List
+| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles3$" Splunk_Instance="$Splunk_Instance3$" app="$app3$" Lookup="*$Lookup$*" author="$author3$" sharing="$sharing3$" Filename="*$Filename$*" Lookup_File_Path="*$Lookup_File_Path$*" Collection="*$Collection$*" Match_Type="*$Match_Type$*" Type="$Type3$" case_sensitive_match="$case_sensitive_match$" emp_name="$emp_name$" emp_ttl="$emp_ttl$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob="$emp_lob$" emp_cc="$emp_cc$" work_city="$work_city$" work_region="$work_region$" work_country="$work_country$" Fields_List="*$Fields_List$*"
 </query>
   </search>
   <search id="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
@@ -51,7 +50,7 @@
 | from lookup:splunk_rest_data_props_lookups_sh_kv_store_lookup 
 | fields shcluster_label Splunk_Instance Splunk_Roles app sharing stanza attribute transform overwrite value author updated acl_perms_read acl_perms_write 
 | `get_instance_roles(Splunk_Instance)`
-|	`get_identity_info(shcluster_label,author)`
+| `get_identity_info(shcluster_label,author)` | `get_identity_info(author)` | `fillnull_identity_info`
 | `strftime_format(updated)`
 | rex field=attribute mode=sed "s/LOOKUP-//g"
 | lookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup shcluster_label app Lookup As transform OUTPUT Filename Type Fields_List Collection
@@ -61,7 +60,7 @@
   </search>
   <search id="splunk_sh_06_knowledge_objects_analysis_dashboards_tracker">
     <query>
-index=`gmc_summary_index` search_name=splunk_internal_web_access_idx_summary_tracker 
+index=`gmc_setup_summary_index` search_name=splunk_internal_web_access_idx_summary_tracker 
 | fields _time User Splunk_Instance App OS_Name avg_spent Dashboard_Name Latest_Access 
 | `get_instance_roles(Splunk_Instance)` 
 | `get_shcluster_label(Splunk_Instance)` 
@@ -72,7 +71,7 @@ index=`gmc_summary_index` search_name=splunk_internal_web_access_idx_summary_tra
   </search>
   <search id="splunk_sh_06_knowledge_objects_analysis_jobs_tracker">
     <query>
-index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary_tracker 
+index=`gmc_setup_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary_tracker 
 | fields _time search_name Splunk_Instance Savedsearch_Name App User Scheduled_Time Dispatch_Time Priority Window_Time Run_Time Result_Count
 | `get_instance_roles(Splunk_Instance)` 
 | `get_shcluster_label(Splunk_Instance)` 
@@ -88,24 +87,24 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       <html>
                 <ul id="tabs" class="nav nav-tabs">
                     <li class="active">
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Dashboards_Inputs,Dashboards_Panel1,Dashboards_Panel2,Dashboards_Panel3,Dashboards_Panel4,Dashboards_Panel5">1. Dashboards</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Dashboards_Inputs1,Dashboards_Inputs2,Dashboards_Inputs3,Dashboards_Inputs4,Dashboards_Panel1,Dashboards_Panel2,Dashboards_Panel3,Dashboards_Panel4,Dashboards_Panel5,Dashboards_Panel6,Dashboards_Panel7,Dashboards_Panel8,Dashboards_Panel9">1. Dashboards</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Reports_Alerts_Inputs,Reports_Alerts_Panel1,Reports_Alerts_Panel2,Reports_Alerts_Panel3,Reports_Alerts_Panel4,Reports_Alerts_Panel5">2. Reports/Alerts</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Reports_Alerts_Inputs1,Reports_Alerts_Inputs2,Reports_Alerts_Inputs3,Reports_Alerts_Inputs4,Reports_Alerts_Panel1,Reports_Alerts_Panel2,Reports_Alerts_Panel3,Reports_Alerts_Panel4,Reports_Alerts_Panel5,Reports_Alerts_Panel6,Reports_Alerts_Panel7,Reports_Alerts_Panel8,Reports_Alerts_Panel9">2. Reports/Alerts</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Lookups_Inputs,Lookups_Panel1,Lookups_Panel2,Lookups_Panel3,Lookups_Panel4,Lookups_Panel5">3. Lookups</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Lookups_Inputs1,Lookups_Inputs2,Lookups_Inputs3,Lookups_Inputs4,Lookups_Panel1,Lookups_Panel2,Lookups_Panel3,Lookups_Panel4,Lookups_Panel5,Lookups_Panel6,Lookups_Panel7,Lookups_Panel8,Lookups_Panel9">3. Lookups</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Auto_Lookups_Inputs,Auto_Lookups_Panel1,Auto_Lookups_Panel2,Auto_Lookups_Panel3,Auto_Lookups_Panel4,Auto_Lookups_Panel5">4. Automatic Lookups</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Auto_Lookups_Inputs1,Auto_Lookups_Inputs2,Auto_Lookups_Inputs3,Auto_Lookups_Input4,Auto_Lookups_Input4,Auto_Lookups_Panel1,Auto_Lookups_Panel2,Auto_Lookups_Panel3,Auto_Lookups_Panel4,Auto_Lookups_Panel5,Auto_Lookups_Panel6,Auto_Lookups_Panel7,Auto_Lookups_Panel8,Auto_Lookups_Panel9">4. Automatic Lookups</a>
                     </li>
                 </ul>
             </html>
     </panel>
   </row>
-  <row id="Dashboards_Inputs">
-    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
-      <title>1. Dashboards Filters</title>
+  <row id="Dashboards_Inputs1">
+    <panel id="panel_accordion_togglepanel_false_Dashboards_Inputs_1" depends="$gadget_lib_loaded$">
+      <title>1. Dashboards - Basic Filters</title>
       <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
         <label>1. Splunk SH (Cluster/Instance)</label>
         <fieldForLabel>shcluster_label</fieldForLabel>
@@ -185,8 +184,13 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         </search>
         <default>*</default>
       </input>
+    </panel>
+  </row>
+  <row id="Dashboards_Inputs2">
+    <panel id="panel_accordion_togglepanel_true_Dashboards_Inputs_2" depends="$gadget_lib_loaded$">
+      <title>2. Dashboards - Identity Filters</title>
       <input type="dropdown" token="author1" searchWhenChanged="true">
-        <label>8. Owner</label>
+        <label>1. Owner (Employee)</label>
         <choice value="*">All</choice>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -197,8 +201,30 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
 | rename author as author1</query>
         </search>
       </input>
+      <input type="dropdown" token="emp_name" searchWhenChanged="true">
+        <label>2. Employee Full Name</label>
+        <fieldForLabel>emp_name</fieldForLabel>
+        <fieldForValue>emp_name</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by emp_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_ttl" searchWhenChanged="true">
+        <label>3. Employee Title</label>
+        <fieldForLabel>emp_ttl</fieldForLabel>
+        <fieldForValue>emp_ttl</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by emp_ttl</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
       <input type="dropdown" token="emp_type" searchWhenChanged="true">
-        <label>9. Employee Type</label>
+        <label>4. Employee Type</label>
         <fieldForLabel>emp_type</fieldForLabel>
         <fieldForValue>emp_type</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
@@ -209,7 +235,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="emp_status" searchWhenChanged="true">
-        <label>10. Employee Status</label>
+        <label>5. Employee Status</label>
         <fieldForLabel>emp_status</fieldForLabel>
         <fieldForValue>emp_status</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
@@ -220,7 +246,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="emp_lob" searchWhenChanged="true">
-        <label>11. Employee LOB</label>
+        <label>6. Employee LOB</label>
         <fieldForLabel>emp_lob</fieldForLabel>
         <fieldForValue>emp_lob</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
@@ -231,7 +257,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="emp_dep" searchWhenChanged="true">
-        <label>12. Employee Department</label>
+        <label>7. Employee Department</label>
         <fieldForLabel>emp_dep</fieldForLabel>
         <fieldForValue>emp_dep</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
@@ -242,7 +268,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="emp_cc" searchWhenChanged="true">
-        <label>13. Employee Cost Center</label>
+        <label>8. Employee Cost Center</label>
         <fieldForLabel>emp_cc</fieldForLabel>
         <fieldForValue>emp_cc</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
@@ -253,7 +279,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="work_city" searchWhenChanged="true">
-        <label>14. Employee City</label>
+        <label>9. Employee City</label>
         <fieldForLabel>work_city</fieldForLabel>
         <fieldForValue>work_city</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
@@ -264,7 +290,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="work_region" searchWhenChanged="true">
-        <label>15. Employee Region/State</label>
+        <label>10. Employee Region/State</label>
         <fieldForLabel>work_region</fieldForLabel>
         <fieldForValue>work_region</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
@@ -275,7 +301,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="work_country" searchWhenChanged="true">
-        <label>16. Employee Country</label>
+        <label>11. Employee Country</label>
         <fieldForLabel>work_country</fieldForLabel>
         <fieldForValue>work_country</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
@@ -285,118 +311,13 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="Lookup_Reference1" searchWhenChanged="true">
-        <label>17. Lookup Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Lookup_Reference</fieldForLabel>
-        <fieldForValue>Lookup_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
-          <query>| stats count by Lookup_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Report_Reference1" searchWhenChanged="true">
-        <label>18. Report Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Report_Reference</fieldForLabel>
-        <fieldForValue>Report_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
-          <query>| stats count by Report_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Dashboard_Reference1" searchWhenChanged="true">
-        <label>19. Dashboard Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Dashboard_Reference</fieldForLabel>
-        <fieldForValue>Dashboard_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
-          <query>| stats count by Dashboard_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Datamodel_Reference1" searchWhenChanged="true">
-        <label>20. Datamodel Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Datamodel_Reference</fieldForLabel>
-        <fieldForValue>Datamodel_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
-          <query>| stats count by Datamodel_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Macro_Reference1" searchWhenChanged="true">
-        <label>21. Macro Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Macro_Reference</fieldForLabel>
-        <fieldForValue>Macro_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
-          <query>| stats count by Macro_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Eventtype_Reference1" searchWhenChanged="true">
-        <label>22. Eventtype Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Eventtype_Reference</fieldForLabel>
-        <fieldForValue>Eventtype_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
-          <query>| stats count by Eventtype_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Index_Reference1" searchWhenChanged="true">
-        <label>23. Index Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Index_Reference</fieldForLabel>
-        <fieldForValue>Index_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
-          <query>| stats count by Index_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Sourcetype_Reference1" searchWhenChanged="true">
-        <label>24. Sourcetype Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Sourcetype_Reference</fieldForLabel>
-        <fieldForValue>Sourcetype_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
-          <query>| stats count by Sourcetype_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Source_Reference1" searchWhenChanged="true">
-        <label>25. Source Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Source_Reference</fieldForLabel>
-        <fieldForValue>Source_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
-          <query>| stats count by Source_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Rest_Reference1" searchWhenChanged="true">
-        <label>26. Rest Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Rest_Reference</fieldForLabel>
-        <fieldForValue>Rest_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
-          <query>| stats count by Rest_Reference</query>
-        </search>
-      </input>
+    </panel>
+  </row>
+  <row id="Dashboards_Inputs3">
+    <panel id="panel_accordion_togglepanel_true_Dashboards_Inputs_3" depends="$gadget_lib_loaded$">
+      <title>3. Dashboards - Advanced Filters</title>
       <input type="dropdown" token="BaseSearch" searchWhenChanged="true">
-        <label>27. Base Search</label>
+        <label>1. Base Search</label>
         <choice value="*">All</choice>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -407,7 +328,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         </search>
       </input>
       <input type="dropdown" token="Days_Latest_Access1" searchWhenChanged="true">
-        <label>28. Days Since Latest Access (Less Than)</label>
+        <label>2. Days Since Latest Access (Less Than)</label>
         <choice value="9999999">Any</choice>
         <default>9999999</default>
         <initialValue>9999999</initialValue>
@@ -420,7 +341,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         </search>
       </input>
       <input type="dropdown" token="Days_Latest_Access2" searchWhenChanged="true">
-        <label>29. Days Since Latest Access (More Than)</label>
+        <label>3. Days Since Latest Access (More Than)</label>
         <choice value="0">Any</choice>
         <default>0</default>
         <initialValue>0</initialValue>
@@ -433,30 +354,150 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         </search>
       </input>
       <input type="text" token="dashboard_size" searchWhenChanged="true">
-        <label>30. Dashboard Size in Bytes &lt;=</label>
+        <label>4. Dashboard Size in Bytes &lt;=</label>
         <default>10000000</default>
         <initialValue>10000000</initialValue>
       </input>
       <input type="text" token="search" searchWhenChanged="true">
-        <label>31. Search By Dashboard Searches (Contains)</label>
+        <label>5. Search By Dashboard Searches (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
       <input type="text" token="label" searchWhenChanged="true">
-        <label>32. Search By Dashboard Name (Contains)</label>
+        <label>6. Search By Dashboard Name (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
       <input type="text" token="title" searchWhenChanged="true">
-        <label>33. Search By Dashboard title (Contains)</label>
+        <label>7. Search By Dashboard title (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row id="Dashboards_Inputs4">
+    <panel id="panel_accordion_togglepanel_true_Dashboards_Inputs_4" depends="$gadget_lib_loaded$">
+      <title>4. Dashboards - Reference Filters</title>
+      <input type="dropdown" token="Lookup_Reference1" searchWhenChanged="true">
+        <label>1. Lookup Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Lookup_Reference</fieldForLabel>
+        <fieldForValue>Lookup_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by Lookup_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Report_Reference1" searchWhenChanged="true">
+        <label>2. Report Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Report_Reference</fieldForLabel>
+        <fieldForValue>Report_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by Report_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Dashboard_Reference1" searchWhenChanged="true">
+        <label>3. Dashboard Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Dashboard_Reference</fieldForLabel>
+        <fieldForValue>Dashboard_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by Dashboard_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Datamodel_Reference1" searchWhenChanged="true">
+        <label>4. Datamodel Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Datamodel_Reference</fieldForLabel>
+        <fieldForValue>Datamodel_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by Datamodel_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Macro_Reference1" searchWhenChanged="true">
+        <label>5. Macro Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Macro_Reference</fieldForLabel>
+        <fieldForValue>Macro_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by Macro_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Eventtype_Reference1" searchWhenChanged="true">
+        <label>6. Eventtype Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Eventtype_Reference</fieldForLabel>
+        <fieldForValue>Eventtype_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by Eventtype_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Index_Reference1" searchWhenChanged="true">
+        <label>7. Index Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Index_Reference</fieldForLabel>
+        <fieldForValue>Index_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by Index_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Sourcetype_Reference1" searchWhenChanged="true">
+        <label>8. Sourcetype Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Sourcetype_Reference</fieldForLabel>
+        <fieldForValue>Sourcetype_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by Sourcetype_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Source_Reference1" searchWhenChanged="true">
+        <label>9. Source Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Source_Reference</fieldForLabel>
+        <fieldForValue>Source_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by Source_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Rest_Reference1" searchWhenChanged="true">
+        <label>10. Rest Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Rest_Reference</fieldForLabel>
+        <fieldForValue>Rest_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
+          <query>| stats count by Rest_Reference</query>
+        </search>
       </input>
       <input type="text" token="Lookup_Reference1" searchWhenChanged="true">
-        <label>34. Search By Lookup Reference (Contains)</label>
+        <label>11. Search By Lookup Reference (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
+    </panel>
+  </row>
+  <row id="Dashboards_Panel3">
+    <panel id="panel_accordion_togglepanel_false_dashboards_4" depends="$gadget_lib_loaded$">
+      <title>5. Dashboards - List</title>
       <table>
         <title>Post-process searches or Base Searches: It is highly recommended to use this feature. Follow the example here: https://docs.splunk.com/Documentation/Splunk/latest/Viz/Savedsearches</title>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
@@ -573,14 +614,14 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
           <colorPalette type="map">{"user":#DC4E41,"global":#F8BE34,"app":#53A051}</colorPalette>
         </format>
         <drilldown>
-          <link target="_blank">/app/global_monitoring_console/splunk_sh_09_macros_dashboard_v1?form.title=$row.Macro%20Reference$</link>
+          <link target="_blank">/app/TA_global_monitoring_console/splunk_sh_09_macros_dashboard_v1?form.title=$row.Macro_Reference$</link>
         </drilldown>
       </table>
     </panel>
   </row>
-  <row id="Dashboards_Panel1">
-    <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
-      <title>2. Total Number of Dashboard/Searches</title>
+  <row id="Dashboards_Panel5">
+    <panel id="panel_accordion_togglepanel_false_dashboards_5" depends="$gadget_lib_loaded$">
+      <title>6. Total Number of Dashboard/Searches</title>
       <single>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
           <query>| stats count</query>
@@ -606,8 +647,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
-      <title>3. Total Number of Authors</title>
+    <panel id="panel_accordion_togglepanel_false_dashboards_6" depends="$gadget_lib_loaded$">
+      <title>7. Total Number of Authors</title>
       <single>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
           <query>| stats dc(author) As Num_Authors</query>
@@ -621,8 +662,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_5" depends="$gadget_lib_loaded$">
-      <title>4. Number of Dashboards By Author</title>
+    <panel id="panel_accordion_togglepanel_false_dashboards_7" depends="$gadget_lib_loaded$">
+      <title>8. Number of Dashboards By Author</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
           <query>| stats count AS "Number of Dashboards" by author
@@ -647,8 +688,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         </format>
       </table>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_6" depends="$gadget_lib_loaded$">
-      <title>5. Number of Dashboards By Employee LOB</title>
+    <panel id="panel_accordion_togglepanel_false_dashboards_8" depends="$gadget_lib_loaded$">
+      <title>9. Number of Dashboards By Employee LOB</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
           <query>| stats count AS "Number of Dashboards" by emp_lob 
@@ -676,9 +717,9 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </table>
     </panel>
   </row>
-  <row id="Dashboards_Panel2">
-    <panel id="panel_accordion_togglepanel_true_7" depends="$gadget_lib_loaded$">
-      <title>6. Dashboards Searches</title>
+  <row id="Dashboards_Panel6">
+    <panel id="panel_accordion_togglepanel_true_dashboards_9" depends="$gadget_lib_loaded$">
+      <title>10. Dashboards Searches</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_dashboards">
           <query>| eval search=mvdedup(mvsort(search)) 
@@ -698,13 +739,13 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </table>
     </panel>
   </row>
-  <row id="Dashboards_Panel3">
-    <panel id="panel_accordion_togglepanel_false_8" depends="$gadget_lib_loaded$">
-      <title>7. Top N Most Used Dashboards Over Time</title>
+  <row id="Dashboards_Panel7">
+    <panel id="panel_accordion_togglepanel_false_dashboards_10" depends="$gadget_lib_loaded$">
+      <title>11. Top N Most Used Dashboards Over Time</title>
       <input type="time" token="TimeRangePkr" searchWhenChanged="true">
         <label>1. Time Range</label>
         <default>
-          <earliest>-24h@h</earliest>
+          <earliest>-7d@h</earliest>
           <latest>now</latest>
         </default>
       </input>
@@ -814,6 +855,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
           <query>| timechart useother=f fixedrange=f usenull=f limit=0 $span_period$
     dc(User) As Num_Users by $split_by_tok_1$ where max in top$top_tok2$</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.chart">column</option>
@@ -826,19 +869,19 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </chart>
     </panel>
   </row>
-  <row id="Dashboards_Panel4">
-    <panel id="panel_accordion_togglepanel_true_2" depends="$gadget_lib_loaded$">
-      <title>8. Dashboards Associated GMC Job(s)</title>
+  <row id="Dashboards_Panel8">
+    <panel id="panel_accordion_togglepanel_true_dashboards_11" depends="$gadget_lib_loaded$">
+      <title>12. Dashboards Associated GMC Job(s)</title>
       <html>
             
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
             
             <ol>
             <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Dashboards Gen Job</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Dashboards Gen Job</a>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_ui_views_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_data_ui_views_sh_kv_store&amp;type=kv">
                      View Dashboards KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -852,10 +895,10 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
             </div>
           </li>
             <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
          <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_index_internal_web_access_tracker_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_index_internal_web_access_tracker_sh_kv_store&amp;type=kv">
                      View Dashboard Access Tracker KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -869,15 +912,15 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
             </div>
           </li>
          <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_internal_web_access_idx_summary_tracker" target="_blank" rel="noopener">Track Dashboards Executions (Summary Indexing)</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_internal_web_access_idx_summary_tracker" target="_blank" rel="noopener">Track Dashboards Executions (Summary Indexing)</a>
           </li>
         </ol>
          </html>
     </panel>
   </row>
-  <row id="Reports_Alerts_Inputs">
-    <panel id="panel_accordion_togglepanel_false_31" depends="$gadget_lib_loaded$">
-      <title>1. Reports/Alerts Filters</title>
+  <row id="Reports_Alerts_Inputs1">
+    <panel id="panel_accordion_togglepanel_false_Reports_Inputs_1" depends="$gadget_lib_loaded$">
+      <title>1. Reports/Alerts - Basic Filters</title>
       <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
         <label>1. Splunk SH (Cluster/Instance)</label>
         <fieldForLabel>shcluster_label</fieldForLabel>
@@ -925,8 +968,19 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         </search>
         <default>*</default>
       </input>
+      <input type="dropdown" token="sharing2" searchWhenChanged="true">
+        <label>5. App Sharing</label>
+        <choice value="*">All</choice>
+        <choice value="app">App</choice>
+        <choice value="user">User</choice>
+        <choice value="global">Global</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>sharing2</fieldForLabel>
+        <fieldForValue>sharing2</fieldForValue>
+      </input>
       <input type="dropdown" token="savedsearch_name" searchWhenChanged="true">
-        <label>5. Report/Alert Name</label>
+        <label>6. Report/Alert Name</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>savedsearch_name</fieldForLabel>
@@ -937,7 +991,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="is_disabled" searchWhenChanged="true">
-        <label>6. IS Disabled?</label>
+        <label>7. IS Disabled?</label>
         <choice value="*">All</choice>
         <choice value="1">Yes</choice>
         <choice value="0">No</choice>
@@ -947,7 +1001,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="savedsearch_type" searchWhenChanged="true">
-        <label>7. Type</label>
+        <label>8. Type</label>
         <choice value="*">All</choice>
         <choice value="report">Report</choice>
         <choice value="alert">Alert</choice>
@@ -957,7 +1011,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="is_scheduled" searchWhenChanged="true">
-        <label>8. IS Scheduled?</label>
+        <label>9. IS Scheduled?</label>
         <choice value="*">All</choice>
         <choice value="1">Yes</choice>
         <choice value="0">No</choice>
@@ -966,119 +1020,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <fieldForValue>is_scheduled</fieldForValue>
         <default>*</default>
       </input>
-      <input type="dropdown" token="author2" searchWhenChanged="true">
-        <label>9. Owner</label>
-        <choice value="*">All</choice>
-        <initialValue>*</initialValue>
-        <fieldForLabel>author2</fieldForLabel>
-        <fieldForValue>author2</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by author 
-| rename author as author2</query>
-        </search>
-        <default>*</default>
-      </input>
-      <input type="dropdown" token="emp_type" searchWhenChanged="true">
-        <label>10. Employee Type</label>
-        <fieldForLabel>emp_type</fieldForLabel>
-        <fieldForValue>emp_type</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by emp_type</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="emp_status" searchWhenChanged="true">
-        <label>11. Employee Status</label>
-        <fieldForLabel>emp_status</fieldForLabel>
-        <fieldForValue>emp_status</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by emp_status</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="emp_lob" searchWhenChanged="true">
-        <label>12. Employee LOB</label>
-        <fieldForLabel>emp_lob</fieldForLabel>
-        <fieldForValue>emp_lob</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by emp_lob</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="emp_dep" searchWhenChanged="true">
-        <label>13. Employee Department</label>
-        <fieldForLabel>emp_dep</fieldForLabel>
-        <fieldForValue>emp_dep</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by emp_dep</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="emp_cc" searchWhenChanged="true">
-        <label>14. Employee Cost Center</label>
-        <fieldForLabel>emp_cc</fieldForLabel>
-        <fieldForValue>emp_cc</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by emp_cc</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="work_city" searchWhenChanged="true">
-        <label>15. Employee City</label>
-        <fieldForLabel>work_city</fieldForLabel>
-        <fieldForValue>work_city</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by work_city</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="work_region" searchWhenChanged="true">
-        <label>16. Employee Region/State</label>
-        <fieldForLabel>work_region</fieldForLabel>
-        <fieldForValue>work_region</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by work_region</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="work_country" searchWhenChanged="true">
-        <label>17. Employee Country</label>
-        <fieldForLabel>work_country</fieldForLabel>
-        <fieldForValue>work_country</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by work_country</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="sharing2" searchWhenChanged="true">
-        <label>18. App Sharing</label>
-        <choice value="*">All</choice>
-        <choice value="app">App</choice>
-        <choice value="user">User</choice>
-        <choice value="global">Global</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>sharing2</fieldForLabel>
-        <fieldForValue>sharing2</fieldForValue>
-      </input>
       <input type="dropdown" token="cron_schedule_described" searchWhenChanged="true">
-        <label>19. Job Schedule Human</label>
+        <label>10. Job Schedule Human</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>cron_schedule_described</fieldForLabel>
@@ -1089,7 +1032,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="cron_schedule" searchWhenChanged="true">
-        <label>20. Job Schedule (No Search)</label>
+        <label>11. Job Schedule (No Search)</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>cron_schedule</fieldForLabel>
@@ -1100,7 +1043,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="run_on_startup" searchWhenChanged="true">
-        <label>21. Run On Startup</label>
+        <label>12. Run On Startup</label>
         <choice value="*">All</choice>
         <choice value="1">Yes</choice>
         <choice value="0">No</choice>
@@ -1110,7 +1053,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="auto_summarize" searchWhenChanged="true">
-        <label>22. Auto Summarize</label>
+        <label>13. Auto Summarize</label>
         <choice value="*">All</choice>
         <choice value="1">Yes</choice>
         <choice value="0">No</choice>
@@ -1120,7 +1063,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="schedule_priority" searchWhenChanged="true">
-        <label>23. Schedule Priority</label>
+        <label>14. Schedule Priority</label>
         <choice value="*">All</choice>
         <choice value="default">default</choice>
         <choice value="high">high</choice>
@@ -1131,7 +1074,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="schedule_window" searchWhenChanged="true">
-        <label>24. Schedule Window</label>
+        <label>15. Schedule Window</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>schedule_window</fieldForLabel>
@@ -1142,7 +1085,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="allow_skew" searchWhenChanged="true">
-        <label>25. Allow Skew</label>
+        <label>16. Allow Skew</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>allow_skew</fieldForLabel>
@@ -1153,7 +1096,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="realtime_schedule" searchWhenChanged="true">
-        <label>26. Realtime Schedule</label>
+        <label>17. Realtime Schedule</label>
         <choice value="*">All</choice>
         <choice value="1">Yes</choice>
         <choice value="0">No</choice>
@@ -1162,8 +1105,140 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <fieldForValue>realtime_schedule</fieldForValue>
         <default>*</default>
       </input>
+    </panel>
+  </row>
+  <row id="Reports_Alerts_Inputs2">
+    <panel id="panel_accordion_togglepanel_true_Reports_Inputs_2" depends="$gadget_lib_loaded$">
+      <title>2. Reports/Alerts - Identity Filters</title>
+      <input type="dropdown" token="author2" searchWhenChanged="true">
+        <label>1. Owner (Employee)</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>author2</fieldForLabel>
+        <fieldForValue>author2</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by author 
+| rename author as author2</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="emp_name" searchWhenChanged="true">
+        <label>2. Employee Full Name</label>
+        <fieldForLabel>emp_name</fieldForLabel>
+        <fieldForValue>emp_name</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by emp_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_ttl" searchWhenChanged="true">
+        <label>3. Employee Title</label>
+        <fieldForLabel>emp_ttl</fieldForLabel>
+        <fieldForValue>emp_ttl</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by emp_ttl</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_type" searchWhenChanged="true">
+        <label>4. Employee Type</label>
+        <fieldForLabel>emp_type</fieldForLabel>
+        <fieldForValue>emp_type</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by emp_type</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_status" searchWhenChanged="true">
+        <label>5. Employee Status</label>
+        <fieldForLabel>emp_status</fieldForLabel>
+        <fieldForValue>emp_status</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by emp_status</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob" searchWhenChanged="true">
+        <label>6. Employee LOB</label>
+        <fieldForLabel>emp_lob</fieldForLabel>
+        <fieldForValue>emp_lob</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by emp_lob</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_dep" searchWhenChanged="true">
+        <label>7. Employee Department</label>
+        <fieldForLabel>emp_dep</fieldForLabel>
+        <fieldForValue>emp_dep</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by emp_dep</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_cc" searchWhenChanged="true">
+        <label>8. Employee Cost Center</label>
+        <fieldForLabel>emp_cc</fieldForLabel>
+        <fieldForValue>emp_cc</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by emp_cc</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_city" searchWhenChanged="true">
+        <label>9. Employee City</label>
+        <fieldForLabel>work_city</fieldForLabel>
+        <fieldForValue>work_city</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by work_city</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_region" searchWhenChanged="true">
+        <label>10. Employee Region/State</label>
+        <fieldForLabel>work_region</fieldForLabel>
+        <fieldForValue>work_region</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by work_region</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_country" searchWhenChanged="true">
+        <label>11. Employee Country</label>
+        <fieldForLabel>work_country</fieldForLabel>
+        <fieldForValue>work_country</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by work_country</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row id="Reports_Alerts_Inputs3">
+    <panel id="panel_accordion_togglepanel_true_Reports_Inputs_3" depends="$gadget_lib_loaded$">
+      <title>3. Reports/Alerts - Advanced Filters</title>
       <input type="dropdown" token="action_email_to" searchWhenChanged="true">
-        <label>27. Send Email To</label>
+        <label>1. Send Email To</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>action_email_to</fieldForLabel>
@@ -1173,99 +1248,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         </search>
         <default>*</default>
       </input>
-      <input type="dropdown" token="Lookup_Reference2" searchWhenChanged="true">
-        <label>28. Lookup Reference</label>
-        <choice value="*">All</choice>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Lookup_Reference2</fieldForLabel>
-        <fieldForValue>Lookup_Reference2</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by Lookup_Reference 
-| rename Lookup_Reference AS Lookup_Reference2</query>
-        </search>
-        <default>*</default>
-      </input>
-      <input type="dropdown" token="Datamodel_Reference2" searchWhenChanged="true">
-        <label>29. Datamodel Reference</label>
-        <choice value="*">All</choice>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Datamodel_Reference2</fieldForLabel>
-        <fieldForValue>Datamodel_Reference2</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by Datamodel_Reference 
-| rename Datamodel_Reference as Datamodel_Reference2</query>
-        </search>
-        <default>*</default>
-      </input>
-      <input type="dropdown" token="Macro_Reference2" searchWhenChanged="true">
-        <label>30. Macro Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Macro_Reference2</fieldForLabel>
-        <fieldForValue>Macro_Reference2</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by Macro_Reference 
-| rename Macro_Reference as Macro_Reference2</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Eventtype_Reference2" searchWhenChanged="true">
-        <label>31. Eventtype Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Eventtype_Reference</fieldForLabel>
-        <fieldForValue>Eventtype_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by Eventtype_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Index_Reference2" searchWhenChanged="true">
-        <label>32. Index Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Index_Reference</fieldForLabel>
-        <fieldForValue>Index_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by Index_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Sourcetype_Reference2" searchWhenChanged="true">
-        <label>33. Sourcetype Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Sourcetype_Reference</fieldForLabel>
-        <fieldForValue>Sourcetype_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by Sourcetype_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Source_Reference2" searchWhenChanged="true">
-        <label>34. Source Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Source_Reference</fieldForLabel>
-        <fieldForValue>Source_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by Source_Reference</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Rest_Reference2" searchWhenChanged="true">
-        <label>35. Rest Reference</label>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-        <fieldForLabel>Rest_Reference</fieldForLabel>
-        <fieldForValue>Rest_Reference</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
-          <query>| stats count by Rest_Reference</query>
-        </search>
-      </input>
       <input type="dropdown" token="action_summary_index" searchWhenChanged="true">
-        <label>39. Summary Indexing?</label>
+        <label>2. Summary Indexing?</label>
         <choice value="*">All</choice>
         <choice value="1">Yes</choice>
         <choice value="0">No</choice>
@@ -1274,28 +1258,28 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <fieldForValue>action_summary_index</fieldForValue>
         <default>*</default>
       </input>
-      <input type="dropdown" token="action_correlationsearch_enabled" searchWhenChanged="true">
-        <label>40. ES Correlation Search?</label>
+      <input type="dropdown" token="correlationsearch_enabled" searchWhenChanged="true">
+        <label>3. ES Correlation Search?</label>
         <choice value="*">All</choice>
         <choice value="1">Yes</choice>
         <choice value="0">No</choice>
         <initialValue>*</initialValue>
-        <fieldForLabel>action_correlationsearch_enabled</fieldForLabel>
-        <fieldForValue>action_correlationsearch_enabled</fieldForValue>
+        <fieldForLabel>correlationsearch_enabled</fieldForLabel>
+        <fieldForValue>correlationsearch_enabled</fieldForValue>
         <default>*</default>
       </input>
       <input type="text" token="savedsearch_name" searchWhenChanged="true">
-        <label>41. Search By Name (Contains)</label>
+        <label>4. Search By Name (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
       <input type="text" token="search2" searchWhenChanged="true">
-        <label>42. Search By Report/Alert Searches (Contains)</label>
+        <label>5. Search By Report/Alert Searches (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="Days_Latest_Access3" searchWhenChanged="true">
-        <label>43. Days Since Latest Access (Less Than)</label>
+        <label>6. Days Since Latest Access (Less Than)</label>
         <choice value="9999999">Any</choice>
         <default>9999999</default>
         <initialValue>9999999</initialValue>
@@ -1308,7 +1292,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         </search>
       </input>
       <input type="dropdown" token="Days_Latest_Access4" searchWhenChanged="true">
-        <label>44. Days Since Latest Access (More Than)</label>
+        <label>7. Days Since Latest Access (More Than)</label>
         <choice value="0">Any</choice>
         <default>0</default>
         <initialValue>0</initialValue>
@@ -1321,16 +1305,116 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         </search>
       </input>
       <input type="text" token="Lookup_Reference2" searchWhenChanged="true">
-        <label>45. Search By Lookup Reference (Contains)</label>
+        <label>8. Search By Lookup Reference (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
+    </panel>
+  </row>
+  <row id="Reports_Alerts_Inputs4">
+    <panel id="panel_accordion_togglepanel_true_Reports_Inputs_4" depends="$gadget_lib_loaded$">
+      <title>4. Reports/Alerts - Reference Filters</title>
+      <input type="dropdown" token="Lookup_Reference2" searchWhenChanged="true">
+        <label>1. Lookup Reference</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Lookup_Reference2</fieldForLabel>
+        <fieldForValue>Lookup_Reference2</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by Lookup_Reference 
+| rename Lookup_Reference AS Lookup_Reference2</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="Datamodel_Reference2" searchWhenChanged="true">
+        <label>2. Datamodel Reference</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Datamodel_Reference2</fieldForLabel>
+        <fieldForValue>Datamodel_Reference2</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by Datamodel_Reference 
+| rename Datamodel_Reference as Datamodel_Reference2</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="Macro_Reference2" searchWhenChanged="true">
+        <label>3. Macro Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Macro_Reference2</fieldForLabel>
+        <fieldForValue>Macro_Reference2</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by Macro_Reference 
+| rename Macro_Reference as Macro_Reference2</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Eventtype_Reference2" searchWhenChanged="true">
+        <label>4. Eventtype Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Eventtype_Reference</fieldForLabel>
+        <fieldForValue>Eventtype_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by Eventtype_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Index_Reference2" searchWhenChanged="true">
+        <label>5. Index Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Index_Reference</fieldForLabel>
+        <fieldForValue>Index_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by Index_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Sourcetype_Reference2" searchWhenChanged="true">
+        <label>6. Sourcetype Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Sourcetype_Reference</fieldForLabel>
+        <fieldForValue>Sourcetype_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by Sourcetype_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Source_Reference2" searchWhenChanged="true">
+        <label>7. Source Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Source_Reference</fieldForLabel>
+        <fieldForValue>Source_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by Source_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Rest_Reference2" searchWhenChanged="true">
+        <label>8. Rest Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Rest_Reference</fieldForLabel>
+        <fieldForValue>Rest_Reference</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
+          <query>| stats count by Rest_Reference</query>
+        </search>
+      </input>
+    </panel>
+  </row>
+  <row id="Reports_Alerts_Panel1">
+    <panel id="panel_accordion_togglepanel_false_Reports_1" depends="$gadget_lib_loaded$">
+      <title>5. Reports/Alerts List</title>
       <table>
-        <title>List of Reports/Alerts</title>
         <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
           <query>| eval #=1 
 | `get_latest_access_human(Days_Latest_Access)` 
-| table # shcluster_label app sharing savedsearch_name description savedsearch_type author emp_name emp_ttl emp_dep emp_lob emp_type emp_status Days_Latest_Access_Display disabled is_visible is_scheduled cron_schedule scheduled_times next_scheduled_time max_concurrent realtime_schedule run_n_times run_on_startup schedule_priority schedule_window updated allow_skew Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference acl_perms_read acl_perms_write email email_to populate_lookup_dest script summary_index summary_index_name webhook webhook_param_url actions auto_summarize auto_summarize_cron_schedule dispatch_earliest_time dispatch_latest_time dispatch_ttl dispatch_as logevent logevent_param_event lookup lookup_append lookup_filename script_filename search 
+| table # shcluster_label app sharing savedsearch_name description savedsearch_type author emp_name emp_ttl emp_dep emp_lob emp_type emp_status Days_Latest_Access_Display disabled is_visible is_scheduled cron_schedule scheduled_times next_scheduled_time max_concurrent realtime_schedule run_n_times run_on_startup schedule_priority schedule_window updated allow_skew Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference acl_perms_read acl_perms_write email email_to populate_lookup_dest script summary_index summary_index_name webhook webhook_param_url actions auto_summarize auto_summarize_cron_schedule dispatch_earliest_time dispatch_latest_time dispatch_ttl dispatch_as logevent logevent_param_event lookup lookup_append lookup_filename script_filename savedsearch_search 
 | rename Splunk_Instance AS "Splunk Instance" Splunk_Roles AS "Splunk Roles" shcluster_label AS "Splunk SH (Cluster/Instance)" 
 | `rename_reference_fields` 
 | `rename_saved_searches_fields` 
@@ -1436,14 +1520,14 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
           <scale type="sharedCategory"></scale>
         </format>
         <drilldown>
-          <link target="_blank">/app/global_monitoring_console/splunk_sh_09_macros_dashboard_v1?form.title=$row.Macro_Reference$</link>
+          <link target="_blank">/app/TA_global_monitoring_console/splunk_sh_09_macros_dashboard_v1?form.title=$row.Macro_Reference$</link>
         </drilldown>
       </table>
     </panel>
   </row>
-  <row id="Reports_Alerts_Panel1">
-    <panel id="panel_accordion_togglepanel_false_32" depends="$gadget_lib_loaded$">
-      <title>2. Number of Reports/Alerts</title>
+  <row id="Reports_Alerts_Panel2">
+    <panel id="panel_accordion_togglepanel_false_Reports_21" depends="$gadget_lib_loaded$">
+      <title>6. Number of Reports/Alerts</title>
       <single>
         <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
           <query>| stats count</query>
@@ -1456,8 +1540,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_33" depends="$gadget_lib_loaded$">
-      <title>3. Total Number of Authors</title>
+    <panel id="panel_accordion_togglepanel_false_Reports_23" depends="$gadget_lib_loaded$">
+      <title>7. Total Number of Authors</title>
       <single>
         <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
           <query>| stats dc(author) As Num_Authors</query>
@@ -1471,8 +1555,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_34" depends="$gadget_lib_loaded$">
-      <title>4. Reports/Alerts By Author</title>
+    <panel id="panel_accordion_togglepanel_false_Reports_24" depends="$gadget_lib_loaded$">
+      <title>8. Reports/Alerts By Author</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
           <query>| stats count AS "Number of Reports/Alerts" by author
@@ -1494,12 +1578,14 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         </format>
       </table>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_35" depends="$gadget_lib_loaded$">
-      <title>5. Reports/Alerts By App</title>
+    <panel id="panel_accordion_togglepanel_false_Reports_25" depends="$gadget_lib_loaded$">
+      <title>9. Reports/Alerts By App</title>
       <chart>
         <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
           <query>| stats count by app</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
@@ -1507,9 +1593,9 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </chart>
     </panel>
   </row>
-  <row id="Reports_Alerts_Panel5">
-    <panel id="panel_accordion_togglepanel_false_361" depends="$gadget_lib_loaded$">
-      <title>6. Top 10 Job Cron Schedules</title>
+  <row id="Reports_Alerts_Panel3">
+    <panel id="panel_accordion_togglepanel_false_Reports_31" depends="$gadget_lib_loaded$">
+      <title>10. Top 10 Job Cron Schedules</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
           <query>| search cron_schedule!="" | top cron_schedule_described
@@ -1534,8 +1620,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         </format>
       </table>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_362" depends="$gadget_lib_loaded$">
-      <title>7. Top 10 Employee LOB</title>
+    <panel id="panel_accordion_togglepanel_false_Reports_32" depends="$gadget_lib_loaded$">
+      <title>11. Top 10 Employee LOB</title>
       <table>
         <search base="splunk_sh_06_knowledge_objects_analysis_savedsearches">
           <query>| top emp_lob 
@@ -1561,9 +1647,9 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </table>
     </panel>
   </row>
-  <row id="Reports_Alerts_Panel3">
-    <panel id="panel_accordion_togglepanel_false_37" depends="$gadget_lib_loaded$">
-      <title>8. Top N Most Used Reports/Alerts Over Time</title>
+  <row id="Reports_Alerts_Panel5">
+    <panel id="panel_accordion_togglepanel_false_Reports_51" depends="$gadget_lib_loaded$">
+      <title>12. Top N Most Used Reports/Alerts Over Time</title>
       <input type="time" token="TimeRangePkr" searchWhenChanged="true">
         <label>1. Time Range</label>
         <default>
@@ -1683,6 +1769,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
     dc(User) As Num_Users
     By $split_by_tok_2$ where Max in top$top_tok2$</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.chart">column</option>
@@ -1695,18 +1783,18 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </chart>
     </panel>
   </row>
-  <row id="Reports_Alerts_Panel4">
-    <panel id="panel_accordion_togglepanel_true_31" depends="$gadget_lib_loaded$">
-      <title>8. Reports/Alerts Associated GMC Job(s)</title>
+  <row id="Reports_Alerts_Panel6">
+    <panel id="panel_accordion_togglepanel_true_Reports_61" depends="$gadget_lib_loaded$">
+      <title>13. Reports/Alerts Associated GMC Job(s)</title>
       <html>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
             <ol>
           <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts Gen Job</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts Gen Job</a>
           </li>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_saved_searches_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_saved_searches_sh_kv_store&amp;type=kv">
                      View Reports/Alerts KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -1719,10 +1807,10 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
                </div>
             </div>
                         <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (KV Store)</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (KV Store)</a>
          <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store&amp;type=kv">
                      View Reports/Alerts Access Tracker KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -1736,15 +1824,15 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
             </div>
           </li>
           <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_internal_scheduler_jobs_idx_summary_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (Summary Indexing)</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_internal_scheduler_jobs_idx_summary_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (Summary Indexing)</a>
           </li>
         </ol>
          </html>
     </panel>
   </row>
-  <row id="Lookups_Inputs">
-    <panel id="panel_accordion_togglepanel_false_61" depends="$gadget_lib_loaded$">
-      <title>1. Lookup Files &amp; KV Stores Filters</title>
+  <row id="Lookups_Inputs1">
+    <panel id="panel_accordion_togglepanel_false_lookups_Inputs_1" depends="$gadget_lib_loaded$">
+      <title>1. Lookup Files &amp; KV Stores - Basic Filters</title>
       <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
         <label>1. Splunk SH (Cluster/Instance)</label>
         <fieldForLabel>shcluster_label</fieldForLabel>
@@ -1803,108 +1891,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <fieldForLabel>sharing3</fieldForLabel>
         <fieldForValue>sharing3</fieldForValue>
       </input>
-      <input type="dropdown" token="author3" searchWhenChanged="true">
-        <label>6. Owner</label>
-        <choice value="*">All</choice>
-        <initialValue>*</initialValue>
-        <fieldForLabel>author3</fieldForLabel>
-        <fieldForValue>author3</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
-          <query>| stats count by author 
-| rename author as author3</query>
-        </search>
-        <default>*</default>
-      </input>
-      <input type="dropdown" token="emp_type" searchWhenChanged="true">
-        <label>7. Employee Type</label>
-        <fieldForLabel>emp_type</fieldForLabel>
-        <fieldForValue>emp_type</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
-          <query>| stats count by emp_type</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="emp_status" searchWhenChanged="true">
-        <label>8. Employee Status</label>
-        <fieldForLabel>emp_status</fieldForLabel>
-        <fieldForValue>emp_status</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
-          <query>| stats count by emp_status</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="emp_lob" searchWhenChanged="true">
-        <label>9. Employee LOB</label>
-        <fieldForLabel>emp_lob</fieldForLabel>
-        <fieldForValue>emp_lob</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
-          <query>| stats count by emp_lob</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="emp_dep" searchWhenChanged="true">
-        <label>10. Employee Department</label>
-        <fieldForLabel>emp_dep</fieldForLabel>
-        <fieldForValue>emp_dep</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
-          <query>| stats count by emp_dep</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="emp_cc" searchWhenChanged="true">
-        <label>11. Employee Cost Center</label>
-        <fieldForLabel>emp_cc</fieldForLabel>
-        <fieldForValue>emp_cc</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
-          <query>| stats count by emp_cc</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="work_city" searchWhenChanged="true">
-        <label>12. Employee City</label>
-        <fieldForLabel>work_city</fieldForLabel>
-        <fieldForValue>work_city</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
-          <query>| stats count by work_city</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="work_region" searchWhenChanged="true">
-        <label>13. Employee Region/State</label>
-        <fieldForLabel>work_region</fieldForLabel>
-        <fieldForValue>work_region</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
-          <query>| stats count by work_region</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="work_country" searchWhenChanged="true">
-        <label>14. Employee Country</label>
-        <fieldForLabel>work_country</fieldForLabel>
-        <fieldForValue>work_country</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
-          <query>| stats count by work_country</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
       <input type="dropdown" token="Type3" searchWhenChanged="true">
-        <label>15. Lookup Type</label>
+        <label>6. Lookup Type</label>
         <choice value="*">All</choice>
         <choice value="file">File-Based</choice>
         <choice value="external">External</choice>
@@ -1916,7 +1904,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="Lookup" searchWhenChanged="true">
-        <label>16.  Lookup Definition (Name)</label>
+        <label>7.  Lookup Definition (Name)</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>Lookup</fieldForLabel>
@@ -1927,7 +1915,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="Filename" searchWhenChanged="true">
-        <label>17. Lookup File Name</label>
+        <label>8. Lookup File Name</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>Filename</fieldForLabel>
@@ -1938,7 +1926,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="Collection" searchWhenChanged="true">
-        <label>18. KV Store Name</label>
+        <label>9. KV Store Name</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>Collection</fieldForLabel>
@@ -1949,7 +1937,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="Lookup_File_Path" searchWhenChanged="true">
-        <label>19. Lookup File Path</label>
+        <label>10. Lookup File Path</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>Lookup_File_Path</fieldForLabel>
@@ -1960,7 +1948,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="Match_Type" searchWhenChanged="true">
-        <label>20. Lookup Match Type</label>
+        <label>11. Lookup Match Type</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>Match_Type</fieldForLabel>
@@ -1971,7 +1959,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="Replicate" searchWhenChanged="true">
-        <label>22. Replicate?</label>
+        <label>12. Replicate?</label>
         <choice value="*">All</choice>
         <choice value="true">True</choice>
         <choice value="false">False</choice>
@@ -1981,7 +1969,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="case_sensitive_match" searchWhenChanged="true">
-        <label>23. Case Sensitive Match</label>
+        <label>13. Case Sensitive Match</label>
         <choice value="*">All</choice>
         <choice value="1">True</choice>
         <choice value="0">False</choice>
@@ -1991,7 +1979,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="dropdown" token="Allow_Caching" searchWhenChanged="true">
-        <label>24. Allow Caching</label>
+        <label>14. Allow Caching</label>
         <choice value="*">All</choice>
         <choice value="true">True</choice>
         <choice value="false">False</choice>
@@ -2001,31 +1989,162 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
       </input>
       <input type="text" token="Lookup" searchWhenChanged="true">
-        <label>28. Lookup Name (Contains)</label>
+        <label>15. Lookup Name (Contains)</label>
         <default>*</default>
       </input>
       <input type="text" token="Filename" searchWhenChanged="true">
-        <label>29. Lookup File Name (Contains)</label>
+        <label>16. Lookup File Name (Contains)</label>
         <default>*</default>
       </input>
       <input type="text" token="Lookup_File_Path" searchWhenChanged="true">
-        <label>30. Lookup File Path (Contains)</label>
+        <label>17. Lookup File Path (Contains)</label>
         <default>*</default>
       </input>
       <input type="text" token="Match_Type" searchWhenChanged="true">
-        <label>31. Lookup Match Type (Contains)</label>
+        <label>18. Lookup Match Type (Contains)</label>
         <default>*</default>
       </input>
       <input type="text" token="Collection" searchWhenChanged="true">
-        <label>32. KV Store (Contains)</label>
+        <label>19. KV Store (Contains)</label>
         <default>*</default>
       </input>
       <input type="text" token="Fields_List" searchWhenChanged="true">
-        <label>33. Fields_List (Contains)</label>
+        <label>20. Fields_List (Contains)</label>
         <default>*</default>
       </input>
+    </panel>
+  </row>
+  <row id="Lookups_Inputs2">
+    <panel id="panel_accordion_togglepanel_true_lookups_Inputs_2" depends="$gadget_lib_loaded$">
+      <title>2. Lookup Files &amp; KV Stores - Identity Filters</title>
+      <input type="dropdown" token="author3" searchWhenChanged="true">
+        <label>1. Owner (Employee)</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>author3</fieldForLabel>
+        <fieldForValue>author3</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
+          <query>| stats count by author 
+| rename author as author3</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="emp_name" searchWhenChanged="true">
+        <label>2. Employee Full Name</label>
+        <fieldForLabel>emp_name</fieldForLabel>
+        <fieldForValue>emp_name</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
+          <query>| stats count by emp_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_ttl" searchWhenChanged="true">
+        <label>3. Employee Title</label>
+        <fieldForLabel>emp_ttl</fieldForLabel>
+        <fieldForValue>emp_ttl</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
+          <query>| stats count by emp_ttl</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_type" searchWhenChanged="true">
+        <label>4. Employee Type</label>
+        <fieldForLabel>emp_type</fieldForLabel>
+        <fieldForValue>emp_type</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
+          <query>| stats count by emp_type</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_status" searchWhenChanged="true">
+        <label>5. Employee Status</label>
+        <fieldForLabel>emp_status</fieldForLabel>
+        <fieldForValue>emp_status</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
+          <query>| stats count by emp_status</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob" searchWhenChanged="true">
+        <label>6. Employee LOB</label>
+        <fieldForLabel>emp_lob</fieldForLabel>
+        <fieldForValue>emp_lob</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
+          <query>| stats count by emp_lob</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_dep" searchWhenChanged="true">
+        <label>7. Employee Department</label>
+        <fieldForLabel>emp_dep</fieldForLabel>
+        <fieldForValue>emp_dep</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
+          <query>| stats count by emp_dep</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_cc" searchWhenChanged="true">
+        <label>8. Employee Cost Center</label>
+        <fieldForLabel>emp_cc</fieldForLabel>
+        <fieldForValue>emp_cc</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
+          <query>| stats count by emp_cc</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_city" searchWhenChanged="true">
+        <label>9. Employee City</label>
+        <fieldForLabel>work_city</fieldForLabel>
+        <fieldForValue>work_city</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
+          <query>| stats count by work_city</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_region" searchWhenChanged="true">
+        <label>10. Employee Region/State</label>
+        <fieldForLabel>work_region</fieldForLabel>
+        <fieldForValue>work_region</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
+          <query>| stats count by work_region</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="work_country" searchWhenChanged="true">
+        <label>11. Employee Country</label>
+        <fieldForLabel>work_country</fieldForLabel>
+        <fieldForValue>work_country</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
+          <query>| stats count by work_country</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row id="Lookups_Panel1">
+    <panel id="panel_accordion_togglepanel_false_lookups_11" depends="$gadget_lib_loaded$">
+      <title>3. Lookups List</title>
       <table>
-        <title>Lookups List</title>
         <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
           <query>| eval #=1 
 | table # shcluster_label app sharing acl_perms_read acl_perms_write Type Lookup Filename Lookup_File_Path Collection Match_Type Fields_List Replicate Allow_Caching Filter Index_Fields_List Min_Matches Max_Matches case_sensitive_match updated author emp_name emp_ttl emp_dep emp_lob emp_type emp_status 
@@ -2105,9 +2224,9 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </table>
     </panel>
   </row>
-  <row id="Lookups_Panel1">
-    <panel id="panel_accordion_togglepanel_false_62" depends="$gadget_lib_loaded$">
-      <title>2. Number of Lookups</title>
+  <row id="Lookups_Panel2">
+    <panel id="panel_accordion_togglepanel_false_lookups_22" depends="$gadget_lib_loaded$">
+      <title>4. Number of Lookups</title>
       <single>
         <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
           <query>| stats count</query>
@@ -2120,8 +2239,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_63" depends="$gadget_lib_loaded$">
-      <title>3. Total Number of Authors</title>
+    <panel id="panel_accordion_togglepanel_false_lookups_23" depends="$gadget_lib_loaded$">
+      <title>5. Total Number of Authors</title>
       <single>
         <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
           <query>| stats dc(author) As Num_Authors</query>
@@ -2135,36 +2254,42 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_64" depends="$gadget_lib_loaded$">
-      <title>4. By Type</title>
+    <panel id="panel_accordion_togglepanel_false_lookups_24" depends="$gadget_lib_loaded$">
+      <title>6. By Type</title>
       <chart>
         <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
           <query>| stats count by Type</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_65" depends="$gadget_lib_loaded$">
-      <title>5. By Replicate</title>
+    <panel id="panel_accordion_togglepanel_false_lookups_25" depends="$gadget_lib_loaded$">
+      <title>7. By Replicate</title>
       <chart>
         <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
           <query>| stats count by Replicate</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_651" depends="$gadget_lib_loaded$">
-      <title>6. By Employee LOB</title>
+    <panel id="panel_accordion_togglepanel_false_lookups_26" depends="$gadget_lib_loaded$">
+      <title>8. By Employee LOB</title>
       <chart>
         <search base="splunk_sh_06_knowledge_objects_analysis_lookups">
           <query>| stats count by emp_lob</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
@@ -2172,18 +2297,18 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </chart>
     </panel>
   </row>
-  <row id="Lookups_Panel5">
-    <panel id="panel_accordion_togglepanel_true_61" depends="$gadget_lib_loaded$">
-      <title>7. Lookups Associated GMC Job(s)</title>
+  <row id="Lookups_Panel3">
+    <panel id="panel_accordion_togglepanel_true_31" depends="$gadget_lib_loaded$">
+      <title>9. Lookups Associated GMC Job(s)</title>
       <html>
            <ol>
           <li>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Table Files Gen Job</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Table Files Gen Job</a>
           </li>
           <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_admin_lookup_table_files_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_admin_lookup_table_files_sh_kv_store&amp;type=kv">
                      View Lookup Files KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -2197,11 +2322,11 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
             </div>
           <li>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Definitions Gen Job</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Definitions Gen Job</a>
           </li>
           <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_admin_transforms_lookup_sh_kv_store&amp;type=kv">
                      View Lookup Definition KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -2217,8 +2342,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
          </html>
     </panel>
   </row>
-  <row id="Auto_Lookups_Inputs">
-    <panel id="panel_accordion_togglepanel_false_81" depends="$gadget_lib_loaded$">
+  <row id="Auto_Lookups_Inputs1">
+    <panel id="panel_accordion_togglepanel_false_Auto_Lookups_Inputs_1" depends="$gadget_lib_loaded$">
       <title>1. Automatic Lookups Filters</title>
       <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
         <label>1. Splunk SH (Cluster/Instance)</label>
@@ -2318,8 +2443,28 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
+      <input type="text" token="Splunk_Roles" searchWhenChanged="true">
+        <label>10. Splunk Roles (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Splunk_Instance" searchWhenChanged="true">
+        <label>11. Splunk Instance (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="attribute" searchWhenChanged="true">
+        <label>12. Automatic Lookup Name (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row id="Auto_Lookups_Inputs2">
+    <panel id="panel_accordion_togglepanel_true_Auto_Lookups_Inputs_2" depends="$gadget_lib_loaded$">
+      <title>2. Automatic Lookups - Identity Filters</title>
       <input type="dropdown" token="author" searchWhenChanged="true">
-        <label>10. Owner</label>
+        <label>1. Owner (Employee)</label>
         <fieldForLabel>author</fieldForLabel>
         <fieldForValue>author</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
@@ -2330,7 +2475,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="emp_name" searchWhenChanged="true">
-        <label>11. Employee Full Name</label>
+        <label>2. Employee Full Name</label>
         <fieldForLabel>emp_name</fieldForLabel>
         <fieldForValue>emp_name</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
@@ -2341,7 +2486,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="emp_ttl" searchWhenChanged="true">
-        <label>12. Employee Title</label>
+        <label>3. Employee Title</label>
         <fieldForLabel>emp_ttl</fieldForLabel>
         <fieldForValue>emp_ttl</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
@@ -2351,19 +2496,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="emp_type" searchWhenChanged="true">
-        <label>13. Employee Type</label>
-        <fieldForLabel>emp_type</fieldForLabel>
-        <fieldForValue>emp_type</fieldForValue>
-        <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
-          <query>| stats count by emp_type</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
       <input type="dropdown" token="emp_status" searchWhenChanged="true">
-        <label>14. Employee Status</label>
+        <label>4. Employee Status</label>
         <fieldForLabel>emp_status</fieldForLabel>
         <fieldForValue>emp_status</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
@@ -2373,8 +2507,19 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
+      <input type="dropdown" token="emp_type" searchWhenChanged="true">
+        <label>5. Employee Type</label>
+        <fieldForLabel>emp_type</fieldForLabel>
+        <fieldForValue>emp_type</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
+          <query>| stats count by emp_type</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
       <input type="dropdown" token="emp_lob" searchWhenChanged="true">
-        <label>15. Employee LOB</label>
+        <label>6. Employee LOB</label>
         <fieldForLabel>emp_lob</fieldForLabel>
         <fieldForValue>emp_lob</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
@@ -2385,7 +2530,7 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="emp_dep" searchWhenChanged="true">
-        <label>16. Employee Department</label>
+        <label>7. Employee Department</label>
         <fieldForLabel>emp_dep</fieldForLabel>
         <fieldForValue>emp_dep</fieldForValue>
         <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
@@ -2395,23 +2540,45 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="text" token="Splunk_Roles" searchWhenChanged="true">
-        <label>17. Splunk Roles (Contains)</label>
+      <input type="dropdown" token="work_city" searchWhenChanged="true">
+        <label>8. Employee City</label>
+        <fieldForLabel>work_city</fieldForLabel>
+        <fieldForValue>work_city</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
+          <query>| stats count by work_city</query>
+        </search>
+        <choice value="*">All</choice>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="text" token="Splunk_Instance" searchWhenChanged="true">
-        <label>18. Splunk Instance (Contains)</label>
+      <input type="dropdown" token="work_region" searchWhenChanged="true">
+        <label>9. Employee Region/State</label>
+        <fieldForLabel>work_region</fieldForLabel>
+        <fieldForValue>work_region</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
+          <query>| stats count by work_region</query>
+        </search>
+        <choice value="*">All</choice>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="text" token="attribute" searchWhenChanged="true">
-        <label>19. Automatic Lookup Name (Contains)</label>
+      <input type="dropdown" token="work_country" searchWhenChanged="true">
+        <label>10. Employee Country</label>
+        <fieldForLabel>work_country</fieldForLabel>
+        <fieldForValue>work_country</fieldForValue>
+        <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
+          <query>| stats count by work_country</query>
+        </search>
+        <choice value="*">All</choice>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
+    </panel>
+  </row>
+  <row id="Auto_Lookups_Panel1">
+    <panel id="panel_accordion_togglepanel_false_Auto_Lookups_11" depends="$gadget_lib_loaded$">
+      <title>3. Automatic Lookups List</title>
       <table>
-        <title>Automatic Lookups List</title>
         <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
           <query>| table shcluster_label attribute app sharing sharing acl_perms_read acl_perms_write author emp_name emp_ttl emp_dep emp_lob emp_type emp_status stanza updated Type transform Filename Collection value Fields_List overwrite author emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status 
 | `rename_common_fields` 
@@ -2470,8 +2637,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
     </panel>
   </row>
   <row id="Auto_Lookups_Panel2">
-    <panel id="panel_accordion_togglepanel_false_82" depends="$gadget_lib_loaded$">
-      <title>2. Total Number of Automatic Lookups</title>
+    <panel id="panel_accordion_togglepanel_false_Auto_Lookups_21" depends="$gadget_lib_loaded$">
+      <title>4. Total Number of Automatic Lookups</title>
       <single>
         <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
           <query>| stats count</query>
@@ -2484,8 +2651,8 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_83" depends="$gadget_lib_loaded$">
-      <title>3. Total Number of Authors</title>
+    <panel id="panel_accordion_togglepanel_false_Auto_Lookups_22" depends="$gadget_lib_loaded$">
+      <title>5. Total Number of Authors</title>
       <single>
         <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
           <query>| stats dc(author) As Num_Authors</query>
@@ -2499,24 +2666,28 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_84" depends="$gadget_lib_loaded$">
-      <title>4. By App</title>
+    <panel id="panel_accordion_togglepanel_false_Auto_Lookups_23" depends="$gadget_lib_loaded$">
+      <title>6. By App</title>
       <chart>
         <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
           <query>| stats count by app</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_841" depends="$gadget_lib_loaded$">
-      <title>5. By Employee LOB</title>
+    <panel id="panel_accordion_togglepanel_false_Auto_Lookups_24" depends="$gadget_lib_loaded$">
+      <title>7. By Employee LOB</title>
       <chart>
         <search base="splunk_sh_06_knowledge_objects_analysis_auto_lookups">
           <query>| stats count by emp_lob</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
@@ -2524,19 +2695,19 @@ index=`gmc_summary_index` search_name=splunk_internal_scheduler_jobs_idx_summary
       </chart>
     </panel>
   </row>
-  <row id="Auto_Lookups_Panel5">
-    <panel id="panel_accordion_togglepanel_true_81" depends="$gadget_lib_loaded$">
-      <title>6. Automatic Lookups Associated GMC Job(s)</title>
+  <row id="Auto_Lookups_Panel3">
+    <panel id="panel_accordion_togglepanel_true_Auto_Lookups_31" depends="$gadget_lib_loaded$">
+      <title>8. Automatic Lookups Associated GMC Job(s)</title>
       <html>
             <ol>
           <li>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Automatic Lookups Gen Job</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Automatic Lookups Gen Job</a>
           </li>
         </ol>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_props_lookups_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_data_props_lookups_sh_kv_store&amp;type=kv">
                      View Automatic Lookups KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>

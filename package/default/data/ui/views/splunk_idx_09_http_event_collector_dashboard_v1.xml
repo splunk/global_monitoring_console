@@ -1,6 +1,6 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>IDX - 09 - HTTP Event Collector - Dashboard - v1.5.90</label>
-  <description>Daily ingestion by index or token, data quality, latency: from producer to Kafka and from Kafka to HF</description>
+  <label>IDX - 09 - HTTP Event Collector - Dashboard - v1.8.10</label>
+  <description>Splunk HTTP Event Collector (HEC) Inputs Information Dashboard</description>
   <search id="splunk_sh_12_http_event_collector_dashboard_v1_1">
     <query>
 | from lookup:splunk_rest_data_inputs_http_sh_kv_store_lookup
@@ -109,9 +109,8 @@ index=_introspection sourcetype=http_event_collector_metrics component=HttpEvent
 | `rename_common_fields`
 | `rename_hec_fields`</query>
         </search>
-        <option name="count">5</option>
+        <option name="count">10</option>
         <option name="drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="wrap">false</option>
         <format type="color" field="Splunk_Instance">
@@ -274,6 +273,8 @@ index=_introspection sourcetype=http_event_collector_metrics component=HttpEvent
     $Function$($field$) As $field$
     $split_by_tok$</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -306,6 +307,8 @@ index=_introspection sourcetype=http_event_collector_metrics component=HttpEvent
 | eval invalid_requests_total = disabled_token_total + incorrect_url_total + auth_fail_total 
 | timechart minspan="1m" sum(valid_requests_total) as "Valid Requests" sum(invalid_requests_total) as "Invalid Requests" sum(data_received) as "Data Received"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -327,10 +330,10 @@ index=_introspection sourcetype=http_event_collector_metrics component=HttpEvent
       <title>4. Associated GMC Job(s) - $env:page$</title>
       <html>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_http_sh_kv_store_lookup_gen" target="_blank" rel="noopener">HTTP Event Collector Gen Job</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_inputs_http_sh_kv_store_lookup_gen" target="_blank" rel="noopener">HTTP Event Collector Gen Job</a>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_inputs_http_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_data_inputs_http_sh_kv_store&amp;type=kv">
                      View HTTP Event Collector KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>
@@ -343,6 +346,68 @@ index=_introspection sourcetype=http_event_collector_metrics component=HttpEvent
                </div>
             </div>
          </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>HEC Error Messages (-24h)</title>
+      <input type="time" token="TimeRangePkr2" searchWhenChanged="true">
+        <label>Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <chart>
+        <search>
+          <query>index=_internal component=HttpInputDataHandler reply=* NOT (channel!=n/a reply=5 http_input_body_size=0) 
+| lookup local=True splunk_hec_reply_codes_csv_lookup reply_code AS reply OUTPUT status_message 
+| timechart count by status_message</query>
+          <earliest>$TimeRangePkr2.earliest$</earliest>
+          <latest>$TimeRangePkr2.latest$</latest>
+        </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>HEC Tokens with Errors (-24h)</title>
+      <viz type="Splunk_ML_Toolkit.LinesViz">
+        <search>
+          <query>index=_internal component=HttpInputDataHandler reply=* NOT (channel!=n/a reply=5 http_input_body_size=0) 
+| lookup local=True splunk_hec_reply_codes_csv_lookup reply_code AS reply OUTPUT status_message 
+| timechart count by name</query>
+          <earliest>$TimeRangePkr2.earliest$</earliest>
+          <latest>$TimeRangePkr2.latest$</latest>
+        </search>
+        <option name="Splunk_ML_Toolkit.LinesViz.showNavigator">true</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <viz type="Splunk_ML_Toolkit.LinesViz">
+        <search>
+          <query>| noop</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="Splunk_ML_Toolkit.LinesViz.showNavigator">true</option>
+        <option name="drilldown">none</option>
+      </viz>
     </panel>
   </row>
 </form>

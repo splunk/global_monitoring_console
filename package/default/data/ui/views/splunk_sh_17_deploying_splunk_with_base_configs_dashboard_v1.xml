@@ -1,5 +1,6 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
   <label>SH - 17 - Deploying Splunk with Base Configs - Dashboard -  v1</label>
+  <description>Deploying Splunk with Base Configs Dashboard</description>
   <search id="splunk_sh_05_audit_users_dashboard_v1">
     <query>| from lookup:splunk_base_configs_csv_lookup
 | fields APP,Deployment_Type,Description,LM_apps,MC_apps,DS_apps,DS_deployment_apps,IDX_apps,IDX_Peer_Node_apps,CM_apps,CM_master_apps,SH_apps,SHCD_apps,SH_Cluster_Member_apps,SHCD_shcluster_apps,SHCD_shcluster_users,HFWD_nix_apps,HFWD_nix_DS_SC,HFWD_WIN_apps,HFWD_WIN_DS_SC,FWD_nix_apps,FWD_nix_DS_SC,FWD_WIN_apps,FWD_WIN_DS_SC,SN_apps
@@ -37,7 +38,7 @@
       <html>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=global_monitoring_console&amp;lookup=splunk_base_configs_csv.csv&amp;type=csv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_base_configs_csv.csv&amp;type=csv">
                      Deploying Splunk with Base Configs Lookup
                      <i class="icon-data icon-modal-medium icon-color-searchfu m-left"/>
                   </a>
@@ -412,6 +413,18 @@
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| noop</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
       </table>
     </panel>
   </row>

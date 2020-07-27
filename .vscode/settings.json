@@ -1,5 +1,4 @@
 {
-    "python.pythonPath": ".venv/bin/python",
     "python.testing.pytestEnabled": true,
     "python.testing.autoTestDiscoverOnSaveEnabled": true
 }

@@ -1,11 +1,11 @@
 {
-  "schemaVersion": "2.0.0", 
+  "schemaVersion": "1.0.0", 
   "info": {
     "title": "Global Monitoring Console App for Splunk", 
     "id": {
       "group": null, 
       "name": "global_monitoring_console", 
-      "version": "1.5.50"
+      "version": "1.8.10"
     }, 
     "author": [
       {
@@ -38,40 +38,7 @@
       "uri": null
     }
   }, 
-  "dependencies": {
-    "Splunk_SA_CIM": {
-      "version": ">=4.10.0",
-      "optional": false,
-      "package": null,
-      "targetOS": [
-        "*"
-      ]
-    },
-      "Splunk_SA_Scientific_Python_linux_x86_64": {
-      "version": "=1.4",
-      "optional": false,
-      "package": null,
-      "targetOS": [
-        "*"
-      ]
-    },
-      "Splunk_ML_Toolkit": {
-      "version": "=4.5.0",
-      "optional": false,
-      "package": null,
-      "targetOS": [
-        "*"
-      ]
-    },
-    "splunk_monitoring_console": {
-      "version": ">=7.3.0",
-      "optional": false,
-      "package": null,
-      "targetOS": [
-        "*"
-      ]
-    }
-  }, 
+  "dependencies": null,
   "tasks": null, 
   "inputGroups": null, 
   "incompatibleApps": null, 

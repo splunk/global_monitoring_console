@@ -1,273 +1,444 @@
 <dashboard theme="dark">
-  <label>Setup - Dashboard - v1.5.90</label>
+  <label>Setup - Dashboard - v1.8.10</label>
+  <description>GMC Setup Dashboard</description>
   <row>
     <panel>
-      <title>$env:page$</title>
       <html>
             <h2>
-               <strong>The App needs to run on a dedicated Global Monitoring Console for the entire enterprise.  Also export the Splunk Monitoring Console App Globally and set read for everyone and write for just admin</strong>
+               <p>
+                  <font size="+1">
+              <b>On-Prem:</b> The App needs to run on a dedicated Global Monitoring Console for the entire enterprise.</font>
+               </p>
+               <p/>
+               <hr/>
+               <p>
+                  Click on this buttom then search for
+                  <font size="+2">splunk_monitoring_console</font>
+                  and click on permissions. Export the App Globally and set read for everyone and write for just admin
+               </p>
+               <div class="btn-group1">
+                  <div id="mod_info">
+                     <a class="btn middle contour" target="blank" href="/manager/search/apps/local">
+                        <b>Update Monitoring Console App Permissions</b>
+                        <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
+                     </a>
+                  </div>
+               </div>
             </h2>
+            <hr/>
             <h1>
-               <strong>Required Splunkbase Apps:</strong>
+               <b>Install the following Splunkbase Apps:</b>
             </h1>
             <ol>
                <li>
-                  Splunk Common Information Model (CIM):
+                  <b>Splunk Common Information Model (CIM):</b>
                   <a href="https://splunkbase.splunk.com/app/1621" target="_blank">https://splunkbase.splunk.com/app/1621</a>
                </li>
                <li>
-                  Number Display Visualization:
-                  <a href="https://splunkbase.splunk.com/app/4537" target="_blank">https://splunkbase.splunk.com/app/4537</a>
+                  <b>Lookup File Editor:</b>
+                  <a href="https://splunkbase.splunk.com/app/1724" target="_blank">https://splunkbase.splunk.com/app/1724</a>
                </li>
                <li>
-                  Lookup File Editor:
-                  <a href="https://splunkbase.splunk.com/app/4537" target="_blank">https://splunkbase.splunk.com/app/1724</a>
+                  <b>Splunk Machine Learning Toolkit (Used by IDX-02 to predict future license ingestion) Download v4.5.0 for Splunk &lt; v8:</b>
+                  <a href="https://splunkbase.splunk.com/app/2890" target="_blank">https://splunkbase.splunk.com/app/2890</a>
                </li>
                <li>
-                  Splunk Machine Learning Toolkit (Optional but highly recommended):
-                  <a href="https://splunkbase.splunk.com/app/4353" target="_blank">https://splunkbase.splunk.com/app/2890</a>
+                  <b>Python for Scientific Computing (for Linux 64-bit) (Used by IDX-02 to predict future license ingestion) Download v1.4.0 for Splunk &lt; v8:</b>
+                  <a href="https://splunkbase.splunk.com/app/2882" target="_blank">https://splunkbase.splunk.com/app/2882</a>
                </li>
                <li>
-                  Python for Scientific Computing (for Linux 64-bit) (Optional but highly recommended):
-                  <a href="https://splunkbase.splunk.com/app/4353" target="_blank">https://splunkbase.splunk.com/app/2882</a>
-               </li>
-               <li>
-                  Config Explorer (Optional but highly recommended):
+                  <b>Config Explorer (Optional but highly recommended):</b>
                   <a href="https://splunkbase.splunk.com/app/4353" target="_blank">https://splunkbase.splunk.com/app/4353</a>
                </li>
             </ol>
-            <p>
-               <strong>Run the following Jobs for the first time from the menu or click on the link:</strong>
+            <hr/>
+               <p>
+               <b>Accelerate the Global Monitoring Console (GMC) Data Model with at least 7 days. Set the Summary Range to at least 7 days, recommended to follow the highest retention you have configured for either _audit, _internal or _interospection.</b>
             </p>
-            <ol>
-               <li>
-                  GMC Jobs / GMC Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_assets_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Assets Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
-              <ul>Edit this job and customize it to automatically build <strong>splunk_identities_custom_sh_csv_lookup_gen</strong> or edit the table manually by clicking on the button:
-                  <p>
-                <a href="/app/global_monitoring_console/search?s=splunk_identities_custom_sh_csv_lookup_gen" target="_blank" rel="noopener">GMC Custom Identities Gen Job</a>
-              </p>
+            <p>
+               <b>Run the GMC TA Setup Screen to schedule the jobs below and to setup the GMC default Macros</b>
                <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=global_monitoring_console&amp;lookup=splunk_identities_custom_sh_csv.csv&amp;type=csv">
-                     Custom Identities Enrichments
-                     <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
-                  </a>
+                  <div id="mod_info">
+                     <a class="btn middle contour" target="blank" href="/app/TA_global_monitoring_console/setup?action=edit">
+                        <b>GMC Setup Screen</b>
+                        <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
+                     </a>
+                  </div>
                </div>
-            </div>
-            </ul>
-             </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / IDX Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_cluster_config_idx_kv_store_lookup_gen" target="_blank" rel="noopener">IDX Cluster Configuration</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_shcluster_config_shc_kv_store_lookup_gen" target="_blank" rel="noopener">Search Head Cluster Configuration Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Search Concurrency</a>
-               </li>
-                <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_authorization_roles_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Search Head Splunk Roles</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Dashboards</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Reports/Alerts</a>
-               </li>
-               <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=global_monitoring_console&amp;lookup=cron_schedule_map_csv.csv&amp;type=csv">
-                     Cron Schedule Translated
-                     <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
-                  </a>
-               </div>
-            </div>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / IDX Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Indexes</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / IDX Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_index_volumes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">IDX Cluster Indexes Volumes Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / All Tiers Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_all_kv_store_lookup_gen" target="_blank" rel="noopener">Data Inputs Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / All Tiers Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_apps_local_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Apps Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / All Tiers Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_files_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Config Files Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Fields /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_calcfields_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Calculated Fields Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Fields /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Field Extractions Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Fields /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_fieldaliases_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Field Aliases Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Fields /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_transforms_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Field Transformations Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_props_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Source Types Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Event Types Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Table Files Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Lookup Definitions Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs / Lookups /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Automatic Lookups Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_macros_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Macros Gen Job</a>
-               </li>
-               <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_models_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Data Models Gen Job</a>
-               </li>
-              <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_index_itsi_summary_sh_kv_store_lookup_gen" target="_blank" rel="noopener">ITSI Search Names with Service/KPI IDs Gen Job</a>
-              </li>
-              <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_itoa_interface_service_sh_kv_store_lookup_gen" target="_blank" rel="noopener">ITSI ITOA Interfaces Services Gen Job</a>
-              </li>
-              <li>
-                  GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_itoa_interface_kpi_base_search_sh_kv_store_lookup_gen" target="_blank" rel="noopener">ITSI ITOA Interfaces KPI Base Searches Gen Job</a>
-              </li>
-            </ol>
-            <p>If you run a dashboard and find no data, please run the corresponding Job(s) assicoated with the dashboard from the GMC Jobs dropdown otherwise all jobs will execute between 12AM and 6AM every day.  The above are needed to get you started right now.</p>
-            <p>
-               <strong>Accelerate the Global Monitoring Console (GMC) Data Model with at least 7 days. Set the Summary Range to at least 7 days, recommended to follow the highest retention you have configured for either _audit, _internal or _interospection.</strong>
             </p>
             <p>
-               <strong>Adjust the following Macros:</strong>
+               <b>After the setup is complete review the GMC Macros here:</b>
             </p>
-    
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/config_explorer/ce#0|./etc/apps/global_monitoring_console/local|read|./etc/apps/global_monitoring_console/local/macros.conf">
-                     GMC App Macros Configuration File
-                     <i class="icon-greater icon-modal-medium icon-color-searchfu m-left"/>
-                  </a>
-               </div>
+            <div id="mod_info">
+               <a class="btn middle contour" target="blank" href="/app/config_explorer/ce#0|./etc/apps/TA_global_monitoring_console/local|read|./etc/apps/TA_global_monitoring_console/local/macros.conf">
+                  <b>GMC App Macros Configuration File</b>
+                  <i class="icon-greater icon-modal-medium icon-color-searchfu m-left"/>
+               </a>
+            </div>
+            <hr/>
+            <p>
                
-         
+               <h1>I. List of GMC Jobs that generates KV Stores from various Splunk REST Endpoints:</h1>
+               <b>Run the following Jobs for the first time from the menu or click on the link</b>
+               <p>
+            <b>On-Prem Only:</b> Enable these jobs on an On-Prem Dedicated Monitoring Console (GMC)</p>
+            </p>
             <ol>
                <li>
-                  <strong>es_search_head</strong>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_assets_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Assets KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
                   <ul>
-                     <li>Adjust to the Enterprise Security Search Head Splunk Instance Name, you can find it in the GMC Assets Dashboard.</li>
+                     Edit this job and customize it to automatically build
+                     <b>splunk_identities_custom_sh_csv_lookup_gen</b>
+                     or edit the table manually by clicking on the button:
+                     <p>
+                        <a href="/app/TA_global_monitoring_console/search?s=splunk_identities_custom_sh_csv_lookup_gen" target="_blank" rel="noopener">GMC Custom Identities Gen Job</a>
+                     </p>
+                     <div class="btn-group1">
+                        <div id="mod_info">
+                           <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=TA_global_monitoring_console&amp;lookup=splunk_identities_custom_sh_csv.csv&amp;type=csv">
+                              <b>GMC Custom Identities Enrichments</b>
+                              <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
+                           </a>
+                        </div>
+                     </div>
+                     <p/>
+                     <p>Add any identities that can not get automatically populated using the GMC Custom Identities Gen Job to the GMC Identities Exceptions CSV Lookup</p>
+                     <div class="btn-group1">
+                        <div id="mod_info">
+                           <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=TA_global_monitoring_console&amp;lookup=splunk_identities_exceptions_sh_csv.csv&amp;type=csv">
+                              <b>GMC Identities Exceptions</b>
+                              <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
+                           </a>
+                        </div>
+                     </div>
                   </ul>
                </li>
                <li>
-                  <strong>gmc_dm_constraints</strong>
-                  <br/>
-                  <ul>
-                     <li>Change the default which is search_group=dmc_group_search_head to accelerate the GMC Data Model against a smaller subset of your Search Heads.</li>
-                  </ul>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_shcluster_config_shc_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Search Head Cluster configuration details KV Store Gen Job From REST</a>
                </li>
                <li>
-                  <strong>license_master</strong>
-                  <ul>
-                     <li>Adjust to the License Master Splunk Instance Name, you can find it in the GMC Assets Dashboard.</li>
-                  </ul>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_cloud_stack_csv_shcluster_config_shc_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Search Head Cluster configuration details Gen Job From Splunk Cloud Stack Info CSV Lookup <b>(Cloud Only!)</b>
+            </a>
                </li>
                <li>
-                  <strong>set_geo_defaults</strong>
-                  <ul>
-                     <li>Adjust the eval statements with your custom Identities Geo Defaults you like every user to get when we don't have this information on them. Set the defaults for City, State/Region &amp; Country</li>
-                  </ul>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_cluster_config_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexer Cluster configuration details KV Store Gen Job From REST</a>
                </li>
                <li>
-                  <strong>set_identities_custom</strong>
-                  <ul>
-                     <li>Adjust the eval statements with your custom Identities defaults you like every user to get when we don't have this information on them.</li>
-                  </ul>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Event Types KV Store Gen Job From REST</a>
                </li>
                <li>
-                  <strong>gmc_summary_index</strong>
-                  <ul>
-                     <li>Create a new index and call it gmc_summary and then adjust the eval statement with your custom summary index otherwise GMC will default to the summary index</li>
-                  </ul>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Lookup table files KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Lookup Definitions KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Automatic lookups (LOOKUP-) KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_saml_groups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk SAML external groups in an IdP response to internal Splunk User Roles KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Access search concurrency metrics for a standalone Splunk Enterprise instance KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_apps_local_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Apps KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_authorization_roles_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk User Roles KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_configs_conf_files_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Configuration Files: (limits, server, distsearch, outputs, ui-prefs, props and transforms) KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_configs_conf_props_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Source Types KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_index_volumes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexer Volumes (logical drives) in use by the Splunk deployment KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexes KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_inputs_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Data Inputs KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_inputs_http_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk HTTP Event Collector (HEC) Inputs KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_macros_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Macros KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_models_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Data Models KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_props_calcfields_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Calculated Fields (EVAL-) KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_props_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Extractions (EXTRACT-) KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_props_fieldaliases_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Aliases (FIELDALIAS-) KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_transforms_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Transformations (TRANSFORM- OR REPORT-) KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Dashboards KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Reports and Alerts (Saved Searches) KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_index_itoa_summary_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk IT Service Intelligence Base Searches KV Store Gen Job From ITSI Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_itoa_interface_kpi_base_search_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk IT Service Intelligence Interface KPI Base Searches KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_itoa_interface_service_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk IT Service Intelligence Interface Services KV Store Gen Job From REST</a>
                </li>
             </ol>
+            <hr/>
+            <h1>II. List of GMC Jobs that generates Summary Indexing Data from various Splunk REST Endpoints:</h1>
             <p>
-               <strong>Tracking KV Stores Load Procedure</strong>
+          <b>Cloud Only:</b> Enable these jobs on the Cloud Stack Cluster Master</p>
+            <ol>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_assets_summary_data_gen" target="_blank" rel="noopener">GMC Assets Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_identities_summary_data_gen" target="_blank" rel="noopener">GMC Identities Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_shcluster_config_shc_summary_data_gen" target="_blank" rel="noopener">Splunk Search Head Cluster configuration details Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_cluster_config_idx_summary_data_gen" target="_blank" rel="noopener">Splunk Indexer Cluster configuration details Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_eventtypes_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Event Types Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Lookup table files Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_transforms_lookup_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Lookup Definitions Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Automatic lookups (LOOKUP-) Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_saml_groups_sh_summary_data_gen" target="_blank" rel="noopener">Splunk SAML external groups in an IdP response to internal Splunk User Roles Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_search_concurrency_settings_handler_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Access search concurrency metrics for a standalone Splunk Enterprise instance Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_apps_local_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Apps Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_authorization_roles_sh_summary_data_gen" target="_blank" rel="noopener">Splunk User Roles Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_configs_conf_files_summary_data_gen" target="_blank" rel="noopener">Splunk Configuration Files: (limits, server, distsearch, outputs, ui-prefs, props and transforms) Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_configs_conf_props_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Source Types Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_index_volumes_idx_summary_data_gen" target="_blank" rel="noopener">Splunk Indexer Volumes (logical drives) in use by the Splunk deployment Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_indexes_idx_summary_data_gen" target="_blank" rel="noopener">Splunk Indexes Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_inputs_all_summary_data_gen" target="_blank" rel="noopener">Splunk Data Inputs Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_inputs_http_sh_summary_data_gen" target="_blank" rel="noopener">Splunk HTTP Event Collector (HEC) Inputs Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_macros_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Macros Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_models_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Data Models Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_props_calcfields_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Calculated Fields (EVAL-) Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_props_extractions_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Field Extractions (EXTRACT-) Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_props_fieldaliases_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Field Aliases (FIELDALIAS-) Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_transforms_extractions_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Field Transformations (TRANSFORM- OR REPORT-) Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Dashboards Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_itoa_interface_kpi_base_search_sh_summary_data_gen" target="_blank" rel="noopener">Splunk IT Service Intelligence Interface KPI Base Searches Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_itoa_interface_service_sh_summary_data_gen" target="_blank" rel="noopener">Splunk IT Service Intelligence Interface Services Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_saved_searches_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Reports and Alerts (Saved Searches) Summary Index Gen Job From REST</a>
+               </li>
+            </ol>
+            <hr/>
+            <h1>III. List of GMC Jobs that Generates KV Stores from the GMC Summary Index:</h1>
+            <p>
+          <b>Cloud Only:</b> Enable these jobs on the Cloud ad-hoc Search Head or Search Head Cluster</p>
+            <ol>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_assets_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Assets KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identitie KV Store Gen Job From Summary Index</a>
+               </li>
+               
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_shcluster_config_shc_kv_store_lookup_gen" target="_blank" rel="noopener">Search Head Cluster configuration details KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_cluster_config_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexer Cluster configuration details KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Event Types KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_admin_saml_groups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk SAML external groups in an IdP response to internal Splunk User Roles KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_admin_search_concurrency_settings_handler_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Access search concurrency metrics for a standalone Splunk Enterprise instance KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Lookup table files KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_admin_transforms_lookup_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Lookup Definitions KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Automatic lookups (LOOKUP-) KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_apps_local_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Apps KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_authorization_roles_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk User Roles KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_configs_conf_files_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Configuration Files: (limits, server, distsearch, outputs, ui-prefs, props and transforms) KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_configs_conf_props_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Source Types KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_index_volumes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexer Volumes (logical drives) in use by the Splunk deployment KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexes KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_inputs_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Data Inputs KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_inputs_http_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk HTTP Event Collector (HEC) Inputs KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_macros_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Macros KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_models_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Data Models KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_props_calcfields_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Calculated Fields (EVAL-) KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_props_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Extractions (EXTRACT-) KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_props_fieldaliases_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Aliases (FIELDALIAS-) KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_transforms_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Transformations (TRANSFORM- OR REPORT-) KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Dashboards KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_itoa_interface_kpi_base_search_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk IT Service Intelligence Interface KPI Base Searches KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_itoa_interface_service_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk IT Service Intelligence Interface Services KV Store Gen Job From Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_summary_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Reports and Alerts (Saved Searches) KV Store Gen Job From Summary Index</a>
+               </li>
+            </ol>
+            <hr/>
+            <p>If you run a dashboard and find no data, please run the corresponding Job(s) assicoated with the dashboard from the GMC Jobs dropdown otherwise all jobs will execute between 12AM and 6AM every day.  The above are needed to get you started right now.</p>
+            <hr/>
+            <p>
+               <h1>
+            <b>IV. Tracking KV Stores Load Procedure</b>
+          </h1>
             </p>
             <p>If you like to fill-up the 3 KV Stores for Users, Dashboards &amp; Report/Alerts please click on each one of these Jobs, select All Time from the time range selector and run the job, this will automatically fill the KV Stores with all the data you have so far.  Please do not save the Job, close the window when done and going forward these 3 jobs run every 5 minutes and tracks by looking at a very small amount of data to keep the KV Store updated.</p>
             <ol>
                <li>
                   GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_index_audit_user_login_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Users Activity (every 5 minutes)</a>
-               </li>
-               <li>GMC Jobs / GMC Tracking Jobs / <a href="/app/global_monitoring_console/search?s=splunk_audit_user_login_idx_summary_tracker" target="_blank" rel="noopener">Track Users Activity (Summary Indexing)</a></li>
-               <li>
-                  GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboards Execution (every 5 minutes)</a>
-               </li>
-               <li>GMC Jobs / GMC Tracking Jobs / <a href="/app/global_monitoring_console/search?s=splunk_internal_scheduler_jobs_idx_summary_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (Summary Indexing)</a></li>
-               <li>
-                  GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Reports/Alerts Execution (every 5 minutes)</a>
-                  <li>GMC Jobs / GMC Tracking Jobs / <a href="/app/global_monitoring_console/search?s=splunk_internal_web_access_idx_summary_tracker" target="_blank" rel="noopener">Track Dashboards Executions (Summary Indexing)</a></li>
-               </li>
-            
-               <li>
-                  GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_internal_index_license_usage_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster By Index Daily</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_index_audit_user_login_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Users Activity (every 5 minutes) (KV Store)</a>
                </li>
                <li>
                   GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_internal_license_rollover_summary_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster Daily</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_audit_user_login_idx_summary_tracker" target="_blank" rel="noopener">Track Users Activity (Summary Indexing)</a>
                </li>
                <li>
                   GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_introspection_index_size_idx_summary_tracker" target="_blank" rel="noopener">Track Index Size Daily</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboards Execution (every 5 minutes) (KV Store)</a>
                </li>
-                <li>
+               <li>
                   GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_introspection_volume_size_idx_summary_tracker" target="_blank" rel="noopener">Track Index Volume Size Daily</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_internal_scheduler_jobs_idx_summary_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (Summary Indexing)</a>
                </li>
-                <li>
+               <li>
                   GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_internal_forwarder_stats_idx_summary_tracker" target="_blank" rel="noopener">Track Forwarder Ingestion Stats Daily</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Reports/Alerts Execution (every 5 minutes) (KV Store)</a>
+                  <li>
+                     GMC Jobs / GMC Tracking Jobs /
+                     <a href="/app/TA_global_monitoring_console/search?s=splunk_internal_web_access_idx_summary_tracker" target="_blank" rel="noopener">Track Dashboards Executions (Summary Indexing)</a>
+                  </li>
+               </li>
+               <li>
+                  GMC Jobs / GMC Tracking Jobs /
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_internal_index_license_usage_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster By Index Daily (Summary Indexing)</a>
+               </li>
+               <li>
+                  GMC Jobs / GMC Tracking Jobs /
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_internal_license_rollover_summary_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster Daily (Summary Indexing)</a>
+               </li>
+               <li>
+                  GMC Jobs / GMC Tracking Jobs /
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_introspection_index_size_idx_summary_tracker" target="_blank" rel="noopener">Track Index Size Daily (Summary Indexing)</a>
+               </li>
+               <li>
+                  GMC Jobs / GMC Tracking Jobs /
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_introspection_volume_size_idx_summary_tracker" target="_blank" rel="noopener">Track Index Volume Size Daily (Summary Indexing)</a>
+               </li>
+               <li>
+                  GMC Jobs / GMC Tracking Jobs /
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_internal_forwarder_stats_idx_summary_tracker" target="_blank" rel="noopener">Track Forwarder Ingestion Stats Daily (Summary Indexing)</a>
                </li>
             </ol>
-            <strong>Tracking Index Size License Usage Summary Index Load Procedure</strong>
+            <b>Tracking Index Size License Usage Summary Index Load Procedure</b>
             <p>If you like to fill-up the summary index with Index Size License Usage click on the link below and select All Time from the time range selector and run the job, this will automatically fill the summary index with data for the first time and going forward these jobs will execute on daily basis to keep the summary index up-to-date</p>
          </html>
     </panel>
@@ -276,41 +447,94 @@
     <panel>
       <title>Complete Dashboard List</title>
       <html>
-<ol>
-<li><a href="/app/global_monitoring_console/splunk_sh_01_assets_identities_dashboard_v1" target="_blank" rel="noopener">SH-01 GMC Assets and Identities</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_03_field_help_dashboard_v1" target="_blank" rel="noopener">SH-03 GMC Fileds Help</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_05_audit_users_dashboard_v1" target="_blank" rel="noopener">SH-05 Audit Users Activity</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1" target="_blank" rel="noopener">SH-06 Dashboards, Reports and Lookups Analysis</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_07_fields_dashboard_v1" target="_blank" rel="noopener">SH-07 Fields</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_08_event_types_dashboard_v1" target="_blank" rel="noopener">SH-08 Event Types</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_09_macros_dashboard_v1" target="_blank" rel="noopener">SH-09 Macros</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_10_source_types_dashboard_v1" target="_blank" rel="noopener">SH-10 Source Types</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_11_data_models_dashboard_v1" target="_blank" rel="noopener">SH-11 Data Models</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_13_config_files_dashboard_v1" target="_blank" rel="noopener">SH-13 Splunk Config Files</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_14_app_validation_certification_dashboard_v1" target="_blank" rel="noopener">SH-14 App Validation and Certification</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_16_splunk_apps_dashboard_v1" target="_blank" rel="noopener">SH-16 Splunk Apps</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_16_splunk_apps_dashboard_v1" target="_blank" rel="noopener">SH-17 Deploying Splunk with Base Configs</a></li>
-<li><a href="/app/global_monitoring_console/splunk_sh_16_splunk_apps_dashboard_v1" target="_blank" rel="noopener">SH-18 Resource Usage</a></li>
-</ol>
-<ol>
-<li><a href="/app/global_monitoring_console/splunk_uf_01_forwarding_analysis_dashboard_v1" target="_blank" rel="noopener">UF-01 Forwarding Analysis</a></li>
-<li><a href="/app/global_monitoring_console/splunk_uf_02_forwarding_analysis_metrics_based_dashboard_v1" target="_blank" rel="noopener">UF-02 Forwarding Analysis Metrics Beta</a></li>
-<li><a href="/app/global_monitoring_console/splunk_uf_03_forwarding_analysis_summary_index_dashboard_v1" target="_blank" rel="noopener">UF-03 Forwarding Analysis Summary Index</a></li>
-</ol>
-
-<ol>
-<li><a href="/app/global_monitoring_console/splunk_idx_01_data_quality_dashboard_v1" target="_blank" rel="noopener">IDX-01 Data Quality with Source Types Info</a></li>
-<li><a href="/app/global_monitoring_console/splunk_idx_02_indexes_dashboard_v1" target="_blank" rel="noopener">IDX-02 Splunk Indexes</a></li>
-<li><a href="/app/global_monitoring_console/splunk_idx_03_network_statistics_dashboard_v1" target="_blank" rel="noopener">IDX-03 Network Statistics (netstat)</a></li>
-<li><a href="/app/global_monitoring_console/splunk_idx_04_disk_io_statistics_dashboard_v1" target="_blank" rel="noopener">IDX-04 DISK IO Statistics (iostat)</a></li>
-<li><a href="/app/global_monitoring_console/splunk_idx_05_inputs_dashboard_v1" target="_blank" rel="noopener">IDX-05 Data Inputs Accross all Splunk Instances</a></li>
-<li><a href="/app/global_monitoring_console/splunk_idx_06_cluster_bucket_status_dashboard_v1" target="_blank" rel="noopener">IDX-06 Indexer Cluster Bucket Status</a></li>
-<li><a href="/app/global_monitoring_console/splunk_idx_07_indexer_queues_dashboard_v1" target="_blank" rel="noopener">IDX-07 Indexer Queues</a></li>
-<li><a href="/app/global_monitoring_console/splunk_idx_08_core_sizing_calculator_dashboard_v1" target="_blank" rel="noopener">IDX-08 Splunk Core Sizing Calculator</a></li>
-<li><a href="/app/global_monitoring_console/splunk_idx_09_http_event_collector_dashboard_v1" target="_blank" rel="noopener">IDX-09 HTTP Event Collector</a></li>
-</ol>
-    </html>
+            <ol>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_01_assets_identities_dashboard_v1" target="_blank" rel="noopener">SH-01 GMC Assets and Identities</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_03_field_help_dashboard_v1" target="_blank" rel="noopener">SH-03 GMC Fileds Help</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_05_audit_users_activity_dashboard_v1" target="_blank" rel="noopener">SH-05 Audit Users Activity</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1" target="_blank" rel="noopener">SH-06 Dashboards, Reports and Lookups Analysis</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_07_fields_dashboard_v1" target="_blank" rel="noopener">SH-07 Fields</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_08_event_types_dashboard_v1" target="_blank" rel="noopener">SH-08 Event Types</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_09_macros_dashboard_v1" target="_blank" rel="noopener">SH-09 Macros</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_10_source_types_dashboard_v1" target="_blank" rel="noopener">SH-10 Source Types</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_11_data_models_dashboard_v1" target="_blank" rel="noopener">SH-11 Data Models</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_13_config_files_dashboard_v1" target="_blank" rel="noopener">SH-13 Splunk Config Files</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_14_app_validation_certification_dashboard_v1" target="_blank" rel="noopener">SH-14 App Validation and Certification</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_16_splunk_apps_dashboard_v1" target="_blank" rel="noopener">SH-16 Splunk Apps</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_17_deploying_splunk_with_base_configs_dashboard_v1" target="_blank" rel="noopener">SH-17 Deploying Splunk with Base Configs</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_sh_18_resource_usage_dashboard" target="_blank" rel="noopener">SH-18 Resource Usage</a>
+               </li>
+            </ol>
+            <ol>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_uf_01_forwarding_analysis_dashboard_v1" target="_blank" rel="noopener">UF-01 Forwarding Analysis</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_uf_02_forwarding_analysis_summary_index_dashboard_v1" target="_blank" rel="noopener">UF-02 Forwarding Analysis Summary Index</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_uf_03_forwarding_analysis_metrics_based_dashboard_v1" target="_blank" rel="noopener">UF-03 Forwarding Analysis Metrics Beta</a>
+               </li>
+            </ol>
+            <ol>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_idx_01_data_quality_dashboard_v1" target="_blank" rel="noopener">IDX-01 Data Quality with Source Types Info</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_idx_02_indexes_dashboard_v1" target="_blank" rel="noopener">IDX-02 Splunk Indexes</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_idx_03_network_statistics_dashboard_v1" target="_blank" rel="noopener">IDX-03 Network Statistics (netstat)</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_idx_04_disk_io_statistics_dashboard_v1" target="_blank" rel="noopener">IDX-04 DISK IO Statistics (iostat)</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_idx_05_inputs_dashboard_v1" target="_blank" rel="noopener">IDX-05 Data Inputs Accross all Splunk Instances</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_idx_06_cluster_bucket_status_dashboard_v1" target="_blank" rel="noopener">IDX-06 Indexer Cluster Bucket Status</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_idx_07_indexer_queues_dashboard_v1" target="_blank" rel="noopener">IDX-07 Indexer Queues</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_idx_08_core_sizing_calculator_dashboard_v1" target="_blank" rel="noopener">IDX-08 Splunk Core Sizing Calculator</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/splunk_idx_09_http_event_collector_dashboard_v1" target="_blank" rel="noopener">IDX-09 HTTP Event Collector</a>
+               </li>
+            </ol>
+         </html>
     </panel>
   </row>
 </dashboard>

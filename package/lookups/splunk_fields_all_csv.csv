@@ -127,6 +127,7 @@ Search job inspector,Execution costs of search commands,startup,configuration,,
 Search job inspector,Search job properties,command,eval,,Actual evals in the search string
 Search job inspector,Search job properties,command,fillnull,,
 Search job inspector,Search job properties,command,lookup,,
+Search job inspector,Search job properties,command,postprocess,,
 Search job inspector,Search job properties,command,noop,,
 Search job inspector,Search job properties,command,rename,,
 Search job inspector,Search job properties,command,search,,
@@ -486,3 +487,44 @@ REST,Authorization,Roles,srchTimeWin,Restrict Search time range,"Maximum time sp
 REST,Authorization,Roles,deleteIndexesAllowed,Delete Indexes Allowed,
 REST,Authorization,Roles,federatedProviders,Role Federated Providers,federated search https://docs.splunk.com/Documentation/DFS/1.1.1/DFS/Setupafederatedsearch
 REST,Authorization,Roles,grantable_roles,Grantable Roles,
+GMC,Lookups,,cron_schedule_map_csv_lookup,,GMC Cron Schedules human-readable format CSV Lookup
+GMC,Lookups,,splunk_base_configs_csv_lookup,,Splunk Base Configs Apps CSV Lookup
+GMC,Lookups,,splunk_cities_geo_sh_csv_lookup,,GMC City Geographic Information CSV Lookup
+GMC,Lookups,,splunk_cloud_stack_info_csv_lookup,,Splunk CLoud Stack Information CSV Lookup
+GMC,Lookups,,splunk_fields_all_csv_lookup,,GMC Fields Help CSV Lookup
+GMC,Lookups,,splunk_identities_custom_sh_csv_default_lookup,,GMC Custom Identities Default CSV Lookup
+GMC,Lookups,,splunk_identities_custom_sh_csv_lookup,,GMC Custom Identities Enrichments CSV Lookup
+GMC,Lookups,,splunk_index_audit_user_login_tracker_sh_kv_store_lookup,,GMC Splunk User Login Activities Tracker KV Store
+GMC,Lookups,,splunk_index_internal_scheduler_jobs_tracker_sh_kv_store_lookup,,GMC Splunk Schedule Executions Tracker KV Store
+GMC,Lookups,,splunk_index_internal_web_access_tracker_sh_kv_store_lookup,,GMC Splunk Dashboard Executions Tracker KV Store
+GMC,Lookups,,splunk_rest_admin_eventtypes_sh_kv_store_lookup,,Splunk Event Types KV Store
+GMC,Lookups,,splunk_rest_admin_lookup_table_files_sh_kv_store_lookup,,Splunk Lookup table files KV Store
+GMC,Lookups,,splunk_rest_admin_saml_groups_sh_kv_store_lookup,,Splunk SAML external groups in an IdP response to internal Splunk User Roles KV Store
+GMC,Lookups,,splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup,,Splunk Access search concurrency metrics for a standalone Splunk Enterprise instance KV Store
+GMC,Lookups,,splunk_rest_admin_transforms_lookup_sh_kv_store_lookup,,Splunk Lookup Definitions KV Store
+GMC,Lookups,,splunk_rest_apps_local_sh_kv_store_lookup,,Splunk Apps KV Store
+GMC,Lookups,,splunk_rest_assets_kv_store_lookup,,GMC Assets KV Store
+GMC,Lookups,,splunk_rest_authorization_roles_sh_kv_store_lookup,,Splunk User Roles KV Store
+GMC,Lookups,,splunk_rest_cluster_config_idx_kv_store_lookup,,Splunk cluster node configuration details KV Store
+GMC,Lookups,,splunk_rest_configs_conf_files_all_kv_store_lookup,,"Splunk Configuration Files: (limits, server, distsearch, outputs, ui-prefs, props & transforms) KV Store"
+GMC,Lookups,,splunk_rest_configs_conf_props_sh_kv_store_lookup,,Splunk Source Types KV Store
+GMC,Lookups,,splunk_rest_data_index_volumes_idx_kv_store_lookup,,Splunk Indexer Volumes (logical drives) in use by the Splunk deployment KV Store
+GMC,Lookups,,splunk_rest_data_indexes_idx_kv_store_lookup,,Splunk Indexes KV Store
+GMC,Lookups,,splunk_rest_data_inputs_all_kv_store_lookup,,Splunk deployment inputs (This includes any modular inputs that may be defined on the system) KV Store
+GMC,Lookups,,splunk_rest_data_inputs_http_sh_kv_store_lookup,,Splunk Http Event Collector (HEC) Inputs KV Store
+GMC,Lookups,,splunk_rest_data_macros_sh_kv_store_lookup,,Splunk Macros KV Store
+GMC,Lookups,,splunk_rest_data_models_sh_kv_store_lookup,,Splunk Data Models KV Store
+GMC,Lookups,,splunk_rest_data_props_calcfields_sh_kv_store_lookup,,Splunk Calculated Fields (EVAL-) KV Store
+GMC,Lookups,,splunk_rest_data_props_extractions_sh_kv_store_lookup,,Splunk Field Extractions (EXTRACT-) KV Store
+GMC,Lookups,,splunk_rest_data_props_fieldaliases_sh_kv_store_lookup,,Splunk Field Aliases (FIELDALIAS-) KV Store
+GMC,Lookups,,splunk_rest_data_props_lookups_sh_kv_store_lookup,,Splunk Automatic lookups (LOOKUP-) KV Store
+GMC,Lookups,,splunk_rest_data_transforms_extractions_sh_kv_store_lookup,,Splunk Field Transformations (TRANSFORM- OR REPORT-) KV Store
+GMC,Lookups,,splunk_rest_data_ui_views_sh_kv_store_lookup,,Splunk Dashboards KV Store
+GMC,Lookups,,splunk_rest_identities_kv_store_lookup,,GMC Identities KV Store
+GMC,Lookups,,splunk_rest_itoa_interface_kpi_base_search_sh_kv_store_lookup,,Splunk IT Service Intelligence Interface KPI Base Searches KV Store
+GMC,Lookups,,splunk_rest_itoa_interface_service_sh_kv_store_lookup,,Splunk IT Service Intelligence Interface Services KV Store
+GMC,Lookups,,splunk_rest_saved_searches_sh_kv_store_lookup,,Splunk Reports & Alerts (Saved Searches) KV Store
+GMC,Lookups,,splunk_rest_shcluster_config_shc_kv_store_lookup,,Splunk Search Head Cluster Node configurations KV Store
+GMC,Lookups,,splunk_index_itsi_summary_sh_kv_store_lookup,,ITSI Base Searches KV Store
+GMC,Lookups,,splunk_ports_all_csv_lookup,,Splunk Ports CSV Lookup
+GMC,Lookups,,splunk_rest_saved_searches_sh_monitoring_kv_store_lookup,,Splunk Drift Monitoring Reports and Alerts (Saved Searches) KV Store

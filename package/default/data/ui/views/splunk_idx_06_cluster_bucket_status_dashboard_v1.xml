@@ -1,5 +1,6 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v1.5.90</label>
+  <label>IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v1.8.10</label>
+  <description>Splunk Indexer Cluster Bucket Status Information Dashboard</description>
   <search id="splunk_idx_07_indexer_cluster_bucket_status_dashboard_v1">
     <query>
 index=_internal search_group=dmc_group_cluster_master component=Metrics sourcetype=splunkd name=cmmaster_* group=subtask_* event_message="*fix*" (to_fix_search_factor&gt;0 OR to_fix_rep_factor&gt;0)
@@ -73,6 +74,8 @@ index=_internal search_group=dmc_group_cluster_master component=Metrics sourcety
     max(to_fix_total_in_Thousandths) as to_fix_total_in_Thousandths
     by idxcluster_label</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.chart">column</option>

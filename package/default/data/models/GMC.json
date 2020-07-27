@@ -1,7 +1,7 @@
 {
     "modelName": "GMC",
     "displayName": "Global Monitoring Console (GMC)",
-    "description": "Global Monitoring Console (GMC)",
+    "description": "Global Monitoring Console (GMC) Data Model",
     "objectSummary": {
         "Event-Based": 8,
         "Transaction-Based": 0,
@@ -66,7 +66,7 @@
             "calculations": [],
             "constraints": [
                 {
-                    "search": "(`gmc_dm_constraints`) (index=_audit sourcetype=audittrail action=search search_id=* (search=* OR info=terminate)) \n    OR (index=_internal ((sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd_access uri=\"*delegatejob*\" spent>200)))\n    OR (index=_introspection sourcetype=splunk_resource_usage component=PerProcess \"data.process_type\"=search \"data.search_props.app\"=*)",
+                    "search": "(`gmc_setup_dm_constraints_search`) (index=_audit sourcetype=audittrail action=search search_id=* (search=* OR info=terminate)) \n    OR (index=_internal ((sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd_access uri=\"*delegatejob*\" spent>200)))\n    OR (index=_introspection sourcetype=splunk_resource_usage component=PerProcess \"data.process_type\"=search \"data.search_props.app\"=*)",
                     "owner": "Search_Activity"
                 }
             ],
@@ -715,28 +715,6 @@
                 {
                     "outputFields": [
                         {
-                            "fieldName": "priority",
-                            "owner": "Search_Activity.Internal_Scheduler",
-                            "type": "string",
-                            "fieldSearch": "",
-                            "required": false,
-                            "multivalue": false,
-                            "hidden": false,
-                            "editable": true,
-                            "displayName": "Priority",
-                            "comment": ""
-                        }
-                    ],
-                    "calculationID": "0nt3x2ipwhgd",
-                    "owner": "Search_Activity.Internal_Scheduler",
-                    "editable": true,
-                    "comment": "",
-                    "calculationType": "Eval",
-                    "expression": "IF(ISNULL(priority) OR priority=\"\", NULL(), priority)"
-                },
-                {
-                    "outputFields": [
-                        {
                             "fieldName": "info2",
                             "owner": "Search_Activity.Internal_Scheduler",
                             "type": "string",
@@ -755,6 +733,28 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "CASE ( \n    status2==\"continued\", \"deferred\",\n    status2==\"delegated\", \"delegated\",\n    status2==\"delegated_scheduled\", \"delegated_scheduled\",\n    status2==\"delegated_remote\", \"delegated_remote\",\n    status2==\"delegated_remote_completion\", \"delegated_remote_completion\",\n    status2==\"delegated_remote_error\", \"delegated_remote_error\",\n    status2==\"delegated_waiting\", \"delegated_waiting\",\n    status2==\"dispatched\", \"dispatched\",\n    status2==\"max_pending\", \"max_pending\",\n    status2==\"max_running\", \"max_running\",\n    status2==\"skipped\", \"skipped\",\n    status2==\"success\", \"completed\",\n    component=\"SearchProcessMemoryTracker\", \"terminated\",\n    TRUE(), status2 )"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "priority",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Priority",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "0nt3x2ipwhgd",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(priority) OR priority=\"\", NULL(), priority)"
                 },
                 {
                     "outputFields": [
@@ -1364,7 +1364,7 @@
                     "editable": true,
                     "comment": "",
                     "calculationType": "Eval",
-                    "expression": "IF ( ISNUM ('data.mem_used'), round('data.mem_used'/1024, 3), NULL())"
+                    "expression": "IF ( ISNUM ('data.mem_used'), 'data.mem_used'/1024, NULL())"
                 },
                 {
                     "outputFields": [
@@ -1386,7 +1386,7 @@
                     "editable": true,
                     "comment": "",
                     "calculationType": "Eval",
-                    "expression": "IF ( ISNUM ('data.normalized_pct_cpu'), 'data.normalized_pct_cpu', NULL())"
+                    "expression": "IF (ISNULL('data.normalized_pct_cpu'), 0, 'data.normalized_pct_cpu')"
                 },
                 {
                     "outputFields": [
@@ -1479,6 +1479,28 @@
                 {
                     "outputFields": [
                         {
+                            "fieldName": "ppid",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "PPID",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "o90tqczmpzr",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.ppid'), 'data.ppid', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
                             "fieldName": "read_mb",
                             "owner": "Search_Activity.Introspection_Search_Usage",
                             "type": "number",
@@ -1497,6 +1519,28 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "IF ( ISNUM ('data.read_mb'), 'data.read_mb', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "written_mb",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Written MB",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "yyp3b0wpkr",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.written_mb'), 'data.written_mb', NULL())"
                 },
                 {
                     "outputFields": [
@@ -1541,28 +1585,6 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "IF ( ISNUM ('data.t_count'), 'data.t_count', NULL())"
-                },
-                {
-                    "outputFields": [
-                        {
-                            "fieldName": "written_mb",
-                            "owner": "Search_Activity.Introspection_Search_Usage",
-                            "type": "number",
-                            "fieldSearch": "",
-                            "required": false,
-                            "multivalue": false,
-                            "hidden": false,
-                            "editable": true,
-                            "displayName": "Written MB",
-                            "comment": ""
-                        }
-                    ],
-                    "calculationID": "yyp3b0wpkr",
-                    "owner": "Search_Activity.Introspection_Search_Usage",
-                    "editable": true,
-                    "comment": "",
-                    "calculationType": "Eval",
-                    "expression": "IF ( ISNUM ('data.written_mb'), 'data.written_mb', NULL())"
                 },
                 {
                     "outputFields": [
@@ -1651,28 +1673,6 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "IF(ISNULL('data.search_props.mode') OR 'data.search_props.mode'=\"\", NULL(), 'data.search_props.mode')"
-                },
-                {
-                    "outputFields": [
-                        {
-                            "fieldName": "ppid",
-                            "owner": "Search_Activity.Introspection_Search_Usage",
-                            "type": "number",
-                            "fieldSearch": "",
-                            "required": false,
-                            "multivalue": false,
-                            "hidden": false,
-                            "editable": true,
-                            "displayName": "PPID",
-                            "comment": ""
-                        }
-                    ],
-                    "calculationID": "o90tqczmpzr",
-                    "owner": "Search_Activity.Introspection_Search_Usage",
-                    "editable": true,
-                    "comment": "",
-                    "calculationType": "Eval",
-                    "expression": "IF ( ISNUM ('data.ppid'), 'data.ppid', NULL())"
                 }
             ],
             "constraints": [

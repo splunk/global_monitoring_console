@@ -1,19 +1,14 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 08 - Event Types - Dashboard - v1.5.90</label>
+  <label>SH - 08 - Event Types - Dashboard - v1.8.10</label>
+  <description>Splunk Event Types Information Dashboard</description>
   <search id="splunk_sh_15_event_types_dashboard_v1">
     <query>
 | from lookup:splunk_rest_admin_eventtypes_sh_kv_store_lookup
 | fields shcluster_label Splunk_Instance app sharing title author description disabled color priority tags search updated acl_perms_read acl_perms_write 
-
 | `get_instance_roles(Splunk_Instance)`
-
-| makemv delim="|" tags
-
-|	`get_identity_info_simple(shcluster_label,author)`
+| `get_identity_info(shcluster_label,author)` | `get_identity_info(author)` | `fillnull_identity_info`
 | `strftime_format(updated)`
-
 | fillnull value="Undefined" Splunk_Instance Splunk_Roles app sharing title author description disabled color priority tags search
-
 | search shcluster_label="$shcluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" app="$app$" author="$author$" title="*$title$*" tags="$tags$" emp_name="$emp_name$" emp_ttl="$emp_ttl$" emp_lob="$emp_lob$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$" search="*$search$*" priority="$priority$"
       </query>
   </search>
@@ -284,6 +279,8 @@
         <search base="splunk_sh_15_event_types_dashboard_v1">
           <query>| stats count by app</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
@@ -296,10 +293,10 @@
       <title>4. Associated GMC Job(s) - $env:page$</title>
       <html>
             GMC Jobs / GMC Gen Jobs / SH Tier Gen Jobs /
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Event Types Gen Job</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Event Types Gen Job</a>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_admin_eventtypes_sh_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_admin_eventtypes_sh_kv_store&amp;type=kv">
                      View Eventtypes KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>

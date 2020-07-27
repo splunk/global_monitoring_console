@@ -1,5 +1,5 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>IDX - 04 - Disk IO Statistics - Dashboard - v1.5.90</label>
+  <label>IDX - 04 - Disk IO Statistics - Dashboard - v1.8.10</label>
   <description>Disk IO Statistics using the Splunk_TA_nix iostat Scripted Inputs</description>
   <search id="splunk_idx_04_disk_io_statistics_dashboard_v1">
     <query>index=osnixperf sourcetype=iostat splunk_server_group=dmc_group_indexer
@@ -82,6 +82,8 @@
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(avgWaitMillis) by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -96,6 +98,8 @@
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(avgQueueSZ) by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -114,6 +118,8 @@
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(bandwUtilPct) by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -128,6 +134,8 @@
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(avgSvcMillis) by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -144,6 +152,8 @@
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(rKB_PS) as rKB_PS max(wKB_PS) as wKB_PS by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -164,6 +174,8 @@
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(read_ops) as read_ops max(write_ops) as write_ops by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -177,6 +189,18 @@
         <option name="trellis.size">medium</option>
         <option name="trellis.splitBy">host</option>
       </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| noop</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
     </panel>
   </row>
 </form>

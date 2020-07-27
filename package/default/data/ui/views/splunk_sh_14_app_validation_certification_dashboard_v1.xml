@@ -1,5 +1,5 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 14 - App Validation &amp; Certification - Dashboard - v1.5.90</label>
+  <label>SH - 14 - App Validation &amp; Certification - Dashboard - v1.8.10</label>
   <description>This Dashboard is based on data generated using the Splunk Add-on Builder Validate &amp; Package feature which validates your add-on against best practices and other rules, and to determine whether your app is ready for Splunk App Certification. The generates an Overall Health Report in the App UI but it also indexes all the findings into the dedicated add_on_builder_index Splunk Index.  To Learn More please read this Splunk Document: https://docs.splunk.com/Documentation/AddonBuilder/latest/UserGuide/Validate</description>
   <search id="splunk_sh_14_app_validation_certification_dashboard_v1">
     <query>index=add_on_builder_index sourcetype=splunk:tabuilder:validation $Exclusions$
@@ -364,6 +364,8 @@
         <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
           <query>| stats count by category | where category!="undefined"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
@@ -390,6 +392,8 @@
         <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
           <query>| stats count by severity | where severity!="undefined"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
@@ -536,6 +540,8 @@
         <search base="App_Validation_and_Certification_Dashboard2">
           <query>| stats count by Btool_Config_File | where Btool_Config_File!="undefined"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
@@ -547,6 +553,8 @@
         <search base="App_Validation_and_Certification_Dashboard2">
           <query>| stats count by Btool_Severity | where Btool_Severity!="undefined"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
@@ -558,6 +566,8 @@
         <search base="App_Validation_and_Certification_Dashboard2">
           <query>| stats count by Btool_Setting | where Btool_Setting!="undefined"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>

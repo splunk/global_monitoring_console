@@ -1,17 +1,19 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>IDX - 07 - Indexer Queues - Dashboard - v1.5.90</label>
+  <label>IDX - 07 - Indexer Queues - Dashboard - v1.8.10</label>
+  <description>Splunk Indexer Queues Information Dashboard</description>
   <search id="splunk_idx_07_indexer_queues_dashboard_v1">
-    <query>index=_internal sourcetype=splunkd component=Metrics splunk_server_group=dmc_group_indexer group=queue name IN (parsingqueue, indexqueue, aggqueue, tcpin_queue, httpinputq, splunktcpin, typingqueue, udp_queue)
+    <query>index=_internal sourcetype=splunkd component=Metrics (splunk_server_group=dmc_group_indexer OR host=idx-i-*) group=queue name IN (auditqueue, parsingqueue, indexqueue, aggqueue, tcpin_queue, httpinputq, splunktcpin, typingqueue, udp_queue, nullqueue)
     | fields _time host name ingest_pipe current_size current_size_kb smallest_size largest_size max_size max_size_kb blocked
     | `get_idxcluster_label(host)`
-    | eval name = case (name="parsingqueue", "Parsing Queue", name="indexqueue", "Indexing Queue", name="typingqueue", "Typing Queue", name="aggqueue", "Aggregation Queue", name="tcpin_queue", "TcpIn Queue", true(), name)
+    | eval name = case (name="parsingqueue", "Parsing Queue", name="indexqueue", "Indexing Queue", name="typingqueue", "Typing Queue", name="aggqueue", "Aggregation Queue", name="tcpin_queue", "TCP-IN Queue", name="nullqueue", "NULL Queue", name="auditqueue", "Audit Queue", name="splunktcpin", "Splunk TCP-IN Queue", name="httpinputq", "HTTP Input Queue", true(), name)
     | eval max=if(isnotnull(max_size_kb),max_size_kb,max_size), curr=if(isnotnull(current_size_kb),current_size_kb,current_size), fill_perc=round(((curr / max) * 100),2)
-    | search idxcluster_label="$idxcluster_label$" host="$host$" name IN ($name$) AND  fill_perc &gt;= $fill_perc$ "$blocked$"
+    | search idxcluster_label="$idxcluster_label$" host="$host$" name IN ($name$) 
+    `gmc_comment("AND  fill_perc &gt;= $fill_perc$ "$blocked$" ingest_pipe=$ingest_pipe$")`
     </query>
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
   </search>
-  <fieldset submitButton="false"></fieldset>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. Indexer Queues Filters</title>
@@ -70,8 +72,19 @@
         <default>0</default>
         <initialValue>0</initialValue>
       </input>
+      <input type="dropdown" token="ingest_pipe" searchWhenChanged="true">
+        <label>7. Ingestion Pipeline</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <search base="splunk_idx_07_indexer_queues_dashboard_v1">
+          <query>| stats count by ingest_pipe</query>
+        </search>
+        <choice value="*">All</choice>
+        <fieldForLabel>ingest_pipe</fieldForLabel>
+        <fieldForValue>ingest_pipe</fieldForValue>
+      </input>
       <input type="dropdown" token="span_period" searchWhenChanged="true">
-        <label>7. Span Period</label>
+        <label>8. Span Period</label>
         <default></default>
         <choice value="">Automatic</choice>
         <choice value="span=1s">1 seconds</choice>
@@ -101,26 +114,44 @@
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
-      <title>2. Queue2</title>
-      <viz type="Splunk_ML_Toolkit.LinesViz">
+      <title>2. Indexer Queue Fill Ratio by Queue Over Time</title>
+      <chart>
         <search base="splunk_idx_07_indexer_queues_dashboard_v1">
-          <query>| timechart minspan=30s partial=f $span_period$
-    Avg(fill_perc) As "Fill %" by name</query>
+          <query>| bucket _time $span_period$ 
+| chart 
+    eval(round(Avg(fill_perc),1)) As "Fill %" 
+    by host,name</query>
         </search>
-        <option name="Splunk_ML_Toolkit.LinesViz.showNavigator">true</option>
-        <option name="drilldown">none</option>
-        <option name="height">675</option>
+        <option name="charting.axisLabelsY.majorUnit">5</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY.maximumNumber">100</option>
+        <option name="charting.axisY.minimumNumber">0</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">679</option>
         <option name="refresh.display">progressbar</option>
-      </viz>
+      </chart>
     </panel>
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
-      <title>3. Queue2</title>
+      <title>3. Queue Size in MB over time</title>
       <chart>
         <title>$env:page$</title>
         <search base="splunk_idx_07_indexer_queues_dashboard_v1">
-          <query>| timechart fixedrange=f Sum(eval(round(current_size_kb,2))) As current_size_kb by name</query>
+          <query>| timechart fixedrange=f Sum(eval(round(current_size_kb/1024,1))) As current_size_mb by name</query>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -129,28 +160,30 @@
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.abbreviation">none</option>
         <option name="charting.axisX.scale">linear</option>
-        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.abbreviation">auto</option>
         <option name="charting.axisY.scale">linear</option>
         <option name="charting.axisY2.abbreviation">none</option>
         <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisY2.scale">inherit</option>
-        <option name="charting.chart">line</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">column</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
-        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.showDataLabels">all</option>
         <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.chart.style">shiny</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
-        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
         <option name="charting.legend.mode">standard</option>
-        <option name="charting.legend.placement">right</option>
+        <option name="charting.legend.placement">bottom</option>
         <option name="charting.lineWidth">2</option>
-        <option name="height">504</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">767</option>
         <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
@@ -160,12 +193,13 @@
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
-      <title>4. Queue3</title>
+      <title>4. Queue fill ratio</title>
       <table>
         <search base="splunk_idx_07_indexer_queues_dashboard_v1">
           <query>| dedup host, name 
 | table _time host name current_size_kb max_size_kb fill_perc
-| rename host As Indexer name As "Queue Name" current_size_kb As "Current Queue Sze (KB)" max_size_kb As "Max Queue Sze (KB)" fill_perc As "Queue Fill Ratio (%)"</query>
+| rename host As Indexer name As "Queue Name" current_size_kb As "Current Queue Sze (KB)" max_size_kb As "Max Queue Sze (KB)" fill_perc As "Queue Fill Ratio (%)"
+| sort 0 - "Queue Fill Ratio (%)"</query>
         </search>
         <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
@@ -175,12 +209,147 @@
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
         <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Queue Fill Ratio (%)">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Queue Fill Ratio (%)">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="Max Queue Sze (KB)">
+          <option name="precision">0</option>
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Queue Fill Ratio (%)">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Queue Fill Ratio (%)">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="Max Queue Sze (KB)">
+          <option name="precision">0</option>
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="Current Queue Sze (KB)">
+          <option name="precision">0</option>
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Queue Fill Ratio (%)">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Queue Fill Ratio (%)">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="Max Queue Sze (KB)">
+          <option name="precision">0</option>
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Queue Fill Ratio (%)">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="fill_perc"></format>
+        <format type="color" field="Queue Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Queue Fill Ratio (%)">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="number" field="Max Queue Sze (KB)">
+          <option name="precision">0</option>
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="Current Queue Sze (KB)">
+          <option name="precision">0</option>
+          <option name="unit">KB</option>
+        </format>
       </table>
     </panel>
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_5" depends="$gadget_lib_loaded$">
-      <title>5. Queue4</title>
+      <title>5. Blocked Queues</title>
       <table>
         <search base="splunk_idx_07_indexer_queues_dashboard_v1">
           <query>| eval is_blocked=if(blocked=="true",1,0), host_queue=host." - ".name 
@@ -196,6 +365,150 @@
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="requires_attention">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="requires_attention">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="host_queue">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="requires_attention">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="blocked_ratio"></format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="blocked">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="requires_attention">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="host_queue">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="blocked_ratio">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F1813F" minColor="#F8BE34"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| noop</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
       </table>
     </panel>
   </row>

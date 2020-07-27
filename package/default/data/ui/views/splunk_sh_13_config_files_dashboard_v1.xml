@@ -1,22 +1,24 @@
 <form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 13 - Config Files - Dashboard - v1.5.90</label>
-  <description>limits.conf server.conf distsearch.conf outputs.conf web.conf ui-prefs.conf props.conf transforms.conf</description>
+  <label>SH - 13 - Config Files - Dashboard - v1.8.10</label>
+  <description>Splunk Config Files  Information Dashboard: limits.conf server.conf distsearch.conf outputs.conf web.conf ui-prefs.conf props.conf transforms.conf</description>
   <search id="splunk_sh_20_config_files_dashboard_v1">
     <query>
 | from lookup:splunk_rest_configs_conf_files_all_kv_store_lookup
 | fields Splunk_Instance config_file app sharing author stanza title updated
 | search $Exclusions$ (author="$author$" app="*$app$*" config_file="*$config_file$*" sharing="$sharing$" stanza="*$stanza$*")
-
 | `get_instance_roles(Splunk_Instance)`
-
 | `get_shcluster_label(Splunk_Instance)` 
 | `strftime_format(updated)`
-
 | makemv delim="###" title
 | mvexpand title | search title!="\[*" 
 | rex field=title "(?&lt;Property&gt;^\w+)\s*=\s*(?&lt;Value&gt;.*?)$"
 | rex field=Value mode=sed "s/\"//g"
-| search shcluster_label="$shcluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" Property="*$Property$*" Value="*$Value$*"
+| stats 
+    values($Splunk_Instance$) as $Splunk_Instance$
+    values(Splunk_Roles) as Splunk_Roles
+    values(Value) as Value
+    by shcluster_label app sharing author config_file stanza Property 
+| search shcluster_label="$shcluster_label$" Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$" Property="$Property$" Value="$Value$"
       </query>
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
@@ -182,13 +184,14 @@
       <table>
         <title>All Configurations</title>
         <search base="splunk_sh_20_config_files_dashboard_v1">
-          <query>| table shcluster_label config_file author app sharing stanza Property Value title updated 
-| sort shcluster_label app stanza Property 
+          <query>| table shcluster_label config_file author app sharing stanza Property Value 
+| sort 0 shcluster_label app stanza Property 
 | `rename_common_fields` 
 | `rename_rest_fields` 
 | rename config_file AS "Config File" title AS "Configuration Entry"</query>
         </search>
         <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="wrap">false</option>
         <format type="color" field="stanza">
@@ -308,6 +311,8 @@
         <search base="splunk_sh_20_config_files_dashboard_v1">
           <query>| stats count by config_file</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
@@ -322,6 +327,8 @@
         <search base="splunk_sh_20_config_files_dashboard_v1">
           <query>| stats count by app</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
@@ -353,10 +360,10 @@
       <title>7. Associated GMC Job(s) - $env:page$</title>
       <html>
             GMC Jobs / GMC Gen Jobs / All Tiers Gen Jobs /
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_files_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Config Files Gen Job</a>
+            <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_configs_conf_files_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Config Files Gen Job</a>
              <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_configs_conf_files_all_kv_store_lookup_gen&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_configs_conf_files_all_kv_store&amp;type=kv">
                      View Splunk Config Files KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>

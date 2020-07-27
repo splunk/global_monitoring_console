@@ -1,5 +1,5 @@
 <form theme="dark">
-  <label>Home - Dashboard - v1.5.90</label>
+  <label>Home - Dashboard - v1.8.10</label>
   <description>Global Monitoring Console App for Splunk (GMC) - Written By Amir Khamis / Splunk PS / akhamis@splunk.com - GitHub: https://github.com/amir-khamis/gmc</description>
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
@@ -19,14 +19,14 @@
       <title>Users Logged into GMC Today</title>
       <table>
         <search>
-          <query>index=`gmc_summary_index` search_name="splunk_audit_user_login_idx_summary_tracker" 
+          <query>index=`gmc_setup_summary_index` search_name="splunk_audit_user_login_idx_summary_tracker" 
 | makemv delim="|" Splunk_Instance 
 | makemv delim="|" Login_Source 
 | makemv delim="|" OS_Name 
 | makemv delim="|" OS_Version 
 | makemv delim="|" Browser_Name 
 | makemv delim="|" Browser_Version 
-| search Splunk_Instance=`gmc_instance_name` 
+| search Splunk_Instance=`gmc_setup_gmc_search` 
 | fields _time Splunk_Instance User Login_Source Latest_Access OS_Name OS_Version Browser_Name Browser_Version 
 | `get_shcluster_label(Splunk_Instance)` 
 | `get_identity_info(shcluster_label,User)` 
@@ -44,7 +44,7 @@
     By User 
 | sort 0 - Latest_Access 
 | `strftime_format(Latest_Access)` 
-| `get_iplocation_info(Login_Source)` 
+| `get_iplocation_info2(Login_Source)` 
 | table User Name Latest_Access Login_Source Latest_Access work_city work_region work_country OS_Name OS_Version Browser_Name Browser_Version</query>
           <earliest>@d</earliest>
           <latest>now</latest>
@@ -86,9 +86,9 @@
       <title>Number of Users</title>
       <single>
         <search>
-          <query>index=`gmc_summary_index` search_name="splunk_audit_user_login_idx_summary_tracker" 
+          <query>index=`gmc_setup_summary_index` search_name="splunk_audit_user_login_idx_summary_tracker" 
 | makemv delim="|" Splunk_Instance 
-| search Splunk_Instance=`gmc_instance_name` 
+| search Splunk_Instance=`gmc_setup_gmc_search` 
 | stats dc(User) as Users</query>
           <earliest>@d</earliest>
           <latest>now</latest>
@@ -108,8 +108,8 @@
       <title>App Data Model</title>
       <table>
         <search>
-          <query>| inputlookup splunk_rest_data_models_sh_kv_store_lookup where app="global_monitoring_console" 
-| table Splunk_Instance title disabled description acceleration cron_schedule earliest_time allow_skew updated
+          <query>| inputlookup splunk_rest_data_models_sh_kv_store_lookup where app="*global_monitoring_console"  
+| table shcluster_label title disabled description acceleration cron_schedule earliest_time allow_skew updated
 | `strftime_format(updated)`
 | rename title AS "Data Model" , disabled AS Disabled acceleration AS Accelerated earliest_time AS "Summary Range" cron_schedule AS "Summarization Period"</query>
           <earliest>$earliest$</earliest>
@@ -117,6 +117,7 @@
         </search>
         <option name="count">5</option>
         <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="wrap">false</option>
         <format type="color" field="Macro Name">
@@ -153,9 +154,9 @@
       <title>App Dashboards</title>
       <table>
         <search>
-          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup where app="global_monitoring_console" 
+          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup where app="*global_monitoring_console"  
 | eval Splunk_Tier = case ( match(label, "IDX"), "Indexer", match(label, "SH"), "Search Head", match(label, "UF"), "Forwarder", true(), "Other") 
-| table Splunk_Instance Splunk_Tier label description updated 
+| table shcluster_label Splunk_Tier label description updated 
 | `strftime_format(updated)` 
 | `rename_dashboards_fields`</query>
           <earliest>$earliest$</earliest>
@@ -180,7 +181,7 @@
       <title>Number of Dashboards</title>
       <single>
         <search>
-          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup where app="global_monitoring_console" 
+          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup where app="*global_monitoring_console"  
 
 | stats count</query>
           <earliest>$earliest$</earliest>
@@ -202,15 +203,15 @@
       <title>App Reports/Alerts</title>
       <table>
         <search>
-          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup where app="global_monitoring_console" 
-| fields Splunk_Instance app savedsearch_name description updated cron_schedule cron_schedule_described Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew 
-| stats values(scheduled_times) as scheduled_times values(next_scheduled_time) as next_scheduled_time last(*) as * by Splunk_Instance app savedsearch_name 
+          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup where app="*global_monitoring_console"  
+| fields shcluster_label app savedsearch_name description updated cron_schedule cron_schedule_described Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew 
+| stats values(scheduled_times) as scheduled_times values(next_scheduled_time) as next_scheduled_time last(*) as * by shcluster_label app savedsearch_name 
 | `strftime_format(updated)` 
 | eval scheduled_times=mvindex(scheduled_times,0,3) ,scheduled_times=mvindex(scheduled_times,1,3) , TimeZone=strftime(strptime(next_scheduled_time,"%m/%d/%Y %H:%M:%S"), "%Y%m%d%H%M%S") + " -500" , EST_Time=strftime(strptime(TimeZone,"%Y%m%d%H%M%S %Z"),"%Y/%m/%d %H:%M:%S %Z") 
-| `get_saved_searches_usage(Splunk_Instance,app,savedsearch_name)` 
+| `get_saved_searches_usage(shcluster_label,app,savedsearch_name)` 
 | eval "Job Class" = case ( match(savedsearch_name, "_tracker$"), "Tracking Jobs", match(savedsearch_name, "_lookup_gen"), "Lookup Gen Jobs", true(), "Other") 
 | `get_cron_schedule(cron_schedule)` 
-| table Splunk_Instance savedsearch_name description updated cron_schedule cron_schedule_described  Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew 
+| table shcluster_label savedsearch_name description updated cron_schedule cron_schedule_described  Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew 
 | `strftime_format(scheduled_times)` 
 | `strftime_format(next_scheduled_time)` 
 | `rename_saved_searches_fields`</query>
@@ -255,8 +256,7 @@
       <title>Number of Reports/Alerts</title>
       <single>
         <search>
-          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup 
-| where app="global_monitoring_console"
+          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup where app="*global_monitoring_console" 
 | stats count AS "Number of Scheduled Jobs"</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
@@ -277,12 +277,12 @@
       <title>App Lookups</title>
       <table>
         <search>
-          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="global_monitoring_console" 
+          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="*global_monitoring_console"  
 | `strftime_format(updated)` 
-| eval Description = case (
-    Lookup="abc", "abc",
-    true(), "Need to document") 
-| table Splunk_Instance Lookup Type Description Filename Collection updated
+| eval Index="GMC"
+| lookup splunk_fields_all_csv_lookup Index Field_Name As Lookup OUTPUTNEW Field_Description
+| rename Field_Description As Description
+| table shcluster_label Lookup Type Description Filename Collection updated
 | `rename_lookup_fields`</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
@@ -327,7 +327,7 @@
       <title>Number of Lookups</title>
       <single>
         <search>
-          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="global_monitoring_console" 
+          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="*global_monitoring_console"  
 | stats  count</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
@@ -354,7 +354,7 @@
         <fieldForLabel>Macro_Class</fieldForLabel>
         <fieldForValue>Macro_Class</fieldForValue>
         <search>
-          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="global_monitoring_console" 
+          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="*global_monitoring_console"  
 | eval Macro_Class = case ( 
     match(title, "_reference"), "Gather Reference Info", 
     match(title, "_usage"), "Gather Usage Info", 
@@ -377,7 +377,7 @@
       </input>
       <table>
         <search>
-          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="global_monitoring_console" 
+          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="*global_monitoring_console" 
 | eval Macro_Class = case ( 
     match(title, "_reference"), "Gather Reference Info", 
     match(title, "_usage"), "Gather Usage Info", 
@@ -390,7 +390,7 @@
 | fillnull value="Other GMC Macros" Macro_Class 
 | search Macro_Class="$Macro_Class$" AND title="*$title$*" 
 | `strftime_format(updated)` 
-| table Splunk_Instance title Macro_Class description updated args definition 
+| table shcluster_label title Macro_Class description updated args definition 
 | sort 0 title 
 | `rename_macros_fields`</query>
           <earliest>$earliest$</earliest>
@@ -423,7 +423,7 @@
       <title>Number of Macros</title>
       <single>
         <search>
-          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="global_monitoring_console" | search title="*$title$*" 
+          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="*global_monitoring_console"  | search title="*$title$*" 
 | stats count AS "Number of Macros"</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
