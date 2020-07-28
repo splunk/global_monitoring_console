@@ -10,13 +10,14 @@
       <a href="/app/global_monitoring_console/splunk_sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a>
       <a href="/app/global_monitoring_console/splunk_sh_05_audit_users_activity_dashboard_v1" target="_blank" rel="noopener">SH-05 Audit Users Activity</a>
       <a href="/app/global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1" target="_blank" rel="noopener">SH-06 Dashboards, Reports and Lookups Analysis</a>
+      <a href="/app/global_monitoring_console/splunk_sh_20_adoption_dashboard_v1" target="_blank" rel="noopener">SH-20 Adoption</a>
    </collection>
    <collection label="GMC Dashboards">
       <collection label="Search Head Tier">
          <a href="/app/global_monitoring_console/splunk_sh_01_assets_identities_dashboard_v1" target="_blank" rel="noopener">SH-01 GMC Assets and Identities</a>
          <a href="/app/global_monitoring_console/splunk_sh_03_field_help_dashboard_v1" target="_blank" rel="noopener">SH-03 GMC Fileds Help</a>
          <a href="/app/global_monitoring_console/splunk_sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a>
-         <a href="/app/global_monitoring_console/splunk_sh_05_audit_users_dashboard_v1" target="_blank" rel="noopener">SH-05 Audit Users Activity</a>
+         <a href="/app/global_monitoring_console/splunk_sh_05_audit_users_activity_dashboard_v1" target="_blank" rel="noopener">SH-05 Audit Users Activity</a>
          <a href="/app/global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1" target="_blank" rel="noopener">SH-06 Dashboards, Reports and Lookups Analysis</a>
          <a href="/app/global_monitoring_console/splunk_sh_07_fields_dashboard_v1" target="_blank" rel="noopener">SH-07 Fields</a>
          <a href="/app/global_monitoring_console/splunk_sh_08_event_types_dashboard_v1" target="_blank" rel="noopener">SH-08 Event Types</a>
@@ -39,25 +40,34 @@
          <a href="/app/global_monitoring_console/splunk_idx_06_cluster_bucket_status_dashboard_v1" target="_blank" rel="noopener">IDX-06 Indexer Cluster Bucket Status</a>
          <a href="/app/global_monitoring_console/splunk_idx_07_indexer_queues_dashboard_v1" target="_blank" rel="noopener">IDX-07 Indexer Queues</a>
          <a href="/app/global_monitoring_console/splunk_idx_08_core_sizing_calculator_dashboard_v1" target="_blank" rel="noopener">IDX-08 Splunk Core Sizing Calculator</a>
+         <a href="/app/global_monitoring_console/splunk_idx_09_http_event_collector_dashboard_v1" target="_blank" rel="noopener">IDX-09 HTTP Event Collector</a>
          <collection label="All Indexer Tier Dashboards">
             <view source="all" match="splunk_idx_" />
          </collection>
       </collection>
       <collection label="Forwarder Tier">
          <a href="/app/global_monitoring_console/splunk_uf_01_forwarding_analysis_dashboard_v1" target="_blank" rel="noopener">UF-01 Forwarding Analysis _internal Index</a>
-         <a href="/app/global_monitoring_console/splunk_uf_03_forwarding_analysis_summary_index_dashboard_v1" target="_blank" rel="noopener">UF-02 Forwarding Analysis Summary Index</a>
-         <a href="/app/global_monitoring_console/splunk_uf_02_forwarding_analysis_metrics_based_dashboard_v1" target="_blank" rel="noopener">UF-03 Forwarding Analysis _metrics Index</a>
+         <a href="/app/global_monitoring_console/splunk_uf_02_forwarding_analysis_summary_index_dashboard_v1" target="_blank" rel="noopener">UF-02 Forwarding Analysis Summary Index</a>
+         <a href="/app/global_monitoring_console/splunk_uf_03_forwarding_analysis_metrics_based_dashboard_v1" target="_blank" rel="noopener">UF-03 Forwarding Analysis _metrics Index</a>
+      </collection>
+      <collection label="Resource Usage">
+         <a href="/app/global_monitoring_console/splunk_sh_18_resource_usage_dashboard" target="_blank" rel="noopener">SH-18 Resource Usage</a>
+      </collection>
+       <collection label="Misc">
+         <a href="/app/global_monitoring_console/splunk_sh_17_deploying_splunk_with_base_configs_dashboard_v1" target="_blank" rel="noopener">SH-17 Deploying Splunk with Base Configs</a>
       </collection>
       <collection label="All GMC Dashboards">
          <view source="all" match="_dashboard_" />
       </collection>
    </collection>
    <collection label="GMC Jobs">
-      <collection label="GMC Gen Jobs">
-         <a href="/app/global_monitoring_console/search?s=splunk_assets_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Assets Gen Job</a>
-         <a href="/app/global_monitoring_console/search?s=splunk_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
+      <collection label="GMC KV Stores From REST Gen Jobs">
+         <a href="/app/global_monitoring_console/search?s=splunk_rest_assets_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Assets Gen Job</a>
+         <a href="/app/global_monitoring_console/search?s=splunk_rest_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
+         <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_saml_groups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk SAML external groups Gen Job</a>
          <collection label="All Tiers Gen Jobs">
             <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_all_kv_store_lookup_gen" target="_blank" rel="noopener">1. Data Inputs Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_http_sh_kv_store_lookup_gen" target="_blank" rel="noopener">2. Splunk HTTP Event Collector (HEC) Inputs Gen Job</a>
             <a href="/app/global_monitoring_console/search?s=splunk_rest_apps_local_sh_kv_store_lookup_gen" target="_blank" rel="noopener">2. Splunk Apps Gen Job</a>
             <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_files_all_kv_store_lookup_gen" target="_blank" rel="noopener">3. Splunk Config Files Gen Job</a>
          </collection>
@@ -82,6 +92,11 @@
                <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_fieldaliases_sh_kv_store_lookup_gen" target="_blank" rel="noopener">3. Field Aliases Gen Job</a>
                <a href="/app/global_monitoring_console/search?s=splunk_rest_data_transforms_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">4. Field Transformations Gen Job</a>
             </collection>
+            <collection label="ITSI">
+               <a href="/app/global_monitoring_console/search?s=splunk_index_itsi_summary_sh_kv_store_lookup_gen" target="_blank" rel="noopener">1. ITSI Search Names with Service/KPI IDs Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_rest_itoa_interface_service_sh_kv_store_lookup_gen" target="_blank" rel="noopener">2. ITSI ITOA Interfaces Services Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_rest_itoa_interface_kpi_base_search_sh_kv_store_lookup_gen" target="_blank" rel="noopener">3. ITSI ITOA Interfaces KPI Base Searches Gen Job</a>
+            </collection>
             <collection label="All SH Gen Jobs">
                <saved source="all" match="_sh_kv_store_lookup_gen" />
             </collection>
@@ -90,6 +105,109 @@
             <a href="/app/global_monitoring_console/search?s=splunk_rest_cluster_config_idx_kv_store_lookup_gen" target="_blank" rel="noopener">1. IDX Cluster Configuration Gen Job</a>
             <a href="/app/global_monitoring_console/search?s=splunk_rest_data_index_volumes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">2. IDX Cluster Indexes Volumes Gen Job</a>
             <a href="/app/global_monitoring_console/search?s=splunk_rest_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">3. Indexes Gen Job</a>
+            <collection label="All IDX Gen Jobs">
+               <saved source="all" match="_idx_kv_store_lookup_gen" />
+            </collection>
+         </collection>
+         <collection label="All GMC Gen Jobs">
+            <saved source="all" match="_gen" />
+         </collection>
+      </collection>
+       <collection label="GMC Summary Indexing From REST Gen Jobs">
+         <a href="/app/global_monitoring_console/search?s=splunk_rest_assets_summary_data_gen" target="_blank" rel="noopener">GMC Assets Gen Job</a>
+         <a href="/app/global_monitoring_console/search?s=splunk_rest_identities_summary_data_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
+         <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_saml_groups_sh_summary_data_gen" target="_blank" rel="noopener">Splunk SAML external groups Gen Job</a>
+         <collection label="All Tiers Gen Jobs">
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_all_summary_data_gen" target="_blank" rel="noopener">1. Data Inputs Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_http_sh_summary_data_gen" target="_blank" rel="noopener">2. Splunk HTTP Event Collector (HEC) Inputs Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_apps_local_sh_summary_data_gen" target="_blank" rel="noopener">3. Splunk Apps Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_files_summary_data_gen" target="_blank" rel="noopener">4. Splunk Config Files Gen Job</a>
+         </collection>
+         <collection label="SH Tier Gen Jobs">
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_authorization_roles_sh_summary_data_gen" target="_blank" rel="noopener">1. Search Head Splunk Roles</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_shcluster_config_shc_summary_data_gen" target="_blank" rel="noopener">2. Search Head Cluster Configuration Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_search_concurrency_settings_handler_sh_summary_data_gen" target="_blank" rel="noopener">3. Search Concurrency Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_summary_data_gen" target="_blank" rel="noopener">4. Dashboards Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_summary_data_gen" target="_blank" rel="noopener">5. Reports/Alerts Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_props_sh_summary_data_gen" target="_blank" rel="noopener">6. Source Types Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_eventtypes_sh_summary_data_gen" target="_blank" rel="noopener">7. Event Types Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_macros_sh_summary_data_gen" target="_blank" rel="noopener">8. Macros Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_models_sh_summary_data_gen" target="_blank" rel="noopener">9. Data Models Gen Job</a>
+            <collection label="Lookups">
+               <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_summary_data_gen" target="_blank" rel="noopener">1. Lookup Table Files Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_transforms_lookup_sh_summary_data_gen" target="_blank" rel="noopener">2. Lookup Definitions Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_summary_data_gen" target="_blank" rel="noopener">3. Automatic Lookups Gen Job</a>
+            </collection>
+            <collection label="Fields">
+               <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_calcfields_sh_summary_data_gen" target="_blank" rel="noopener">1. Calculated Fields Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_extractions_sh_summary_data_gen" target="_blank" rel="noopener">2. Field Extractions Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_fieldaliases_sh_summary_data_gen" target="_blank" rel="noopener">3. Field Aliases Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_rest_data_transforms_extractions_sh_summary_data_gen" target="_blank" rel="noopener">4. Field Transformations Gen Job</a>
+            </collection>
+            <collection label="ITSI">
+               <a href="/app/global_monitoring_console/search?s=splunk_rest_itoa_interface_service_sh_summary_data_gen" target="_blank" rel="noopener">2. ITSI ITOA Interfaces Services Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_rest_itoa_interface_kpi_base_search_sh_summary_data_gen" target="_blank" rel="noopener">3. ITSI ITOA Interfaces KPI Base Searches Gen Job</a>
+            </collection>
+            <collection label="All SH Gen Jobs">
+               <saved source="all" match="_sh_kv_store_lookup_gen" />
+            </collection>
+         </collection>
+         <collection label="IDX Tier Gen Jobs">
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_cluster_config_idx_summary_data_gen" target="_blank" rel="noopener">1. IDX Cluster Configuration Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_index_volumes_idx_summary_data_gen" target="_blank" rel="noopener">2. IDX Cluster Indexes Volumes Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_indexes_idx_summary_data_gen" target="_blank" rel="noopener">3. Indexes Gen Job</a>
+            <collection label="All IDX Gen Jobs">
+               <saved source="all" match="_idx_kv_store_lookup_gen" />
+            </collection>
+         </collection>
+         <collection label="All GMC Gen Jobs">
+            <saved source="all" match="_gen" />
+         </collection>
+      </collection>
+       <collection label="GMC KV Stores from Summary Index Gen Jobs ">
+         <a href="/app/global_monitoring_console/search?s=splunk_summary_assets_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Assets Gen Job</a>
+         <a href="/app/global_monitoring_console/search?s=splunk_summary_identities_kv_store_lookup_gen" target="_blank" rel="noopener">GMC Identities Gen Job</a>
+         <a href="/app/global_monitoring_console/search?s=splunk_summary_admin_saml_groups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk SAML external groups Gen Job</a>
+         <collection label="All Tiers Gen Jobs">
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_data_inputs_all_kv_store_lookup_gen" target="_blank" rel="noopener">1. Data Inputs Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_data_inputs_http_sh_kv_store_lookup_gen" target="_blank" rel="noopener">2. Splunk HTTP Event Collector (HEC) Inputs Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_apps_local_sh_kv_store_lookup_gen" target="_blank" rel="noopener">2. Splunk Apps Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_configs_conf_files_all_kv_store_lookup_gen" target="_blank" rel="noopener">3. Splunk Config Files Gen Job</a>
+         </collection>
+         <collection label="SH Tier Gen Jobs">
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_authorization_roles_sh_kv_store_lookup_gen" target="_blank" rel="noopener">1. Search Head Splunk Roles</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_shcluster_config_shc_kv_store_lookup_gen" target="_blank" rel="noopener">2. Search Head Cluster Configuration Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_admin_search_concurrency_settings_handler_sh_kv_store_lookup_gen" target="_blank" rel="noopener">3. Search Concurrency Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">4. Dashboards Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">5. Reports/Alerts Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_configs_conf_props_sh_kv_store_lookup_gen" target="_blank" rel="noopener">6. Source Types Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">7. Event Types Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_data_macros_sh_kv_store_lookup_gen" target="_blank" rel="noopener">8. Macros Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_data_models_sh_kv_store_lookup_gen" target="_blank" rel="noopener">9. Data Models Gen Job</a>
+            <collection label="Lookups">
+               <a href="/app/global_monitoring_console/search?s=splunk_summary_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">1. Lookup Table Files Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_summary_admin_transforms_lookup_sh_kv_store_lookup_gen" target="_blank" rel="noopener">2. Lookup Definitions Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_summary_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">3. Automatic Lookups Gen Job</a>
+            </collection>
+            <collection label="Fields">
+               <a href="/app/global_monitoring_console/search?s=splunk_summary_data_props_calcfields_sh_kv_store_lookup_gen" target="_blank" rel="noopener">1. Calculated Fields Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_summary_data_props_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">2. Field Extractions Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_summary_data_props_fieldaliases_sh_kv_store_lookup_gen" target="_blank" rel="noopener">3. Field Aliases Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_summary_data_transforms_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">4. Field Transformations Gen Job</a>
+            </collection>
+            <collection label="ITSI">
+               <a href="/app/global_monitoring_console/search?s=splunk_index_itsi_summary_sh_kv_store_lookup_gen" target="_blank" rel="noopener">1. ITSI Search Names with Service/KPI IDs Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_summary_itoa_interface_service_sh_kv_store_lookup_gen" target="_blank" rel="noopener">2. ITSI ITOA Interfaces Services Gen Job</a>
+               <a href="/app/global_monitoring_console/search?s=splunk_summary_itoa_interface_kpi_base_search_sh_kv_store_lookup_gen" target="_blank" rel="noopener">3. ITSI ITOA Interfaces KPI Base Searches Gen Job</a>
+            </collection>
+            <collection label="All SH Gen Jobs">
+               <saved source="all" match="splunk_summary_data_" />
+            </collection>
+         </collection>
+         <collection label="IDX Tier Gen Jobs">
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_cluster_config_idx_kv_store_lookup_gen" target="_blank" rel="noopener">1. IDX Cluster Configuration Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_data_index_volumes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">2. IDX Cluster Indexes Volumes Gen Job</a>
+            <a href="/app/global_monitoring_console/search?s=splunk_summary_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">3. Indexes Gen Job</a>
             <collection label="All IDX Gen Jobs">
                <saved source="all" match="_idx_kv_store_lookup_gen" />
             </collection>

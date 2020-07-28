@@ -1,0 +1,454 @@
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>SH - 18 - Resource Usage - Dashboard - v1.8.10</label>
+  <description>Splunk Resource Usage Information Dashboard</description>
+  <search id="splunk_sh_18_resource_usage_dashboard1">
+    <query>
+index=_introspection sourcetype=splunk_resource_usage component IN (Hostwide, IOStats, PerProcess)
+| fields - sourcetype source index linecount
+| rename data.* as * , search_props.* As *
+| eval process_class = case( 
+    process=="splunk-optimize","index service", 
+    process=="sh" OR process=="ksh" OR process=="bash" OR like(process,"python%") OR process=="powershell","scripted input", 
+    process=="mongod", "KVStore") 
+| eval process_class = case( 
+    process=="splunkd" AND (like(args,"-p %start%") OR like(args,"service") OR like(args,"%_internal_launch_under_systemd%")),"splunkd server", 
+    process=="splunkd" AND isnotnull(sid),"search", 
+    process=="splunkd" AND (like(args,"fsck%") OR like(args,"recover-metadata%") OR like(args,"cluster_thing")),"index service", 
+    process=="splunkd" AND args=="instrument-resource-usage", "scripted input",
+    (like(process,"python%") AND like(args,"%/appserver/mrsparkle/root.py%")) OR like(process,"splunkweb"),"Splunk Web", 
+    isnotnull(process_class), process_class) 
+| eval process_class = if(isnull(process_class),"other",process_class)
+| `get_instance_info_simple(host)`
+| search host="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$"
+</query>
+    <earliest>$TimeRangePkr.earliest$</earliest>
+    <latest>$TimeRangePkr.latest$</latest>
+  </search>
+  <search base="splunk_sh_18_resource_usage_dashboard1" id="splunk_sh_18_resource_usage_dashboard_Hostwide">
+    <query>
+      | where component="Hostwide"
+      | eval cpu_total_pct=cpu_user_pct+cpu_system_pct
+</query>
+  </search>
+  <search base="splunk_sh_18_resource_usage_dashboard1" id="splunk_sh_18_resource_usage_dashboard_IOStats">
+    <query>
+      | where component="IOStats"
+</query>
+  </search>
+  <search base="splunk_sh_18_resource_usage_dashboard1" id="splunk_sh_18_resource_usage_dashboard_PerProcess">
+    <query>
+      | where component="PerProcess"
+      | fillnull value="undefined" app
+      | search app="$app$"
+</query>
+  </search>
+  <search id="splunk_sh_18_resource_usage_dashboard_lookup">
+    <query>
+| from lookup:splunk_rest_assets_kv_store_lookup 
+| fields Splunk_Instance Splunk_Roles shcluster_label idxcluster_label serverName host host_short host_fqdn
+| search Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$"
+</query>
+  </search>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+      <title>1. $Function1$ $Metric1$ By $Splitby1$ (PerProcess)   $TimeRangePkr.earliest$ $TimeRangePkr.latest$</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2. Splunk_Roles</label>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_sh_18_resource_usage_dashboard_lookup">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
+        <label>3. Splunk Instance</label>
+        <fieldForLabel>Splunk_Instance</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="splunk_sh_18_resource_usage_dashboard_lookup">
+          <query>| stats count by Splunk_Instance</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app" searchWhenChanged="true">
+        <label>4. App</label>
+        <fieldForLabel>app</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search base="splunk_sh_18_resource_usage_dashboard_PerProcess">
+          <query>| stats count by app</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Function1" searchWhenChanged="true">
+        <label>5. Function</label>
+        <choice value="Max">Maximum</choice>
+        <choice value="Min">Minimum</choice>
+        <choice value="Avg">Average</choice>
+        <choice value="Median">Median</choice>
+        <choice value="Perc90">90th Percentile</choice>
+        <choice value="First">Sampled</choice>
+        <choice value="Sum">Sum</choice>
+        <default>Max</default>
+        <initialValue>Max</initialValue>
+      </input>
+      <input type="dropdown" token="Metric1" searchWhenChanged="true">
+        <label>6. Metric</label>
+        <choice value="fd_used">Open Files</choice>
+        <choice value="mem_used">Memory Used (MB)</choice>
+        <choice value="normalized_pct_cpu">Normalized CPU %</choice>
+        <choice value="page_faults">Page Faults</choice>
+        <choice value="pct_cpu">CPU %</choice>
+        <choice value="pct_memory">Memory %</choice>
+        <choice value="t_count">Thread Count</choice>
+        <choice value="read_mb">Read MB</choice>
+        <choice value="written_mb">Written MB</choice>
+        <default>mem_used</default>
+        <initialValue>mem_used</initialValue>
+      </input>
+      <input type="dropdown" token="Splitby1" searchWhenChanged="true">
+        <label>7. Split By</label>
+        <choice value="By type">Search Type</choice>
+        <choice value="By process_class">Process Class</choice>
+        <choice value="By process_type">Process Type</choice>
+        <choice value="By process">Process</choice>
+        <choice value="By host">Splunk Instance</choice>
+        <choice value="By pid">PID</choice>
+        <choice value="By user">User</choice>
+        <choice value="By app">App</choice>
+        <choice value="By provenance">Provenance</choice>
+        <choice value="By mode">Mode</choice>
+        <search>
+          <query/>
+        </search>
+        <default>By process_class</default>
+        <initialValue>By process_class</initialValue>
+      </input>
+      <input type="dropdown" token="span_period1" searchWhenChanged="true">
+        <label>8. Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
+      <input type="text" token="top_tok" searchWhenChanged="true">
+        <label>9. Timechart IN top N (PerProcess)</label>
+        <default>10</default>
+        <initialValue>10</initialValue>
+      </input>
+      <chart>
+        <title>$TimeRangePkr.earliest$ $TimeRangePkr.latest$</title>
+        <search base="splunk_sh_18_resource_usage_dashboard_PerProcess">
+          <query>| timechart $span_period1$ usenull=false useother=false fixedrange=false limit=0
+    $Function1$($Metric1$) AS "$Metric1$" 
+    $Splitby1$
+    Where Max in top$top_tok$</query>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">600</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
+      <title>1. $Function2$ $Metric2$ By $Splitby2$ (Hostwide)</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2. Splunk_Roles</label>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_sh_18_resource_usage_dashboard_lookup">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
+        <label>3. Splunk Instance</label>
+        <fieldForLabel>Splunk_Instance</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="splunk_sh_18_resource_usage_dashboard_lookup">
+          <query>| stats count by Splunk_Instance</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Function2" searchWhenChanged="true">
+        <label>5. Function</label>
+        <choice value="Max">Maximum</choice>
+        <choice value="Min">Minimum</choice>
+        <choice value="Avg">Average</choice>
+        <choice value="Median">Median</choice>
+        <choice value="Perc90">90th Percentile</choice>
+        <choice value="First">Sampled</choice>
+        <choice value="Sum">Sum</choice>
+        <default>Max</default>
+        <initialValue>Max</initialValue>
+      </input>
+      <input type="dropdown" token="Metric2" searchWhenChanged="true">
+        <label>6. Metric</label>
+        <choice value="mem_used">Memory Used (MB)</choice>
+        <choice value="normalized_load_avg_1min">normalized_load_avg_1min</choice>
+        <choice value="pg_paged_out">pg_paged_out</choice>
+        <choice value="pg_swapped_out">pg_swapped_out</choice>
+        <choice value="runnable_process_count">runnable_process_count</choice>
+        <choice value="swap_used">swap_used</choice>
+        <choice value="cpu_system_pct">cpu_system_pct</choice>
+        <choice value="cpu_user_pct">cpu_user_pct</choice>
+        <choice value="cpu_total_pct">cpu_total_pct</choice>
+        <default>normalized_load_avg_1min</default>
+        <initialValue>normalized_load_avg_1min</initialValue>
+      </input>
+      <input type="dropdown" token="Splitby2" searchWhenChanged="true">
+        <label>7. Split By</label>
+        <choice value="By host">Splunk Instance</choice>
+        <choice value="By Splunk_Roles">Splunk Roles</choice>
+        <choice value="">None</choice>
+        <search>
+          <query/>
+        </search>
+        <default></default>
+      </input>
+      <input type="dropdown" token="span_period2" searchWhenChanged="true">
+        <label>8. Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
+      <input type="text" token="top_tok" searchWhenChanged="true">
+        <label>9. Timechart IN top N (Hostwide)</label>
+        <default>10</default>
+        <initialValue>10</initialValue>
+      </input>
+      <chart>
+        <search base="splunk_sh_18_resource_usage_dashboard_Hostwide">
+          <query>| timechart $span_period2$ usenull=false useother=false fixedrange=false limit=0
+    $Function2$($Metric2$) AS "$Metric2$" 
+    $Splitby2$</query>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">600</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
+      <title>1. $Function3$ $Metric3$ By $Splitby3$ (IOStats)</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2. Splunk_Roles</label>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_sh_18_resource_usage_dashboard_lookup">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
+        <label>3. Splunk Instance</label>
+        <fieldForLabel>Splunk_Instance</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="splunk_sh_18_resource_usage_dashboard_lookup">
+          <query>| stats count by Splunk_Instance</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Function3" searchWhenChanged="true">
+        <label>5. Function</label>
+        <choice value="Max">Maximum</choice>
+        <choice value="Min">Minimum</choice>
+        <choice value="Avg">Average</choice>
+        <choice value="Median">Median</choice>
+        <choice value="Perc90">90th Percentile</choice>
+        <choice value="First">Sampled</choice>
+        <choice value="Sum">Sum</choice>
+        <default>Max</default>
+        <initialValue>Max</initialValue>
+      </input>
+      <input type="dropdown" token="Metric3" searchWhenChanged="true">
+        <label>6. Metric</label>
+        <choice value="avg_service_ms">avg_service_ms</choice>
+        <choice value="avg_total_ms">avg_total_ms</choice>
+        <choice value="cpu_pct">cpu_pct</choice>
+        <choice value="reads_kb_ps">reads_kb_ps</choice>
+        <choice value="reads_ps">reads_ps</choice>
+        <choice value="writes_kb_ps">writes_kb_ps</choice>
+        <choice value="writes_ps">writes_ps</choice>
+        <default>avg_service_ms</default>
+        <initialValue>avg_service_ms</initialValue>
+      </input>
+      <input type="dropdown" token="Splitby3" searchWhenChanged="true">
+        <label>7. Split By</label>
+        <choice value="By host">Splunk Instance</choice>
+        <choice value="By device">device</choice>
+        <choice value="By fs_type">fs_type</choice>
+        <choice value="By mount_point">mount_point</choice>
+        <choice value="">None</choice>
+        <search>
+          <query/>
+        </search>
+        <default></default>
+      </input>
+      <input type="dropdown" token="span_period3" searchWhenChanged="true">
+        <label>8. Span Period</label>
+        <default></default>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+      </input>
+      <input type="text" token="top_tok" searchWhenChanged="true">
+        <label>9. Timechart IN top N (IOStats)</label>
+        <default>10</default>
+        <initialValue>10</initialValue>
+      </input>
+      <chart>
+        <search base="splunk_sh_18_resource_usage_dashboard_IOStats">
+          <query>| timechart $span_period3$ usenull=false useother=false fixedrange=false limit=0
+    $Function3$($Metric3$) AS "$Metric3$" 
+    $Splitby3$</query>
+        </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="height">600</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| noop</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>

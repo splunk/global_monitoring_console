@@ -1,5 +1,5 @@
-<form theme="dark">
-  <label>IDX - 04 - Disk IO Statistics - Dashboard - v1.5.66</label>
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>IDX - 04 - Disk IO Statistics - Dashboard - v1.8.10</label>
   <description>Disk IO Statistics using the Splunk_TA_nix iostat Scripted Inputs</description>
   <search id="splunk_idx_04_disk_io_statistics_dashboard_v1">
     <query>index=osnixperf sourcetype=iostat splunk_server_group=dmc_group_indexer
@@ -10,40 +10,44 @@
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
   </search>
-  <fieldset submitButton="false" autoRun="true">
-    <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-      <label>1. Time Range</label>
-      <default>
-        <earliest>-15m</earliest>
-        <latest>now</latest>
-      </default>
-    </input>
-    <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-      <label>2. Splunk_Roles</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>Splunk_Roles</fieldForLabel>
-      <fieldForValue>Splunk_Roles</fieldForValue>
-      <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
-        <query>| stats count by Splunk_Roles</query>
-      </search>
-    </input>
-    <input type="dropdown" token="host" searchWhenChanged="true">
-      <label>3. Splunk Instance</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>host</fieldForLabel>
-      <fieldForValue>host</fieldForValue>
-      <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
-        <query>| stats count by host</query>
-      </search>
-    </input>
-  </fieldset>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
-    <panel>
-      <title>$env:page$</title>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+      <title>1. Disk IO Statistics Filters</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2. Splunk_Roles</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+      </input>
+      <input type="dropdown" token="host" searchWhenChanged="true">
+        <label>3. Splunk Instance</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>host</fieldForLabel>
+        <fieldForValue>host</fieldForValue>
+        <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
+          <query>| stats count by host</query>
+        </search>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_2" depends="$gadget_lib_loaded$">
+      <title>2. Setup Instructions $env:page$</title>
       <html>
                 <h3>Disk Statistics</h3>
                 <p/> Report input/output statistics for disks.
@@ -71,13 +75,15 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Device Average Time in milliseconds AKA Latency</title>
+    <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
+      <title>3. Device Average Time in milliseconds AKA Latency</title>
       <chart>
         <title>The average time (in milliseconds) for I/O requests issued to the device to be served. This includes the time spent by the requests in queue and the time spent servicing them.</title>
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(avgWaitMillis) by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -85,13 +91,15 @@
         <option name="charting.legend.placement">bottom</option>
       </chart>
     </panel>
-    <panel>
-      <title>Device Average Queue Length</title>
+    <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
+      <title>4. Device Average Queue Length</title>
       <chart>
         <title>The average queue length of the requests that were issued to the device.</title>
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(avgQueueSZ) by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -103,13 +111,15 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Device Bandwidth Utilization</title>
+    <panel id="panel_accordion_togglepanel_false_5" depends="$gadget_lib_loaded$">
+      <title>5. Device Bandwidth Utilization</title>
       <chart>
         <title>Percentage of CPU time during which I/O requests were issued to the device. Device saturation occurs when this value is close to 100%.</title>
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(bandwUtilPct) by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -117,13 +127,15 @@
         <option name="charting.legend.placement">bottom</option>
       </chart>
     </panel>
-    <panel>
-      <title>Device Average Service Time in milliseconds</title>
+    <panel id="panel_accordion_togglepanel_false_6" depends="$gadget_lib_loaded$">
+      <title>6. Device Average Service Time in milliseconds</title>
       <chart>
         <title>The average service time (in milliseconds) for I/O requests that were issued to the device.</title>
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(avgSvcMillis) by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -133,13 +145,15 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Device Read &amp; Write KB Per Second</title>
+    <panel id="panel_accordion_togglepanel_false_7" depends="$gadget_lib_loaded$">
+      <title>7. Device Read &amp; Write KB Per Second</title>
       <chart>
         <title>The amount of data Read &amp; Written from the device expressed in kilobytes per second.</title>
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(rKB_PS) as rKB_PS max(wKB_PS) as wKB_PS by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -153,13 +167,15 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Read &amp; Write Operations Per Second</title>
+    <panel id="panel_accordion_togglepanel_false_8" depends="$gadget_lib_loaded$">
+      <title>8. Read &amp; Write Operations Per Second</title>
       <chart>
         <title>The number of Read &amp; Write operations that were issued to the device per second.</title>
         <search base="splunk_idx_04_disk_io_statistics_dashboard_v1">
           <query>timechart max(read_ops) as read_ops max(write_ops) as write_ops by host</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">area</option>
         <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">minmax</option>
@@ -173,6 +189,18 @@
         <option name="trellis.size">medium</option>
         <option name="trellis.splitBy">host</option>
       </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| noop</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
     </panel>
   </row>
 </form>

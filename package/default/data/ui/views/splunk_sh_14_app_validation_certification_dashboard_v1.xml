@@ -1,5 +1,5 @@
-<form theme="dark">
-  <label>SH - 14 - App Validation &amp; Certification - Dashboard - v1.5.66</label>
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>SH - 14 - App Validation &amp; Certification - Dashboard - v1.8.10</label>
   <description>This Dashboard is based on data generated using the Splunk Add-on Builder Validate &amp; Package feature which validates your add-on against best practices and other rules, and to determine whether your app is ready for Splunk App Certification. The generates an Overall Health Report in the App UI but it also indexes all the findings into the dedicated add_on_builder_index Splunk Index.  To Learn More please read this Splunk Document: https://docs.splunk.com/Documentation/AddonBuilder/latest/UserGuide/Validate</description>
   <search id="splunk_sh_14_app_validation_certification_dashboard_v1">
     <query>index=add_on_builder_index sourcetype=splunk:tabuilder:validation $Exclusions$
@@ -81,221 +81,199 @@
     <earliest>$TimeRangePkr2.earliest$</earliest>
     <latest>$TimeRangePkr2.latest$</latest>
   </search>
-  <fieldset submitButton="false" autoRun="true">
-    <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-      <label>1. Time Range</label>
-      <default>
-        <earliest>-30d@d</earliest>
-        <latest>now</latest>
-      </default>
-    </input>
-    <input type="dropdown" token="ta_name" searchWhenChanged="true">
-      <label>2. App</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>ta_name</fieldForLabel>
-      <fieldForValue>ta_name</fieldForValue>
-      <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
-        <query>| stats count by ta_name | where ta_name!="undefined"</query>
-      </search>
-    </input>
-    <input type="dropdown" token="AoB_Config_File" searchWhenChanged="true">
-      <label>3. Configuration File</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>AoB_Config_File</fieldForLabel>
-      <fieldForValue>AoB_Config_File</fieldForValue>
-      <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
-        <query>| stats count by AoB_Config_File | where AoB_Config_File!="undefined"</query>
-      </search>
-    </input>
-    <input type="dropdown" token="Source_Type_Name" searchWhenChanged="true">
-      <label>4. Source / Source Type / Knowledge Objects</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>Source_Type_Name</fieldForLabel>
-      <fieldForValue>Source_Type_Name</fieldForValue>
-      <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
-        <query>| stats count by Source_Type_Name | where Source_Type_Name!="undefined"</query>
-      </search>
-    </input>
-    <input type="dropdown" token="validation_id" searchWhenChanged="true">
-      <label>5. Validation ID</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>validation_id</fieldForLabel>
-      <fieldForValue>validation_id</fieldForValue>
-      <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
-        <query>| stats count by validation_id | where validation_id!="undefined" | sort - validation_id</query>
-      </search>
-    </input>
-    <input type="dropdown" token="category" searchWhenChanged="true">
-      <label>6. Category</label>
-      <choice value="*">All</choice>
-      <choice value="App Precertification">App Precertification</choice>
-      <choice value="Best Practice">Best Practice</choice>
-      <choice value="Field Extraction">Field Extraction</choice>
-      <choice value="Data Model Mapping">Data Model Mapping</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>category</fieldForLabel>
-      <fieldForValue>category</fieldForValue>
-    </input>
-    <input type="dropdown" token="sub_category" searchWhenChanged="true">
-      <label>7. Subcategory</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>sub_category</fieldForLabel>
-      <fieldForValue>sub_category</fieldForValue>
-      <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
-        <query>| stats count by sub_category | where sub_category!="undefined"</query>
-      </search>
-    </input>
-    <input type="dropdown" token="rule_name" searchWhenChanged="true">
-      <label>8. Rule Name</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>rule_name</fieldForLabel>
-      <fieldForValue>rule_name</fieldForValue>
-      <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
-        <query>| stats count by rule_name | where rule_name!="undefined"</query>
-      </search>
-    </input>
-    <input type="dropdown" token="validation_time" searchWhenChanged="true">
-      <label>9. Validation Time</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>validation_time</fieldForLabel>
-      <fieldForValue>validation_time</fieldForValue>
-      <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
-        <query>| stats count by validation_time | where validation_time!="undefined"</query>
-      </search>
-    </input>
-    <input type="dropdown" token="status" searchWhenChanged="true">
-      <label>10. Status</label>
-      <choice value="*">All</choice>
-      <choice value="Pass">Passed</choice>
-      <choice value="Fail">Failed</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>status</fieldForLabel>
-      <fieldForValue>status</fieldForValue>
-    </input>
-    <input type="dropdown" token="severity" searchWhenChanged="true">
-      <label>11. Severity</label>
-      <choice value="*">All</choice>
-      <choice value="Pass">Pass</choice>
-      <choice value="Warning">Warning</choice>
-      <choice value="Error">Error</choice>
-      <choice value="Internal">Internal</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>severity</fieldForLabel>
-      <fieldForValue>severity</fieldForValue>
-    </input>
-    <input type="dropdown" token="message_id" searchWhenChanged="true">
-      <label>12. Message ID</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>message_id</fieldForLabel>
-      <fieldForValue>message_id</fieldForValue>
-      <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
-        <query>| stats count by message_id | where message_id!="undefined"</query>
-      </search>
-    </input>
-    <input type="dropdown" token="description" searchWhenChanged="true">
-      <label>13. Description</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>description</fieldForLabel>
-      <fieldForValue>description</fieldForValue>
-      <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
-        <query>| stats count by description | where description!="undefined"</query>
-      </search>
-    </input>
-    <input type="dropdown" token="solution" searchWhenChanged="true">
-      <label>14. Solution Suggestion</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>solution</fieldForLabel>
-      <fieldForValue>solution</fieldForValue>
-      <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
-        <query>| stats count by solution | where solution!="undefined"</query>
-      </search>
-    </input>
-    <input type="text" searchWhenChanged="true" token="sub_category">
-      <label>15. Subcategory (Contains)</label>
-    </input>
-    <input type="text" searchWhenChanged="true" token="rule_name">
-      <label>16. Rule Name (Contains)</label>
-    </input>
-    <input type="text" searchWhenChanged="true" token="description">
-      <label>17. Description (Contains)</label>
-    </input>
-    <input type="text" searchWhenChanged="true" token="solution">
-      <label>18. Solution (Contains)</label>
-    </input>
-    <input type="text" searchWhenChanged="true" token="ta_name">
-      <label>19. App Name (Contains)</label>
-    </input>
-    <input type="text" searchWhenChanged="true" token="Source_Type_Name">
-      <label>20. Source Type (Contains)</label>
-    </input>
-    <input type="checkbox" token="Exclusions" searchWhenChanged="true">
-      <label>21. Exclusions</label>
-      <choice value="rule_name != &quot;*README*&quot;">Exclude README issues</choice>
-      <choice value="description != &quot;*static/appIcon*&quot; AND description != &quot;Check that static* is * or less&quot;">Exclude Icon issues</choice>
-      <choice value="rule_name != &quot;No Unnecessary files&quot;">Exclude  Unnecessary files issues</choice>
-      <choice value="rule_name != &quot;No underscores in sourcetypes&quot;">Exclude No underscores in sourcetypes issues</choice>
-      <choice value="description != &quot;Cannot get any events for sourcetype*&quot;*">Exclude Cannot get any events for sourcetype issues</choice>
-      <choice value="description!=&quot;Cannot get any events for sourcetype*&quot;">Exclude Cannot get any events for sourcetype</choice>
-      <choice value="description!=&quot;*contains special characters*&quot;">Exclude Sourcetype has special characters</choice>
-      <initialValue>validation_id=*</initialValue>
-      <default>validation_id=*</default>
-      <prefix>(</prefix>
-      <suffix>)</suffix>
-      <delimiter> AND </delimiter>
-    </input>
-  </fieldset>
-  <row id="style_settings" depends="$visible$">
-    <panel depends="$alwaysHideCSS$">
-      <html>
-                <style>
-                    <!--.dashboard-body {-->
-                    <!--    background: #a6a6a6 !important;-->
-                    <!--}-->
-           .dashboard-panel h2{
-             background:#FFA500 !important;
-             color:black !important;
-             text-align: center !important;
-             font-weight: bold !important;
-             border-top-right-radius: 15px;
-             border-top-left-radius: 15px; }
-            .dashboard-panel h1.panel-title {
-              font-weight: bold !important;
-              font-size: 100% !important; }
-                .table, th, td {
-              border: 8px solid black !important; }
-            { display: none;  }
-         
-                
-                </style>
-            </html>
+  <fieldset submitButton="false"></fieldset>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+      <title>1. App Validation &amp; Certification Filters</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="ta_name" searchWhenChanged="true">
+        <label>2. App</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>ta_name</fieldForLabel>
+        <fieldForValue>ta_name</fieldForValue>
+        <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
+          <query>| stats count by ta_name | where ta_name!="undefined"</query>
+        </search>
+      </input>
+      <input type="dropdown" token="AoB_Config_File" searchWhenChanged="true">
+        <label>3. Configuration File</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>AoB_Config_File</fieldForLabel>
+        <fieldForValue>AoB_Config_File</fieldForValue>
+        <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
+          <query>| stats count by AoB_Config_File | where AoB_Config_File!="undefined"</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Source_Type_Name" searchWhenChanged="true">
+        <label>4. Source / Source Type / Knowledge Objects</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Source_Type_Name</fieldForLabel>
+        <fieldForValue>Source_Type_Name</fieldForValue>
+        <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
+          <query>| stats count by Source_Type_Name | where Source_Type_Name!="undefined"</query>
+        </search>
+      </input>
+      <input type="dropdown" token="validation_id" searchWhenChanged="true">
+        <label>5. Validation ID</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>validation_id</fieldForLabel>
+        <fieldForValue>validation_id</fieldForValue>
+        <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
+          <query>| stats count by validation_id | where validation_id!="undefined" | sort - validation_id</query>
+        </search>
+      </input>
+      <input type="dropdown" token="category" searchWhenChanged="true">
+        <label>6. Category</label>
+        <choice value="*">All</choice>
+        <choice value="App Precertification">App Precertification</choice>
+        <choice value="Best Practice">Best Practice</choice>
+        <choice value="Field Extraction">Field Extraction</choice>
+        <choice value="Data Model Mapping">Data Model Mapping</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>category</fieldForLabel>
+        <fieldForValue>category</fieldForValue>
+      </input>
+      <input type="dropdown" token="sub_category" searchWhenChanged="true">
+        <label>7. Subcategory</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>sub_category</fieldForLabel>
+        <fieldForValue>sub_category</fieldForValue>
+        <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
+          <query>| stats count by sub_category | where sub_category!="undefined"</query>
+        </search>
+      </input>
+      <input type="dropdown" token="rule_name" searchWhenChanged="true">
+        <label>8. Rule Name</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>rule_name</fieldForLabel>
+        <fieldForValue>rule_name</fieldForValue>
+        <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
+          <query>| stats count by rule_name | where rule_name!="undefined"</query>
+        </search>
+      </input>
+      <input type="dropdown" token="validation_time" searchWhenChanged="true">
+        <label>9. Validation Time</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>validation_time</fieldForLabel>
+        <fieldForValue>validation_time</fieldForValue>
+        <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
+          <query>| stats count by validation_time | where validation_time!="undefined"</query>
+        </search>
+      </input>
+      <input type="dropdown" token="status" searchWhenChanged="true">
+        <label>10. Status</label>
+        <choice value="*">All</choice>
+        <choice value="Pass">Passed</choice>
+        <choice value="Fail">Failed</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>status</fieldForLabel>
+        <fieldForValue>status</fieldForValue>
+      </input>
+      <input type="dropdown" token="severity" searchWhenChanged="true">
+        <label>11. Severity</label>
+        <choice value="*">All</choice>
+        <choice value="Pass">Pass</choice>
+        <choice value="Warning">Warning</choice>
+        <choice value="Error">Error</choice>
+        <choice value="Internal">Internal</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>severity</fieldForLabel>
+        <fieldForValue>severity</fieldForValue>
+      </input>
+      <input type="dropdown" token="message_id" searchWhenChanged="true">
+        <label>12. Message ID</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>message_id</fieldForLabel>
+        <fieldForValue>message_id</fieldForValue>
+        <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
+          <query>| stats count by message_id | where message_id!="undefined"</query>
+        </search>
+      </input>
+      <input type="dropdown" token="description" searchWhenChanged="true">
+        <label>13. Description</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>description</fieldForLabel>
+        <fieldForValue>description</fieldForValue>
+        <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
+          <query>| stats count by description | where description!="undefined"</query>
+        </search>
+      </input>
+      <input type="dropdown" token="solution" searchWhenChanged="true">
+        <label>14. Solution Suggestion</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>solution</fieldForLabel>
+        <fieldForValue>solution</fieldForValue>
+        <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
+          <query>| stats count by solution | where solution!="undefined"</query>
+        </search>
+      </input>
+      <input type="text" searchWhenChanged="true" token="sub_category">
+        <label>15. Subcategory (Contains)</label>
+      </input>
+      <input type="text" searchWhenChanged="true" token="rule_name">
+        <label>16. Rule Name (Contains)</label>
+      </input>
+      <input type="text" searchWhenChanged="true" token="description">
+        <label>17. Description (Contains)</label>
+      </input>
+      <input type="text" searchWhenChanged="true" token="solution">
+        <label>18. Solution (Contains)</label>
+      </input>
+      <input type="text" searchWhenChanged="true" token="ta_name">
+        <label>19. App Name (Contains)</label>
+      </input>
+      <input type="text" searchWhenChanged="true" token="Source_Type_Name">
+        <label>20. Source Type (Contains)</label>
+      </input>
+      <input type="checkbox" token="Exclusions" searchWhenChanged="true">
+        <label>21. Exclusions</label>
+        <choice value="rule_name != &quot;*README*&quot;">Exclude README issues</choice>
+        <choice value="description != &quot;*static/appIcon*&quot; AND description != &quot;Check that static* is * or less&quot;">Exclude Icon issues</choice>
+        <choice value="rule_name != &quot;No Unnecessary files&quot;">Exclude  Unnecessary files issues</choice>
+        <choice value="rule_name != &quot;No underscores in sourcetypes&quot;">Exclude No underscores in sourcetypes issues</choice>
+        <choice value="description != &quot;Cannot get any events for sourcetype*&quot;*">Exclude Cannot get any events for sourcetype issues</choice>
+        <choice value="description!=&quot;Cannot get any events for sourcetype*&quot;">Exclude Cannot get any events for sourcetype</choice>
+        <choice value="description!=&quot;*contains special characters*&quot;">Exclude Sourcetype has special characters</choice>
+        <initialValue>validation_id=*</initialValue>
+        <default>validation_id=*</default>
+        <prefix>(</prefix>
+        <suffix>)</suffix>
+        <delimiter> AND </delimiter>
+      </input>
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Add-on Builder Validation Results - $env:page$</title>
+    <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
+      <title>2.  Add-on Builder Validation Results - $env:page$</title>
       <table>
         <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
           <query>| table ta_name AoB_Config_File Source_Type_Name validation_id validation_time status severity category sub_category rule_name message_id description solution messages 
@@ -365,8 +343,8 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Add-on Builder Validations</title>
+    <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
+      <title>3. Add-on Builder Validations</title>
       <single>
         <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
           <query>| stats count</query>
@@ -380,19 +358,21 @@
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel>
-      <title>Add-on Builder Validations  By Category</title>
+    <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
+      <title>4. Add-on Builder Validations  By Category</title>
       <chart>
         <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
           <query>| stats count by category | where category!="undefined"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
-    <panel>
-      <title>Add-on Builder Number of Apps Validated</title>
+    <panel id="panel_accordion_togglepanel_false_5" depends="$gadget_lib_loaded$">
+      <title>5. Add-on Builder Number of Apps Validated</title>
       <single>
         <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
           <query>| stats dc(ta_name) AS "Number of Apps"</query>
@@ -406,19 +386,21 @@
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel>
-      <title>Add-on Builder Validations  By Severity</title>
+    <panel id="panel_accordion_togglepanel_false_6" depends="$gadget_lib_loaded$">
+      <title>6. Add-on Builder Validations  By Severity</title>
       <chart>
         <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
           <query>| stats count by severity | where severity!="undefined"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
-    <panel>
-      <title>Add-on Builder Validations By App</title>
+    <panel id="panel_accordion_togglepanel_false_7" depends="$gadget_lib_loaded$">
+      <title>7. Add-on Builder Validations By App</title>
       <table>
         <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
           <query>| stats count AS "Number of Validations" by ta_name
@@ -444,8 +426,8 @@
         </format>
       </table>
     </panel>
-    <panel>
-      <title>Add-on Builder Validations  By Source Type</title>
+    <panel id="panel_accordion_togglepanel_false_8" depends="$gadget_lib_loaded$">
+      <title>8. Add-on Builder Validations  By Source Type</title>
       <table>
         <search base="splunk_sh_14_app_validation_certification_dashboard_v1">
           <query>| stats count by Source_Type_Name 
@@ -464,8 +446,8 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Btool check &amp; validate-regex Validation Results</title>
+    <panel id="panel_accordion_togglepanel_false_9" depends="$gadget_lib_loaded$">
+      <title>9. Btool check &amp; validate-regex Validation Results</title>
       <input type="dropdown" token="Btool_Config_File" searchWhenChanged="true">
         <label>Configuration File</label>
         <fieldForLabel>Btool_Config_File</fieldForLabel>
@@ -515,7 +497,7 @@
         <fieldForValue>Btool_Severity</fieldForValue>
       </input>
       <table>
-        <title>These Events were generated using the following two commands: splunk cmd btool validate-regex --debug  &amp; splunk cmd btool check --debug</title>
+        <title>10. These Events were generated using the following two commands: splunk cmd btool validate-regex --debug  &amp; splunk cmd btool check --debug</title>
         <search base="App_Validation_and_Certification_Dashboard2">
           <query>| table Btool_Config_File Btool_Stanza Btool_Setting Btool_Severity Btool_Issue Raw_Event count 
 | sort 0 Btool_Config_File Btool_Stanza Btool_Setting Btool_Severity
@@ -523,7 +505,6 @@
         </search>
         <option name="count">5</option>
         <option name="drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="wrap">false</option>
         <format type="color" field="Setting">
@@ -553,41 +534,47 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Btool Validations By Configuration File</title>
+    <panel id="panel_accordion_togglepanel_false_10" depends="$gadget_lib_loaded$">
+      <title>11. Btool Validations By Configuration File</title>
       <chart>
         <search base="App_Validation_and_Certification_Dashboard2">
           <query>| stats count by Btool_Config_File | where Btool_Config_File!="undefined"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
-    <panel>
-      <title>Btool Validations By Severity</title>
+    <panel id="panel_accordion_togglepanel_false_11" depends="$gadget_lib_loaded$">
+      <title>12. Btool Validations By Severity</title>
       <chart>
         <search base="App_Validation_and_Certification_Dashboard2">
           <query>| stats count by Btool_Severity | where Btool_Severity!="undefined"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
-    <panel>
-      <title>Btool Validations By Setting</title>
+    <panel id="panel_accordion_togglepanel_false_12" depends="$gadget_lib_loaded$">
+      <title>13. Btool Validations By Setting</title>
       <chart>
         <search base="App_Validation_and_Certification_Dashboard2">
           <query>| stats count by Btool_Setting | where Btool_Setting!="undefined"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
-    <panel>
-      <title>Btool Validations By Source Type</title>
+    <panel id="panel_accordion_togglepanel_false_13" depends="$gadget_lib_loaded$">
+      <title>14. Btool Validations By Source Type</title>
       <table>
         <search base="App_Validation_and_Certification_Dashboard2">
           <query>| stats count by Btool_Stanza 
@@ -606,8 +593,8 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Internal Index App issues</title>
+    <panel id="panel_accordion_togglepanel_false_14" depends="$gadget_lib_loaded$">
+      <title>15. Internal Index App issues</title>
       <input type="time" token="TimeRangePkr2" searchWhenChanged="true">
         <label>Time Range</label>
         <default>
@@ -669,6 +656,30 @@
           <scale type="sharedCategory"></scale>
         </format>
       </table>
+    </panel>
+  </row>
+  <row id="style_settings" depends="$visible$">
+    <panel depends="$alwaysHideCSS$">
+      <html>
+                <style>
+               <!--.dashboard-body {-->
+               <!--    background: #a6a6a6 !important;-->
+               <!--}-->
+               .dashboard-panel h2{
+             background:#214FC6 !important;
+             color:white !important;
+             text-align: left !important;
+             font-weight: bold !important;
+             border-top-right-radius: 15px;
+             border-top-left-radius: 15px; }
+            .dashboard-panel h1.panel-title {
+              font-weight: bold !important;
+              font-size: 100% !important; }
+                .table, th, td {
+              border: 8px solid black !important; }
+            { display: none;  }
+                </style>
+            </html>
     </panel>
   </row>
 </form>

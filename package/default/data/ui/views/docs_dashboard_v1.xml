@@ -1,5 +1,6 @@
 <dashboard theme="dark">
-  <label>Docs - Dashboard - v1.5.66</label>
+  <label>Docs - Dashboard - v1.8.10</label>
+  <description>GMC Documentation Dashboard</description>
   <row>
     <panel>
       <html>

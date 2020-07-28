@@ -1,6 +1,6 @@
-<form theme="dark">
-  <label>IDX - 01 - Data Quality - Dashboard - v1.5.66</label>
-  <description>Source Type Data Quality issues &amp; All Source Type definitions</description>
+<form onunloadCancelJobs="true" stylesheet="load.css" script="load.js" theme="dark">
+  <label>IDX - 01 - Data Quality - Dashboard - v1.8.10</label>
+  <description>Splunk Source Type Data Quality issues &amp; All Source Type definitions</description>
   <search id="splunk_idx_01_data_quality_dashboard_v1">
     <query>
 index=_internal sourcetype=splunkd log_level IN (WARN,ERROR) component IN (AggregatorMiningProcessor, DateParserVerbose, LineBreakingProcessor) 
@@ -31,78 +31,52 @@ index=_internal sourcetype=splunkd log_level IN (WARN,ERROR) component IN (Aggre
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
   </search>
-  <fieldset submitButton="false" autoRun="true">
-    <input type="time" token="TimeRangePkr" searchWhenChanged="true">
-      <label>1. Time Range</label>
-      <default>
-        <earliest>-60m@m</earliest>
-        <latest>now</latest>
-      </default>
-    </input>
-    <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-      <label>2. Splunk Roless</label>
-      <choice value="*">All</choice>
-      <initialValue>*</initialValue>
-      <fieldForLabel>Splunk_Roles</fieldForLabel>
-      <fieldForValue>Splunk_Roles</fieldForValue>
-      <search base="splunk_idx_01_data_quality_dashboard_v1">
-        <query>| stats count by Splunk_Roles</query>
-      </search>
-      <default>*</default>
-    </input>
-    <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
-      <label>3. Splunk Instance</label>
-      <choice value="*">All</choice>
-      <initialValue>*</initialValue>
-      <fieldForLabel>Splunk_Instance</fieldForLabel>
-      <fieldForValue>Splunk_Instance</fieldForValue>
-      <search base="splunk_idx_01_data_quality_dashboard_v1">
-        <query>| stats count by Splunk_Instance</query>
-      </search>
-      <default>*</default>
-    </input>
-    <input type="dropdown" token="Sourcetype" searchWhenChanged="true">
-      <label>4. Source Type</label>
-      <choice value="*">All</choice>
-      <initialValue>*</initialValue>
-      <fieldForLabel>Sourcetype</fieldForLabel>
-      <fieldForValue>Sourcetype</fieldForValue>
-      <search base="splunk_idx_01_data_quality_dashboard_v1">
-        <query>| stats count by Sourcetype</query>
-      </search>
-      <default>*</default>
-    </input>
-  </fieldset>
-  <row id="style_settings" depends="$visible$">
-    <panel depends="$alwaysHideCSS$">
-      <html>
-                <style>
-                    .dashboard-body
-                    background: #a6a6a6 !important;
-                    }
-           .dashboard-panel h2{
-             background:#FFA500 !important;
-             color:black !important;
-             text-align: center !important;
-             font-weight: bold !important;
-             border-top-right-radius: 15px;
-             border-top-left-radius: 15px; }
-            .dashboard-panel h1.panel-title {
-              font-weight: bold !important;
-              font-size: 100% !important; }
-                .table, th, td {
-              border: 8px solid black !important; }
-            { display: none;  }
-         
-                </style>
-            </html>
-    </panel>
-  </row>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
-    <panel>
-      <title>Data Quality Broken Down by Reason</title>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+      <title>1. Data Quality Filters</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-60m@m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2. Splunk Roless</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_idx_01_data_quality_dashboard_v1">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
+        <label>3. Splunk Instance</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Splunk_Instance</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="splunk_idx_01_data_quality_dashboard_v1">
+          <query>| stats count by Splunk_Instance</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="Sourcetype" searchWhenChanged="true">
+        <label>4. Source Type</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Sourcetype</fieldForLabel>
+        <fieldForValue>Sourcetype</fieldForValue>
+        <search base="splunk_idx_01_data_quality_dashboard_v1">
+          <query>| stats count by Sourcetype</query>
+        </search>
+        <default>*</default>
+      </input>
       <table>
-        <title>$env:page$</title>
+        <title>Data Quality Broken Down by Reason</title>
         <search base="splunk_idx_01_data_quality_dashboard_v1">
           <query>| table Splunk_Instance Sourcetype "# of Hosts Involved" "# of Line Length Issues" "# of Time Stamps" "Aggregation Issues" "Line Breaking Issues" "Source Count" "Timestamp Parsing Issues" "Total Issues"</query>
         </search>
@@ -152,31 +126,39 @@ index=_internal sourcetype=splunkd log_level IN (WARN,ERROR) component IN (Aggre
     </panel>
   </row>
   <row>
-    <panel>
-      <title>Source Type Definition</title>
+    <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
+      <title>2. Source Type Definition</title>
       <table depends="$Sourcetype$">
         <search>
           <query>| from lookup:splunk_rest_configs_conf_props_sh_kv_store_lookup 
-| fields shcluster_label title app sharing author description TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER TRUNCATE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER KV_MODE INDEXED_EXTRACTIONS EVENT_BREAKER_ENABLE EVENT_BREAKER ANNOTATE_PUNCT LEARN_SOURCETYPE LEARN_MODEL MAX_EVENTS maxDist updated 
 | `get_instance_roles(Splunk_Instance)` 
 | stats values(*) AS * By title 
 | fillnull value="auto" KV_MODE 
 | fillnull value="128" MAX_TIMESTAMP_LOOKAHEAD 
 | fillnull value="300" maxDist 
 | fillnull value="256" MAX_EVENTS 
-| fillnull value="0" EVENT_BREAKER_ENABLE 
-| fillnull value="1" ANNOTATE_PUNCT LEARN_MODEL SHOULD_LINEMERGE LEARN_SOURCETYPE BREAK_ONLY_BEFORE_DATE 
+| fillnull value="0" EVENT_BREAKER_ENABLE CHECK_FOR_HEADER FIELD_HEADER_REGEX JSON_TRIM_BRACES_IN_ARRAY_NAMES NO_BINARY_CHECK
+| fillnull value="1" ANNOTATE_PUNCT LEARN_MODEL SHOULD_LINEMERGE LEARN_SOURCETYPE BREAK_ONLY_BEFORE_DATE ADD_EXTRA_TIME_FIELDS AUTO_KV_JSON PREFIX_SOURCETYPE is_valid
 | fillnull value="10000" TRUNCATE 
 | fillnull value="^" TIME_PREFIX 
 | fillnull value="([\r\n]+)" LINE_BREAKER 
 | fillnull value="\r\n" EVENT_BREAKER 
 | fillnull value="/etc/datetime.xml" DATETIME_CONFIG 
 | fillnull value="not-set" INDEXED_EXTRACTIONS 
+| fillnull value="UTF-8" CHARSET 
+| fillnull value="endpoint_md5" CHECK_METHOD 
+| fillnull value="1000" DEPTH_LIMIT 
+| fillnull value="100" LINE_BREAKER_LOOKBEHIND 
+| fillnull value="100000" MATCH_LIMIT 
+| fillnull value="2000" MAX_DAYS_AGO 
+| fillnull value="2" MAX_DAYS_HENCE 
+| fillnull value="3600" MAX_DIFF_SECS_AGO 
+| fillnull value="604800" MAX_DIFF_SECS_HENCE 
 | `strftime_format(updated)` 
-| table title shcluster_label Splunk_Instance app sharing author description TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER TRUNCATE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER KV_MODE INDEXED_EXTRACTIONS EVENT_BREAKER_ENABLE EVENT_BREAKER ANNOTATE_PUNCT LEARN_SOURCETYPE LEARN_MODEL MAX_EVENTS maxDist updated 
 | search Splunk_Instance="$Splunk_Instance$" title="$Sourcetype$" 
-| `rename_common_fields`
-| `rename_rest_fields`
+| table title app description TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER EVENT_BREAKER_ENABLE EVENT_BREAKER TRUNCATE KV_MODE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER INDEXED_EXTRACTIONS ANNOTATE_PUNCT LEARN_SOURCETYPE LEARN_MODEL MAX_EVENTS maxDist updated 
+| `rename_common_fields` 
+| `rename_rest_fields` 
 | rename title as Sourcetype</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
@@ -271,6 +253,32 @@ index=_internal sourcetype=splunkd log_level IN (WARN,ERROR) component IN (Aggre
           <unset token="form.Sourcetype"></unset>
         </drilldown>
       </table>
+    </panel>
+  </row>
+  <row id="style_settings" depends="$visible$">
+    <panel depends="$alwaysHideCSS$">
+      <title>$env:page$</title>
+      <html>
+                <style>
+                    .dashboard-body
+                    background: #a6a6a6 !important;
+                    }
+           .dashboard-panel h2{
+             background:#FFA500 !important;
+             color:black !important;
+             text-align: center !important;
+             font-weight: bold !important;
+             border-top-right-radius: 15px;
+             border-top-left-radius: 15px; }
+            .dashboard-panel h1.panel-title {
+              font-weight: bold !important;
+              font-size: 100% !important; }
+                .table, th, td {
+              border: 8px solid black !important; }
+            { display: none;  }
+         
+                </style>
+            </html>
     </panel>
   </row>
 </form>

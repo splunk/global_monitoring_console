@@ -1,15 +1,15 @@
 <form onunloadCancelJobs="true" stylesheet="load.css" script="load.js" theme="dark">
-  <label>IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v1.5.66</label>
-  <description>Indexes.conf deep analysis by Indexer Cluster with many filters and important index settings.</description>
+  <label>IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v1.8.10</label>
+  <description>Splunk Indexes deep analysis by Indexer Cluster with many filters and important index settings</description>
   <!--splunk_rest_data_indexes_idx_kv_store_lookup-->
   <search id="splunk_rest_data_indexes_idx_kv_store_lookup">
     <query>
 | from lookup:splunk_rest_data_indexes_idx_kv_store_lookup
-| fields idxcluster_label Splunk_Instance title app coldPath coldPath_maxDataSizeMB coldToFrozenDir coldToFrozenScript currentDBSize currentDBSizeMB datamodel_summary_size datatype frozenTimePeriodInSecs homePath homePath_maxDataSizeMB isInternal maxDataSize maxGlobalDataSizeMB maxGlobalRawDataSizeMB maxHotBuckets maxHotIdleSecs maxHotSpanSecs maxTime maxTotalDataSizeMB maxWarmDBCount minHotIdleSecsBeforeForceRoll minTime quarantineFutureSecs quarantinePastSecs repFactor rotatePeriodInSecs thawedPath throttleCheckPeriod totalEventCount total_bucket_count_avg total_capacity total_raw_size tstatsHomePath disabled updated cold_bucket_size warm_bucket_size
+| fields idxcluster_label Splunk_Instance app, title, disabled, archiver_enableDataArchive, archiver_maxDataArchiveRetentionPeriod, assureUTF8, cold_bucket_count, cold_bucket_size, cold_capacity, cold_event_count, cold_event_max_time, cold_event_min_time, home_capacity, home_event_count, home_event_max_time, home_event_min_time, home_hot_bucket_count, home_warm_bucket_count, home_warm_bucket_size, thawed, bucketRebuildMemoryHint, coldPath, coldPath_expanded, coldPath_maxDataSizeMB, coldToFrozenDir, coldToFrozenScript, compressRawdata, currentDBSize, currentDBSizeMB, datamodel_summary_size, datatype, defaultDatabase, enableDataIntegrityControl, enableOnlineBucketRepair, enableRealtimeSearch, enableTsidxReduction, fileSystemExecutorWorkers, frozenTimePeriodInSecs, homePath, homePath_expanded, homePath_maxDataSizeMB, hotBucketTimeRefreshInterval, indexThreads, isInternal, isReady, isVirtual, journalCompression, lastInitSequenceNumber, lastInitTime, maxBloomBackfillBucketAge, maxBucketSizeCacheEntries, maxConcurrentOptimizes, maxDataSize, maxGlobalDataSizeMB, maxGlobalRawDataSizeMB, maxHotBuckets, maxHotIdleSecs, maxHotSpanSecs, maxMemMB, maxMetaEntries, maxRunningProcessGroups, maxRunningProcessGroupsLowPriority, maxTime, maxTimeUnreplicatedNoAcks, maxTimeUnreplicatedWithAcks, maxTotalDataSizeMB, maxWarmDBCount, memPoolMB, minHotIdleSecsBeforeForceRoll, minRawFileSyncSecs, minStreamGroupQueueSize, minTime, partialServiceMetaPeriod, processTrackerServiceInterval, quarantineFutureSecs, quarantinePastSecs, rawChunkSizeBytes, repFactor, rotatePeriodInSecs, rtRouterQueueSize, rtRouterThreads, selfStorageThreads, serviceInactiveIndexesPeriod, serviceMetaPeriod, serviceOnlyAsNeeded, serviceSubtaskTimingPeriod, splitByIndexKeys, streamingTargetTsidxSyncPeriodMsec, summaryHomePath_expanded, suppressBannerList, suspendHotRollByDeleteQuery, sync, syncMeta, thawedPath, thawedPath_expanded, throttleCheckPeriod, timePeriodInSecBeforeTsidxReduction, total_bucket_count, total_capacity, total_event_count, total_raw_size, total_size, totalEventCount, tsidxReductionCheckPeriodInSec, tsidxWritingLevel, tstatsHomePath, tstatsHomePath_expanded, waitPeriodInSecsForManifestWrite, warmToColdScript, updated, total_bucket_count_avg
 | search idxcluster_label="$idxcluster_label$" AND title="*$Index_Name$*"
 | rename title AS Index_Name
 | join idxcluster_label Index_Name type=left 
-    [ search index=`gmc_summary_index` search_name=splunk_internal_index_license_usage_idx_summary_tracker earliest=-1d@d latest=-0d@d 
+    [ search index=`gmc_setup_summary_index` search_name=splunk_internal_index_license_usage_idx_summary_tracker earliest=-1d@d latest=-0d@d 
     | fields _time idxcluster_label Index_Name License_Usage 
     | stats 
         Sum(License_Usage) AS License_Usage
@@ -27,20 +27,26 @@
     coldToFrozenDir = if ( isnull ( coldToFrozenDir ) OR coldToFrozenDir ="", "undefined", coldToFrozenDir ),
     total_bucket_count_avg = floor(total_bucket_count_avg),
     cold_bucket_size_MB = cold_bucket_size,
-    warm_bucket_size_MB = warm_bucket_size, 
-    datamodel_summary_size_MB = datamodel_summary_size, 
+    home_warm_bucket_size_MB = home_warm_bucket_size, 
+    datamodel_summary_size_MB = datamodel_summary_size,
+    homePath_maxDataSize = homePath_maxDataSizeMB,
+    homePath_maxDataSize_MB = homePath_maxDataSizeMB,
+    coldPath_maxDataSize = coldPath_maxDataSizeMB,
+    coldPath_maxDataSize_MB = coldPath_maxDataSizeMB,
     License_Usage_MB = License_Usage 
 | `gmc_byte2human(License_Usage,3)` 
 | `gmc_byte2human(currentDBSize,3)` 
 | `gmc_mb2human(cold_bucket_size,3)` 
-| `gmc_mb2human(warm_bucket_size,3)` 
+| `gmc_mb2human(home_warm_bucket_size,3)` 
+| `gmc_mb2human(homePath_maxDataSize,3)` 
+| `gmc_mb2human(coldPath_maxDataSize,3)` 
 | `gmc_mb2human(datamodel_summary_size,3)` 
 | `secs_2_days(frozenTimePeriodInSecs, Retention_Days)` 
 | `secs_2_days(quarantinePastSecs, Quarantine Past Days)` 
 | `secs_2_days(quarantineFutureSecs, Quarantine Future Days)` 
 | `secs_2_days(maxHotSpanSecs, maxHotSpanSecs)` 
 | `strftime_format(updated)` 
-| fillnull value="0" coldPath_maxDataSizeMB homePath_maxDataSizeMB maxGlobalDataSizeMB maxGlobalRawDataSizeMB maxHotIdleSecs partialServiceMetaPeriod ,License_Usage_MB License_Usage_GB License_Usage_TB currentDBSizeMB datamodel_summary_size_MB datamodel_summary_size_GB datamodel_summary_size_TB warm_bucket_size_MB warm_bucket_size_GB warm_bucket_size_TB total_bucket_count_avg cold_bucket_size_MB cold_bucket_size_GB cold_bucket_size_TB Time_Diff_Days Days_Diff_From_Retention repFactor 
+| fillnull value="0" License_Usage_MB,License_Usage_GB,License_Usage_TB,datamodel_summary_size_MB,datamodel_summary_size_GB,datamodel_summary_size_TB,home_warm_bucket_size_MB,home_warm_bucket_size_GB home_warm_bucket_size_TB,total_bucket_count_avg,cold_bucket_size_MB,cold_bucket_size_GB,cold_bucket_size_TB,Time_Diff_Days,Days_Diff_From_Retention,archiver_enableDataArchive,archiver_maxDataArchiveRetentionPeriod,assureUTF8,cold_bucket_count,cold_bucket_size,cold_capacity,cold_event_count,cold_event_max_time,cold_event_min_time,coldPath_maxDataSizeMB,compressRawdata,currentDBSizeMB,datamodel_summary_size,disabled,enableDataIntegrityControl,enableOnlineBucketRepair,enableRealtimeSearch,enableTsidxReduction,fileSystemExecutorWorkers,frozenTimePeriodInSecs,home_capacity,home_event_count,home_event_max_time,home_event_min_time,home_hot_bucket_count,home_warm_bucket_count,home_warm_bucket_size,homePath_maxDataSizeMB,hotBucketTimeRefreshInterval,isInternal,isReady,isVirtual,lastInitSequenceNumber,lastInitTime,maxBucketSizeCacheEntries,maxConcurrentOptimizes,maxGlobalDataSizeMB,maxGlobalRawDataSizeMB,maxHotIdleSecs,maxMemMB,maxMetaEntries,maxRunningProcessGroups,maxRunningProcessGroupsLowPriority,maxTime,maxTimeUnreplicatedNoAcks,maxTimeUnreplicatedWithAcks,minRawFileSyncSecs,minStreamGroupQueueSize,minTime,partialServiceMetaPeriod,processTrackerServiceInterval,rawChunkSizeBytes,repFactor,rtRouterQueueSize,serviceInactiveIndexesPeriod,serviceMetaPeriod,serviceSubtaskTimingPeriod,streamingTargetTsidxSyncPeriodMsec,suspendHotRollByDeleteQuery,sync,syncMeta,throttleCheckPeriod,timePeriodInSecBeforeTsidxReduction,total_bucket_count,total_capacity,total_event_count,total_raw_size,total_size,totalEventCount,tsidxReductionCheckPeriodInSec,updated,waitPeriodInSecsForManifestWrite License_Usage
 | fillnull value="3" maxHotBuckets 
 | fillnull value="60" rotatePeriodInSecs 
 | fillnull value="300" maxWarmDBCount 
@@ -52,12 +58,13 @@
 | fillnull value="auto" maxDataSize minHotIdleSecsBeforeForceRoll 
 | fillnull value="event" datatype 
 | fillnull value="undefined"
+| search currentDBSize_$unit_tok7$ &gt;= $currentDBSize$ Splunk_Roles="*$Splunk_Roles$*" coldToFrozenDir="$coldToFrozenDir$" datatype="$datatype$" HotWarm_Volume="$HotWarm_Volume$" Cold_Volume="$Cold_Volume$" DM_Volume="$DM_Volume$" Retention_Days="$Retention_Days$" maxDataSize="$maxDataSize$" coldToFrozenDir="$coldToFrozenDir$" thawedPath="$thawedPath$"tstatsHomePath="$tstatsHomePath$" app="$app$" isInternal="$isInternal$" homePath="*$homePath$*" coldPath="*$coldPath$*" coldPath_maxDataSizeMB="$coldPath_maxDataSizeMB$" homePath_maxDataSizeMB="$homePath_maxDataSizeMB$" maxTotalDataSizeMB="$maxTotalDataSizeMB$" maxWarmDBCount="$maxWarmDBCount$" License_Usage_$unit_tok7$ &gt;= $License_Usage$ enableRealtimeSearch="$enableRealtimeSearch$"
 </query>
   </search>
   <!--splunk_internal_license_rollover_summary_idx_summary_tracker-->
   <search id="splunk_internal_license_rollover_summary_idx_summary_tracker">
     <query>
-index=`gmc_summary_index` search_name=splunk_internal_license_rollover_summary_idx_summary_tracker idxcluster_label="$idxcluster_label$" earliest=$TimeRangePkr2.earliest$ latest=$TimeRangePkr2.latest$
+index=`gmc_setup_summary_index` search_name=splunk_internal_license_rollover_summary_idx_summary_tracker idxcluster_label="$idxcluster_label$" earliest=$TimeRangePkr2.earliest$ latest=$TimeRangePkr2.latest$
 `gmc_comment("BaseSearch: splunk_internal_license_rollover_summary_idx_summary_tracker")`
 | fields _time search_name idxcluster_label Lic_Pool type Lic_Stack_Size License_Usage 
 | `gmc_byte2human(License_Usage,3)`
@@ -69,7 +76,7 @@ index=`gmc_summary_index` search_name=splunk_internal_license_rollover_summary_i
   <!--splunk_internal_index_license_usage_idx_summary_tracker-->
   <search id="splunk_internal_index_license_usage_idx_summary_tracker">
     <query>
-index=`gmc_summary_index` search_name=splunk_internal_index_license_usage_idx_summary_tracker idxcluster_label="$idxcluster_label$" Index_Name="$Index_Name$" Lic_Sourcetype="$Lic_Sourcetype$"
+index=`gmc_setup_summary_index` search_name=splunk_internal_index_license_usage_idx_summary_tracker idxcluster_label="$idxcluster_label$" Index_Name="$Index_Name$" Lic_Sourcetype="$Lic_Sourcetype$"
 | fields _time search_name idxcluster_label Lic_Pool Lic_Pool_Size Lic_Stack_Size type Index_Name Lic_Sourcetype Lic_Source Lic_Host License_Usage 
 | makemv delim=" " Lic_Source 
 | makemv delim=" " Lic_Host 
@@ -78,9 +85,8 @@ index=`gmc_summary_index` search_name=splunk_internal_index_license_usage_idx_su
     Values(Lic_Host) AS Lic_Host
     Values(Lic_Pool) AS Lic_Pool 
     Latest(Lic_Pool_Size) AS Lic_Pool_Size 
-    Sum(License_Usage) AS License_Usage
+    Latest(License_Usage) AS License_Usage
     BY _time idxcluster_label Index_Name Lic_Sourcetype
-
 | eval Time=strftime(_time,"%A %B %d, %Y")
 | search Lic_Source="$Lic_Source$" Lic_Host="$Lic_Host$" Lic_Pool_Size="$Lic_Pool_Size$" Lic_Pool="$Lic_Pool$" Time="$Time$"
 | `gmc_byte2human(License_Usage,$round_tok6$)` 
@@ -94,7 +100,7 @@ index=`gmc_summary_index` search_name=splunk_internal_index_license_usage_idx_su
   <!--splunk_introspection_volume_size_idx_summary_tracker-->
   <search id="splunk_introspection_volume_size_idx_summary_tracker">
     <query>
-index=`gmc_summary_index` search_name="splunk_introspection_volume_size_idx_summary_tracker" idxcluster_label="$idxcluster_label$"
+index=`gmc_setup_summary_index` search_name="splunk_introspection_volume_size_idx_summary_tracker" idxcluster_label="$idxcluster_label$"
 | fields _time search_name idxcluster_label host Volume Volume_Path Volume_Capacity Volume_Usage 
 | `gmc_byte2human(Volume_Capacity, 3)` 
 | `gmc_byte2human(Volume_Usage, 3)`
@@ -105,17 +111,17 @@ index=`gmc_summary_index` search_name="splunk_introspection_volume_size_idx_summ
   <!--splunk_introspection_index_size_idx_summary_tracker-->
   <search id="splunk_introspection_index_size_idx_summary_tracker">
     <query>
-index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summary_tracker Index_Name="*$Index_Name$*" idxcluster_label="$idxcluster_label$" `gmc_comment("BaseSearch: splunk_introspection_index_size_idx_summary_tracker")`
-| fields _time search_name idxcluster_label Index_Name total_size home_bucket_size warm_bucket_size cold_bucket_size datamodel_summary_size
-| `gmc_byte2human(total_size,3)` | `gmc_byte2human(home_bucket_size,3)` | `gmc_byte2human(warm_bucket_size,3)` | `gmc_byte2human(cold_bucket_size,3)` | `gmc_byte2human(datamodel_summary_size,3)`
+index=`gmc_setup_summary_index` search_name=splunk_introspection_index_size_idx_summary_tracker Index_Name="*$Index_Name$*" idxcluster_label="$idxcluster_label$" `gmc_comment("BaseSearch: splunk_introspection_index_size_idx_summary_tracker")`
+| fields _time search_name idxcluster_label Index_Name total_size home_bucket_size home_warm_bucket_size cold_bucket_size datamodel_summary_size
+| `gmc_byte2human(total_size,3)` | `gmc_byte2human(home_bucket_size,3)` | `gmc_byte2human(home_warm_bucket_size,3)` | `gmc_byte2human(cold_bucket_size,3)` | `gmc_byte2human(datamodel_summary_size,3)`
 </query>
     <earliest>$TimeRangePkr5.earliest$</earliest>
     <latest>$TimeRangePkr5.latest$</latest>
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
-    <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
-      <title>01. Index Deep Analysis including Index Size &amp; Yesterday's License Ingestion By Cluster By Index</title>
+    <panel id="panel_accordion_togglepanel_false_inputs_1" depends="$gadget_lib_loaded$">
+      <title>Indexes - Basic Filters</title>
       <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
         <label>1. Indexer Cluster</label>
         <fieldForLabel>idxcluster_label</fieldForLabel>
@@ -192,8 +198,33 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
+      <input type="text" token="Splunk_Roles" searchWhenChanged="true">
+        <label>8. Splunk Roles (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Index_Name" searchWhenChanged="true">
+        <label>9. Index Name (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" searchWhenChanged="true" token="currentDBSize">
+        <label>10. Index Size IN $unit_tok7$ (&gt;=)</label>
+        <default>0</default>
+        <initialValue>0</initialValue>
+      </input>
+      <input type="text" token="License_Usage" searchWhenChanged="true">
+        <label>11. License Usage Size $unit_tok7$ (&gt;=)</label>
+        <default>0</default>
+        <initialValue>0</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_inputs_2" depends="$gadget_lib_loaded$">
+      <title>Indexes - Advanced Filters</title>
       <input type="dropdown" token="maxTotalDataSizeMB" searchWhenChanged="true">
-        <label>8. Max Size of Index (maxTotalDataSizeMB)</label>
+        <label>1. Max Size of Index (maxTotalDataSizeMB)</label>
         <fieldForLabel>maxTotalDataSizeMB</fieldForLabel>
         <fieldForValue>maxTotalDataSizeMB</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -204,7 +235,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="homePath_maxDataSizeMB" searchWhenChanged="true">
-        <label>9. Max Size of Hot/Warm (homePath_maxDataSizeMB)</label>
+        <label>2. Max Size of Hot/Warm (homePath_maxDataSizeMB)</label>
         <fieldForLabel>homePath_maxDataSizeMB</fieldForLabel>
         <fieldForValue>homePath_maxDataSizeMB</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -215,7 +246,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="coldPath_maxDataSizeMB" searchWhenChanged="true">
-        <label>10. Max Size of Cold (coldPath_maxDataSizeMB)</label>
+        <label>3. Max Size of Cold (coldPath_maxDataSizeMB)</label>
         <fieldForLabel>coldPath_maxDataSizeMB</fieldForLabel>
         <fieldForValue>coldPath_maxDataSizeMB</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -226,7 +257,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="maxDataSize" searchWhenChanged="true">
-        <label>11. Max Size of Hot/Warm/Cold Buckets (maxDataSize)</label>
+        <label>4. Max Size of Hot/Warm/Cold Buckets (maxDataSize)</label>
         <fieldForLabel>maxDataSize</fieldForLabel>
         <fieldForValue>maxDataSize</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -237,7 +268,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="HotWarm_Volume" searchWhenChanged="true">
-        <label>12. Hot/Warm Volume</label>
+        <label>5. Hot/Warm Volume</label>
         <fieldForLabel>HotWarm_Volume</fieldForLabel>
         <fieldForValue>HotWarm_Volume</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -248,7 +279,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="homePath" searchWhenChanged="true">
-        <label>13. Home Path (Hot/Warm Volume i.e. homePath)</label>
+        <label>6. Home Path (Hot/Warm Volume i.e. homePath)</label>
         <fieldForLabel>homePath</fieldForLabel>
         <fieldForValue>homePath</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -259,7 +290,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="Cold_Volume" searchWhenChanged="true">
-        <label>14. Cold Volume</label>
+        <label>7. Cold Volume</label>
         <fieldForLabel>Cold_Volume</fieldForLabel>
         <fieldForValue>Cold_Volume</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -270,7 +301,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="coldPath" searchWhenChanged="true">
-        <label>15. Cold Path  (Cold Volume i.e. coldPath)</label>
+        <label>8. Cold Path  (Cold Volume i.e. coldPath)</label>
         <fieldForLabel>coldPath</fieldForLabel>
         <fieldForValue>coldPath</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -281,7 +312,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="coldToFrozenDir" searchWhenChanged="true">
-        <label>16. Frozen Path (Archiving i.e. coldToFrozenDir)</label>
+        <label>9. Frozen Path (Archiving i.e. coldToFrozenDir)</label>
         <fieldForLabel>coldToFrozenDir</fieldForLabel>
         <fieldForValue>coldToFrozenDir</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -292,7 +323,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="thawedPath" searchWhenChanged="true">
-        <label>17. Thawed Path (thawedPath)</label>
+        <label>10. Thawed Path (thawedPath)</label>
         <fieldForLabel>thawedPath</fieldForLabel>
         <fieldForValue>thawedPath</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -303,7 +334,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="maxWarmDBCount" searchWhenChanged="true">
-        <label>18. Max # of Warm Buckets (maxWarmDBCount)</label>
+        <label>11. Max # of Warm Buckets (maxWarmDBCount)</label>
         <fieldForLabel>maxWarmDBCount</fieldForLabel>
         <fieldForValue>maxWarmDBCount</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -314,7 +345,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="DM_Volume" searchWhenChanged="true">
-        <label>19. Data Model Volume</label>
+        <label>12. Data Model Volume</label>
         <fieldForLabel>DM_Volume</fieldForLabel>
         <fieldForValue>DM_Volume</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -325,7 +356,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="tstatsHomePath" searchWhenChanged="true">
-        <label>20. Data Model Acceleration TSIDX (tstatsHomePath)</label>
+        <label>13. Data Model Acceleration TSIDX (tstatsHomePath)</label>
         <fieldForLabel>tstatsHomePath</fieldForLabel>
         <fieldForValue>tstatsHomePath</fieldForValue>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
@@ -335,28 +366,21 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="text" token="Splunk_Roles" searchWhenChanged="true">
-        <label>21. Splunk Roles (Contains)</label>
+      <input type="dropdown" token="enableRealtimeSearch" searchWhenChanged="true">
+        <label>14. Real-Time Searches (enableRealtimeSearch)</label>
+        <choice value="*">All</choice>
+        <choice value="1">Enabled</choice>
+        <choice value="0">Disabled</choice>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="text" token="Index_Name" searchWhenChanged="true">
-        <label>22. Index Name (Contains)</label>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="text" searchWhenChanged="true" token="currentDBSize">
-        <label>23. Index Size IN $unit_tok7$ (&gt;=)</label>
-        <default>0</default>
-        <initialValue>0</initialValue>
-      </input>
-      <input type="text" token="License_Usage" searchWhenChanged="true">
-        <label>24. License Usage Size $unit_tok7$ (&gt;=)</label>
-        <default>0</default>
-        <initialValue>0</initialValue>
-      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+      <title>01. Index Deep Analysis including Index Size &amp; Yesterday's License Ingestion By Cluster By Index</title>
       <input type="dropdown" token="unit_tok7" searchWhenChanged="true">
-        <label>25. Unit (Index &amp; License Usage)</label>
+        <label>1. Unit (Index &amp; License Usage)</label>
         <choice value="MB">MB</choice>
         <choice value="GB">GB</choice>
         <choice value="TB">TB</choice>
@@ -365,24 +389,17 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <fieldForLabel>unit_tok7</fieldForLabel>
         <fieldForValue>unit_tok7</fieldForValue>
       </input>
-      <input type="dropdown" token="round_tok7" searchWhenChanged="true">
-        <label>26. Rounding (Index &amp; License Usage)</label>
+      <input type="text" token="round_tok7" searchWhenChanged="true">
+        <label>2. Rounding</label>
         <default>2</default>
         <initialValue>2</initialValue>
-        <choice value="0">0</choice>
-        <choice value="1">1</choice>
-        <choice value="2">2</choice>
-        <choice value="3">3</choice>
-        <fieldForLabel>round_tok7</fieldForLabel>
-        <fieldForValue>round_tok7</fieldForValue>
       </input>
       <table>
         <title>Unit of Measurement: $unit_tok7$ / Earliest: $earliest$ / Latest: $latest$</title>
         <search base="splunk_rest_data_indexes_idx_kv_store_lookup">
-          <query>| search currentDBSize_$unit_tok7$ &gt;= $currentDBSize$ Splunk_Roles="*$Splunk_Roles$*" coldToFrozenDir="$coldToFrozenDir$" datatype="$datatype$" HotWarm_Volume="$HotWarm_Volume$" Cold_Volume="$Cold_Volume$" DM_Volume="$DM_Volume$" Retention_Days="$Retention_Days$" maxDataSize="$maxDataSize$" coldToFrozenDir="$coldToFrozenDir$" thawedPath="$thawedPath$"tstatsHomePath="$tstatsHomePath$" app="$app$" isInternal="$isInternal$" homePath="*$homePath$*" coldPath="*$coldPath$*" coldPath_maxDataSizeMB="$coldPath_maxDataSizeMB$" homePath_maxDataSizeMB="$homePath_maxDataSizeMB$" maxTotalDataSizeMB="$maxTotalDataSizeMB$" maxWarmDBCount="$maxWarmDBCount$" License_Usage_$unit_tok7$ &gt;= $License_Usage$ 
-| noop 
+          <query>| noop 
 | sort 0 - currentDBSize 
-| table idxcluster_label app Index_Name HotWarm_Volume Cold_Volume Retention_Days currentDBSize_$unit_tok7$ License_Usage_$unit_tok7$ warm_bucket_size_$unit_tok7$ cold_bucket_size_$unit_tok7$ datamodel_summary_size_$unit_tok7$ total_bucket_count_avg totalEventCount homePath_maxDataSize$unit_tok7$ coldPath_maxDataSize$unit_tok7$ "Earliest Event" "Latest Event" Time_Diff_Days Days_Diff_From_Retention maxDataSize maxHotBuckets maxWarmDBCount "Quarantine Past Days" "Quarantine Future Days" maxHotSpanSecs Num_Splunk_Instances datatype disabled updated 
+| table idxcluster_label app Index_Name HotWarm_Volume Cold_Volume Retention_Days currentDBSize_$unit_tok7$ License_Usage_$unit_tok7$ home_warm_bucket_size_$unit_tok7$ cold_bucket_size_$unit_tok7$ datamodel_summary_size_$unit_tok7$ total_bucket_count_avg totalEventCount homePath_maxDataSize_$unit_tok7$ coldPath_maxDataSize_$unit_tok7$ "Earliest Event" "Latest Event" Time_Diff_Days Days_Diff_From_Retention maxDataSize maxHotBuckets maxWarmDBCount "Quarantine Past Days" "Quarantine Future Days" maxHotSpanSecs Num_Splunk_Instances datatype disabled updated enableRealtimeSearch total_raw_size total_bucket_count home_hot_bucket_count home_warm_bucket_count cold_bucket_count cold_event_count home_event_count maxHotIdleSecs total_event_count
 | `rename_indexes_fields` 
 | `rename_license_fields`</query>
         </search>
@@ -611,16 +628,10 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <fieldForLabel>unit_tok9</fieldForLabel>
         <fieldForValue>unit_tok9</fieldForValue>
       </input>
-      <input type="dropdown" token="round_tok9" searchWhenChanged="true">
-        <label>26. Rounding (Index &amp; License Usage)</label>
+      <input type="text" token="round_tok9" searchWhenChanged="true">
+        <label>26. Rounding</label>
         <default>2</default>
         <initialValue>2</initialValue>
-        <choice value="0">0</choice>
-        <choice value="1">1</choice>
-        <choice value="2">2</choice>
-        <choice value="3">3</choice>
-        <fieldForLabel>round_tok9</fieldForLabel>
-        <fieldForValue>round_tok9</fieldForValue>
       </input>
       <table>
         <search>
@@ -677,7 +688,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_true_8" depends="$gadget_lib_loaded$">
-      <title>03. Splunk Daily Ingestion Forecast Using Splunk Machine Learning Smart Forecasting StateSpaceForecast Algorithm</title>
+      <title>03. Splunk Daily Ingestion Forecast Using Splunk Machine Learning Smart Forecasting State Space Forecast Algorithm</title>
       <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
         <label>1. Indexer Cluster</label>
         <fieldForLabel>idxcluster_label</fieldForLabel>
@@ -734,21 +745,15 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <fieldForLabel>unit_tok5</fieldForLabel>
         <fieldForValue>unit_tok5</fieldForValue>
       </input>
-      <input type="dropdown" token="round_tok5" searchWhenChanged="true">
+      <input type="text" token="round_tok5" searchWhenChanged="true">
         <label>10. Rounding</label>
         <default>2</default>
         <initialValue>2</initialValue>
-        <choice value="0">0</choice>
-        <choice value="1">1</choice>
-        <choice value="2">2</choice>
-        <choice value="3">3</choice>
-        <fieldForLabel>round_tok5</fieldForLabel>
-        <fieldForValue>round_tok5</fieldForValue>
       </input>
       <viz type="Splunk_ML_Toolkit.ForecastViz">
-        <title>StateSpaceForecast is a forecasting algorithm for time series data in the MLTK. It is based on Kalman filters. The algorithm supports incremental fit.  (https://docs.splunk.com/Documentation/MLApp/latest/User/Algorithms#StateSpaceForecast)</title>
+        <title>State Space Forecast is a forecasting algorithm for time series data in the MLTK. It is based on Kalman filters. The algorithm supports incremental fit.  (https://docs.splunk.com/Documentation/MLApp/latest/User/Algorithms#StateSpaceForecast)</title>
         <search>
-          <query>index=`gmc_summary_index` search_name=splunk_internal_license_rollover_summary_idx_summary_tracker idxcluster_label="$idxcluster_label$" earliest=-$earliest$d@d latest=-0d@d 
+          <query>index=`gmc_setup_summary_index` search_name=splunk_internal_license_rollover_summary_idx_summary_tracker idxcluster_label="$idxcluster_label$" earliest=-$earliest$d@d latest=-0d@d 
 | fields _time date_wday idxcluster_label Lic_Pool License_Usage 
 | eval Weekends = If (Match(date_wday, "saturday|sunday"), "1", "0") 
 | bucket Span=1d _time 
@@ -779,7 +784,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_true_3" depends="$gadget_lib_loaded$">
-      <title>04. Commulative License Usage By Cluster Over Time</title>
+      <title>04. Cumulative aka Rollover Summary License Usage By Cluster Over Time</title>
       <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
         <label>1. Indexer Cluster</label>
         <fieldForLabel>idxcluster_label</fieldForLabel>
@@ -808,16 +813,10 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <fieldForLabel>unit_tok4</fieldForLabel>
         <fieldForValue>unit_tok4</fieldForValue>
       </input>
-      <input type="dropdown" token="round_tok4" searchWhenChanged="true">
+      <input type="text" token="round_tok4" searchWhenChanged="true">
         <label>4. Rounding</label>
         <default>2</default>
         <initialValue>2</initialValue>
-        <choice value="0">0</choice>
-        <choice value="1">1</choice>
-        <choice value="2">2</choice>
-        <choice value="3">3</choice>
-        <fieldForLabel>round_tok4</fieldForLabel>
-        <fieldForValue>round_tok4</fieldForValue>
       </input>
       <chart>
         <search base="splunk_internal_license_rollover_summary_idx_summary_tracker">
@@ -826,13 +825,15 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
 | timechart span=1d FixedRange=f UseNull=f UseOther=f limit=0
     Sum(eval(round(License_Usage_$unit_tok4$,$round_tok4$))) As License_Usage_$unit_tok4$ by idxcluster_label 
 | join type=outer _time 
-    [ search index=`gmc_summary_index` search_name=splunk_internal_license_rollover_summary_idx_summary_tracker earliest=-30d@d 
+    [ search index=`gmc_setup_summary_index` search_name=splunk_internal_license_rollover_summary_idx_summary_tracker earliest=-30d@d 
     | fields _time idxcluster_label Lic_Stack_Size 
     | `gmc_byte2human(Lic_Stack_Size,3)` 
     | bin _time Span=1d 
     | dedup _time Lic_Stack_Size_$unit_tok4$ 
     | stats sum(Lic_Stack_Size_$unit_tok4$) AS Stack_Size by _time]</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.text">$unit_tok4$</option>
         <option name="charting.axisTitleY2.visibility">collapsed</option>
@@ -843,7 +844,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <option name="charting.axisY2.scale">inherit</option>
         <option name="charting.chart">column</option>
         <option name="charting.chart.overlayFields">Stack_Size</option>
-        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.layout.splitSeries">0</option>
@@ -900,16 +901,10 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <fieldForLabel>unit_tok1</fieldForLabel>
         <fieldForValue>unit_tok1</fieldForValue>
       </input>
-      <input type="dropdown" token="round_tok1" searchWhenChanged="true">
+      <input type="text" token="round_tok1" searchWhenChanged="true">
         <label>6. Rounding</label>
         <default>2</default>
         <initialValue>2</initialValue>
-        <choice value="0">0</choice>
-        <choice value="1">1</choice>
-        <choice value="2">2</choice>
-        <choice value="3">3</choice>
-        <fieldForLabel>round_tok1</fieldForLabel>
-        <fieldForValue>round_tok1</fieldForValue>
       </input>
       <chart>
         <search base="splunk_internal_index_license_usage_idx_summary_tracker">
@@ -922,6 +917,8 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
     by Index_Name where max in top$top_tok2$ 
 | addtotals fieldname="Total License Usage"</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.text">$unit_tok1$</option>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -941,7 +938,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_true_9" depends="$gadget_lib_loaded$">
-      <title>06. License Ingestion By Cluster/Index/Sourcetype/Source/License Pool</title>
+      <title>06. License Ingestion By Cluster/Index/Source Type/Source/License Pool</title>
       <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
         <label>1. Indexer Cluster</label>
         <fieldForLabel>idxcluster_label</fieldForLabel>
@@ -1054,16 +1051,10 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <fieldForLabel>unit_tok6</fieldForLabel>
         <fieldForValue>unit_tok6</fieldForValue>
       </input>
-      <input type="dropdown" token="round_tok6" searchWhenChanged="true">
+      <input type="text" token="round_tok6" searchWhenChanged="true">
         <label>12. Rounding</label>
         <default>2</default>
         <initialValue>2</initialValue>
-        <choice value="0">0</choice>
-        <choice value="1">1</choice>
-        <choice value="2">2</choice>
-        <choice value="3">3</choice>
-        <fieldForLabel>round_tok6</fieldForLabel>
-        <fieldForValue>round_tok6</fieldForValue>
       </input>
       <input type="text" token="license_usage_tok1" searchWhenChanged="true">
         <label>13. License Usage &gt;= $license_usage_tok1$ ($unit_tok6$)</label>
@@ -1170,6 +1161,8 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
 | sort 0 - count
 | head 10</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">visible</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
@@ -1184,11 +1177,13 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_true_12" depends="panel_accordion_togglepanel_true_14">
-      <title>08. Top 10 Highest Ingestion by Sourcetype (Pie Chart)</title>
+      <title>08. Top 10 Highest Ingestion by Source Type (Pie Chart)</title>
       <chart>
         <search base="splunk_internal_index_license_usage_idx_summary_tracker">
           <query>| stats sum(License_Usage) as License_Usage by Lic_Sourcetype | sort 0 - count | head 10</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">visible</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
@@ -1208,6 +1203,8 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <search base="splunk_internal_index_license_usage_idx_summary_tracker">
           <query>| stats sum(License_Usage) as License_Usage by Lic_Source | sort 0 - count | head 10</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">visible</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
@@ -1227,6 +1224,8 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <search base="splunk_internal_index_license_usage_idx_summary_tracker">
           <query>| stats sum(License_Usage) as License_Usage by Lic_Host | sort 0 - count | head 10</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">visible</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
@@ -1246,6 +1245,8 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <search base="splunk_internal_index_license_usage_idx_summary_tracker">
           <query>| stats sum(License_Usage) as License_Usage by Lic_Pool</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">visible</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
@@ -1263,7 +1264,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
     <panel id="panel_accordion_togglepanel_true_16" depends="$gadget_lib_loaded$">
       <title>12. Volume Usage Over Time By Volume</title>
       <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
-        <label>Indexer Cluster</label>
+        <label>1. Indexer Cluster</label>
         <fieldForLabel>idxcluster_label</fieldForLabel>
         <fieldForValue>idxcluster_label</fieldForValue>
         <search base="splunk_introspection_volume_size_idx_summary_tracker">
@@ -1274,14 +1275,14 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="time" token="TimeRangePkr4" searchWhenChanged="true">
-        <label>Time Range</label>
+        <label>2. Time Range</label>
         <default>
           <earliest>-30d@d</earliest>
           <latest>now</latest>
         </default>
       </input>
       <input type="dropdown" token="unit_tok8" searchWhenChanged="true">
-        <label>Unit</label>
+        <label>3. Unit</label>
         <choice value="MB">MB</choice>
         <choice value="GB">GB</choice>
         <choice value="TB">TB</choice>
@@ -1290,22 +1291,18 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <fieldForLabel>unit_tok8</fieldForLabel>
         <fieldForValue>unit_tok8</fieldForValue>
       </input>
-      <input type="dropdown" token="round_tok8" searchWhenChanged="true">
-        <label>Rounding</label>
+      <input type="text" token="round_tok8" searchWhenChanged="true">
+        <label>4. Rounding</label>
         <default>2</default>
         <initialValue>2</initialValue>
-        <choice value="0">0</choice>
-        <choice value="1">1</choice>
-        <choice value="2">2</choice>
-        <choice value="3">3</choice>
-        <fieldForLabel>round_tok8</fieldForLabel>
-        <fieldForValue>round_tok8</fieldForValue>
       </input>
       <chart>
         <search base="splunk_introspection_volume_size_idx_summary_tracker">
           <query>| timechart Span=1d FixedRange=f UseNull=f UseOther=f limit=0
     Max(eval(round(Volume_Usage_$unit_tok8$, $round_tok8$))) As Volume_Usage_$unit_tok8$ BY Volume</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.text">$unit_tok8$</option>
         <option name="charting.axisTitleY.visibility">visible</option>
@@ -1324,9 +1321,9 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_true_6" depends="$gadget_lib_loaded$">
-      <title>13. Commulative Index Size By Cluster Over Time</title>
+      <title>13. Cumulative Index Size By Cluster Over Time</title>
       <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
-        <label>Indexer Cluster</label>
+        <label>1. Indexer Cluster</label>
         <fieldForLabel>idxcluster_label</fieldForLabel>
         <fieldForValue>idxcluster_label</fieldForValue>
         <search base="splunk_introspection_index_size_idx_summary_tracker">
@@ -1337,19 +1334,19 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="time" token="TimeRangePkr5" searchWhenChanged="true">
-        <label>Time Range</label>
+        <label>2. Time Range</label>
         <default>
           <earliest>-30d@d</earliest>
           <latest>now</latest>
         </default>
       </input>
       <input type="text" token="top_tok1" searchWhenChanged="true">
-        <label>Timechart IN top:</label>
+        <label>3. Timechart IN top:</label>
         <default>10</default>
         <initialValue>10</initialValue>
       </input>
       <input type="dropdown" token="unit_tok3" searchWhenChanged="true">
-        <label>Unit</label>
+        <label>4. Unit</label>
         <choice value="MB">MB</choice>
         <choice value="GB">GB</choice>
         <choice value="TB">TB</choice>
@@ -1358,16 +1355,10 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <fieldForLabel>unit_tok3</fieldForLabel>
         <fieldForValue>unit_tok3</fieldForValue>
       </input>
-      <input type="dropdown" token="round_tok3" searchWhenChanged="true">
-        <label>Rounding</label>
+      <input type="text" token="round_tok3" searchWhenChanged="true">
+        <label>5. Rounding</label>
         <default>2</default>
         <initialValue>2</initialValue>
-        <choice value="0">0</choice>
-        <choice value="1">1</choice>
-        <choice value="2">2</choice>
-        <choice value="3">3</choice>
-        <fieldForLabel>round_tok3</fieldForLabel>
-        <fieldForValue>round_tok3</fieldForValue>
       </input>
       <chart>
         <search base="splunk_introspection_index_size_idx_summary_tracker">
@@ -1375,6 +1366,8 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
     sum(eval(round(total_size_$unit_tok3$,$round_tok3$))) AS total_size_$unit_tok3$
     by idxcluster_label</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.text">$unit_tok3$</option>
         <option name="charting.axisTitleY.visibility">visible</option>
@@ -1395,7 +1388,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
     <panel id="panel_accordion_togglepanel_true_5" depends="$gadget_lib_loaded$">
       <title>14. Top N Largest Indexes By Cluster Over Time</title>
       <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
-        <label>Indexer Cluster</label>
+        <label>1. Indexer Cluster</label>
         <fieldForLabel>idxcluster_label</fieldForLabel>
         <fieldForValue>idxcluster_label</fieldForValue>
         <search base="splunk_introspection_index_size_idx_summary_tracker">
@@ -1406,19 +1399,19 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <initialValue>*</initialValue>
       </input>
       <input type="time" token="TimeRangePkr5" searchWhenChanged="true">
-        <label>Time Range</label>
+        <label>2. Time Range</label>
         <default>
           <earliest>-7d@d</earliest>
           <latest>now</latest>
         </default>
       </input>
       <input type="text" token="top_tok1" searchWhenChanged="true">
-        <label>Timechart IN top:</label>
+        <label>3. Timechart IN top:</label>
         <default>10</default>
         <initialValue>10</initialValue>
       </input>
       <input type="dropdown" token="unit_tok2" searchWhenChanged="true">
-        <label>Unit</label>
+        <label>4. Unit</label>
         <choice value="MB">MB</choice>
         <choice value="GB">GB</choice>
         <choice value="TB">TB</choice>
@@ -1427,16 +1420,10 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         <fieldForLabel>unit_tok2</fieldForLabel>
         <fieldForValue>unit_tok2</fieldForValue>
       </input>
-      <input type="dropdown" token="round_tok2" searchWhenChanged="true">
-        <label>Rounding</label>
+      <input type="text" token="round_tok2" searchWhenChanged="true">
+        <label>5. Rounding</label>
         <default>2</default>
         <initialValue>2</initialValue>
-        <choice value="0">0</choice>
-        <choice value="1">1</choice>
-        <choice value="2">2</choice>
-        <choice value="3">3</choice>
-        <fieldForLabel>round_tok2</fieldForLabel>
-        <fieldForValue>round_tok2</fieldForValue>
       </input>
       <chart>
         <search base="splunk_introspection_index_size_idx_summary_tracker">
@@ -1448,6 +1435,8 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
     max(eval(round(total_size_$unit_tok2$,$round_tok2$))) as total_size_$unit_tok2$ by Index_Name where max in top$top_tok1$ 
 | rename VALUE_* AS *</query>
         </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.text">$unit_tok2$</option>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -1475,7 +1464,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
     FROM DATAMODEL=GMC
     WHERE nodename=Search_Activity.Internal_Scheduler
     AND Search_Activity.Internal_Scheduler.savedsearch_name2 IN ( splunk_rest_cluster_config_idx_kv_store_lookup_gen,splunk_rest_data_indexes_idx_kv_store_lookup_gen,splunk_rest_data_index_volumes_idx_kv_store_lookup_gen,splunk_internal_index_license_usage_idx_summary_tracker,splunk_internal_license_rollover_summary_idx_summary_tracker,splunk_introspection_index_size_idx_summary_tracker,splunk_introspection_volume_size_idx_summary_tracker)
-    AND Search_Activity.Internal_Scheduler.app2 = "global_monitoring_console"
+    AND Search_Activity.Internal_Scheduler.app2 = "TA_global_monitoring_console"
     BY Search_Activity.Internal_Scheduler.savedsearch_name2 
 | `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)` 
 | table savedsearch_name2 scheduled_time dispatch_time info total_run_time 
@@ -1502,31 +1491,31 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
             <ol>
                <li>
                   GMC Jobs / GMC Gen Jobs / IDX Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_cluster_config_idx_kv_store_lookup_gen" target="_blank" rel="noopener">IDX Cluster Configuration Gen Job</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_cluster_config_idx_kv_store_lookup_gen" target="_blank" rel="noopener">IDX Cluster Configuration Gen Job</a>
                </li>
                <li>
                   GMC Jobs / GMC Gen Jobs / IDX Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Indexes Gen Job</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Indexes Gen Job</a>
                </li>
                <li>
                   GMC Jobs / GMC Gen Jobs / IDX Tier Gen Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_index_volumes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">IDX Cluster Indexes Volumes Gen Job</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_rest_data_index_volumes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">IDX Cluster Indexes Volumes Gen Job</a>
                </li>
                <li>
                   GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_internal_index_license_usage_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster By Index Daily</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_internal_index_license_usage_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster By Index Daily</a>
                </li>
                <li>
                   GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_internal_license_rollover_summary_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster Daily</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_internal_license_rollover_summary_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster Daily (Cumulative)</a>
                </li>
                <li>
                   GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_introspection_index_size_idx_summary_tracker" target="_blank" rel="noopener">Track Index Size Daily</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_introspection_index_size_idx_summary_tracker" target="_blank" rel="noopener">Track Index Size Daily</a>
                </li>
                <li>
                   GMC Jobs / GMC Tracking Jobs /
-                  <a href="/app/global_monitoring_console/search?s=splunk_introspection_volume_size_idx_summary_tracker" target="_blank" rel="noopener">Track Index Volume Size Daily</a>
+                  <a href="/app/TA_global_monitoring_console/search?s=splunk_introspection_volume_size_idx_summary_tracker" target="_blank" rel="noopener">Track Index Volume Size Daily</a>
                </li>
             </ol>
             <li>docs.splunk.com Admin/indexes.conf: <a href="https://docs.splunk.com/Documentation/Splunk/latest/Admin/Indexesconf" target="_blank" rel="noopener">indexes.conf</a>
@@ -1535,7 +1524,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
         </li>
         <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_index_volumes_idx_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_data_index_volumes_idx_kv_store&amp;type=kv">
                      View Volumes KV Store
                      <i class="icon-data icon-modal-medium icon-color-searchfu m-left"/>
                   </a>
@@ -1549,7 +1538,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
             </div>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_cluster_config_idx_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_cluster_config_idx_kv_store&amp;type=kv">
                      View IDX Cluster KV Store
                      <i class="icon-data icon-modal-medium icon-color-searchfu m-left"/>
                   </a>
@@ -1563,7 +1552,7 @@ index=`gmc_summary_index` search_name=splunk_introspection_index_size_idx_summar
             </div>
             <div class="btn-group1">
                <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_indexes_idx_kv_store&amp;type=kv">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_data_indexes_idx_kv_store&amp;type=kv">
                      View Indexes KV Store
                      <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
                   </a>

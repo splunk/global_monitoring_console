@@ -1,303 +1,249 @@
-<form theme="dark">
-  <label>IDX - 05 - Data Inputs - Dashboard - v1.5.66</label>
-  <description>All Splunk Servers Data Inputs with tons of filters</description>
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>IDX - 05 - Data Inputs - Dashboard - v1.8.10</label>
+  <description>All Splunk Instances Data Inputs Information Dashboard</description>
   <search id="splunk_idx_05_inputs_dashboard_v1">
     <query>
 | from lookup:splunk_rest_data_inputs_all_kv_store_lookup
 | fields shcluster_label Splunk_Instance app title disabled sharing author type description source sourcetype index location acceleration whitelist blacklist crcSalt interval
-
 | `get_instance_roles(Splunk_Instance)`
 |	`get_identity_info_simple(shcluster_label,author)`
-
 | fillnull value="Undefined" Splunk_Instance Splunk_Roles app title disabled sharing author type description source sourcetype index location acceleration whitelist blacklist crcSalt interval
-
 | search shcluster_label="$shcluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" app="$app$" title="*$title$*" author="$author$" description="*$description$*" source="$source$" sourcetype="$sourcetype$" index="$index$" disabled="$disabled$" type="$type$" emp_name="$emp_name$" emp_ttl="$emp_ttl$" emp_lob="$emp_lob$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$"
       </query>
   </search>
-  <fieldset submitButton="false" autoRun="true">
-    <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
-      <label>1. Splunk SH (Cluster/Instance)</label>
-      <fieldForLabel>shcluster_label</fieldForLabel>
-      <fieldForValue>shcluster_label</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by shcluster_label</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-      <label>2. Splunk Roles</label>
-      <fieldForLabel>Splunk_Roles</fieldForLabel>
-      <fieldForValue>Splunk_Roles</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by Splunk_Roles</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
-      <label>3. Splunk Instance</label>
-      <fieldForLabel>Splunk_Instance</fieldForLabel>
-      <fieldForValue>Splunk_Instance</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by Splunk_Instance</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="app" searchWhenChanged="true">
-      <label>4. App</label>
-      <fieldForLabel>app</fieldForLabel>
-      <fieldForValue>app</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by app</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="sharing" searchWhenChanged="true">
-      <label>5. App Sharing</label>
-      <fieldForLabel>sharing</fieldForLabel>
-      <fieldForValue>sharing</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by sharing</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="disabled" searchWhenChanged="true">
-      <label>6. Enabled</label>
-      <fieldForLabel>disabled</fieldForLabel>
-      <fieldForValue>disabled</fieldForValue>
-      <choice value="*">All</choice>
-      <choice value="0">True</choice>
-      <choice value="1">False</choice>
-      <default>*</default>
-    </input>
-    <input type="dropdown" token="type" searchWhenChanged="true">
-      <label>7. Input Type</label>
-      <fieldForLabel>type</fieldForLabel>
-      <fieldForValue>type</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by type</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-    </input>
-    <input type="dropdown" token="title" searchWhenChanged="true">
-      <label>8. Inputs Name</label>
-      <fieldForLabel>title</fieldForLabel>
-      <fieldForValue>title</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by title</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="description" searchWhenChanged="true">
-      <label>9. Description</label>
-      <fieldForLabel>description</fieldForLabel>
-      <fieldForValue>description</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by description</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="index" searchWhenChanged="true">
-      <label>10. Index</label>
-      <fieldForLabel>index</fieldForLabel>
-      <fieldForValue>index</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by index</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="sourcetype" searchWhenChanged="true">
-      <label>11. Source Type</label>
-      <fieldForLabel>sourcetype</fieldForLabel>
-      <fieldForValue>sourcetype</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by sourcetype</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-    </input>
-    <input type="dropdown" token="source" searchWhenChanged="true">
-      <label>12. Source</label>
-      <fieldForLabel>source</fieldForLabel>
-      <fieldForValue>source</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by source</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="author" searchWhenChanged="true">
-      <label>13. Owner</label>
-      <fieldForLabel>author</fieldForLabel>
-      <fieldForValue>author</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by author</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="emp_name" searchWhenChanged="true">
-      <label>14. Employee Full Name</label>
-      <fieldForLabel>emp_name</fieldForLabel>
-      <fieldForValue>emp_name</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by emp_name</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="emp_ttl" searchWhenChanged="true">
-      <label>15. Employee Title</label>
-      <fieldForLabel>emp_ttl</fieldForLabel>
-      <fieldForValue>emp_ttl</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by emp_ttl</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="emp_dep" searchWhenChanged="true">
-      <label>16. Employee Department</label>
-      <fieldForLabel>emp_dep</fieldForLabel>
-      <fieldForValue>emp_dep</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by emp_dep</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="emp_lob" searchWhenChanged="true">
-      <label>17. Employee LOB</label>
-      <fieldForLabel>emp_lob</fieldForLabel>
-      <fieldForValue>emp_lob</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by emp_lob</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="emp_type" searchWhenChanged="true">
-      <label>18. Employee Type</label>
-      <fieldForLabel>emp_type</fieldForLabel>
-      <fieldForValue>emp_type</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by emp_type</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="dropdown" token="emp_status" searchWhenChanged="true">
-      <label>19. Employee Status</label>
-      <fieldForLabel>emp_status</fieldForLabel>
-      <fieldForValue>emp_status</fieldForValue>
-      <search base="splunk_idx_05_inputs_dashboard_v1">
-        <query>| stats count by emp_status</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="text" token="Splunk_Roles" searchWhenChanged="true">
-      <label>20. Splunk Roles (Contains)</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="text" token="Splunk_Instance" searchWhenChanged="true">
-      <label>21. Splunk Instance (Contains)</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="text" token="title" searchWhenChanged="true">
-      <label>22. Inputs Name (Contains)</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="text" token="description" searchWhenChanged="true">
-      <label>23. Description (Contains)</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-  </fieldset>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
-    <panel>
-      <title>Associated GMC Job(s) - $env:page$</title>
-      <html>
-            GMC Jobs / GMC Gen Jobs / All Tiers Gen Jobs /
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_all_kv_store_lookup_gen" target="_blank" rel="noopener">Data Inputs Gen Job</a>
-             <div class="btn-group1">
-               <div id="mod_info">
-                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console&amp;lookup=splunk_rest_data_inputs_all_kv_store&amp;type=kv">
-                     View Splunk Data Inputs KV Store
-                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-               <div id="mod_att" class="hide">
-                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                     Attention
-                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
-                  </a>
-               </div>
-            </div>
-         </html>
-    </panel>
-  </row>
-  <row>
-    <panel>
-      <title>Total Number of Inputs</title>
-      <single>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+      <title>1. Data Inputs Filters</title>
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+        <label>1. Splunk SH (Cluster/Instance)</label>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
         <search base="splunk_idx_05_inputs_dashboard_v1">
-          <query>| stats count</query>
+          <query>| stats count by shcluster_label</query>
         </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
-        <option name="rangeColors">["0x006d9c","0x006d9c"]</option>
-        <option name="rangeValues">[0]</option>
-        <option name="refresh.display">progressbar</option>
-        <option name="useColors">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>By App</title>
-      <chart>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2. Splunk Roles</label>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
+        <label>3. Splunk Instance</label>
+        <fieldForLabel>Splunk_Instance</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by Splunk_Instance</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app" searchWhenChanged="true">
+        <label>4. App</label>
+        <fieldForLabel>app</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
         <search base="splunk_idx_05_inputs_dashboard_v1">
           <query>| stats count by app</query>
         </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.chart.sliceCollapsingThreshold">0</option>
-        <option name="charting.drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
-      </chart>
-    </panel>
-  </row>
-  <row>
-    <panel>
-      <title>Inputs</title>
-      <table>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="sharing" searchWhenChanged="true">
+        <label>5. App Sharing</label>
+        <fieldForLabel>sharing</fieldForLabel>
+        <fieldForValue>sharing</fieldForValue>
         <search base="splunk_idx_05_inputs_dashboard_v1">
-          <query>| table shcluster_label title type disabled author app sharing description source sourcetype index location acceleration whitelist blacklist crcSalt interval emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status endDate 
+          <query>| stats count by sharing</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="disabled" searchWhenChanged="true">
+        <label>6. Enabled</label>
+        <fieldForLabel>disabled</fieldForLabel>
+        <fieldForValue>disabled</fieldForValue>
+        <choice value="*">All</choice>
+        <choice value="0">True</choice>
+        <choice value="1">False</choice>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="type" searchWhenChanged="true">
+        <label>7. Input Type</label>
+        <fieldForLabel>type</fieldForLabel>
+        <fieldForValue>type</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by type</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="title" searchWhenChanged="true">
+        <label>8. Inputs Name</label>
+        <fieldForLabel>title</fieldForLabel>
+        <fieldForValue>title</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by title</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="description" searchWhenChanged="true">
+        <label>9. Description</label>
+        <fieldForLabel>description</fieldForLabel>
+        <fieldForValue>description</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by description</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="index" searchWhenChanged="true">
+        <label>10. Index</label>
+        <fieldForLabel>index</fieldForLabel>
+        <fieldForValue>index</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by index</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="sourcetype" searchWhenChanged="true">
+        <label>11. Source Type</label>
+        <fieldForLabel>sourcetype</fieldForLabel>
+        <fieldForValue>sourcetype</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by sourcetype</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="source" searchWhenChanged="true">
+        <label>12. Source</label>
+        <fieldForLabel>source</fieldForLabel>
+        <fieldForValue>source</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by source</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="author" searchWhenChanged="true">
+        <label>13. Owner</label>
+        <fieldForLabel>author</fieldForLabel>
+        <fieldForValue>author</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by author</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_name" searchWhenChanged="true">
+        <label>14. Employee Full Name</label>
+        <fieldForLabel>emp_name</fieldForLabel>
+        <fieldForValue>emp_name</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by emp_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_ttl" searchWhenChanged="true">
+        <label>15. Employee Title</label>
+        <fieldForLabel>emp_ttl</fieldForLabel>
+        <fieldForValue>emp_ttl</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by emp_ttl</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_dep" searchWhenChanged="true">
+        <label>16. Employee Department</label>
+        <fieldForLabel>emp_dep</fieldForLabel>
+        <fieldForValue>emp_dep</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by emp_dep</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob" searchWhenChanged="true">
+        <label>17. Employee LOB</label>
+        <fieldForLabel>emp_lob</fieldForLabel>
+        <fieldForValue>emp_lob</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by emp_lob</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_type" searchWhenChanged="true">
+        <label>18. Employee Type</label>
+        <fieldForLabel>emp_type</fieldForLabel>
+        <fieldForValue>emp_type</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by emp_type</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_status" searchWhenChanged="true">
+        <label>19. Employee Status</label>
+        <fieldForLabel>emp_status</fieldForLabel>
+        <fieldForValue>emp_status</fieldForValue>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by emp_status</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Splunk_Roles" searchWhenChanged="true">
+        <label>20. Splunk Roles (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Splunk_Instance" searchWhenChanged="true">
+        <label>21. Splunk Instance (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="title" searchWhenChanged="true">
+        <label>22. Inputs Name (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="description" searchWhenChanged="true">
+        <label>23. Description (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <table>
+        <title>Data Inputs List</title>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| table shcluster_label Splunk_Roles title type disabled author app sharing description source sourcetype index location acceleration whitelist blacklist crcSalt interval emp_name emp_ttl emp_dep emp_lob emp_cc emp_type emp_status endDate 
 | sort 0 shcluster_label app title 
 | `rename_common_fields`
 | `rename_identity_fields`
@@ -308,6 +254,7 @@
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="totalsRow">false</option>
         <option name="wrap">false</option>
@@ -327,6 +274,57 @@
           <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
         </format>
       </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
+      <title>2. Total Number of Inputs</title>
+      <single>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x006d9c","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
+      <title>3. By App</title>
+      <chart>
+        <search base="splunk_idx_05_inputs_dashboard_v1">
+          <query>| stats count by app</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_4" depends="$gadget_lib_loaded$">
+      <title>4. Associated GMC Job(s) - $env:page$</title>
+      <html>
+            GMC Jobs / GMC Gen Jobs / All Tiers Gen Jobs /
+            <a href="/app/TA_global_monitoring_console//search?s=splunk_rest_data_inputs_all_kv_store_lookup_gen" target="_blank" rel="noopener">Data Inputs Gen Job</a>
+             <div class="btn-group1">
+          <div id="mod_info">
+            <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_data_inputs_all_kv_store&amp;type=kv">
+                     View Splunk Data Inputs KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+          </div>
+          <div id="mod_att" class="hide">
+            <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+          </div>
+        </div>
+         </html>
     </panel>
   </row>
 </form>
