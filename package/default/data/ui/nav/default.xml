@@ -10,6 +10,7 @@
       <a href="/app/global_monitoring_console/splunk_sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a>
       <a href="/app/global_monitoring_console/splunk_sh_05_audit_users_activity_dashboard_v1" target="_blank" rel="noopener">SH-05 Audit Users Activity</a>
       <a href="/app/global_monitoring_console/splunk_sh_06_knowledge_objects_analysis_dashboard_v1" target="_blank" rel="noopener">SH-06 Dashboards, Reports and Lookups Analysis</a>
+      <a href="/app/global_monitoring_console/splunk_sh_20_adoption_dashboard_v1" target="_blank" rel="noopener">SH-20 Adoption</a>
    </collection>
    <collection label="GMC Dashboards">
       <collection label="Search Head Tier">
