@@ -38,7 +38,7 @@
 
 .toggledclosed:before {
   /* color: #551A8B; */
-  color: #FFFF38;
+  color: #551A8B;
   content: "\25Bc";
 }
 
