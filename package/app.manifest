@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0.0", 
+  "info": {
+    "title": "Global Monitoring Console App for Splunk", 
+    "id": {
+      "group": null, 
+      "name": "global_monitoring_console", 
+      "version": "1.0.00"
+    }, 
+    "author": [
+      {
+        "name": "AK Khamis - akhamis@splunk.com", 
+        "email": "akhamis@splunk.com", 
+        "company": "Splunk"
+      }
+    ], 
+    "releaseDate": null, 
+    "description": "Global Monitoring Console App for Splunk", 
+    "classification": {
+      "intendedAudience": null, 
+      "categories": [], 
+      "developmentStatus": null
+    }, 
+      "commonInformationModels": null,
+    "license": {
+      "name": "ASL2",
+      "text": "LICENSE-Apache-2.0",
+      "uri": "http://www.apache.org/licenses/LICENSE-2.0"
+    },
+   "privacyPolicy": {
+      "name": "Splunk Privacy Policy",
+      "text": null,
+      "uri": "https://www.splunk.com/en_us/legal/privacy/privacy-policy.html"
+    },
+   "releaseNotes": {
+      "name": "Readme",
+      "text": "README.md",
+      "uri": null
+    }
+  }, 
+  "dependencies": null,
+  "tasks": null, 
+  "inputGroups": null, 
+  "incompatibleApps": null, 
+  "platformRequirements": null, 
+  "supportedDeployments": [
+    "_standalone", 
+    "_distributed",
+    "_search_head_clustering"
+  ], 
+  "targetWorkloads": [
+    "_search_heads"
+  ]
+}

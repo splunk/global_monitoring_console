@@ -1,0 +1,756 @@
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>IDX - 09 - HTTP Event Collector - Cloud Dashboard - v1</label>
+  <description>Splunk HTTP Event Collector (HEC) Inputs Information Dashboard</description>
+  <search id="splunk_sh_12_http_event_collector_dashboard_v1_1">
+    <query>| from lookup:splunk_rest_data_inputs_http_sh_kv_store_lookup
+| fields _time,idxcluster_label,shcluster_label,Splunk_Instance,app,title,token_name,token,disabled,index_name,indexes,source_name,sourcetype_name,useACK,dedicatedIoThreads,enableSSL,port,maxSockets,maxThreads 
+| `get_instance_roles(Splunk_Instance)`
+| fillnull value=0 useACK disabled
+| fillnull value="Undefined" app title token_name token index indexes source_name sourcetype_name
+| search shcluster_label="$shcluster_label$" idxcluster_label="$idxcluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" app="$app$" token_name="$token_name$" source_name="$source_name$" sourcetype_name="$sourcetype_name$" useACK="$useACK$"</query>
+  </search>
+  <search id="splunk_sh_12_http_event_collector_dashboard_v1_2">
+    <query>index=_introspection sourcetype=http_event_collector_metrics component=HttpEventCollector 
+| rename data.* as * 
+| fields _time host format num_of_ack_requests num_of_auth_failures num_of_errors num_of_events num_of_parser_errors num_of_requests num_of_requests_acked num_of_requests_in_mint_format num_of_requests_to_disabled_token num_of_requests_to_incorrect_url num_of_requests_waiting_ack series token_name total_bytes_indexed total_bytes_received transport log_level
+| lookup splunk_rest_data_inputs_http_sh_kv_store_lookup token_name As token_name OUTPUT sourcetype_name app token index_name indexes source_name useACK 
+| `get_shcluster_label(host)`
+| `get_idxcluster_label(host)`
+| fillnull value=0 useACK disabled
+| fillnull value="Undefined" app title token_name token index indexes source_name sourcetype_name
+| search shcluster_label="$shcluster_label$" idxcluster_label="$idxcluster_label$" token_name="$token_name$" host="*$Splunk_Instance$*" index_name="$index_name$"</query>
+    <earliest>$TimeRangePkr.earliest$</earliest>
+    <latest>$TimeRangePkr.latest$</latest>
+  </search>
+  <search id="splunk_sh_12_http_event_collector_dashboard_v1_3">
+    <query>index=_internal component=HttpInputDataHandler 
+`gmc_comment("reply=* NOT (channel!=n/a reply=5 http_input_body_size=0) ")`
+| `get_shcluster_label(host)`
+| `get_idxcluster_label(host)`
+| fields _time idxcluster_label shcluster_label host name channel reply event_message events_processed http_input_body_size source_IP log_level
+| stats latest(*) as * values(host) as host by _time idxcluster_label name 
+| lookup local=True splunk_hec_reply_codes_csv_lookup reply_code AS reply OUTPUT status_message 
+| lookup splunk_rest_data_inputs_http_sh_kv_store_lookup token_name As name OUTPUT sourcetype_name app token index_name indexes source_name useACK
+| fillnull value=0 useACK disabled
+| fillnull value="Undefined" app title token_name token index indexes source_name sourcetype_name status_message
+| search status_message="$status_message$" shcluster_label="$shcluster_label$" app="$app$" token_name="$token_name$" source_name="$source_name$" sourcetype_name="$sourcetype_name$" useACK="$useACK$"</query>
+    <earliest>$TimeRangePkr.earliest$</earliest>
+    <latest>$TimeRangePkr.latest$</latest>
+  </search>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <table>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by _time 
+| fields _time 
+| `strftime_format(_time)`
+| rename _time As "Dashboard Latest Refresh"</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
+      <title>1. HTTP Event Collector Inputs Filters</title>
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+        <label>1. SH Cluster Label</label>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
+        <label>2. IDX Cluster Label</label>
+        <fieldForLabel>idxcluster_label</fieldForLabel>
+        <fieldForValue>idxcluster_label</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by idxcluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>3. Splunk Roles</label>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
+        <label>4. Splunk Instance</label>
+        <fieldForLabel>Splunk_Instance</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by Splunk_Instance</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app" searchWhenChanged="true">
+        <label>5. App</label>
+        <fieldForLabel>app</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by app</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="token_name" searchWhenChanged="true">
+        <label>6. Token Name</label>
+        <fieldForLabel>token_name</fieldForLabel>
+        <fieldForValue>token_name</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by token_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="index_name" searchWhenChanged="true">
+        <label>7. Index Name</label>
+        <fieldForLabel>index_name</fieldForLabel>
+        <fieldForValue>index_name</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by index_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="sourcetype_name" searchWhenChanged="true">
+        <label>8. Sourcetype Name</label>
+        <fieldForLabel>sourcetype_name</fieldForLabel>
+        <fieldForValue>sourcetype_name</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by sourcetype_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="source_name" searchWhenChanged="true">
+        <label>9. Source Name</label>
+        <fieldForLabel>source_name</fieldForLabel>
+        <fieldForValue>source_name</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by source_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="useACK" searchWhenChanged="true">
+        <label>10. Acknowledgment Enabled?</label>
+        <fieldForLabel>useACK</fieldForLabel>
+        <fieldForValue>useACK</fieldForValue>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <choice value="*">Any</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Splunk_Roles" searchWhenChanged="true">
+        <label>11.  Splunk Roles (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Splunk_Instance" searchWhenChanged="true">
+        <label>12. Splunk Instance (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <html>
+            <style>#panel_accordion_togglepanel_false_2 { 
+            font-size: 14px; 
+            background:#214FC6 !important; 
+            color:white !important; 
+            text-align: left !important;
+            font-weight: bold !important;
+            border-top-right-radius: 15px;
+            border-top-left-radius: 15px; 
+            border: 8px solid black !important;
+            }</style>
+         </html>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_222" depends="$gadget_lib_loaded$">
+      <title>2. HTTP Event Collector Inputs List</title>
+      <table>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| table shcluster_label disabled app token_name token index_name indexes source_name sourcetype_name useACK dedicatedIoThreads enableSSL port maxSockets maxThreads 
+| `rename_common_fields` 
+| `rename_hec_fields`</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Splunk_Instance">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="stanza">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="value">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Stanza">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Calculated Field">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Value">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Event Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Color">
+          <colorPalette type="map">{"et_blue":#006D9C}</colorPalette>
+        </format>
+        <format type="color" field="Splunk Instance">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="HEC Index">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="HEC useACK?">
+          <colorPalette type="map">{"0":#006D9C,"1":#5A4575}</colorPalette>
+        </format>
+        <format type="color" field="HEC Token Disabled?">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+      </table>
+      <single>
+        <title>Total Number of HEC Inputs</title>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="unit">HEC Inputs</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_22" depends="$gadget_lib_loaded$">
+      <title>3. Top N HTTP Event Collector Metrics</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>1. Chart Time Range</label>
+        <default>
+          <earliest>-5m@m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="metric_2" searchWhenChanged="true">
+        <label>2. Metric Name</label>
+        <choice value="num_of_ack_requests">Total number of per-token Acknowledged Requests</choice>
+        <choice value="num_of_events">Total number of per-token events received</choice>
+        <choice value="num_of_requests">Total number of valid per-token individual HTTP(S) requests received</choice>
+        <choice value="num_of_requests_acked">Total number of requests Acknowledged</choice>
+        <choice value="num_of_requests_in_mint_format">Total number of requests from Splunk MINT</choice>
+        <choice value="total_bytes_indexed">Total amount of per-token data sent to the indexer</choice>
+        <choice value="total_bytes_received">Total amount of per-token data received by calling the /receive/token endpoint</choice>
+        <choice value="num_of_requests_to_disabled_token">Total number of per-token requests to disable token</choice>
+        <choice value="num_of_errors">Total number of per-token errors</choice>
+        <choice value="num_of_parser_errors">Total number of per-token parser errors due to incorrectly formatted event data</choice>
+        <choice value="num_of_auth_failures">Total number of authentication failures due to invalid token</choice>
+        <choice value="num_of_requests_to_incorrect_url">Total number of requests to an incorrect URL</choice>
+        <default>num_of_events</default>
+        <initialValue>num_of_events</initialValue>
+      </input>
+      <input type="dropdown" token="agg_function_2" searchWhenChanged="true">
+        <label>3. Aggregate Function</label>
+        <choice value="Count">Count (Number of Occurrence)</choice>
+        <choice value="Dc">Distinct Values</choice>
+        <choice value="Values">Values</choice>
+        <choice value="Sum">Sum</choice>
+        <choice value="Min">Minimum Values</choice>
+        <choice value="Max">Maximum Values</choice>
+        <choice value="Avg">Average Values</choice>
+        <choice value="Perc90">90th Percentile</choice>
+        <choice value="Median">Median (Middle-Most Value)</choice>
+        <choice value="Mean">Mean (Arithmetic Mean)</choice>
+        <choice value="Mode">Mode (Most Frequent Value)</choice>
+        <choice value="Range">Range (Difference Between the Max and Min Values)</choice>
+        <choice value="Var">Var (Sample Variance)</choice>
+        <choice value="VarP">varp (Population Variance)</choice>
+        <choice value="SumSQ">SumSQ (Sum of the Squares of the Values)</choice>
+        <choice value="UpperPerc">UpperPerc (Approximate Percentile Value)</choice>
+        <choice value="Stdev">Stdev (Sample Standard Deviation)</choice>
+        <choice value="StdevP">StdevP (Population Standard Deviation )</choice>
+        <choice value="ExactPerc">ExactPerc (Percentile Value of the Numeric field Y)</choice>
+        <choice value="EstDC">EstDC (Estimated count of the Distinct Values)</choice>
+        <choice value="Estdc_Error">Estdc_Error (Theoretical Error of the Estimated Count of the Distinct Values)</choice>
+        <choice value="First">First (Sampled)</choice>
+        <default>Sum</default>
+        <initialValue>Sum</initialValue>
+      </input>
+      <input type="dropdown" token="split_by_2" searchWhenChanged="true">
+        <label>4. Split the results by</label>
+        <choice value="shcluster_label">SH Cluster Label</choice>
+        <choice value="token_name">Token Name</choice>
+        <choice value="series">Metrics data type</choice>
+        <choice value="transport">Data transport protocol for HTTP Event Collector data</choice>
+        <choice value="app">App</choice>
+        <choice value="index_name">Index</choice>
+        <choice value="sourcetype_name">Sourcetype</choice>
+        <choice value="source_name">Source</choice>
+        <choice value="useACK">Acknowledgment</choice>
+        <choice value="format">HEC Data Format</choice>
+        <choice value="log_level">Log severity level</choice>
+        <default>token_name</default>
+        <initialValue>token_name</initialValue>
+      </input>
+      <input type="text" token="round_2" searchWhenChanged="true">
+        <label>5. Rounding</label>
+        <default>3</default>
+        <initialValue>3</initialValue>
+      </input>
+      <input type="dropdown" token="span_2" searchWhenChanged="true">
+        <label>6. Span (Size of each bin)</label>
+        <choice value="">Automatic</choice>
+        <choice value="span=1s">1 seconds</choice>
+        <choice value="span=5s">5 seconds</choice>
+        <choice value="span=10s">10 seconds</choice>
+        <choice value="span=15s">15 seconds</choice>
+        <choice value="span=30s">30 seconds</choice>
+        <choice value="span=1m">1 minute</choice>
+        <choice value="span=5m">5 minutes</choice>
+        <choice value="span=10m">10 minutes</choice>
+        <choice value="span=15m">15 minutes</choice>
+        <choice value="span=30m">30 minutes</choice>
+        <choice value="span=45m">45 minutes</choice>
+        <choice value="span=1h">1 hour</choice>
+        <choice value="span=2h">2 hours</choice>
+        <choice value="span=3h">3 hours</choice>
+        <choice value="span=4h">4 hours</choice>
+        <choice value="span=6h">6 hours</choice>
+        <choice value="span=8h">8 hours</choice>
+        <choice value="span=12h">12 hours</choice>
+        <choice value="span=1d">1 day</choice>
+        <choice value="span=1w">1 week</choice>
+        <choice value="span=1mon">1 month</choice>
+        <choice value="span=12mon">1 year</choice>
+        <default></default>
+      </input>
+      <input type="dropdown" token="fixedrange_2" searchWhenChanged="true">
+        <label>7. Fixed Range (Enforce the earliest and latest times of the search) ?</label>
+        <choice value="True">True</choice>
+        <choice value="False">False</choice>
+        <default>True</default>
+        <initialValue>True</initialValue>
+      </input>
+      <input type="dropdown" token="cont_2" searchWhenChanged="true">
+        <label>8. Cont (Continuous Chart) ?</label>
+        <choice value="True">True</choice>
+        <choice value="False">False</choice>
+        <default>False</default>
+        <initialValue>False</initialValue>
+      </input>
+      <input type="dropdown" token="dedup_splitvals_2" searchWhenChanged="true">
+        <label>9. Dedup_SplitVals (Remove duplicate values in multivalued) ?</label>
+        <choice value="True">True</choice>
+        <choice value="False">False</choice>
+        <default>False</default>
+        <initialValue>False</initialValue>
+      </input>
+      <input type="dropdown" token="partial_2" searchWhenChanged="true">
+        <label>10. Partial (Partial time bins should be retained or not) ?</label>
+        <choice value="True">True</choice>
+        <choice value="False">False</choice>
+        <default>True</default>
+        <initialValue>True</initialValue>
+      </input>
+      <input type="dropdown" token="usenull_2" searchWhenChanged="true">
+        <label>11. Use Null ?</label>
+        <choice value="True">True</choice>
+        <choice value="False">False</choice>
+        <default>False</default>
+        <initialValue>False</initialValue>
+      </input>
+      <input type="dropdown" token="useother_2" searchWhenChanged="true">
+        <label>12. Use Other ?</label>
+        <choice value="True">True</choice>
+        <choice value="False">False</choice>
+        <default>False</default>
+        <initialValue>False</initialValue>
+      </input>
+      <input type="dropdown" token="where_comp_2" searchWhenChanged="true">
+        <label>13. Series with the highest spikes (Max or Sum)</label>
+        <choice value="Max">Max</choice>
+        <choice value="Min">Min</choice>
+        <choice value="Sum">Sum</choice>
+        <choice value="Avg">Avg</choice>
+        <default>Max</default>
+        <initialValue>Max</initialValue>
+      </input>
+      <input type="dropdown" token="wherein_comp_a_2" searchWhenChanged="true">
+        <label>14. Grouping Criteria (In or Not In)</label>
+        <choice value="In">IN</choice>
+        <choice value="NotIn">NOT IN</choice>
+        <default>In</default>
+        <initialValue>In</initialValue>
+      </input>
+      <input type="dropdown" token="wherein_comp_b_2" searchWhenChanged="true">
+        <label>15. Top or Bottom groups</label>
+        <choice value="top">Top</choice>
+        <choice value="bottom">Bottom</choice>
+        <default>top</default>
+        <initialValue>top</initialValue>
+      </input>
+      <input type="text" token="wherein_comp_c_2" searchWhenChanged="true">
+        <label>16. Number for Series for Top &amp; Bottom (Finds Spikes)</label>
+        <default>15</default>
+        <initialValue>15</initialValue>
+      </input>
+      <chart>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_2">
+          <query>| eval total_run_time=total_run_time/60 
+| timechart $span_2$ FixedRange=$fixedrange_2$ UseNull=$usenull_2$ UseOther=$useother_2$ Partial=$partial_2$ Cont=$cont_2$ Dedup_SplitVals=$dedup_splitvals_2$
+    eval(round($agg_function_2$($metric_2$),$round_2$)) As $metric_2$
+    By $split_by_2$ 
+    Where $where_comp_2$ $wherein_comp_a_2$ $wherein_comp_b_2$$wherein_comp_c_2$</query>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">550</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
+      <title>4. HTTP Event Collector Valid vs Invalid Requests</title>
+      <chart>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| bin _time minspan=1m 
+| stats sum(num_of_events) as events_total, sum(num_of_requests) as requests_total, sum(num_of_requests_to_disabled_token) as disabled_token_total, sum(num_of_requests_to_incorrect_url) as incorrect_url_total, sum(num_of_auth_failures) as auth_fail_total, sum(num_of_parser_errors) as parser_error_total, sum(total_bytes_indexed) as data_indexed, sum(total_bytes_received) as data_received by _time 
+| eval incorrect_url_total=if(isnull(incorrect_url_total), 0, incorrect_url_total) 
+| eval data_indexed=data_indexed/pow(1024, 2) 
+| eval data_received=data_received/pow(1024, 2) 
+| eval auth_fail_total=if(isnull(auth_fail_total), 0, auth_fail_total) 
+| eval valid_requests_total = requests_total 
+| eval invalid_requests_total = disabled_token_total + incorrect_url_total + auth_fail_total 
+| timechart minspan="1m" sum(valid_requests_total) as "Valid Requests" sum(invalid_requests_total) as "Invalid Requests" sum(data_received) as "Data Received"</query>
+        </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY2.abbreviation">auto</option>
+        <option name="charting.axisY2.enabled">1</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.overlayFields">"Data Received"</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="height">500</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_41" depends="$gadget_lib_loaded$">
+      <title>5. HTTP Event Collector Error Messages over time</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>Time Range</label>
+        <default>
+          <earliest>-5m@m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="status_message" searchWhenChanged="true">
+        <label>2. HEC Status Message</label>
+        <fieldForLabel>status_message</fieldForLabel>
+        <fieldForValue>status_message</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_3">
+          <query>| stats count by status_message</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <chart>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_3">
+          <query>| search reply=* NOT (channel!=n/a reply=5 http_input_body_size=0) 
+| timechart count by status_message</query>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">500</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_441" depends="$gadget_lib_loaded$">
+      <title>6. HTTP Event Collector Token Messages</title>
+      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-5m@m</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+        <label>2. SH Cluster Label</label>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app" searchWhenChanged="true">
+        <label>3. App</label>
+        <fieldForLabel>app</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by app</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="token_name" searchWhenChanged="true">
+        <label>4. Token Name</label>
+        <fieldForLabel>token_name</fieldForLabel>
+        <fieldForValue>token_name</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by token_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="index_name" searchWhenChanged="true">
+        <label>5. Index Name</label>
+        <fieldForLabel>index_name</fieldForLabel>
+        <fieldForValue>index_name</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by index_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="sourcetype_name" searchWhenChanged="true">
+        <label>6. Sourcetype Name</label>
+        <fieldForLabel>sourcetype_name</fieldForLabel>
+        <fieldForValue>sourcetype_name</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by sourcetype_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="source_name" searchWhenChanged="true">
+        <label>7. Source Name</label>
+        <fieldForLabel>source_name</fieldForLabel>
+        <fieldForValue>source_name</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by source_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="useACK" searchWhenChanged="true">
+        <label>8. Acknowledgment Enabled?</label>
+        <fieldForLabel>useACK</fieldForLabel>
+        <fieldForValue>useACK</fieldForValue>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <choice value="*">Any</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="status_message" searchWhenChanged="true">
+        <label>9. HEC Status Message</label>
+        <fieldForLabel>status_message</fieldForLabel>
+        <fieldForValue>status_message</fieldForValue>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_3">
+          <query>| stats count by status_message</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <table>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_3">
+          <query>| stats latest(*) as * values(host) as host by idxcluster_label name 
+| table idxcluster_label name token app index_name indexes sourcetype_name source_name useACK source_IP status_message channel events_processed http_input_body_size
+| `rename_common_fields` 
+| `rename_hec_fields`</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="IDX Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="HEC Token Name2">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="HEC App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="HEC Index">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="HEC Sourcetype">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="HEC Status Message">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="HEC Body Size"></format>
+        <format type="color" field="HEC useACK?">
+          <colorPalette type="map">{"0":#5A4575,"1":#006D9C}</colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
+      <title>7. HTTP Event Collector Stats By $split_by_tok_1$</title>
+      <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
+        <label>1. Split By</label>
+        <choice value="shcluster_label">SH Cluster Label</choice>
+        <choice value="Splunk_Instance">Splunk Instance</choice>
+        <choice value="app">App</choice>
+        <choice value="disabled">Disabled?</choice>
+        <choice value="token_name">Token Name</choice>
+        <choice value="token">Token</choice>
+        <choice value="index_name">Index</choice>
+        <choice value="indexes">Indexes</choice>
+        <choice value="source_name">Source</choice>
+        <choice value="sourcetype_name">Source Type</choice>
+        <choice value="useACK">useACK</choice>
+        <choice value="dedicatedIoThreads">dedicatedIoThreads</choice>
+        <choice value="enableSSL">enableSSL</choice>
+        <choice value="port">port</choice>
+        <choice value="maxSockets">maxSockets</choice>
+        <choice value="maxThreads">maxThreads</choice>
+        <default>index_name</default>
+        <initialValue>index_name</initialValue>
+      </input>
+      <chart>
+        <search base="splunk_sh_12_http_event_collector_dashboard_v1_1">
+          <query>| stats count by $split_by_tok_1$</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.001</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">700</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_6" depends="$gadget_lib_loaded$">
+      <title>9. Associated GMC Job(s) - $env:page$</title>
+      <html>
+            <ol>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_http_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Http Event Collector (HEC) Inputs KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_http_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Http Event Collector (HEC) Inputs Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_summary_data_inputs_http_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Http Event Collector (HEC) Inputs KV Store Gen Job From Summary Index</a>
+               </li>
+            </ol>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console/&amp;lookup=splunk_rest_data_inputs_http_sh_kv_store&amp;type=kv">
+                     View HTTP Event Collector KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+         </html>
+    </panel>
+  </row>
+</form>

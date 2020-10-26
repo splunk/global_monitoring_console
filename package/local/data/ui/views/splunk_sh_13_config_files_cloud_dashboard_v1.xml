@@ -1,0 +1,512 @@
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>SH - 13 - Config Files - Cloud Dashboard - v1</label>
+  <description>Splunk Config Files Information Dashboard: limits.conf server.conf distsearch.conf outputs.conf web.conf ui-prefs.conf props.conf transforms.conf</description>
+  <search id="splunk_sh_20_config_files_dashboard_v1">
+    <query>| from lookup:splunk_rest_configs_conf_files_all_kv_store_lookup
+| fields _time Splunk_Instance config_file app sharing author stanza title updated
+| search $Exclusions$ (author="$author$" app="*$app$*" config_file="*$config_file$*" sharing="$sharing$" stanza="*$stanza$*")
+| `get_instance_roles(Splunk_Instance)`
+| `get_cluster_label(Splunk_Instance)` 
+| `strftime_format(updated)`
+| makemv delim="###" title
+| mvexpand title | search title!="\[*" 
+| rex field=title "(?&lt;Property&gt;^\w+)\s*=\s*(?&lt;Value&gt;.*?)$"
+| rex field=Value mode=sed "s/\"//g"
+| stats 
+  Latest(_time) As _time
+  Values(*) As *
+  Dc(Value) As DC_Value
+    by cluster_label app config_file stanza Property 
+| search cluster_label="$cluster_label$" Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$" Property="$Property$" Value="$Value$"</query>
+  </search>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <table>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats Latest(_time) As _time
+| fields _time 
+| `strftime_format(_time)`
+| rename _time As "splunk_rest_configs_conf_files_all_kv_store_lookup Refresh"</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+      <title>1. Config Files Filters</title>
+      <input type="dropdown" token="cluster_label" searchWhenChanged="true">
+        <label>1. Splunk (Cluster/Instance)</label>
+        <fieldForLabel>cluster_label</fieldForLabel>
+        <fieldForValue>cluster_label</fieldForValue>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count by cluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2. Splunk Roles</label>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
+        <label>3. Splunk Instance</label>
+        <fieldForLabel>Splunk_Instance</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count by Splunk_Instance</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="author" searchWhenChanged="true">
+        <label>4. Owner</label>
+        <fieldForLabel>author</fieldForLabel>
+        <fieldForValue>author</fieldForValue>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count by author</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app" searchWhenChanged="true">
+        <label>5. App</label>
+        <fieldForLabel>app</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count by app</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="sharing" searchWhenChanged="true">
+        <label>6. App Sharing</label>
+        <fieldForLabel>sharing</fieldForLabel>
+        <fieldForValue>sharing</fieldForValue>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count by sharing</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="config_file" searchWhenChanged="true">
+        <label>7. Config File</label>
+        <fieldForLabel>config_file</fieldForLabel>
+        <fieldForValue>config_file</fieldForValue>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count by config_file</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="stanza" searchWhenChanged="true">
+        <label>8. Stanza</label>
+        <fieldForLabel>stanza</fieldForLabel>
+        <fieldForValue>stanza</fieldForValue>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count by stanza</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Property" searchWhenChanged="true">
+        <label>9. Property</label>
+        <fieldForLabel>Property</fieldForLabel>
+        <fieldForValue>Property</fieldForValue>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count by Property</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Value" searchWhenChanged="true">
+        <label>10. Value</label>
+        <fieldForLabel>Value</fieldForLabel>
+        <fieldForValue>Value</fieldForValue>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count by Value</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Splunk_Roles" searchWhenChanged="true">
+        <label>11. Splunk Roles (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Splunk_Instance" searchWhenChanged="true">
+        <label>12. Splunk Instance (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="config_file" searchWhenChanged="true">
+        <label>13. Config File (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="stanza" searchWhenChanged="true">
+        <label>14. Stanza (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Property" searchWhenChanged="true">
+        <label>15. Property (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Value" searchWhenChanged="true">
+        <label>16. Value (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="app" searchWhenChanged="true">
+        <label>17. App (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="checkbox" token="Exclusions" searchWhenChanged="true">
+        <label>18. Exclusions</label>
+        <choice value="app!=&quot;system&quot;">Exclude system App</choice>
+        <choice value="app!=&quot;search&quot;">Exclude search App</choice>
+        <choice value="*">No Exclusions</choice>
+        <delimiter>AND</delimiter>
+        <prefix>(</prefix>
+        <suffix>)</suffix>
+        <default>"app!=""search"""</default>
+        <initialValue>app!="search"</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_11" depends="$gadget_lib_loaded$">
+      <title>2. Config Files List</title>
+      <table>
+        <title>splunk_rest_configs_conf_files_all_kv_store_lookup</title>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| table shcluster_label config_file author app sharing stanza Property Value  | where Property!="updated"
+| sort 0 shcluster_label app stanza Property 
+| `rename_common_fields` 
+| `rename_rest_fields` 
+| rename config_file AS "Config File" title AS "Configuration Entry"</query>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format type="color" field="stanza">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="value">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Calculated Field">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Event Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Disabled">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="Color">
+          <colorPalette type="map">{"et_blue":#006D9C}</colorPalette>
+        </format>
+        <format type="color" field="Priority">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F8BE34" minColor="#53A051"></colorPalette>
+          <scale type="minMidMax" midType="percent" midValue="50"></scale>
+        </format>
+        <format type="color" field="Tags">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Search">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Property">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="SH Cluster Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Search Head">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="DC_Value">
+          <colorPalette type="map">{"1":#53A051,"2":#F8BE34,"3":#DC4E41}</colorPalette>
+        </format>
+      </table>
+      <single>
+        <title>Total Number of Config File Properties</title>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0xf1813f"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_111" depends="$gadget_lib_loaded$">
+      <title>3. Current Search Head &amp; Search Head Clustering Configurations</title>
+      <table>
+        <search>
+          <query>| from lookup:splunk_rest_shcluster_config_shc_kv_store_lookup 
+| stats Latest(_time) As _time 
+| fields _time 
+| `strftime_format(_time)` 
+| rename _time As "splunk_rest_shcluster_config_shc_kv_store_lookup Refresh"</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">false</option>
+      </table>
+      <table>
+        <title>splunk_rest_shcluster_config_shc_kv_store_lookup</title>
+        <search>
+          <query>| from lookup:splunk_rest_shcluster_config_shc_kv_store_lookup 
+| search shcluster_label="$cluster_label$" 
+| table  shcluster_label mode conf_deploy_fetch_url adhoc_searchhead replication_factor replication_port replication_use_ssl async_replicate_on_proxy register_replication_address captain_is_adhoc_searchhead decommission_search_jobs_wait_secs dynamic_captain manual_detention max_peer_rep_load percent_peers_to_restart ping_flag preferred_captain quiet_period rolling_restart cxn_timeout heartbeat_timeout rcv_timeout send_timeout rep_cxn_timeout rep_max_rcv_timeout rep_max_send_timeout rep_rcv_timeout rep_send_timeout restart_timeout 
+| `rename_common_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_114" depends="$gadget_lib_loaded$">
+      <title>3. Current Indexer Clustering Configurations</title>
+      <table>
+        <search>
+          <query>| from lookup:splunk_rest_cluster_config_idx_kv_store_lookup 
+| stats Latest(_time) As _time 
+| fields _time 
+| `strftime_format(_time)` 
+| rename _time As "splunk_rest_cluster_config_idx_kv_store_lookup Refresh"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">false</option>
+      </table>
+      <table>
+        <title>splunk_rest_cluster_config_idx_kv_store_lookup</title>
+        <search>
+          <query>| from lookup:splunk_rest_cluster_config_idx_kv_store_lookup 
+| search idxcluster_label="$cluster_label$" 
+| stats Last(*) As * by idxcluster_label
+| table idxcluster_label master_uri forwarderdata_rcv_port guid mode access_logging_for_heartbeats allowed_hbmiss_count cxn_timeout decommission_node_force_timeout decommission_search_jobs_wait_secs disabled forwarderdata_use_ssl frozen_notifications_per_batch heartbeat_period heartbeat_timeout manual_detention max_auto_service_interval max_fixup_time_ms max_peer_build_load max_peer_rep_load max_peer_sum_rep_load max_peers_to_download_bundle max_primary_backups_per_service notify_scan_min_period notify_scan_period percent_peers_to_restart ping_flag quiet_period rcv_timeout register_forwarder_address register_replication_address register_search_address remote_storage_upload_timeout rep_cxn_timeout rep_max_rcv_timeout rep_max_send_timeout rep_rcv_timeout rep_send_timeout replication_factor replication_port replication_use_ssl report_remote_storage_bucket_upload_to_targets reporting_delay_period restart_timeout search_factor search_files_retry_timeout send_timeout service_interval site warm_bucket_replication_pre_upload</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="idxcluster_label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_113" depends="$gadget_lib_loaded$">
+      <title>4. Current Search Concurrency Configurations</title>
+      <table>
+        <search>
+          <query>| from lookup:splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup 
+| stats Latest(_time) As _time 
+| fields _time 
+| `strftime_format(_time)` 
+| rename _time As "splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup Refresh"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">false</option>
+      </table>
+      <table>
+        <title>splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup</title>
+        <search>
+          <query>| from lookup:splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup 
+| search shcluster_label="$cluster_label$" 
+| table shcluster_label auto_summary_perc base_max_searches max_rt_search_multiplier max_searches_per_cpu max_searches_perc max_auto_summary_searches max_hist_scheduled_searches max_hist_searches max_rt_scheduled_searches max_rt_searches 
+| `rename_common_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_112" depends="$gadget_lib_loaded$">
+      <title>5. Current Splunk Instance Configurations</title>
+      <table>
+        <search>
+          <query>| from lookup:splunk_rest_assets_kv_store_lookup 
+| stats Latest(_time) As _time 
+| fields _time 
+| `strftime_format(_time)` 
+| rename _time As "splunk_rest_assets_kv_store_lookup Refresh"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">false</option>
+      </table>
+      <table>
+        <title>splunk_rest_assets_kv_store_lookup</title>
+        <search>
+          <query>| from lookup:splunk_rest_assets_kv_store_lookup 
+| search idxcluster_label="$cluster_label$" OR cluster_label="$cluster_label$" OR Splunk_Instance="$cluster_label$"
+| table cluster_label idxcluster_label Splunk_Instance version numberOfCores numberOfVirtualCores physicalMemoryMB rtsearch_enabled isForwarding appServerPorts dfsDisabled dfsMasterPort enableSplunkWebSSL httpport kvStoreDisabled kvStorePort mgmtHostPort minFreeSpace sessionTimeout startwebserver</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="cluster_label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
+      <title>6. Config Files Stats By $split_by_tok_1$</title>
+      <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
+        <label>1. Split By</label>
+        <choice value="shcluster_label">SH Cluster Label</choice>
+        <choice value="Splunk_Instance">Splunk Instance</choice>
+        <choice value="app">App</choice>
+        <choice value="sharing">App Sharing</choice>
+        <choice value="author">Author (User)</choice>
+        <choice value="updated">Update Date</choice>
+        <choice value="config_file">config_file</choice>
+        <choice value="cluster_label">Cluster Label</choice>
+        <default>app</default>
+        <initialValue>app</initialValue>
+      </input>
+      <chart>
+        <search base="splunk_sh_20_config_files_dashboard_v1">
+          <query>| stats count by $split_by_tok_1$</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.001</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">700</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_8" depends="$gadget_lib_loaded$">
+      <title>8. Associated GMC Job(s) - $env:page$</title>
+      <html>
+            <ol>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_files_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Configuration Files: (limits, server, distsearch, outputs, ui-prefs, props and transforms) KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_files_summary_data_gen" target="_blank" rel="noopener">Splunk Configuration Files: (limits, server, distsearch, outputs, ui-prefs, props and transforms) Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_summary_configs_conf_files_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Configuration Files: (limits, server, distsearch, outputs, ui-prefs, props and transforms) KV Store Gen Job From Summary Index</a>
+               </li>
+            </ol>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=global_monitoring_console/&amp;lookup=splunk_rest_configs_conf_files_all_kv_store&amp;type=kv">
+                     View Splunk Config Files KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+         </html>
+    </panel>
+  </row>
+</form>

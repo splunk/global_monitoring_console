@@ -1,0 +1,157 @@
+/*
+ * Copyright (c) 2016-2018, OctoInsight Inc., All rights reserved.
+ * Authored by Ryan Thibodeaux
+ * see included LICENSE file (BSD 3-clause)
+ */
+
+.db-slider-container {
+  font-family: Arial, Helvetica, Arial, sans-serif;
+  
+  /* border-top: 3px solid slateblue;
+  border-right: 3px solid slateblue;
+  border-left: 1px solid slateblue; */
+
+  border-top: 3px solid #FFFF38;
+  border-right: 3px solid #FFFF38;
+  border-left: 1px solid #FFFF38;
+
+  position: fixed;
+  width: 150px;
+  z-index: 10000;
+  height: 125px;
+  color: #000;
+  display: flex;
+  background: #b2b6ba;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  right: 0;
+  left: 0;
+  margin-right: 40px;
+  margin-left: auto;
+}
+
+.db-slider-header {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  justify-content: center;
+  margin: 5px 0px;
+  height: 30px;
+  vertical-align: middle;
+  width: inherit;
+  position: absolute;
+  cursor: pointer;
+}
+
+.db-slider-up {
+  bottom: 0px !important;
+}
+
+.db-slider-down {
+  bottom: -100px !important;
+}
+
+.db-slider-container > .db-slider-header > .uparrow:before {
+  content: "\25B2";
+  cursor: pointer;
+  margin-left: -25px;
+  margin-right: 8px;
+}
+
+.db-slider-container > .db-slider-header > .downarrow:before {
+  content: "\25Bc";
+  cursor: pointer;
+  margin-left: -25px;
+  margin-right: 8px;
+}
+
+.db-slider-content {
+  position: relative;
+  margin: 35px auto;
+  line-height: 16px;
+}
+
+.db-slider-content > .splunk-choice-input {
+  padding-bottom: 2px;
+}
+
+.db-slider-content label {
+  font-size: 12px;
+  color: #000;
+}
+
+.db-slider-content div[class*="main_Box_"] {
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+.db-slider-content div[class*="main_Box_"] > button {
+  height: 16px;
+  width: 16px;
+  line-height: 16px;
+  background-color: #eee;
+  background-image: linear-gradient(180deg,#f7f7f7,#eee);
+}
+
+
+/* custom settings for app HTML buttons */
+.db-slider-content .btn-app-submit {
+  margin-top: 5px;
+  margin-left: 14px;
+}
+
+.btn-app-submit {
+  display: inline-block;
+  height: auto;
+  font-size: 14px;
+  box-sizing: border-box;
+  font-weight: 400;
+  padding: 4px 12px;
+  margin-bottom: 0;
+  line-height: 16px;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: linear-gradient(180deg, #65a637, #5b9532);
+  background-repeat: repeat-x;
+  background-color: #65a637;
+  border: 1px solid #4d7e2a;
+  border-bottom-color: #4d7e2a;
+  border-top-color: #4d7e2a;
+  color: #fff;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .1);
+  text-shadow: none
+  border-radius: 2px
+}
+
+.btn-app-submit.active,
+.btn-app-submit:active,
+.btn-app-submit:hover {
+  background-image: linear-gradient(180deg, #7ab83d, #65a637);
+  transition: background .2s, border .2s, box-shadow .2s, text-decoration .2s;
+  background-color: #7dc34b;
+  border-color: #547e2a;
+  border-bottom-color: #547e2a;
+  border-top-color: #547e2a;
+  text-decoration: none
+}
+
+.btn-app-submit:hover {
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .08);
+}
+
+.btn-app-submit.active,
+.btn-app-submit:active {
+  box-shadow: none;
+  text-shadow: none;
+  filter: none
+}
+
+.btn-app-submit:focus {
+  border-color: rgba(82, 168, 236, .8);
+  outline: 0;
+  border-collapse: separate;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .1);
+  transition: background .2s, border .2s, box-shadow .2s, text-decoration .2s;
+  background-position: 0
+}

@@ -1,0 +1,227 @@
+<form script="help_entries_list.js, tooltip.js" stylesheet="tooltip.css" theme="dark">
+  <label>GMC 101 - v2</label>
+  <description>splunk backup kvstore -appName global_monitoring_console -collectionName help_entries -archiveName gmc101 -auth admin:</description>
+  <search id="gmc_searches_dashboard_v1">
+    <query>| from lookup:help_entries 
+    | fields app, view, panel, classification, text, app_version, disabled
+| rename app as search_num, view as search_name, panel as tags, classification as category, app_version as search, text As search_description
+| makemv delim="," tags
+| stats Values(*) As * by search_num
+| fillnull value="not-set" search_name,category,tags
+| search category IN ($category$) NOT category IN ($category2$) tags IN ($tags$) NOT tags IN ($tags2$) search_num IN ($search_num$) search_name="*$search_name$*" search="*$gmc_search1$*" search="*$gmc_search2$*"
+| $gmc$
+</query>
+  </search>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="multiselect" token="category" searchWhenChanged="true">
+      <label>1. Category</label>
+      <choice value="*">All</choice>
+      <initialValue>*</initialValue>
+      <fieldForLabel>category</fieldForLabel>
+      <fieldForValue>category</fieldForValue>
+      <search base="gmc_searches_dashboard_v1">
+        <query>| stats count by category</query>
+      </search>
+      <delimiter>,</delimiter>
+      <default>*</default>
+    </input>
+    <input type="multiselect" token="tags" searchWhenChanged="true">
+      <label>2.1 Tags</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>tags</fieldForLabel>
+      <fieldForValue>tags</fieldForValue>
+      <search base="gmc_searches_dashboard_v1">
+        <query>| stats count by tags</query>
+      </search>
+      <delimiter>,</delimiter>
+    </input>
+    <input type="multiselect" token="tags2" searchWhenChanged="true">
+      <label>2.2 Tag Exclusions</label>
+      <choice value="None">None</choice>
+      <fieldForLabel>tags2</fieldForLabel>
+      <fieldForValue>tags</fieldForValue>
+      <search base="gmc_searches_dashboard_v1">
+        <query>| stats count by tags</query>
+      </search>
+      <delimiter>,</delimiter>
+      <default>None</default>
+      <initialValue>None</initialValue>
+    </input>
+    <input type="multiselect" token="search_num" searchWhenChanged="true">
+      <label>3. Search ID</label>
+      <choice value="*">All</choice>
+      <initialValue>*</initialValue>
+      <fieldForLabel>search_num</fieldForLabel>
+      <fieldForValue>search_num</fieldForValue>
+      <search base="gmc_searches_dashboard_v1">
+        <query>| stats count by search_num</query>
+      </search>
+      <delimiter>,</delimiter>
+    </input>
+    <input type="dropdown" token="search_name" searchWhenChanged="true">
+      <label>4.1 Search Name</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>search_name</fieldForLabel>
+      <fieldForValue>search_name</fieldForValue>
+      <search base="gmc_searches_dashboard_v1">
+        <query>| stats count by search_name</query>
+      </search>
+    </input>
+    <input type="text" token="search_name" searchWhenChanged="true">
+      <label>4.2 Search Name (Contains) I</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="gmc_search1" searchWhenChanged="true">
+      <label>5.1 Search (Contains) I</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="gmc_search2" searchWhenChanged="true">
+      <label>5.2 Search (Contains) II</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="multiselect" token="category2" searchWhenChanged="true">
+      <label>6. Category Exclusions</label>
+      <choice value="None">None</choice>
+      <fieldForLabel>category2</fieldForLabel>
+      <fieldForValue>category</fieldForValue>
+      <search base="gmc_searches_dashboard_v1">
+        <query>| stats count by category</query>
+      </search>
+      <delimiter>,</delimiter>
+      <default>None</default>
+      <initialValue>None</initialValue>
+    </input>
+    <input type="checkbox" token="gmc" searchWhenChanged="true">
+      <label>7. GMC Only</label>
+      <choice value="search search_num=&quot;GMC-*&quot;">Yes</choice>
+      <choice value="noop">No</choice>
+      <delimiter> </delimiter>
+      <default>"search search_num=""GMC-*"""</default>
+      <initialValue>search search_num="GMC-*"</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>GMC 101 Search Execution with Filters (Health_Assessments)</title>
+      <table id="tblToolTip">
+        <title>app=ID name=view category=classification tags=panel desc=text search=app_version</title>
+        <search base="gmc_searches_dashboard_v1">
+          <query>| table search_num search_name category,tags search search_description
+| sort 0 - search_num 
+| rename search_num As "Search ID", search_name As "Search Name", search_description As "Search Description", search As "GMC_Search"</query>
+        </search>
+        <option name="count">3</option>
+        <option name="drilldown">row</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <link target="_blank">search?q=$row.GMC_Search$</link>
+        </drilldown>
+      </table>
+      <single>
+        <title>Total number of searches</title>
+        <search base="gmc_searches_dashboard_v1">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <title>Latest Search Number</title>
+        <search base="gmc_searches_dashboard_v1">
+          <query>| search search_num="GMC-*"| stats count by search_num
+| tail 1</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>GMC 101 Search Management</title>
+      <html id="element1">
+                <div id="help_entries">
+                    Loading
+                </div>
+            </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>By Category</title>
+      <chart>
+        <search base="gmc_searches_dashboard_v1">
+          <query>| stats count by category</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>By Tags</title>
+      <chart>
+        <search base="gmc_searches_dashboard_v1">
+          <query>| stats count by tags</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$alwaysHideCSS$">
+      <html>
+            <style>#Input1{
+             width:15% !important;
+           }
+           #Input2{
+             width:15% !important;
+           }</style>
+           <style>#Input3{
+             width:15% !important;
+           }
+           #Input4{
+             width:15% !important;
+           }</style>
+           <style>#Input5{
+             width:15% !important;
+           }
+           #Input6{
+             width:15% !important;
+           }</style>
+           <style>#Input7{
+             width:15% !important;
+           }
+           #Input8{
+             width:15% !important;
+           }</style>
+           <style>#Input9{
+             width:15% !important;
+           }
+           #Input10{
+             width:15% !important;
+           }</style>
+         </html>
+    </panel>
+  </row>
+</form>

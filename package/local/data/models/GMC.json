@@ -1,0 +1,1757 @@
+{
+    "modelName": "GMC",
+    "displayName": "Global Monitoring Console (GMC)",
+    "description": "Global Monitoring Console (GMC) Data Model",
+    "objectSummary": {
+        "Event-Based": 8,
+        "Transaction-Based": 0,
+        "Search-Based": 0
+    },
+    "objects": [
+        {
+            "objectName": "Search_Activity",
+            "displayName": "Search Activity",
+            "parentName": "BaseEvent",
+            "comment": "",
+            "fields": [
+                {
+                    "fieldName": "_time",
+                    "owner": "BaseEvent",
+                    "type": "timestamp",
+                    "fieldSearch": "",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "_time",
+                    "comment": ""
+                },
+                {
+                    "fieldName": "host",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "fieldSearch": "",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "host",
+                    "comment": ""
+                },
+                {
+                    "fieldName": "source",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "fieldSearch": "",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "source",
+                    "comment": ""
+                },
+                {
+                    "fieldName": "sourcetype",
+                    "owner": "BaseEvent",
+                    "type": "string",
+                    "fieldSearch": "",
+                    "required": false,
+                    "multivalue": false,
+                    "hidden": false,
+                    "editable": true,
+                    "displayName": "sourcetype",
+                    "comment": ""
+                }
+            ],
+            "calculations": [],
+            "constraints": [
+                {
+                    "search": "(`gmc_setup_dm_constraints_search`) (index=_audit sourcetype=audittrail action=search search_id=* (search=* OR info=terminate)) OR ( index=_internal AND ((sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd_access uri=\"*delegatejob*\" spent>500) OR (sourcetype=splunkd component=DispatchManager username=* \"QUEUED\"))) OR (index=_introspection sourcetype=splunk_resource_usage component=PerProcess \"data.process_type\"=search \"data.search_props.app\"=*)",
+                    "owner": "Search_Activity"
+                }
+            ],
+            "lineage": "Search_Activity"
+        },
+        {
+            "objectName": "Audit_Search",
+            "displayName": "Audit Search",
+            "parentName": "Search_Activity",
+            "comment": "",
+            "fields": [],
+            "calculations": [
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "search_id1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Search ID",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "i0enhy2yk3",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(search_id) OR search_id=\"\", NULL(), trim(search_id, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "search",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Search",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "5hsrsm72v7n",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(search) OR search=\"\" OR match(trim(trim(search, \"'\")), \"^\\s*\\|?\\s*summarize\") OR len(search) < 5, NULL(), trim(trim(search, \"'\")) )"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "savedsearch_name1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Savedsearch Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "3sfmikv7flb",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(savedsearch_name) OR savedsearch_name=\"\"  OR match(savedsearch_name, \"^_ACCELERATE_|N\\/A|^search\\d+|\\*\") OR match(search, \"^\\| summarize\") OR match(search_id, \"^ta_\\d+|^\\d+\"), \"Undefined\", savedsearch_name)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "datamodel1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Datamodel",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "f6hxqossk5u",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case ( match(savedsearch_name, \"^_ACCELERATE_DM_\"), replace(savedsearch_name, \"_ACCELERATE_DM_(.*)_ACCELERATE_\", \"\\1\"), true(), null())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "info1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Info",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "m4iqoz8xspa",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(info) OR info=\"\", \"Undefined\", info)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "user1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "User",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "wirjgm4ibtp",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case ( ISNULL(user) OR user=\"\", \"Undefined\", user=\"nobody\", \"system\", true(), user )"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "roles",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Roles",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "hgvdx0rtzi8",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ( ISNULL(roles) OR roles=\"\") OR match(roles, \"=\"), NULL(), trim(roles, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "search_et",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Search ET",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "ehn0mgxq3n9",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "Case( \n    IsNum(search_et),search_et, \n    search_et=\"N/A\" OR apiStartTime=\"N/A\" OR match(apiStartTime,\"_TIME\"),0, \n    (IsNull(search_et) OR search_et=\"\") AND IsNotNull(apiStartTime),strptime(apiStartTime,\"%a %b %d %H:%M:%S %Y\"),\n    True(), Null())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "search_lt",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Search LT",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "zfczzvwwhqf",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "Case( \n    IsNum(search_lt),search_lt,\n    search_lt=\"N/A\" OR apiEndTime=\"N/A\" OR match(apiEndTime, \"_TIME\"),0, \n    (IsNull(search_lt) OR search_lt=\"\") AND IsNotNull(apiEndTime),strptime(apiEndTime,\"%a %b %d %H:%M:%S %Y\"),\n    True(), Null())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "search_startup_time",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Search Startup Time",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "ou6qzqs8p3s",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (search_startup_time), search_startup_time, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "dispatch_time1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Dispatch Time",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "st4c2bmsmn",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (exec_time), exec_time, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "considered_events",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Considered Events",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "uuwmgi3hry",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (considered_events), considered_events, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "searched_buckets",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Searched Buckets",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "gqvmx6txm4a",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (searched_buckets), searched_buckets, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "scan_count1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Scan Count",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "lxluqkf07g",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (scan_count), scan_count, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "result_count1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Result Count",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "1sq683pnu6o",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (result_count), result_count, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "available_count",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Available Count",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "ibuw76ucu",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (available_count), available_count, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "event_count",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Event Count",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "rsreec1ycv",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (event_count), event_count, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "total_run_time1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Total Run Time",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "aal37upub8d",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (total_run_time), total_run_time, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "total_slices",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Total Slices",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "ha4bilb4a3",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (total_slices), total_slices, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "decompressed_slices",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Decompressed Slices",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "sfmt8x19k5",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (decompressed_slices), decompressed_slices, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "is_realtime",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "IS Realtime",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "pliaca1ivf",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (is_realtime), is_realtime, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "search_type1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Search Type",
+                            "comment": "Search Type"
+                        }
+                    ],
+                    "calculationID": "ytcrbeyjhy",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case ( \n      match(search_id1, \"^SummaryDirector\") OR match(search_id1, \"^summarize_SummaryDirector\") OR (match(savedsearch_name, \"^_ACCELERATE_\") AND NOT match(savedsearch_name, \"^_ACCELERATE_DM_\")), \"report_acceleration\",\n      ( match(search_id1, \"^DM_\") OR match(savedsearch_name, \"^_ACCELERATE_DM_\") ), \"datamodel_acceleration\",\n      match(search_id1, \"^scheduler_\") AND isnotnull(savedsearch_name) AND NOT match(savedsearch_name, \"^_ACCELERATE_\"), \"scheduled\", \n      match(search_id1, \"^rt_\"), \"realtime\", \n      match(search_id1, \"^subsearch_\"), \"subsearch\", \n      match(search_id1, \"^ta_\\d+\"), \"typeahead\", \n      true(), \"adhoc\")"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "exec_time",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Execution Time",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "o1jz7nlyx0o",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (exec_time), exec_time, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "max_count",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Max Count",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "x40w2r2iirc",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (max_count), max_count, NULL())"
+                }
+            ],
+            "constraints": [
+                {
+                    "search": "(index=_audit sourcetype=audittrail action=search search_id=* (search=* OR info=terminate))",
+                    "owner": "Search_Activity.Audit_Search"
+                }
+            ],
+            "lineage": "Search_Activity.Audit_Search"
+        },
+        {
+            "objectName": "Internal_Scheduler",
+            "displayName": "Internal Scheduler",
+            "parentName": "Search_Activity",
+            "comment": "",
+            "fields": [],
+            "calculations": [
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "status2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": true,
+                            "editable": true,
+                            "displayName": "Status",
+                            "comment": ""
+                        }
+                    ],
+                    "inputField": "_raw",
+                    "calculationID": "bj0alq8xd4t",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Rex",
+                    "expression": "status=(?<status2>.*?),"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "search_id2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Search ID",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "puyduvsnc2c",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case ( ISNOTNULL(search_id), search_id, ISNULL(sid) OR sid=\"\", savedsearch_id, true(), sid )"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "savedsearch_name2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Savedsearch Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "h4ewlmb9kcg",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(savedsearch_name) OR savedsearch_name=\"\"  OR match(savedsearch_name, \"^_ACCELERATE_\"), \"Undefined\", savedsearch_name)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "app2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "App",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "tctp13wxh1",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(app) OR app=\"\", \"Undefined\", app)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "info2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "info",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "fw2zthbk1tq",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "CASE ( \n    status2==\"continued\", \"deferred\",\n    status2==\"delegated\", \"delegated\",\n    status2==\"delegated_scheduled\", \"delegated_scheduled\",\n    status2==\"delegated_remote\", \"delegated_remote\",\n    status2==\"delegated_remote_completion\", \"delegated_remote_completion\",\n    status2==\"delegated_remote_error\", \"delegated_remote_error\",\n    status2==\"delegated_waiting\", \"delegated_waiting\",\n    status2==\"dispatched\", \"dispatched\",\n    status2==\"max_pending\", \"max_pending\",\n    status2==\"max_running\", \"max_running\",\n    status2==\"skipped\", \"skipped\",\n    status2==\"success\", \"completed\",\n    component=\"SearchProcessMemoryTracker\", \"terminated\",\n    component=\"DispatchManager\", \"queued\",\n    TRUE(), status2 )"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "priority",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Priority",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "0nt3x2ipwhgd",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(priority) OR priority=\"\", NULL(), priority)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "savedsearch_id",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Savedsearch ID",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "kztkg7mhmxl",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "CASE (\n    info2=\"terminated\", \"terminated\", \n    ISNULL(savedsearch_id) OR savedsearch_id=\"\", \"Undefined\",\n    TRUE(), savedsearch_id)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "user2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "User",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "rkycgk3xjcf",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case ( ISNOTNULL(username), username, user=\"nobody\", \"system\", ISNULL(user) OR user=\"\", \"Undefined\", true(), user )"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "scheduled_time",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Scheduled Time",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "8jxrasogtz8",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (scheduled_time), scheduled_time, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "dispatch_time2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Dispatch Time",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "g7kn0pajqo8",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (dispatch_time), dispatch_time, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "window_time",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Window Time",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "04hqrr91zih3",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case ( ISNULL(window_time) OR window_time=\"\", NULL(), window_time=\"-1\", \"auto\", TRUE(), window_time )"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "total_run_time2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Total Run Time",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "qamwz5jchol",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (run_time), run_time, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "result_count2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Result Count",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "0xm7exx0bu4n",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (result_count), result_count, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "concurrency_category",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Concurrency Category",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "8wdjriygmun",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(concurrency_category) OR concurrency_category=\"\", NULL(), concurrency_category)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "concurrency_context",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Concurrency Context",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "flb87jocn9n",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(concurrency_context) OR concurrency_context=\"\", NULL(), concurrency_context)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "concurrency_limit",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Concurrency Limit",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "zp4v30cj4y",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (concurrency_limit), concurrency_limit, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "reason",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Reason",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "1sbcp09gl8f",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(reason) OR reason=\"\", NULL(), reason)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "skipped_count",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Skipped Count",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "bskxp83bcq6",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (skipped_count), skipped_count, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "search_type2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Search Type",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "9ivu4kf9exp",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case ( \n    match(alert_actions, \"summary_index\"), \"summary_indexing\",\n    match(search_type, \"scheduled\"), \"scheduled\",\n    match(search_type, \"datamodel_acceleration\"), \"datamodel_acceleration\",\n    (search_id2 LIKE \"DM_%\" OR savedsearch_name LIKE \"_ACCELERATE_DM%\"), \"datamodel_acceleration\", \n    savedsearch_name LIKE \"_ACCELERATE_DM%\", \"datamodel_acceleration\",\n    match(search_type, \"report_acceleration\"), \"report_acceleration\",\n    match(search_id2, \"^scheduler__\") OR match(search_id2, \"^scheduler__\") , \"scheduled\",\n    search_id2 LIKE \"rt%\", \"realtime\",\n    search_id2 LIKE \"subsearch%\", \"subsearch\",\n    (search_id2 LIKE \"SummaryDirector%\" OR search_id2 LIKE \"summarize_SummaryDirector%\"), \"summary_director\",\n    true(), \"adhoc\")"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "alert_actions",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Alert Actions",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "hinjjitbazw",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(alert_actions) OR alert_actions=\"\", NULL(), alert_actions)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "event_message",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Event_Message",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "czi54fe4o3",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(component = \"SearchProcessMemoryTracker\", event_message, null() )"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "spent",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Spent",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "u1ysireq36f",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM (spent), spent, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "uri_path",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Uri Path",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "sj0oryjql4",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(uri_path) OR uri_path=\"\", NULL(), uri_path)"
+                }
+            ],
+            "constraints": [
+                {
+                    "search": "(index=_internal AND ( (sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd_access uri=\"*delegatejob*\" spent>500) OR (sourcetype=splunkd component=DispatchManager username=* \"QUEUED\")))",
+                    "owner": "Search_Activity.Internal_Scheduler"
+                }
+            ],
+            "lineage": "Search_Activity.Internal_Scheduler"
+        },
+        {
+            "objectName": "Introspection_Search_Usage",
+            "displayName": "Introspection Search Usage",
+            "parentName": "Search_Activity",
+            "comment": "",
+            "fields": [],
+            "calculations": [
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "search_id3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Search ID",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "6puzhmnq48f",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL('data.search_props.sid') OR 'data.search_props.sid'=\"\", NULL(), 'data.search_props.sid')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "acceleration_id",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Acceleration ID",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "3bae8nl1j03",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL('data.search_props.acceleration_id') OR 'data.search_props.acceleration_id'=\"\", NULL(), 'data.search_props.acceleration_id')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "app3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "App",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "qwpc2xc7ij",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL('data.search_props.app') OR 'data.search_props.app'=\"\", \"Undefined\", 'data.search_props.app')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "delta_scan_count",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Delta Scan Count",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "7wx44rv09cx",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.search_props.delta_scan_count'), 'data.search_props.delta_scan_count', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "savedsearch_name3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Savedsearch Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "k3i2pgrx28",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL('data.search_props.label') OR 'data.search_props.label'=\"\" OR 'data.search_props.label'=\"N/A\" OR match('data.search_props.label', \"^_ACCELERATE_\"), \"Undefined\", 'data.search_props.label')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "provenance",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Provenance",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "j8rmx55jou",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL('data.search_props.provenance') OR 'data.search_props.provenance'=\"\", \"unknown\", 'data.search_props.provenance')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "scan_count3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Scan Count",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "9297kmjy8bf",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.search_props.scan_count'), 'data.search_props.scan_count', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "user3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "User",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "lpyhkslo38d",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case ( ISNULL('data.search_props.user') OR 'data.search_props.user'=\"\", \"Undefined\", 'data.search_props.user'=\"nobody\", \"system\", true(), 'data.search_props.user' )"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "total_run_time3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Total Run Time",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "6o70u9p3u8g",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.elapsed'), 'data.elapsed', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "mem_used",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Memory Used",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "ynt8drmpd0f",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.mem_used'), 'data.mem_used'/1024, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "normalized_pct_cpu",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Normalized CPU %",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "1yb2oreixlo",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF (ISNULL('data.normalized_pct_cpu'), 0, 'data.normalized_pct_cpu')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "page_faults",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Page Faults",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "akq5wl1mmt6",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.page_faults'), 'data.page_faults', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "pct_cpu",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "CPU %",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "kq5oz77ido",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.pct_cpu'), 'data.pct_cpu', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "pct_memory",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Memory %",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "ew8t16ub568",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.pct_memory'), 'data.pct_memory', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "pid",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "PID",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "sdwfznuvwvr",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.pid'), 'data.pid', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "ppid",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "PPID",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "o90tqczmpzr",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.ppid'), 'data.ppid', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "read_mb",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Read MB",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "7rcnla6kn8f",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.read_mb'), 'data.read_mb', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "written_mb",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Written MB",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "yyp3b0wpkr",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.written_mb'), 'data.written_mb', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "status",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Status",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "7et782lfgzx",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL('data.status') OR 'data.status'=\"\", NULL(), 'data.status')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "t_count",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Thread Count",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "5w4hd35dc6g",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.t_count'), 'data.t_count', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "fd_used",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "FD Used",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "b70jdevft6h",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF ( ISNUM ('data.fd_used'), 'data.fd_used', NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "search_head",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Search Head",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "96eqx7mmv69",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case ( isnotnull('data.search_props.search_head') AND 'data.search_props.role' == \"peer\", 'data.search_props.search_head', \n    isnull('data.search_props.search_head') AND 'data.search_props.role' == \"head\", \"_self\", \n    isnull('data.search_props.search_head') AND 'data.search_props.role' == \"peer\", \"_unknown\")"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "search_type3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Search Type",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "8ws69xfe6nc",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "case ( \n    match('data.search_props.type', \"ad-hoc\"), \"adhoc\",\n    match('data.search_props.type', \"datamodel acceleration\"), \"datamodel_acceleration\",\n    match('data.search_props.type', \"report acceleration\"), \"report_acceleration\",\n    match('data.search_props.type', \"summary index\"), \"summary_indexing\",\n    true(), 'data.search_props.type')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "mode",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Mode",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "h4qtiula0p",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL('data.search_props.mode') OR 'data.search_props.mode'=\"\", NULL(), 'data.search_props.mode')"
+                }
+            ],
+            "constraints": [
+                {
+                    "search": "(index=_introspection sourcetype=splunk_resource_usage component=PerProcess \"data.process_type\"=search \"data.search_props.app\"=*)",
+                    "owner": "Search_Activity.Introspection_Search_Usage"
+                }
+            ],
+            "lineage": "Search_Activity.Introspection_Search_Usage"
+        },
+        {
+            "objectName": "Audit_Total_Executions",
+            "displayName": "Audit Total Executions",
+            "parentName": "Audit_Search",
+            "comment": "",
+            "fields": [],
+            "calculations": [],
+            "constraints": [
+                {
+                    "search": "info1 IN (\"*completed\", \"canceled\", \"failed\")",
+                    "owner": "Search_Activity.Audit_Search.Audit_Total_Executions"
+                }
+            ],
+            "lineage": "Search_Activity.Audit_Search.Audit_Total_Executions"
+        },
+        {
+            "objectName": "Internal_Total_Executions",
+            "displayName": "Internal Total Executions",
+            "parentName": "Internal_Scheduler",
+            "comment": "",
+            "fields": [],
+            "calculations": [],
+            "constraints": [
+                {
+                    "search": "info2 IN (\"completed\", \"skipped\")",
+                    "owner": "Search_Activity.Internal_Scheduler.Internal_Total_Executions"
+                }
+            ],
+            "lineage": "Search_Activity.Internal_Scheduler.Internal_Total_Executions"
+        },
+        {
+            "objectName": "Internal_Skipped_Executions",
+            "displayName": "Internal Skipped Executions",
+            "parentName": "Internal_Scheduler",
+            "comment": "",
+            "fields": [],
+            "calculations": [],
+            "constraints": [
+                {
+                    "search": "info2=\"skipped\"",
+                    "owner": "Search_Activity.Internal_Scheduler.Internal_Skipped_Executions"
+                }
+            ],
+            "lineage": "Search_Activity.Internal_Scheduler.Internal_Skipped_Executions"
+        },
+        {
+            "objectName": "Audit_Successful_Executions",
+            "displayName": "Audit Successful Executions",
+            "parentName": "Audit_Search",
+            "comment": "",
+            "fields": [],
+            "calculations": [],
+            "constraints": [
+                {
+                    "search": "info1=\"completed\"",
+                    "owner": "Search_Activity.Audit_Search.Audit_Successful_Executions"
+                }
+            ],
+            "lineage": "Search_Activity.Audit_Search.Audit_Successful_Executions"
+        }
+    ],
+    "objectNameList": [
+        "Search_Activity",
+        "Audit_Search",
+        "Internal_Scheduler",
+        "Introspection_Search_Usage",
+        "Audit_Total_Executions",
+        "Internal_Total_Executions",
+        "Internal_Skipped_Executions",
+        "Audit_Successful_Executions"
+    ]
+}

@@ -1,0 +1,138 @@
+<div tabindex="-1" class="help_entry-edit-modal modal fade in hide">
+	<div class="modal-header">
+		<button type="button" class="close btn-dialog-close" data-dismiss="modal">x</button>
+		<h3 class="text-dialog-title">Add New GMC 101 Search</h3>
+	</div>
+	<div class="modal-body form form-horizontal modal-body-scrolling" style="padding-left: 0px; padding-right: 0px;">
+		<div id="help_entry-app-controls" class="control-group shared-controls-controlgroup">
+			<label class="control-label" for="help_entry-app">
+                Search ID: </label>
+			<div class="controls ">
+				<input type="text" name="help_entry-app" id="help_entry-app" />
+				<span class="help-inline"></span>
+			</div>
+		</div>
+		<div id="help_entry-view-controls" class="control-group shared-controls-controlgroup">
+			<label class="control-label" for="help_entry-view">
+                Search Name: </label>
+			<div class="controls ">
+				<input type="text" name="help_entry-view" id="help_entry-view" />
+				<span class="help-inline"></span>
+			</div>
+		</div>
+		<div class="control-group shared-controls-controlgroup">
+			<label class="control-label" for="help_entry-classification">
+                Category: </label>
+			<div class="controls ">
+				<select id="help_entry-classification">
+                    <option value="GMC">GMC</option>
+                    <option value="Infrastructure">Infrastructure</option>
+                    <option value="Dashboards">Adoption</option>
+                    <option value="Indexer_Cluster">Indexer Cluster</option>
+                    <option value="Search_Head_Cluster">Search Head Cluster</option>
+                    <option value="Scheduler">Scheduler</option>
+                    <option value="Configuration_Files">Configuration Files</option>
+                    <option value="Knowledge_Objects ">Knowledge Objects </option>
+                    <option value="Scheduled_Jobs">Scheduled Jobs</option>
+                    <option value="Dashboards">Dashboards</option>
+                    <option value="Lookups">Lookups</option>
+                    <option value="Commands">Commands</option>
+                    <option value="Sourcetypes">Source Types</option>
+                    <option value="SPL">SPL</option>
+                    <option value="Health">Splunk Health</option>
+                    <option value="Security">Security</option>
+                    <option value="Usage">Usage</option>
+                    <option value="Resource_Usage">Resource Usage</option>
+                    <option value="Other">Other</option>
+               </select>
+			</div>
+		</div>
+		<div id="help_entry-panel-controls" class="control-group shared-controls-controlgroup">
+			<label class="control-label" for="help_entry-panel">
+                Tags: </label>
+			<div class="controls ">
+				<input type="text" name="help_entry-panel" id="help_entry-panel" />
+				<span class="help-inline"></span>
+			</div>
+		</div>
+		<div id="help_entry-text-controls" class="control-group shared-controls-controlgroup">
+			<label class="control-label" for="help_entry-text">
+                Description: </label>
+			<div class="controls ">
+				<textarea name="help_entry-text" id="help_entry-text"></textarea>
+				<span class="help-inline"></span>
+			</div>
+		</div>
+
+		<div id="help_entry-app_version-controls" class="control-group shared-controls-controlgroup">
+			<label class="control-label" for="help_entry-app_version">
+                Search String: </label>
+			<div class="controls ">
+				<textarea name="help_entry-app_version" id="help_entry-app_version"></textarea>
+
+				<span class="help-inline"></span>
+			</div>
+		</div>
+		<input type="hidden" name="help_entry-key" id="help_entry-key" />
+    </div>
+		<div class="modal-footer">
+			<a href="#" class="btn btn-dialog-cancel label_from_data pull-left" data-dismiss="modal"
+				style="display: inline;">Cancel</a>
+			<div class="loading pull-left"></div>
+			<a href="#" class="btn btn-primary pull-right save save_help_entry" style="display: inline;">Save</a>
+		</div>
+	</div>
+
+	<div id="table-container"></div>
+	<script type="text/x-template" id="help_entry-list-template">
+
+		<% if(allow_editing_collection && !insufficient_permissions){ %>
+<a href="#" class="btn btn-primary pull-left add_help_entry" style="position: relative; top: 22px; display: block;z-index: 1000;">Add New GMC 101 Search</a>
+<% } %>
+
+<table id="table" class="table table-striped display">
+    <thead>
+		<tr>
+			<th>Search ID</th>
+            <th>Search Name</th>
+            <th>Description</th> 
+            <th>Category</th>
+            <% if (!insufficient_permissions){ %>
+			<th>Actions</th> <% } %>
+            <th>Search String</th> 
+		</tr>
+	</thead>
+	<tbody>
+        <% for(var c = 0; c < help_entries.length; c++){
+            
+                help_entry = help_entries[c];
+                //editorUrl = "o";
+                //editorUrl = editor + "?" + $.param( { 'key': help_entry._key } );
+                
+            %>
+            <tr>
+                <td><%- help_entries[c].app %></td>
+                <td><%- help_entries[c].view %></td>
+                <td><%- help_entries[c].text %></td>
+                <td><%- help_entries[c].classification %></td>
+                
+
+                <% if(!insufficient_permissions){ %>
+                <td>
+                    <% if(allow_editing_collection){ %>
+                        <% if(help_entries[c].disabled){ %>
+                            <a class="enable_help_entry" data-disabled="false" data-key="<%- help_entry._key %>" href="#">Enable</a> | 
+                        <% } else { %>
+                            <a class="disable_help_entry" data-disabled="true" data-key="<%- help_entry._key %>" href="#">Disable</a> |
+                        <% } %>
+                      <a class="edit_help_entry" data-key="<%- help_entry._key %>" data-suppression-title="<%- help_entry.title %>" data-suppression-type="<%- help_entry.type %>" data-scope="<%- help_entry.scope %>" href="#">Edit</a>
+                    | <a class="remove_help_entry" data-key="<%- help_entry._key %>" href="#">Remove</a>
+                    <% } %>
+                </td>
+                <% } %>
+                <td><%- help_entries[c].app_version %></td>
+            </tr>
+        <% } %>
+    </tbody>        
+</table>
+</script>

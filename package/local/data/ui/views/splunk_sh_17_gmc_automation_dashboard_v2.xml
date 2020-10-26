@@ -1,0 +1,768 @@
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>SH - 17 - GMC Job Automation - Dashboard - Under Dev</label>
+  <search id="splunk_sh_17_gmc_automation_dashboard_1">
+    <query>
+| from lookup:splunk_rest_saved_searches_sh_kv_store_lookup
+| `get_identity_info(author)` 
+| `fillnull_identity_info`
+| `cron_descriptor(cron_schedule)`
+| eval days_last_updated=round((now() - updated) / 86400 , 0)
+| `normalize_earliest_time(dispatch_earliest_time)`
+| fillnull value=0 action_summary_index correlationsearch_enabled updated populate_lookup acl_removable days_last_updated
+| `strftime_format(updated)`
+| rex field=email_to mode=sed "s/\s+|\"//g" 
+| rex field=email_to mode=sed "s/;/,/g" 
+| eval email_to = trim(lower(email_to))
+| fillnull value=0 action_summary_index correlationsearch_enabled dispatch_auto_cancel updated populate_lookup acl_removable
+| fillnull value="no-actions" actions
+| fillnull value="Undefined" description cron_schedule scheduled_times next_scheduled_time auto_summarize dispatch_earliest_time dispatch_latest_time schedule_priority max_concurrent schedule_window allow_skew realtime_schedule alert_severity alert_track alert_type removable run_n_times run_on_startup savedsearch_search email_to cron_schedule_described action_summary_index_name populate_lookup_dest summary_index_name Index_Reference
+| search 
+    shcluster_label="$shcluster_label$"
+    app="$app$"
+    sharing=$sharing$
+    author="*$author$*"
+    savedsearch_name="$savedsearch_name$"
+    savedsearch_type="$savedsearch_type$"
+    savedsearch_search="$savedsearch_search$"
+    Lookup_Reference="$Lookup_Reference$"
+    Datamodel_Reference="$Datamodel_Reference$"
+    Macro_Reference="$Macro_Reference$"
+    Index_Reference="$Index_Reference$"
+    Sourcetype_Reference="$Sourcetype_Reference$"
+    Source_Reference="$Source_Reference$"
+    Eventtype_Reference="$Eventtype_Reference$"
+    Rest_Reference="$Rest_Reference$"
+    email_to="$email_to$"
+    auto_summarize="$auto_summarize$"
+    schedule_priority="$schedule_priority$"
+    realtime_schedule="$realtime_schedule$"
+    correlationsearch_enabled="$correlationsearch_enabled$"
+    action_summary_index="$action_summary_index$"
+    cron_schedule_described="$cron_schedule_described$"
+    emp_name="$emp_name$"
+    emp_type="$emp_type$"
+    emp_status="$emp_status$"
+    emp_dep="$emp_dep$"
+    emp_lob1="$emp_lob1$"
+    dispatch_earliest_time_normalized="$dispatch_earliest_time_normalized$"
+    actions="$actions$"
+    updated="$updated$"
+    populate_lookup="$populate_lookup$"
+    populate_lookup_dest="$populate_lookup_dest$"
+    summary_index_name="$summary_index_name$"
+    days_last_updated&gt;=$days_last_updated$
+    acl_removable=$acl_removable$
+    disabled=$is_disabled$ is_scheduled=$is_scheduled$
+    allow_skew IN ($allow_skew$) NOT allow_skew IN ($allow_skew_excl$)
+    schedule_window IN ($schedule_window$) NOT schedule_window IN ($schedule_window_excl$)
+
+</query>
+  </search>
+  <search id="splunk_sh_17_gmc_automation_dashboard_2">
+    <query>index=gmc_summary search_name=splunk_rest_saved_searches_sh_summary_data shcluster_label=$shcluster_label$ app="$app$" author="*$author$*" sharing=$sharing$ disabled="$is_disabled$" is_scheduled="$is_scheduled$" savedsearch_name="$savedsearch_name$" NOT app IN (splunk_*,Splunk*,alert_webhook,appsbrowser,cisco-app-ACI,SA-nix,chargeback) earliest=-24h@h 
+| eval days_last_updated=round((now() - updated) / 86400 , 0) 
+| where days_last_updated &gt;= 90 
+| `get_identity_info(author)`
+</query>
+  </search>
+  <fieldset submitButton="true" autoRun="false"></fieldset>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_Reports_Inputs_1" depends="$gadget_lib_loaded$">
+      <title>1. Reports/Alerts - Basic Filters</title>
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+        <label>1. Splunk SH (Cluster/Instance)</label>
+        <fieldForLabel>shcluster_label2</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app" searchWhenChanged="false">
+        <label>4.1 App</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>app2</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by app</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="sharing" searchWhenChanged="false">
+        <label>5. App Sharing</label>
+        <choice value="*">All</choice>
+        <choice value="app">App</choice>
+        <choice value="user">User</choice>
+        <choice value="global">Global</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>sharing2</fieldForLabel>
+        <fieldForValue>sharing2</fieldForValue>
+      </input>
+      <input type="dropdown" token="savedsearch_name" searchWhenChanged="false">
+        <label>6.1 Report/Alert Name</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>savedsearch_name</fieldForLabel>
+        <fieldForValue>savedsearch_name</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by savedsearch_name</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="text" token="savedsearch_name" searchWhenChanged="false">
+        <label>6.2. Report/Alert Name (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="is_scheduled" searchWhenChanged="false">
+        <label>7. IS Scheduled?</label>
+        <choice value="*">All</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>is_scheduled</fieldForLabel>
+        <fieldForValue>is_scheduled</fieldForValue>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="is_disabled" searchWhenChanged="false">
+        <label>8.1 IS Disabled?</label>
+        <choice value="*">All</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>is_disabled</fieldForLabel>
+        <fieldForValue>is_disabled</fieldForValue>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="savedsearch_type" searchWhenChanged="false">
+        <label>9. Type</label>
+        <choice value="*">All</choice>
+        <choice value="report">Report</choice>
+        <choice value="alert">Alert</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>savedsearch_type</fieldForLabel>
+        <fieldForValue>savedsearch_type</fieldForValue>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="cron_schedule_described" searchWhenChanged="false">
+        <label>10. Job Schedule Human</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>cron_schedule_described</fieldForLabel>
+        <fieldForValue>cron_schedule_described</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by cron_schedule_described</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="auto_summarize" searchWhenChanged="false">
+        <label>13. Auto Summarize</label>
+        <choice value="*">All</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>auto_summarize</fieldForLabel>
+        <fieldForValue>auto_summarize</fieldForValue>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="schedule_priority" searchWhenChanged="false">
+        <label>14. Schedule Priority</label>
+        <choice value="*">All</choice>
+        <choice value="default">Default</choice>
+        <choice value="high">High</choice>
+        <choice value="highest">Highest</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>schedule_priority</fieldForLabel>
+        <fieldForValue>schedule_priority</fieldForValue>
+        <default>*</default>
+      </input>
+      <input type="multiselect" token="schedule_window" searchWhenChanged="false">
+        <label>15.1 Schedule Window (Include)</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>schedule_window</fieldForLabel>
+        <fieldForValue>schedule_window</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by schedule_window</query>
+        </search>
+        <default>*</default>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="schedule_window_excl" searchWhenChanged="false">
+        <label>15.2 Schedule Window (Exclusions)</label>
+        <choice value="none">No-Exclusions</choice>
+        <initialValue>none</initialValue>
+        <fieldForLabel>schedule_window_excl</fieldForLabel>
+        <fieldForValue>schedule_window</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by schedule_window</query>
+        </search>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="allow_skew" searchWhenChanged="false">
+        <label>16.1 Allow Skew</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>allow_skew</fieldForLabel>
+        <fieldForValue>allow_skew</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by allow_skew</query>
+        </search>
+        <default>*</default>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="allow_skew_excl" searchWhenChanged="false">
+        <label>16.2 Allow Skew (Exclusions)</label>
+        <choice value="none">No-Exclusions</choice>
+        <initialValue>none</initialValue>
+        <fieldForLabel>allow_skew_excl</fieldForLabel>
+        <fieldForValue>allow_skew</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by allow_skew</query>
+        </search>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="dropdown" token="realtime_schedule" searchWhenChanged="false">
+        <label>17. Realtime Schedule</label>
+        <choice value="*">All</choice>
+        <choice value="1">Real-time Sched (Default)</choice>
+        <choice value="0">Continuous Sched (Resource Intensive)</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>realtime_schedule</fieldForLabel>
+        <fieldForValue>realtime_schedule</fieldForValue>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="actions" searchWhenChanged="false">
+        <label>18. Job Actions</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>actions</fieldForLabel>
+        <fieldForValue>actions</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by actions</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="acl_removable" searchWhenChanged="false">
+        <label>9. Can be Deleted?</label>
+        <choice value="*">Any</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>acl_removable</fieldForLabel>
+        <fieldForValue>acl_removable</fieldForValue>
+        <default>*</default>
+      </input>
+    </panel>
+  </row>
+  <row id="Reports_Alerts_Inputs2">
+    <panel id="panel_accordion_togglepanel_true_Reports_Inputs_2" depends="$gadget_lib_loaded$">
+      <title>2. Reports/Alerts - Identity Filters</title>
+      <input type="dropdown" token="author" searchWhenChanged="false">
+        <label>1.1 Owner (Employee)</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>author2</fieldForLabel>
+        <fieldForValue>author</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by author</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="text" token="author" searchWhenChanged="false">
+        <label>1.2.Author (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_name" searchWhenChanged="false">
+        <label>2. Employee Full Name</label>
+        <fieldForLabel>emp_name</fieldForLabel>
+        <fieldForValue>emp_name</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by emp_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_type" searchWhenChanged="false">
+        <label>4. Employee Type</label>
+        <fieldForLabel>emp_type</fieldForLabel>
+        <fieldForValue>emp_type</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by emp_type</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_status" searchWhenChanged="false">
+        <label>5. Employee Status</label>
+        <fieldForLabel>emp_status</fieldForLabel>
+        <fieldForValue>emp_status</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by emp_status</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob1" searchWhenChanged="false">
+        <label>6. Employee LOB</label>
+        <fieldForLabel>emp_lob1</fieldForLabel>
+        <fieldForValue>emp_lob1</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by emp_lob1</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_dep" searchWhenChanged="false">
+        <label>7. Employee Department</label>
+        <fieldForLabel>emp_dep</fieldForLabel>
+        <fieldForValue>emp_dep</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by emp_dep</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row id="Reports_Alerts_Inputs3">
+    <panel id="panel_accordion_togglepanel_true_Reports_Inputs_3" depends="$gadget_lib_loaded$">
+      <title>3. Reports/Alerts - Advanced Filters</title>
+      <input type="dropdown" token="dispatch_earliest_time_normalized" searchWhenChanged="false">
+        <label>1. Dispatch Earliest Time</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>dispatch_earliest_time_normalized</fieldForLabel>
+        <fieldForValue>dispatch_earliest_time_normalized</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by dispatch_earliest_time_normalized</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="email_to" searchWhenChanged="false">
+        <label>3. Send Email To</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>email_to</fieldForLabel>
+        <fieldForValue>email_to</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by email_to</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="updated" searchWhenChanged="false">
+        <label>4.1 Updated</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>updated</fieldForLabel>
+        <fieldForValue>updated</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by updated</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="text" token="days_last_updated" searchWhenChanged="false">
+        <label>4.2 Last Updated &gt;= $days_last_updated$ Days</label>
+        <default>-1</default>
+        <initialValue>-1</initialValue>
+      </input>
+      <input type="dropdown" token="action_summary_index" searchWhenChanged="false">
+        <label>6.1 Summary Indexing?</label>
+        <choice value="*">All</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>action_summary_index</fieldForLabel>
+        <fieldForValue>action_summary_index</fieldForValue>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="summary_index_name" searchWhenChanged="false">
+        <label>6.2 Summary Index Name</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>summary_index_name</fieldForLabel>
+        <fieldForValue>summary_index_name</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by summary_index_name</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="correlationsearch_enabled" searchWhenChanged="false">
+        <label>7. ES Correlation Search?</label>
+        <choice value="*">All</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>correlationsearch_enabled</fieldForLabel>
+        <fieldForValue>correlationsearch_enabled</fieldForValue>
+        <default>*</default>
+      </input>
+      <input type="text" token="savedsearch_search" searchWhenChanged="false">
+        <label>8. Search By Report/Alert Searches (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_Reports_Inputs_4" depends="$gadget_lib_loaded$">
+      <title>4. Reports/Alerts - Reference Filters</title>
+      <input type="dropdown" token="Lookup_Reference" searchWhenChanged="false">
+        <label>1.1 Lookup Reference</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Lookup_Reference2</fieldForLabel>
+        <fieldForValue>Lookup_Reference</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by Lookup_Reference</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="text" token="Lookup_Reference" searchWhenChanged="false">
+        <label>1.2. Lookup Reference (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="populate_lookup" searchWhenChanged="false">
+        <label>1.3 Lookup populate_lookup</label>
+        <choice value="*">Any</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>populate_lookup</fieldForLabel>
+        <fieldForValue>populate_lookup</fieldForValue>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="populate_lookup_dest" searchWhenChanged="false">
+        <label>1.4 Lookup populate_lookup_dest</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>populate_lookup_dest</fieldForLabel>
+        <fieldForValue>populate_lookup_dest</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by populate_lookup_dest</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="Datamodel_Reference" searchWhenChanged="false">
+        <label>2. Datamodel Reference</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Datamodel_Reference2</fieldForLabel>
+        <fieldForValue>Datamodel_Reference</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by Datamodel_Reference</query>
+        </search>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="Macro_Reference" searchWhenChanged="false">
+        <label>3. Macro Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Macro_Reference2</fieldForLabel>
+        <fieldForValue>Macro_Reference</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by Macro_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Eventtype_Reference" searchWhenChanged="false">
+        <label>4. Eventtype Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Eventtype_Reference2</fieldForLabel>
+        <fieldForValue>Eventtype_Reference</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by Eventtype_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Index_Reference" searchWhenChanged="false">
+        <label>5. Index Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Index_Reference2</fieldForLabel>
+        <fieldForValue>Index_Reference</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by Index_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Sourcetype_Reference" searchWhenChanged="false">
+        <label>6. Sourcetype Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Sourcetype_Reference2</fieldForLabel>
+        <fieldForValue>Sourcetype_Reference</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by Sourcetype_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Source_Reference" searchWhenChanged="false">
+        <label>7. Source Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Source_Reference2</fieldForLabel>
+        <fieldForValue>Source_Reference</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by Source_Reference</query>
+        </search>
+      </input>
+      <input type="dropdown" token="Rest_Reference" searchWhenChanged="false">
+        <label>8. Rest Reference</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Rest_Reference2</fieldForLabel>
+        <fieldForValue>Rest_Reference</fieldForValue>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by Rest_Reference</query>
+        </search>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_Reports_1" depends="$gadget_lib_loaded$">
+      <title>5. Reports/Alerts List</title>
+      <table>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| table shcluster_label app sharing savedsearch_name savedsearch_type disabled is_scheduled updated days_last_updated description dispatch_earliest_time_normalized dispatch_latest_time cron_schedule cron_schedule_described scheduled_times next_scheduled_time realtime_schedule schedule_priority schedule_window allow_skew author emp_name emp_title emp_dep emp_lob1 emp_type emp_status run_n_times run_on_startup max_concurrent is_visible acl_perms_read acl_perms_write email email_to populate_lookup_dest script summary_index summary_index_name webhook webhook_param_url actions auto_summarize auto_summarize_cron_schedule dispatch_ttl dispatch_as logevent logevent_param_event lookup lookup_append lookup_filename script_filename 
+| eval scheduled_times=mvindex(scheduled_times,0,0) 
+| `rename_reference_fields` 
+| `rename_saved_searches_fields` 
+| `rename_identity_fields`</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+      </table>
+      <single>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x555","0xf8be34"]</option>
+        <option name="rangeValues">[100]</option>
+        <option name="unit">Reports/Alerts</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats dc(author) As Num_Authors</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x555","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">Authors</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_Reports_2" depends="$gadget_lib_loaded$">
+      <title>6. Reports Stats By $split_by_tok_$</title>
+      <input type="dropdown" token="split_by_tok_" searchWhenChanged="true">
+        <label>1. Split By</label>
+        <choice value="shcluster_label">SH Cluster Label</choice>
+        <choice value="host">Splunk Instance</choice>
+        <choice value="app">App</choice>
+        <choice value="sharing">App Sharing</choice>
+        <choice value="author">Author</choice>
+        <choice value="emp_name">Employee Name</choice>
+        <choice value="savedsearch_type">Saved Search Type</choice>
+        <choice value="emp_lob1">Employee LOB</choice>
+        <choice value="emp_dep">Employee Department</choice>
+        <choice value="emp_cc">Employee Cost Center</choice>
+        <choice value="emp_title">Employee Title</choice>
+        <choice value="emp_type">Employee Type</choice>
+        <choice value="emp_status">Employee Status</choice>
+        <choice value="updated">Update Date</choice>
+        <choice value="Index_Reference">Index Reference</choice>
+        <choice value="Lookup_Reference">Lookup Reference</choice>
+        <choice value="Datamodel_Reference">Data Model Reference</choice>
+        <choice value="Rest_Reference">Rest Reference</choice>
+        <choice value="Report_Reference">Report Reference</choice>
+        <choice value="schedule_priority">Schedule Priority</choice>
+        <choice value="schedule_window">Schedule Window</choice>
+        <choice value="allow_skew">Allow Skew</choice>
+        <choice value="realtime_schedule">Realtime Schedule?</choice>
+        <choice value="is_scheduled">IS Scheduled?</choice>
+        <choice value="disabled">Disabled?</choice>
+        <choice value="cron_schedule">Cron Schedule</choice>
+        <choice value="cron_schedule_described">Cron Schedule Humanly Readable</choice>
+        <choice value="dispatch_earliest_time">Dispatch Earliest Time</choice>
+        <choice value="dispatch_earliest_time_normalized">Dispatch Earliest Time Normalized</choice>
+        <choice value="populate_lookup_dest">Populate Lookup Destinations</choice>
+        <choice value="dispatch_ttl">Dispatch Time to Live</choice>
+        <choice value="summary_index">Summary Indexing?</choice>
+        <choice value="actions">Actions</choice>
+        <choice value="auto_summarize">Auto Summarize</choice>
+        <choice value="logevent">Log Event</choice>
+        <choice value="lookup">Lookup</choice>
+        <default>app</default>
+        <initialValue>app</initialValue>
+      </input>
+      <chart>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count by $split_by_tok_$</query>
+        </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">700</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_Reports_3" depends="$gadget_lib_loaded$">
+      <title>7.1 REST API URIs for Automation</title>
+      <input type="dropdown" token="job_property" searchWhenChanged="true">
+        <label>1. Job Property</label>
+        <choice value="enable">Enable Jobs</choice>
+        <choice value="disable">Disable Jobs</choice>
+        <choice value="delete">Delete Jobs</choice>
+        <choice value="allow_skew">Update Allow Skew</choice>
+        <choice value="schedule_window">Update Schedule Window</choice>
+        <choice value="schedule_priority">Update Schedule Priority</choice>
+        <choice value="realtime_schedule">Update RealTime Schedule</choice>
+        <choice value="cron_schedule">Update Cron Schedule</choice>
+        <fieldForLabel>job_property</fieldForLabel>
+        <fieldForValue>job_property</fieldForValue>
+        <default>disable</default>
+        <initialValue>disable</initialValue>
+      </input>
+      <input type="text" token="property_value" searchWhenChanged="true">
+        <label>2. Job Property Value</label>
+        <default>1</default>
+        <initialValue>1</initialValue>
+      </input>
+      <table>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| eval fudge_author = case (
+    'sharing' == "user", 'author',
+    'sharing' == "global", "nobody",
+    'sharing' == "app", "nobody") 
+| eval shcluster_label_rest=if(shcluster_label="libertymutual-shc", "libertymutual", shcluster_label . "-libertymutual") 
+| eval job_url="https://" . shcluster_label_rest . ".splunkcloud.com/app/" . app . "/search?s=" . savedsearch_name 
+| eval encoded_title=savedsearch_name 
+| eval job_property=case("$job_property$"="disable" OR "$job_property$"="enable", "/$job_property$", true(), "") 
+| eval curl_options=case(!match("$job_property$", "delete|disable|enable"), "-d $job_property$=\"$property_value$\"", true(), "") 
+| rex field=encoded_title mode=sed
+    "s:%:%25:g s:\+:%2B:g s:\":%22:g s:\(:%28:g s:\):%29:g s: :%20:g  s:&lt;:%3C:g  s:&gt;:%3E:g  s:#:%23:g  s:{:%7B:g  s:}:%7D:g  s:\|:%7C:g s:\\\:%5C:g  s:\^:%5E:g  s:~:%7E:g
+     s:\[:%5B:g  s:\]:%5D:g  s:\`:%60:g  s:;:%3B:g  s:/:%2F:g  s:\?:%3F:g  s/:/%3A/g  s:@:%40:g  s:=:%3D:g  s:&amp;:%26:g  s:\$:%24:g  s:\!:%21:g  s:\*:%2A:g" 
+| eval rest_uri="https://" . shcluster_label_rest . ".splunkcloud.com:8089/servicesNS/" . fudge_author . "/" . app . "/saved/searches/" . encoded_title . job_property 
+| eval actions=if(match(author, "admin|system"), "no-email", "email") 
+| eval Request=case("$job_property$"="delete", "DELETE", true(), "POST") 
+| table savedsearch_name actions author emp_name emp_first emp_email rest_uri Request curl_options job_url</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="rest_uri">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+      <single>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x555","0xf8be34"]</option>
+        <option name="rangeValues">[100]</option>
+        <option name="unit">Reports/Alerts</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| stats dc(author) As Num_Authors</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x555","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">Authors</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_Reports_31" depends="$gadget_lib_loaded$">
+      <title>7.2 REST API URIs for Automation / Ad-hoc Export</title>
+      <table>
+        <search base="splunk_sh_17_gmc_automation_dashboard_1">
+          <query>| eval fudge_author = case (
+    'sharing' == "user", 'author',
+    'sharing' == "global", "nobody",
+    'sharing' == "app", "nobody") 
+| eval shcluster_label_rest=if(shcluster_label="libertymutual-shc", "libertymutual", shcluster_label . "-libertymutual") 
+| eval job_url="https://" . shcluster_label_rest . ".splunkcloud.com/app/" . app . "/search?s=" . savedsearch_name 
+| eval encoded_title=savedsearch_name 
+| eval job_property=case("$job_property$"="disable" OR "$job_property$"="enable", "/$job_property$", true(), "") 
+| eval curl_options=case(!match("$job_property$", "delete|disable|enable"), "-d $job_property$=\"$property_value$\"", true(), "") 
+| rex field=encoded_title mode=sed
+    "s:%:%25:g s:\+:%2B:g s:\":%22:g s:\(:%28:g s:\):%29:g s: :%20:g  s:&lt;:%3C:g  s:&gt;:%3E:g  s:#:%23:g  s:{:%7B:g  s:}:%7D:g  s:\|:%7C:g s:\\\:%5C:g  s:\^:%5E:g  s:~:%7E:g
+     s:\[:%5B:g  s:\]:%5D:g  s:\`:%60:g  s:;:%3B:g  s:/:%2F:g  s:\?:%3F:g  s/:/%3A/g  s:@:%40:g  s:=:%3D:g  s:&amp;:%26:g  s:\$:%24:g  s:\!:%21:g  s:\*:%2A:g" 
+| eval rest_uri="https://" . shcluster_label_rest . ".splunkcloud.com:8089/servicesNS/" . fudge_author . "/" . app . "/saved/searches/" . encoded_title . job_property 
+| eval actions=if(match(author, "admin|system"), "no-email", "email") 
+| eval Request=case("$job_property$"="delete", "DELETE", true(), "POST") 
+| table savedsearch_name rest_uri Request</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| noop</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

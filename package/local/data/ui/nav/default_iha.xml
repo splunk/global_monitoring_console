@@ -1,0 +1,73 @@
+<nav search_view="search" color="#ffde63">
+   <view name="gmc_101_dashboard_v1" default="true" />
+   <view name="gmc_home_dashboard_v1" />
+   <view name="search" />
+   <view name="gmc_kb_dashboard_v1" />
+   <view name="gmc_setup_dashboard_v1" />
+   <view name="gmc_app_dashboard_v1" />
+
+   <collection label="IHA Dashboards">
+      <a href="/app/global_monitoring_console/gmc_assets_identities_dashboard_v1" target="_blank" rel="noopener">IHA Assets and Identities</a>
+      <a href="/app/global_monitoring_console/gmc_01_splunk_internal_logs_analysis_v1" target="_blank" rel="noopener">IHA-01 Splunk Internal Log Analysis</a>
+      <a href="/app/global_monitoring_console/splunk_sh_01_dashboards_deep_analysis_dashboard_v1" target="_blank" rel="noopener">SH-01 Dashboards Deep Analysis</a>
+      <a href="/app/global_monitoring_console/splunk_sh_02_reports_alerts_deep_analysis_dashboard_v1" target="_blank" rel="noopener">SH-02 Reports/Alerts Deep Analysis</a>
+      <a href="/app/global_monitoring_console/splunk_sh_03_lookups_deep_analysis_dashboard_v1" target="_blank" rel="noopener">SH-03 Lookups Deep Analysis</a>
+      <a href="/app/global_monitoring_console/splunk_sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a>
+      <a href="/app/global_monitoring_console/splunk_sh_05_audit_users_activity_dashboard_v1" target="_blank" rel="noopener">SH-05 Audit Users Activity</a>
+      <a href="/app/global_monitoring_console/splunk_sh_10_source_types_dashboard_v1" target="_blank" rel="noopener">SH-10 Source Types</a>
+      <a href="/app/global_monitoring_console/splunk_sh_11_data_models_dashboard_v1" target="_blank" rel="noopener">SH-11 Data Models</a>
+      <a href="/app/global_monitoring_console/splunk_sh_13_config_files_dashboard_v1" target="_blank" rel="noopener">SH-13 Splunk Config Files</a>
+      <a href="/app/global_monitoring_console/splunk_sh_16_splunk_apps_dashboard_v1" target="_blank" rel="noopener">SH-16 Splunk Apps</a>
+      <a href="/app/global_monitoring_console/splunk_sh_18_resource_usage_dashboard" target="_blank" rel="noopener">SH-18 Resource Usage</a>
+      <a href="/app/global_monitoring_console/splunk_idx_01_data_quality_dashboard_v1" target="_blank" rel="noopener">IDX-01 Data Quality with Source Types Info</a>
+      <a href="/app/global_monitoring_console/splunk_idx_02_indexes_dashboard_v1" target="_blank" rel="noopener">IDX-02 Splunk Indexes</a>
+      <a href="/app/global_monitoring_console/splunk_idx_05_inputs_dashboard_v1" target="_blank" rel="noopener">IDX-05 Data Inputs Accross all Splunk Instances</a>
+      <a href="/app/global_monitoring_console/splunk_idx_07_indexer_queues_dashboard_v1" target="_blank" rel="noopener">IDX-07 Indexer Queues</a>
+      <a href="/app/global_monitoring_console/splunk_idx_09_http_event_collector_dashboard_v1" target="_blank" rel="noopener">IDX-09 HTTP Event Collector</a>
+      <a href="/app/global_monitoring_console/splunk_uf_01_forwarding_analysis_dashboard_v1" target="_blank" rel="noopener">UF-01 Forwarding Analysis _internal Index</a>
+   </collection>
+   
+   <collection label="Monitoring Console Dashboards">
+      <collection label="Indexing">
+         <collection label="Performance">
+            <a href="/app/splunk_monitoring_console/indexing_performance_advanced" target="_blank" rel="noopener">Indexing Performance: Advanced</a>
+            <a href="/app/splunk_monitoring_console/indexing_performance_deployment" target="_blank" rel="noopener">Indexing Performance: Deployment</a>
+         </collection>
+         <collection label="Indexer Clustering">
+            <a href="/app/splunk_monitoring_console/indexer_clustering_status" target="_blank" rel="noopener">Indexing Clustering: Status</a>
+            <a href="/app/splunk_monitoring_console/indexer_clustering_service_activity" target="_blank" rel="noopener">Indexing Clustering: Service Activity</a>
+         </collection>
+      </collection>
+      <collection label="Search">
+         <collection label="Activity">
+            <a href="/app/splunk_monitoring_console/search_activity_deployment" target="_blank" rel="noopener">Search Activity: Deployment</a>
+            <a href="/app/splunk_monitoring_console/search_usage_statistics_deployment" target="_blank" rel="noopener">Search Usage Statistics: Deployment</a>
+         </collection>
+         <collection label="Distributed Search">
+            <a href="/app/splunk_monitoring_console/distributed_search_deployment" target="_blank" rel="noopener">Distributed Search: Deployment</a>
+         </collection>
+         <collection label="Search Head Clustering">
+            <a href="/app/splunk_monitoring_console/shc_status_and_conf" target="_blank" rel="noopener">Search Head Cluster: Status and Configuration</a>
+            <a href="/app/splunk_monitoring_console/shc_conf_rep" target="_blank" rel="noopener">Search Head Clustering: Configuration Replication</a>
+            <a href="/app/splunk_monitoring_console/shc_artifact_replication" target="_blank" rel="noopener">Search Head Clustering: Artifact Replication</a>
+            <a href="/app/splunk_monitoring_console/shc_scheduler_delegation_statistics" target="_blank" rel="noopener">Search Head Clustering: Scheduler Delegation</a>
+            <a href="/app/splunk_monitoring_console/shc_app_deployment" target="_blank" rel="noopener">Search Head Clustering: App Deployment</a>
+         </collection>
+         <collection label="Scheduler Activity">
+            <a href="/app/splunk_monitoring_console/scheduler_activity_deployment" target="_blank" rel="noopener">Scheduler Activity: Deployment</a>
+         </collection>
+      </collection>
+      <collection label="Resource Usage">
+         <a href="/app/splunk_monitoring_console/resource_usage_instance" target="_blank" rel="noopener">Resource Usage: Instance</a>
+         <a href="/app/splunk_monitoring_console/resource_usage_machine" target="_blank" rel="noopener">Resource Usage: Machine</a>
+         <a href="/app/splunk_monitoring_console/resource_usage_deployment" target="_blank" rel="noopener">Resource Usage: Deployment</a>
+      </collection>
+   </collection>
+   <collection label="Splunk">
+      <view name="reports" />
+      <view name="dashboards" />
+      <view name="alerts" />
+      <view name="analysis_workspace" />
+      <view name="data_models" />
+   </collection>
+</nav>
