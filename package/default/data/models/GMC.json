@@ -3,7 +3,7 @@
     "displayName": "Global Monitoring Console (GMC)",
     "description": "Global Monitoring Console (GMC) Data Model",
     "objectSummary": {
-        "Event-Based": 8,
+        "Event-Based": 4,
         "Transaction-Based": 0,
         "Search-Based": 0
     },
@@ -66,7 +66,7 @@
             "calculations": [],
             "constraints": [
                 {
-                    "search": "(`gmc_setup_dm_constraints_search`) (index=_audit sourcetype=audittrail action=search search_id=* (search=* OR info=terminate)) OR ( index=_internal AND ((sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd_access uri=\"*delegatejob*\" spent>500) OR (sourcetype=splunkd component=DispatchManager username=* \"QUEUED\"))) OR (index=_introspection sourcetype=splunk_resource_usage component=PerProcess \"data.process_type\"=search \"data.search_props.app\"=*)",
+                    "search": "(`setup_dm_constraints_search`) (index=_audit sourcetype=audittrail ((action=search search_id=*) OR info=terminate)) OR ( index=_internal AND ((sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd component=DispatchManager username=* \"QUEUED\"))) OR (index=_introspection sourcetype=splunk_resource_usage component=PerProcess \"data.process_type\"=search \"data.search_props.app\"=*)",
                     "owner": "Search_Activity"
                 }
             ],
@@ -610,7 +610,7 @@
             ],
             "constraints": [
                 {
-                    "search": "(index=_audit sourcetype=audittrail action=search search_id=* (search=* OR info=terminate))",
+                    "search": "(index=_audit sourcetype=audittrail ((action=search search_id=*) OR info=terminate))",
                     "owner": "Search_Activity.Audit_Search"
                 }
             ],
@@ -1040,7 +1040,7 @@
                     "editable": true,
                     "comment": "",
                     "calculationType": "Eval",
-                    "expression": "case ( \n    match(alert_actions, \"summary_index\"), \"summary_indexing\",\n    match(search_type, \"scheduled\"), \"scheduled\",\n    match(search_type, \"datamodel_acceleration\"), \"datamodel_acceleration\",\n    (search_id2 LIKE \"DM_%\" OR savedsearch_name LIKE \"_ACCELERATE_DM%\"), \"datamodel_acceleration\", \n    savedsearch_name LIKE \"_ACCELERATE_DM%\", \"datamodel_acceleration\",\n    match(search_type, \"report_acceleration\"), \"report_acceleration\",\n    match(search_id2, \"^scheduler__\") OR match(search_id2, \"^scheduler__\") , \"scheduled\",\n    search_id2 LIKE \"rt%\", \"realtime\",\n    search_id2 LIKE \"subsearch%\", \"subsearch\",\n    (search_id2 LIKE \"SummaryDirector%\" OR search_id2 LIKE \"summarize_SummaryDirector%\"), \"summary_director\",\n    true(), \"adhoc\")"
+                    "expression": "case ( \n    match(alert_actions, \"summary_index\"), \"summary_indexing\",\n    match(search_type, \"scheduled\"), \"scheduled\",\n    match(_raw, \"SavedSplunker\") AND (isnotnull(savedsearch_name2) OR savedsearch_name2=\"\"), \"scheduled\",\n    match(search_type, \"datamodel_acceleration\"), \"datamodel_acceleration\",\n    (search_id2 LIKE \"DM_%\" OR savedsearch_name2 LIKE \"_ACCELERATE_DM%\"), \"datamodel_acceleration\", \n    savedsearch_name2 LIKE \"_ACCELERATE_DM%\", \"datamodel_acceleration\",\n    match(search_type, \"report_acceleration\"), \"report_acceleration\",\n    match(search_id2, \"^scheduler__\") OR match(search_id2, \"^scheduler__\") , \"scheduled\",\n    search_id2 LIKE \"rt%\", \"realtime\",\n    search_id2 LIKE \"subsearch%\", \"subsearch\",\n    (search_id2 LIKE \"SummaryDirector%\" OR search_id2 LIKE \"summarize_SummaryDirector%\"), \"summary_director\",\n    true(), \"adhoc\")"
                 },
                 {
                     "outputFields": [
@@ -1133,7 +1133,7 @@
             ],
             "constraints": [
                 {
-                    "search": "(index=_internal AND ( (sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd_access uri=\"*delegatejob*\" spent>500) OR (sourcetype=splunkd component=DispatchManager username=* \"QUEUED\")))",
+                    "search": "(index=_internal AND ( (sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd component=DispatchManager username=* \"QUEUED\")))",
                     "owner": "Search_Activity.Internal_Scheduler"
                 }
             ],
@@ -1682,76 +1682,12 @@
                 }
             ],
             "lineage": "Search_Activity.Introspection_Search_Usage"
-        },
-        {
-            "objectName": "Audit_Total_Executions",
-            "displayName": "Audit Total Executions",
-            "parentName": "Audit_Search",
-            "comment": "",
-            "fields": [],
-            "calculations": [],
-            "constraints": [
-                {
-                    "search": "info1 IN (\"*completed\", \"canceled\", \"failed\")",
-                    "owner": "Search_Activity.Audit_Search.Audit_Total_Executions"
-                }
-            ],
-            "lineage": "Search_Activity.Audit_Search.Audit_Total_Executions"
-        },
-        {
-            "objectName": "Internal_Total_Executions",
-            "displayName": "Internal Total Executions",
-            "parentName": "Internal_Scheduler",
-            "comment": "",
-            "fields": [],
-            "calculations": [],
-            "constraints": [
-                {
-                    "search": "info2 IN (\"completed\", \"skipped\")",
-                    "owner": "Search_Activity.Internal_Scheduler.Internal_Total_Executions"
-                }
-            ],
-            "lineage": "Search_Activity.Internal_Scheduler.Internal_Total_Executions"
-        },
-        {
-            "objectName": "Internal_Skipped_Executions",
-            "displayName": "Internal Skipped Executions",
-            "parentName": "Internal_Scheduler",
-            "comment": "",
-            "fields": [],
-            "calculations": [],
-            "constraints": [
-                {
-                    "search": "info2=\"skipped\"",
-                    "owner": "Search_Activity.Internal_Scheduler.Internal_Skipped_Executions"
-                }
-            ],
-            "lineage": "Search_Activity.Internal_Scheduler.Internal_Skipped_Executions"
-        },
-        {
-            "objectName": "Audit_Successful_Executions",
-            "displayName": "Audit Successful Executions",
-            "parentName": "Audit_Search",
-            "comment": "",
-            "fields": [],
-            "calculations": [],
-            "constraints": [
-                {
-                    "search": "info1=\"completed\"",
-                    "owner": "Search_Activity.Audit_Search.Audit_Successful_Executions"
-                }
-            ],
-            "lineage": "Search_Activity.Audit_Search.Audit_Successful_Executions"
         }
     ],
     "objectNameList": [
         "Search_Activity",
         "Audit_Search",
         "Internal_Scheduler",
-        "Introspection_Search_Usage",
-        "Audit_Total_Executions",
-        "Internal_Total_Executions",
-        "Internal_Skipped_Executions",
-        "Audit_Successful_Executions"
+        "Introspection_Search_Usage"
     ]
 }
