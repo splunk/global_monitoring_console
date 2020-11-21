@@ -1,5 +1,7 @@
 #tabs {
     border-bottom: 0px;
+    /* background-color: rgb(249,209,71); */
+    background-color: whitesmoke;
 }
 
 #tabs>.dashboard-cell>.dashboard-panel {

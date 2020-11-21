@@ -1,0 +1,579 @@
+<form theme="dark">
+  <label>SH - 15 - Splunk Cloud Virtual Core (SVC) Usage Analysis - Dashboard - v1</label>
+  <search id="sh_15_business_app_analysis_1">
+    <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+    count
+    From DATAMODEL=GMC
+    Where nodename=Search_Activity.Audit_Search
+    index=_audit
+    earliest=$earliest_time$ latest=$latest_time$
+    By Search_Activity.Audit_Search.user1 
+| `gmc_drop_dm_object_name(Search_Activity.Audit_Search)` 
+| rename user1 As user
+| fields user
+| lookup splunk_rest_identities_kv_store_lookup identity as user OUTPUTNEW emp_lob2 emp_dep
+| lookup splunk_identities_exceptions_sh_csv_lookup identity as user OUTPUTNEW emp_lob2 emp_dep 
+| fillnull value="NO-Market-Data" emp_lob2
+| fillnull value="NO-Department-Data" emp_dep
+| search emp_lob2 IN ($emp_lob2$) emp_dep IN ($emp_dep$) user IN ($user$)
+</query>
+  </search>
+  <search id="sh_15_business_app_analysis_2">
+    <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=True
+    count As Num_Searches
+    Sum(Search_Activity.Audit_Search.total_run_time1) AS total_run_time
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Audit_Search
+    index=_audit
+    earliest=$earliest_time$ latest=$latest_time$
+    AND Search_Activity.Audit_Search.total_run_time1 &gt; 0
+    BY _time span=1d host Search_Activity.Audit_Search.search_id1 Search_Activity.Audit_Search.search_type1 Search_Activity.Audit_Search.info1 Search_Activity.Audit_Search.user1 
+| `gmc_drop_dm_object_name(Search_Activity.Audit_Search)` 
+| rename info1 AS info, search_id1 As search_id , user1 As user , search_type1 As search_type 
+| fields search_id host user search_type info total_run_time Num_Searches 
+| stats 
+    Sum(total_run_time) As user_total_run_time
+    By _time user 
+| eventstats sum(user_total_run_time) As grand_total_run_time 
+| eval user_total_run_time_perc = user_total_run_time / grand_total_run_time
+| bin _time span=1d 
+| join _time 
+    [ search index=`setup_summary_index` source=splunk_virtual_core_usage_tracker earliest=-30d@d latest=now 
+    | bin _time span=1d 
+    | stats 
+        Max(total_util) As Utilization 
+        Max(License) As License
+        By _time] 
+| eval svc_usage = user_total_run_time_perc * Utilization 
+| lookup splunk_rest_identities_kv_store_lookup identity as user OUTPUTNEW emp_lob2 emp_dep
+| lookup splunk_identities_exceptions_sh_csv_lookup identity as user OUTPUTNEW emp_lob2 emp_dep 
+| fillnull value="NO-Market-Data" emp_lob2
+| fillnull value="NO-Department-Data" emp_dep
+| search emp_lob2 IN ($emp_lob2$) emp_dep IN ($emp_dep$) user IN ($user$)
+</query>
+  </search>
+  <search id="sh_06_knowledge_objects_analysis_dashboards_tracker">
+    <query>|noop</query>
+  </search>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="multiselect" token="emp_lob2">
+      <label>1. Market</label>
+      <choice value="*">All</choice>
+      <fieldForLabel>emp_lob2</fieldForLabel>
+      <fieldForValue>emp_lob2</fieldForValue>
+      <search base="sh_15_business_app_analysis_1">
+        <query>| stats count by emp_lob2</query>
+      </search>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <valuePrefix>"</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter>,</delimiter>
+    </input>
+    <input type="multiselect" token="emp_dep">
+      <label>2. Department</label>
+      <choice value="*">All</choice>
+      <fieldForLabel>emp_dep</fieldForLabel>
+      <fieldForValue>emp_dep</fieldForValue>
+      <search base="sh_15_business_app_analysis_1">
+        <query>| stats count by emp_dep</query>
+      </search>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <valuePrefix>"</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter>,</delimiter>
+    </input>
+    <input type="multiselect" token="user">
+      <label>3. User</label>
+      <choice value="*">All</choice>
+      <fieldForLabel>user</fieldForLabel>
+      <fieldForValue>user</fieldForValue>
+      <search base="sh_15_business_app_analysis_1">
+        <query>| stats count by user</query>
+      </search>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <valuePrefix>"</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter>,</delimiter>
+    </input>
+    <input type="text" token="earliest_time" searchWhenChanged="false">
+      <label>4. Earliest Time (From)</label>
+      <default>-1d@d</default>
+      <initialValue>-1d@d</initialValue>
+    </input>
+    <input type="text" token="latest_time">
+      <label>5. Latest Time (To)</label>
+      <default>-0d@d</default>
+      <initialValue>-0d@d</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Splunk Maximum Virtual Core (SVC) Usage by Market Over the last : $earliest_time$</title>
+      <table>
+        <search base="sh_15_business_app_analysis_2">
+          <query>| stats 
+    Sum(svc_usage) As svc_usage
+    Dc(emp_dep) As Num_Departments
+    Dc(user) As Num_Users
+    Max(License) As License
+    Max(Utilization) As Utilization
+    Max(_time) As Day
+    By emp_lob2 
+| eval svc_perc = round(svc_usage/License *100, 2) 
+| `ustime_format(Day)` 
+| sort 0 - svc_usage 
+| table emp_lob2 Num_Users Num_Departments svc_usage svc_perc Utilization License Day 
+| rename emp_lob2 As "Market", emp_dep As Departments , svc_usage As "SVC Usage", svc_perc As "SVC Usage %", Num_Users As "# of Users", Num_Departments As "# of Departments"</query>
+        </search>
+        <option name="count">20</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="SVC Usage">
+          <colorPalette type="list">[#53A051,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+          <scale type="threshold">100,500,1000</scale>
+        </format>
+        <format type="number" field="SVC Usage">
+          <option name="unit">svc</option>
+        </format>
+        <format type="color" field="Market">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="SVC Usage %">
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Utilization">
+          <option name="unit">svc</option>
+        </format>
+        <format type="number" field="# of Users">
+          <option name="precision">0</option>
+          <option name="unit">Users</option>
+        </format>
+        <format type="color" field="SVC Usage">
+          <colorPalette type="list">[#53A051,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+          <scale type="threshold">100,500,1000</scale>
+        </format>
+        <format type="number" field="SVC Usage">
+          <option name="unit">svc</option>
+        </format>
+        <format type="color" field="Market">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="SVC Usage %">
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Utilization">
+          <option name="unit">svc</option>
+        </format>
+        <format type="number" field="# of Users">
+          <option name="precision">0</option>
+          <option name="unit">Users</option>
+        </format>
+        <format type="number" field="# of Departments">
+          <option name="precision">0</option>
+          <option name="unit">Departments</option>
+        </format>
+        <drilldown>
+          <condition field="Market">
+            <set token="selected_market">$click.value2$</set>
+            <set token="show_single_value">true</set>
+            <unset token="show_event_list"></unset>
+          </condition>
+        </drilldown>
+      </table>
+      <html>
+        <h1>Click on any Market to see Departments Details</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$show_single_value$">
+      <title>Splunk Virtual Core (SVC) Usage for: ($selected_market$) - Over the last : $earliest_time$ (Drill-Down)</title>
+      <table>
+        <search base="sh_15_business_app_analysis_2">
+          <query>| where emp_lob2="$selected_market$" 
+| stats 
+    Sum(svc_usage) As svc_usage
+    Dc(user) As Num_Users
+    Max(License) As License
+    Max(Utilization) As Utilization
+    By emp_dep 
+| eval svc_perc = round(svc_usage/License *100, 2) 
+| sort 0 - svc_usage 
+| table  emp_dep Num_Users Num_Departments svc_usage svc_perc Utilization License 
+| rename  emp_dep As Departments , svc_usage As "SVC Usage", svc_perc As "SVC Usage %", Num_Users As "# of Users"</query>
+        </search>
+        <option name="count">10</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="number" field="SVC Usage">
+          <option name="unit">svc</option>
+        </format>
+        <format type="color" field="Departments">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Utilization">
+          <option name="unit">svc</option>
+        </format>
+        <format type="number" field="SVC Usage">
+          <option name="unit">svc</option>
+        </format>
+        <format type="color" field="Departments">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="SVC Usage">
+          <colorPalette type="list">[#53A051,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+          <scale type="threshold">50,250,750</scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$show_single_value$">
+      <title>Splunk Virtual Core (SVC) Usage by User Over the last : $earliest_time$ (Drill-Down)</title>
+      <table>
+        <search base="sh_15_business_app_analysis_2">
+          <query>| where emp_lob2="$selected_market$" 
+| stats 
+    Sum(svc_usage) As svc_usage
+    Max(License) As License
+    Max(Utilization) As Utilization
+    By user 
+| eval svc_perc = round(svc_usage/License *100, 2) 
+| sort 0 - svc_usage 
+| lookup splunk_identities_custom_kv_store_lookup identity as user OUTPUTNEW emp_lob2 emp_dep emp_name
+| table user emp_name emp_lob2 emp_dep Num_Departments svc_usage svc_perc Utilization License 
+| rename emp_lob2 As "User", svc_usage As "SVC Usage", svc_perc As "SVC Usage %", emp_lob2 As Market, emp_dep As Department, emp_name As Name</query>
+        </search>
+        <option name="count">10</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="number" field="SVC Usage">
+          <option name="unit">svc</option>
+        </format>
+        <format type="color" field="Departments">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Utilization">
+          <option name="unit">svc</option>
+        </format>
+        <format type="number" field="SVC Usage">
+          <option name="unit">svc</option>
+        </format>
+        <format type="color" field="Departments">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="SVC Usage">
+          <colorPalette type="list">[#53A051,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+          <scale type="threshold">50,250,750</scale>
+        </format>
+        <format type="color" field="user">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Splunk Virtual Core (SVC) Usage by Market Over the last : $earliest_time$</title>
+      <chart>
+        <search base="sh_15_business_app_analysis_2">
+          <query>| timechart span=1d eval(round(Sum(svc_usage),0)) as svc_usage by emp_lob2</query>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.stackMode">stacked100</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">1</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">698</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Login Activity by Bisiness Unit</title>
+      <table>
+        <search>
+          <query>| from lookup:splunk_index_audit_user_login_tracker_sh_kv_store_lookup 
+| fields User Earliest_Access Latest_Access Login_Source Splunk_Instance OS_Name OS_Version Browser_Name Browser_Version 
+| `get_shcluster_label(Splunk_Instance)` 
+| eval Days_Latest_Access = round((now() - Latest_Access) / 86400 ) 
+| `strftime_format(Latest_Access)` 
+| `get_identity_info(User)` | search emp_lob2 IN ($emp_lob2$)
+| stats 
+    values(*) as * by User 
+| fillnull value="undefined" emp_lob1 emp_lob2 emp_lob3 vendor_name splunk_role_map ldap_group_name ldap_group_type 
+| `get_latest_access_human(Days_Latest_Access)` 
+| lookup splunk_identities_custom_kv_store_lookup identity as managedBy OUTPUTNEW emp_name As emp_manager_name 
+| table User Days_Latest_Access_Display emp_name emp_title emp_lob2 emp_lob2 managedBy emp_manager_name emp_location shcluster_label Latest_Access emp_type emp_status 
+| `rename_common_fields` 
+| `rename_identity_fields`</query>
+          <earliest>$earliest_time$</earliest>
+          <latest>$latest_time$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+      </table>
+      <single>
+        <title>Total</title>
+        <search>
+          <query>| from lookup:splunk_index_audit_user_login_tracker_sh_kv_store_lookup 
+| fields User
+| `get_identity_info(User)` 
+| search emp_lob2 IN ($emp_lob2$) 
+| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="unit"></option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Job Activity By Business Unit Restricted to an App</title>
+      <table>
+        <search>
+          <query>index=`setup_summary_index` source="splunk_internal_scheduler_jobs_idx_summary_tracker" earliest=$earliest_time$ latest=$latest_time$
+| `get_shcluster_label(Splunk_Instance)` 
+| stats
+    Latest(Scheduled_Time) As Scheduled_Time
+    Latest(Dispatch_Time) As Dispatch_Time
+    Max(Run_Time) As Run_Time
+    Values(Status) As Status
+    Latest(_time) As _time
+    By shcluster_label App User Savedsearch_Name 
+| `ustime_format(Scheduled_Time)` 
+| `ustime_format(Dispatch_Time)` 
+| `ustime_format(_time)` 
+| sort 0 - Run_Time 
+| eval Run_Time_Human=Run_Time 
+| `gmc_convert_runtime(Run_Time_Human)` 
+| `get_saved_searches_info(shcluster_label,App,Savedsearch_Name)` 
+| `ustime_format(updated)` 
+| `get_identity_info(User)` | search emp_lob2 IN ($emp_lob2$)
+| lookup splunk_identities_custom_kv_store_lookup identity as managedBy OUTPUTNEW emp_name As emp_manager_name 
+| eval dispatch_earliest_time_normalized = case ( match(dispatch_earliest_time, "mon"), "Month_Interval", match(dispatch_earliest_time, "w"), "Week_Interval", match(dispatch_earliest_time, "-1d@d|-1d|-24h|24h@h|-1day") OR dispatch_earliest_time="@d" , "1_Day_Interval", match(dispatch_earliest_time, "d"), "N_Day_Interval", match(dispatch_earliest_time, "h"), "Hour_Interval", match(dispatch_earliest_time, "m"), "Minute_Interval", match(dispatch_earliest_time, "s"), "Second_Interval", dispatch_earliest_time = "0" OR dispatch_earliest_time = "1", "All-Time", match(dispatch_earliest_time,"^\d+") AND len(dispatch_earliest_time) = 10, strftime(dispatch_earliest_time,"%m/%d/%Y %I:%M:%S"), match(dispatch_earliest_time, "y"), "Year_Interval", true(), "Other") 
+| table shcluster_label App sharing Savedsearch_Name updated cron_schedule dispatch_earliest_time dispatch_earliest_time_normalized Run_Time Run_Time_Human User author emp_name emp_ttl emp_lob2 emp_lob2 managedBy emp_manager_name emp_location allow_skew schedule_window schedule_priority realtime_schedule Scheduled_Time Dispatch_Time _time Status dispatch_latest_time description savedsearch_search</query>
+          <earliest>$earliest_time$</earliest>
+          <latest>$latest_time$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+      </table>
+      <single>
+        <title>Total</title>
+        <search>
+          <query>index=`setup_summary_index` source="splunk_internal_scheduler_jobs_idx_summary_tracker" earliest=$earliest_time$ latest=$latest_time$ 
+| `get_shcluster_label(Splunk_Instance)` 
+| stats
+    Latest(Scheduled_Time) As Scheduled_Time
+    Latest(Dispatch_Time) As Dispatch_Time
+    Max(Run_Time) As Run_Time
+    Values(Status) As Status
+    Latest(_time) As _time
+    By shcluster_label App User Savedsearch_Name 
+| `get_identity_info(User)` 
+| search emp_lob2 IN ($emp_lob2$) 
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Report on Job Execution by Department Name not restricted to an App</title>
+      <table>
+        <search>
+          <query>index=`setup_summary_index` source="splunk_internal_scheduler_jobs_idx_summary_tracker"  earliest=$earliest_time$ latest=$latest_time$
+| `get_identity_info(User)` | search emp_lob2 IN ($emp_lob2$)
+| `get_shcluster_label(Splunk_Instance)` 
+| stats values(emp_*) as emp_* values(managedBy) As managedBy by shcluster_label App Savedsearch_Name User 
+| lookup splunk_identities_custom_kv_store_lookup identity as managedBy OUTPUTNEW emp_name As emp_manager_name</query>
+          <earliest>$earliest_time$</earliest>
+          <latest>$latest_time$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+      </table>
+      <single>
+        <title>Total</title>
+        <search>
+          <query>index=`setup_summary_index` source="splunk_internal_scheduler_jobs_idx_summary_tracker" earliest=$earliest_time$ latest=$latest_time$ 
+| `get_identity_info(User)` 
+| search emp_lob2 IN ($emp_lob2$) 
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Report on All dashboards created by Business Utit</title>
+      <table>
+        <search>
+          <query>| from lookup:splunk_rest_data_ui_views_sh_kv_store_lookup 
+| fields shcluster_label,Splunk_Instance,Splunk_Roles,app,sharing,title,label,description,type,dashboard_size,author,updated,time_range,Report_Reference,Dashboard_Reference,Lookup_Reference,Datamodel_Reference,Macro_Reference,Index_Reference,Sourcetype_Reference,Source_Reference,Eventtype_Reference,Rest_Reference,search,BaseSearch,panel_title,num_panels,auto_refresh_delay,submitButton,autoRun 
+| `get_identity_info(author)` 
+| search emp_lob2 IN ($emp_lob2$)
+| `strftime_format(updated)` 
+| eval search=mvdedup(mvsort(search)) 
+| fields shcluster_label app sharing title label Days_Latest_Access_Display Latest_Access time_range description dashboard_size author updated Report_Reference Dashboard_Reference Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference BaseSearch search emp_* panel_title,num_panels,auto_refresh_delay,submitButton,autoRun 
+| stats values(*) as * dc(search) as Num_Searches count by shcluster_label app title 
+| eval search = mvindex(search, 0, 4) 
+| table shcluster_label app sharing title label author num_panels panel_title emp_name emp_ttl emp_lob2 emp_lob emp_type emp_status Days_Latest_Access_Display Latest_Access description time_range dashboard_size updated Report_Reference Dashboard_Reference Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference BaseSearch Num_Searches auto_refresh_delay,submitButton,autoRun search</query>
+          <earliest>$earliest_time$</earliest>
+          <latest>$latest_time$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+      </table>
+      <single>
+        <title>Total</title>
+        <search>
+          <query>| from lookup:splunk_rest_data_ui_views_sh_kv_store_lookup 
+| fields author 
+| `get_identity_info(author)` 
+| search emp_lob2 IN ($emp_lob2$) 
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Report on Dashboard Executions by Business Utit with stats in the past N Days</title>
+      <table>
+        <search>
+          <query>index=`setup_summary_index` source=splunk_internal_web_access_idx_summary_tracker  earliest=$earliest_time$ latest=$latest_time$
+| fields _time Splunk_Instance App User Dashboard_Name Latest_Access 
+| `get_shcluster_label(Splunk_Instance)` 
+| `get_dashboards_info(shcluster_label,App,Dashboard_Name)` 
+| stats
+    Values(User) As Users 
+    Values(auto_refresh_delay) As auto_refresh_delay 
+    count As Num_Executions
+    Dc(User) As Num_Users 
+    Dc(search) As Num_Searches
+    Latest(Latest_Access) As Latest_Access 
+    Latest(*) As *
+    by shcluster_label App sharing Dashboard_Name 
+| `ustime_format(Latest_Access)` 
+| `get_identity_info(Users)` | search emp_lob2 IN ($emp_lob2$)
+| lookup splunk_identities_custom_kv_store_lookup identity as managedBy OUTPUTNEW emp_name As emp_manager_name 
+| table shcluster_label App sharing Dashboard_Name label description Latest_Access Users emp_name Num_Users Num_Searches Num_Executions BaseSearch num_panels auto_refresh_delay submitButton autoRun</query>
+          <earliest>$earliest_time$</earliest>
+          <latest>$latest_time$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+      </table>
+      <single>
+        <title>Total</title>
+        <search>
+          <query>index=`setup_summary_index` source=splunk_internal_web_access_idx_summary_tracker earliest=$earliest_time$ latest=$latest_time$ 
+| fields _time Splunk_Instance App User Dashboard_Name Latest_Access 
+| `get_shcluster_label(Splunk_Instance)` 
+| `get_dashboards_info(shcluster_label,App,Dashboard_Name)` 
+| stats
+    Values(User) As Users 
+    Values(auto_refresh_delay) As auto_refresh_delay 
+    count As Num_Executions
+    Dc(User) As Num_Users 
+    Dc(search) As Num_Searches
+    Latest(Latest_Access) As Latest_Access 
+    Latest(*) As *
+    by shcluster_label App sharing Dashboard_Name 
+| `get_identity_info(Users)` 
+| search emp_lob2 IN ($emp_lob2$) 
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+</form>

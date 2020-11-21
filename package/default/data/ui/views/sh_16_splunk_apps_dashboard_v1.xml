@@ -1,0 +1,495 @@
+<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>SH - 16 - Splunk Apps - Dashboard - v1</label>
+  <description>Splunk Apps Information Dashboard</description>
+  <search id="sh_16_splunk_apps">
+    <query>| from lookup:splunk_rest_apps_local_sh_kv_store_lookup
+| fields _time,shcluster_label,Splunk_Instance,title,label,core,author,version,build,check_for_updates,visible,sharing,disabled,configured,show_in_nav,state_change_requires_restart,description,details,updated,acl_perms_read,acl_perms_write,setup_view,attribution_link,update_appurl,update_homepage
+| `get_instance_roles(Splunk_Instance)`
+| `strftime_format(updated)`    
+| rex field=details "id\/(?&lt;Splunkbase_App_Name&gt;\w+)" 
+| `get_app_info(title)`
+| fillnull value="Undefined" Splunk_Roles Splunk_Instance app_type title label core author version build check_for_updates visible sharing disabled configured show_in_nav state_change_requires_restart description details
+| search shcluster_label="$shcluster_label$" Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$" title="$title$" sharing="$sharing$" app_type IN ($app_type$) NOT app_type IN ($app_type2$)  label="$label$" author="$author$" check_for_updates="$check_for_updates$" visible="$visible$" disabled="$disabled$" configured="$configured$" show_in_nav="$show_in_nav$" description="$description$" details="$details$" acl_perms_read="$acl_perms_read$" acl_perms_write="$acl_perms_write$"</query>
+  </search>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+      <title>1. Splunk Apps Filters</title>
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+        <label>1. Splunk SH (Cluster/Instance)</label>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2. Splunk Roles</label>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
+        <label>3. Splunk Instance</label>
+        <fieldForLabel>Splunk_Instance</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by Splunk_Instance</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="multiselect" token="app_type" searchWhenChanged="true">
+        <label>4.1 App Type</label>
+        <fieldForLabel>app_type</fieldForLabel>
+        <fieldForValue>app_type</fieldForValue>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by app_type</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="app_type2" searchWhenChanged="true">
+        <label>4.2 App Type Exclusions</label>
+        <fieldForLabel>app_type</fieldForLabel>
+        <fieldForValue>app_type</fieldForValue>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by app_type</query>
+        </search>
+        <choice value="none">None</choice>
+        <default>Splunk Core Apps (Core),Splunk Base Config Apps (Core)</default>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="dropdown" token="label" searchWhenChanged="true">
+        <label>5. App Name</label>
+        <fieldForLabel>label</fieldForLabel>
+        <fieldForValue>label</fieldForValue>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="title" searchWhenChanged="true">
+        <label>6. Folder Name</label>
+        <fieldForLabel>title</fieldForLabel>
+        <fieldForValue>title</fieldForValue>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by title</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="sharing" searchWhenChanged="true">
+        <label>7. App Sharing</label>
+        <fieldForLabel>sharing</fieldForLabel>
+        <fieldForValue>sharing</fieldForValue>
+        <choice value="*">All</choice>
+        <choice value="global">Global</choice>
+        <choice value="app">App</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="author" searchWhenChanged="true">
+        <label>8. Owner</label>
+        <fieldForLabel>author</fieldForLabel>
+        <fieldForValue>author</fieldForValue>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by author</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="acl_perms_read " searchWhenChanged="true">
+        <label>9. Role Read Permissions</label>
+        <fieldForLabel>acl_perms_read</fieldForLabel>
+        <fieldForValue>acl_perms_read</fieldForValue>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by acl_perms_read</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="acl_perms_write" searchWhenChanged="true">
+        <label>10. Role Write Permissions</label>
+        <fieldForLabel>acl_perms_write</fieldForLabel>
+        <fieldForValue>acl_perms_write</fieldForValue>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by acl_perms_write</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="show_in_nav" searchWhenChanged="true">
+        <label>11. Show in Navigation Menu?</label>
+        <fieldForLabel>show_in_nav</fieldForLabel>
+        <fieldForValue>show_in_nav</fieldForValue>
+        <choice value="*">All</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="visible" searchWhenChanged="true">
+        <label>12. Visible?</label>
+        <fieldForLabel>visible</fieldForLabel>
+        <fieldForValue>visible</fieldForValue>
+        <choice value="*">All</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="check_for_updates" searchWhenChanged="true">
+        <label>13. Update Checking?</label>
+        <fieldForLabel>check_for_updates</fieldForLabel>
+        <fieldForValue>check_for_updates</fieldForValue>
+        <choice value="*">All</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="disabled" searchWhenChanged="true">
+        <label>14. Enabled?</label>
+        <fieldForLabel>disabled</fieldForLabel>
+        <fieldForValue>disabled</fieldForValue>
+        <choice value="*">All</choice>
+        <choice value="0">Yes</choice>
+        <choice value="1">No</choice>
+        <default>0</default>
+        <initialValue>0</initialValue>
+      </input>
+      <input type="dropdown" token="configured" searchWhenChanged="true">
+        <label>15. Configured?</label>
+        <fieldForLabel>configured</fieldForLabel>
+        <fieldForValue>configured</fieldForValue>
+        <choice value="*">All</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="label" searchWhenChanged="true">
+        <label>16.  Name (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="title" searchWhenChanged="true">
+        <label>17. Folder Name (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="description" searchWhenChanged="true">
+        <label>18. Description (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="details" searchWhenChanged="true">
+        <label>19. Details (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
+      <table>
+        <title>2. Apps List</title>
+        <search base="sh_16_splunk_apps">
+          <query>| table shcluster_label title label version app_type build disabled sharing acl_perms_read acl_perms_write author check_for_updates visible configured show_in_nav state_change_requires_restart details description setup_view attribution_link update_appurl update_homepage 
+| `rename_common_fields` 
+| `rename_rest_fields` 
+| rename label AS Name app_type AS Type version AS Version configured AS Configured show_in_nav AS "Show in Navigation Menu" build AS Build visible AS Visible check_for_updates AS "Update Checking" details AS Details state_change_requires_restart AS "State Change Requires Restart" acl_perms_read As "Role Read Permissions" acl_perms_write As "Role Write Permissions" attribution_link As "Docs"</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">row</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Splunk_Instance">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Splunk Role">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Field Alias">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Stanza">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="App Sharing">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="value">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Value">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Configured">
+          <colorPalette type="map">{"0":#F8BE34,"1":#53A051}</colorPalette>
+        </format>
+        <format type="color" field="Show in Navigation Menu">
+          <colorPalette type="map">{"0":#F8BE34,"1":#53A051}</colorPalette>
+        </format>
+        <format type="color" field="Update Checking">
+          <colorPalette type="map">{"0":#F8BE34,"1":#53A051}</colorPalette>
+        </format>
+        <format type="color" field="Visible">
+          <colorPalette type="map">{"0":#F8BE34,"1":#53A051}</colorPalette>
+        </format>
+        <format type="color" field="State Change Requires Restart">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="Disabled">
+          <colorPalette type="map">{"0":#53A051,"1":#F8BE34}</colorPalette>
+        </format>
+        <format type="color" field="Version">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <drilldown>
+          <condition field="title">
+            <set token="selected_title">$click.value2$</set>
+            <set token="show_single_value">true</set>
+            <unset token="show_event_list"></unset>
+          </condition>
+        </drilldown>
+      </table>
+      <single>
+        <title>Total Number of Apps</title>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">Apps</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+      <html>
+        <h1>Click on any App to see Splunkbase App information</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_3" depends="$show_single_value$">
+      <title>Splunkbase App Info for: $selected_title$</title>
+      <table>
+        <search base="sh_16_splunk_apps">
+          <query>| where title="$selected_title$" 
+| stats latest(version) As version count by shcluster_label title 
+| `get_sbase_app_info(title)` 
+| rename version as installed_version 
+| table shcluster_label title sbase_title uid appid installed_version latest_version type access appinspected archive_status categories created_by path updated_time support product_compatibility splunk_compatibility release_notes</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="installed_version">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="title">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_22" depends="$show_single_value$">
+      <title>Splunkbase App Overview for: $selected_title$</title>
+      <table>
+        <search base="sh_16_splunk_apps">
+          <query>| where title="$selected_title$" 
+| stats count by title 
+| `get_sbase_app_info(title)` 
+| fields overview</query>
+        </search>
+        <option name="count">1</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="installed_version">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="title">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="overview">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_23" depends="$show_single_value$">
+      <title>Splunkbase App Details for: $selected_title$</title>
+      <table>
+        <search base="sh_16_splunk_apps">
+          <query>| where title="$selected_title$" 
+| stats count by title 
+| `get_sbase_app_info(title)` 
+| fields details</query>
+        </search>
+        <option name="count">1</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="installed_version">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="title">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="details">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_21" depends="$gadget_lib_loaded$">
+      <title>3. Apps Stats By $split_by_tok_1$</title>
+      <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
+        <label>1. Split By</label>
+        <choice value="shcluster_label">SH Cluster Label</choice>
+        <choice value="Splunk_Instance">Splunk Instance</choice>
+        <choice value="sharing">App Sharing</choice>
+        <choice value="author">Author (User)</choice>
+        <choice value="emp_name">Employee Name</choice>
+        <choice value="emp_lob1">Employee LOB</choice>
+        <choice value="emp_dep">Employee Department</choice>
+        <choice value="emp_cc">Employee Cost Center</choice>
+        <choice value="emp_title">Employee Title</choice>
+        <choice value="emp_type">Employee Type</choice>
+        <choice value="emp_status">Employee Status</choice>
+        <choice value="updated">Update Date</choice>
+        <choice value="disabled">disabled</choice>
+        <choice value="check_for_updates">check_for_updates</choice>
+        <choice value="visible">visible</choice>
+        <choice value="show_in_nav">show_in_nav</choice>
+        <choice value="configured">configured</choice>
+        <choice value="state_change_requires_restart">state_change_requires_restart</choice>
+        <choice value="setup_view">setup_view</choice>
+        <choice value="attribution_link">attribution_link</choice>
+        <choice value="update_appurl">update_appurl</choice>
+        <choice value="update_homepage">update_homepage</choice>
+        <default>shcluster_label</default>
+        <initialValue>shcluster_label</initialValue>
+      </input>
+      <chart>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by $split_by_tok_1$</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.001</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">700</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_4" depends="$gadget_lib_loaded$">
+      <title>4. Associated GMC Job(s) - $env:page$</title>
+      <html>
+            <ol>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_apps_local_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Apps KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_apps_local_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Apps Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_summary_apps_local_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Apps KV Store Gen Job From Summary Index</a>
+               </li>
+            </ol>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_apps_local_sh_kv_store&amp;type=kv">
+                     View Splunk Apps KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+         </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Dashboard Latest Refresh</title>
+        <search base="sh_16_splunk_apps">
+          <query>| stats count by _time 
+| fields _time 
+| `strftime_format(_time)`
+| rename _time As "Dashboard Latest Refresh"</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+      </single>
+    </panel>
+  </row>
+</form>
