@@ -1,0 +1,227 @@
+<dashboard theme="dark">
+  <label>07 - IOC Setup</label>
+  <description>IOC Setup Dashboard</description>
+  <row>
+    <panel>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+                <h1>Complete the setup of the splunk_cloud_stack_info_csv table</h1>
+                <div class="btn-group1">
+                    <div id="mod_info">
+                        <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=ioc_app&amp;lookup=splunk_cloud_stack_info_csv.csv&amp;type=csv">
+                            <b>IOC Cloud Stack Table</b>
+                            <i class="icon-data icon-modal-medium icon-color-searchfu m-left"/>
+                        </a>
+                    </div>
+                    <div id="mod_att" class="hide">
+                        <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                            <i class="icon-alert icon-modal-medium icon-color-severe m-left"/>
+                        </a>
+                    </div>
+                </div>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+                <p>
+                    <h1>Run the IOC TA Setup Screen to schedule the jobs below and to setup the IOC default Macros</h1>
+                    <div class="btn-group1">
+                        <div id="mod_info">
+                            <a class="btn middle contour" target="blank" href="/app/ioc_ta/setup?action=edit">
+                                <b>IOC Setup Screen</b>
+                                <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
+                            </a>
+                        </div>
+                    </div>
+                </p>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+                <h1>Edit this job and customize it to automatically build <b>splunk_identities_custom_kv_store_lookup_gen</b> or edit the table manually by clicking on the button:</h1>
+                <p>
+                    <a href="/app/ioc_app/search?s=splunk_identities_custom_kv_store_lookup_gen" target="_blank" rel="noopener">IOC Custom Identities Gen Job</a>
+                </p>
+                <div class="btn-group1">
+                    <div id="mod_info">
+                        <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=ioc_app&amp;lookup=splunk_identities_custom_kv_store&amp;type=kv">
+                            <b>View Custom Identities KV Store</b>
+                            <i class="icon-data icon-modal-medium icon-color-searchfu m-left"/>
+                        </a>
+                    </div>
+                    <div id="mod_att" class="hide">
+                        <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                            <i class="icon-alert icon-modal-medium icon-color-severe m-left"/>
+                        </a>
+                    </div>
+                </div>
+                <p/>
+                <p>Add any identities that can not get automatically populated using the IOC Custom Identities Gen Job to the IOC Identities Exceptions CSV Lookup</p>
+                <div class="btn-group1">
+                    <div id="mod_info">
+                        <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=ioc_app&amp;lookup=splunk_identities_exceptions_sh_csv.csv&amp;type=csv">
+                            <b>IOC Identities Exceptions</b>
+                            <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
+                        </a>
+                    </div>
+                </div>
+                <p>Use the splunk_identities_types_csv_lookup Lookup Table to automatically classify identity types and other classification using wild card matching, the table ships with multiple examples.</p>
+                <div class="btn-group1">
+                    <div id="mod_info">
+                        <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=admin&amp;namespace=ioc_app&amp;lookup=splunk_identities_types_csv.csv&amp;type=csv">
+                            <b>IOC Identities Types</b>
+                            <i class="icon-gear icon-modal-medium icon-color-searchfu m-left"/>
+                        </a>
+                    </div>
+                </div>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+                <p>
+                    <h1>I. List of IOC Jobs</h1>
+                    <b>Run the following Jobs for the first time from the menu or click on the link</b>
+                    
+                </p>
+                <h1>Run these two jobs first</h1>
+                <ol>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_shcluster_config_shc_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Search Head Cluster configuration details - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_cluster_config_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexer Cluster configuration details - KV Store - Gen Job - From REST</a>
+                    </li>
+                </ol>
+                <h1>Run theses jobs only after running the above two jobs</h1>
+                <ol>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_assets_kv_store_lookup_gen" target="_blank" rel="noopener">IOC Assets - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_identities_kv_store_lookup_gen" target="_blank" rel="noopener">IOC Identities - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_authorization_roles_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk User Roles - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_saml_groups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk SAML external groups in an IdP response to internal Splunk User Roles - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexes - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Dashboards - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Reports and Alerts (Saved Searches) - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_alert_actions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Alert Actions - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_lookup_table_files_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Lookup table files - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_transforms_lookup_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Lookup Definitions - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_lookups_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Automatic lookups (LOOKUP-) - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_apps_local_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Apps - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_files_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Configuration Files: (limits, server, distsearch, outputs, ui-prefs, props and transforms) - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_calcfields_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Calculated Fields (EVAL-) - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Extractions (EXTRACT-) - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_fieldaliases_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Aliases (FIELDALIAS-) - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_transforms_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Transformations (TRANSFORM- OR REPORT-) - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_props_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Source Types - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Data Inputs - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_http_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk HTTP Event Collector (HEC) Inputs - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Event Types - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_macros_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Macros - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_models_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Data Models - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_index_itsi_summary_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk IT Service Intelligence Base Searches - KV Store - Gen Job - From ITSI Summary Index</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_itsi_kpi_base_search_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk IT Service Intelligence Interface KPI Base Searches - KV Store - Gen Job - From REST</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_itsi_service_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk IT Service Intelligence Interface Services - KV Store - Gen Job - From REST</a>
+                    </li>
+                </ol>
+                <h1>Run these jobs depending on version:</h1>
+                <ol>
+                
+                <li value="7">
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup_gen_v7" target="_blank" rel="noopener">Splunk v7 Search Concurrency Metrics - KV Store - Gen Job - From REST</a>
+                </li>
+                <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk v8 Search Concurrency Metrics - KV Store - Gen Job - From REST</a>
+                </li>
+                </ol>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+                <p>
+                    <h1>
+                        <b>II. List of IOC Tracking Jobs</b>
+                    </h1>
+                    <b>Run the following Jobs for the first time by clicking on the link.  Some of the jobs need to be modified before execution.  Please follow the comment instructions inside the search</b>
+                </p>
+                <h2>1. Tracking Jobs that will need to be modified before execution for backfill</h2>
+                <ol>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_index_audit_user_login_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Users Activity (KV Store) (Every 5 minutes)</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_audit_user_login_idx_summary_tracker" target="_blank" rel="noopener">Track Users Activity (Summary Indexing) (Every 5 minutes)</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboards Execution (KV Store) (Every 5 minutes)</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_internal_web_access_idx_summary_tracker" target="_blank" rel="noopener">Track Dashboards Executions (Summary Indexing) (Every 5 minutes)</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Reports/Alerts Execution (KV Store) (Every 5 minutes)</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_internal_scheduler_jobs_idx_summary_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (Summary Indexing) (Every 5 minutes)</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_internal_index_license_usage_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster By Index Daily (Summary Indexing) (Every Day)</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_messages_sh_summary_tracker" target="_blank" rel="noopener">Track Splunk Messages (Summary Indexing) (Every 15 minutes)</a>
+                    </li>
+                </ol>
+                <h2>2. Tracking Jobs to run without modification for backfill</h2>
+                <ol>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_rest_search_jobs_sh_summary_tracker" target="_blank" rel="noopener">Track Job Activity (Summary Indexing) (Every 5 minutes)</a>
+                    </li>
+                    <li>
+                        <a href="/app/global_monitoring_console/search?s=splunk_internal_license_rollover_summary_idx_summary_tracker" target="_blank" rel="noopener">Track License Usage By Cluster Daily (Summary Indexing) (Every Day)</a>
+                    </li>
+                </ol>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+                <h1><b>III. Restore the IOC 101 KV Store Database</b></h1>
+                <p>Run the following search to restore the KV Store from the csv provided with the install. Search will need to be edited upon running to remove the comments around the outputlookup.</p>
+                <a href="/app/global_monitoring_console/search?s=ioc101_restore_lookup_gen" target="_blank" rel="noopener">KV Restore Search</a>
+            </html>
+    </panel>
+  </row>
+</dashboard>

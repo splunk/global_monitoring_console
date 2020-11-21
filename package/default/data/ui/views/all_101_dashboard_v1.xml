@@ -1,0 +1,295 @@
+<form script="help_entries_list.js, tooltip.js" stylesheet="tooltip.css" theme="dark">
+  <!-- 
+    app=ID name=view category=classification tags=panel desc=text search=app_version
+    splunk backup kvstore -appName global_monitoring_console -collectionName help_entries -archiveName gmc101 -auth admin: 
+  | from lookup:help_entries  | fields app, view, panel, classification, text, app_version, disabled  | eval classification=if(classification="os", "OS", classification)   | outputlookup help_entries createinapp=true create_empty=true override_if_empty=false
+  -->
+  <label>101 - Search Repository</label>
+  <search id="a01_dashboard">
+    <query>| from lookup:help_entries 
+    | fields app, view, panel, classification, text, app_version, disabled
+| rename app as search_num, view as search_name, panel as tags, classification as category, app_version as search, text As search_description
+| makemv delim="," tags
+| stats Values(*) As * by search_num
+| fillnull value="not-set" search_name,category,tags,search_description
+| search category IN ($category$) NOT category IN ($category2$) tags IN ($tags$) NOT tags IN ($tags2$) search_num IN ($search_num$) search_name IN ($search_name$) search="*$gmc_search1$*" search="*$gmc_search2$*" search_description="*$search_description$*"
+| $gmc$
+</query>
+  </search>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="multiselect" token="category" searchWhenChanged="true">
+      <label>1.1 Category</label>
+      <choice value="*">All</choice>
+      <fieldForLabel>category</fieldForLabel>
+      <fieldForValue>category</fieldForValue>
+      <search base="a01_dashboard">
+        <query>| stats count by category</query>
+      </search>
+      <delimiter>,</delimiter>
+      <default>*</default>
+    </input>
+    <input type="multiselect" token="category2" searchWhenChanged="true">
+      <label>1.2 Category Exclusions</label>
+      <choice value="None">None</choice>
+      <fieldForLabel>category2</fieldForLabel>
+      <fieldForValue>category</fieldForValue>
+      <search base="a01_dashboard">
+        <query>| stats count by category</query>
+      </search>
+      <delimiter>,</delimiter>
+      <default>None</default>
+    </input>
+    <input type="multiselect" token="tags" searchWhenChanged="true">
+      <label>2.1 Tags</label>
+      <search base="a01_dashboard">
+        <query>| stats count by tags</query>
+      </search>
+      <fieldForLabel>tags</fieldForLabel>
+      <fieldForValue>tags</fieldForValue>
+      <choice value="*">All</choice>
+      <initialValue>*</initialValue>
+      <delimiter>,</delimiter>
+    </input>
+    <input type="multiselect" token="tags2" searchWhenChanged="true">
+      <label>2.2 Tag Exclusions</label>
+      <choice value="None">None</choice>
+      <fieldForLabel>tags2</fieldForLabel>
+      <fieldForValue>tags</fieldForValue>
+      <search base="a01_dashboard">
+        <query>| stats count by tags</query>
+      </search>
+      <delimiter>,</delimiter>
+      <initialValue>None</initialValue>
+    </input>
+    <input type="multiselect" token="search_num" searchWhenChanged="true">
+      <label>3. Search ID</label>
+      <choice value="*">All</choice>
+      <fieldForLabel>search_num</fieldForLabel>
+      <fieldForValue>search_num</fieldForValue>
+      <search base="a01_dashboard">
+        <query>| stats count by search_num</query>
+      </search>
+      <delimiter>,</delimiter>
+      <default>*</default>
+    </input>
+    <input type="multiselect" token="search_name" searchWhenChanged="true">
+      <label>4.1 Search Name</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>search_name</fieldForLabel>
+      <fieldForValue>search_name</fieldForValue>
+      <search base="a01_dashboard">
+        <query>| stats count by search_name</query>
+      </search>
+      <delimiter>,</delimiter>
+      <valuePrefix>"</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+    </input>
+    <input type="text" token="search_name" searchWhenChanged="true">
+      <label>4.2 Search Name (Contains) I</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="gmc_search1" searchWhenChanged="true">
+      <label>5.1 Search (Contains) I</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="gmc_search2" searchWhenChanged="true">
+      <label>5.2 Search (Contains) II</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="search_description" searchWhenChanged="true">
+      <label>6 Description (Contains).</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="checkbox" token="gmc" searchWhenChanged="true">
+      <label>7. GMC Category Only</label>
+      <choice value="search search_num=&quot;GMC-*&quot;">Yes</choice>
+      <choice value="noop">No</choice>
+      <delimiter/>
+      <default>noop</default>
+      <initialValue>noop</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+        <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+        <h1 style="color:rgb(207,49,128);font-size:50px;text-align:center">Search Repository</h1>
+        <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>1. List of matching searches</title>
+      <html>
+        <h1 style="color:YELLOW;font-size:25px;text-align:center">Click on any search to run it</h1>
+      </html>
+      <table id="tblToolTip">
+        <search base="a01_dashboard">
+          <query>| eval len_name=len(search_name), len_search=len(search) , num=search_num 
+| rex field=num mode=sed "s/^\w+-//g" 
+| table num search_num search_name category tags search search_description len_name len_search 
+| sort - num
+| rename search_num As "Search ID", search_name As "Search Name", search_description As "Search Description", search As "GMC_Search"</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">row</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="Search Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <drilldown>
+          <link target="_blank">search?q=$row.GMC_Search$</link>
+        </drilldown>
+      </table>
+      <single>
+        <title>Total number of searches</title>
+        <search base="a01_dashboard">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <title>Latest Search Number</title>
+        <search base="a01_dashboard">
+          <query>| search search_num="GMC-*"| stats count by search_num
+| tail 1</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>2. Search Management</title>
+      <html>
+        <h1 style="color:YELLOW;font-size:25px;text-align:center">Add/Remove/Edit Searches here</h1>
+      </html>
+      <html id="element1">
+                <div id="help_entries">
+                    Loading
+                </div>
+            </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>3.1 Searches By Category</title>
+      <chart>
+        <search base="a01_dashboard">
+          <query>| stats count by category</query>
+        </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">500</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>3.2 Searches By Tags</title>
+      <chart>
+        <search base="a01_dashboard">
+          <query>| stats count by tags</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="height">500</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>4. Repository Backup/Restore Jobs</title>
+      <html>
+                <a href="/app/global_monitoring_console/search?s=ioc101_backup_lookup_gen" target="_blank" rel="noopener">
+                    <h1 style="color:green">Click here to Backup the GMC 101 DB</h1>
+                </a>
+                <a href="/app/global_monitoring_console/search?s=ioc101_restore_lookup_gen" target="_blank" rel="noopener">
+                    <h1 style="color:red">Click here to Restore the GMC 101 DB to factory default!</h1>
+                </a>
+            </html>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$alwaysHideCSS$">
+      <html>
+                <style>#Input1{
+             width:15% !important;
+           }
+           #Input2{
+             width:15% !important;
+           }</style>
+                <style>#Input3{
+             width:15% !important;
+           }
+           #Input4{
+             width:15% !important;
+           }</style>
+                <style>#Input5{
+             width:15% !important;
+           }
+           #Input6{
+             width:15% !important;
+           }</style>
+                <style>#Input7{
+             width:15% !important;
+           }
+           #Input8{
+             width:15% !important;
+           }</style>
+                <style>#Input9{
+             width:15% !important;
+           }
+           #Input10{
+             width:15% !important;
+           }</style>
+            </html>
+    </panel>
+  </row>
+</form>
