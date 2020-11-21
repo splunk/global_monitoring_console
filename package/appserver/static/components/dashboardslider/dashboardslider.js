@@ -108,7 +108,7 @@
 
         // setup checkbox choices
         cb.settings.set("choices", [
-          { label: "Enable Debug", value: "debug" },
+          // { label: "Enable Debug", value: "debug" },
           { label: "Hide Inputs", value: "hideinputs" }
         ]);
 

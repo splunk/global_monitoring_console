@@ -111,7 +111,7 @@ table.dataTable.cell-border tbody tr:first-child td {
 
 /* This changes the background color of the Search ID table colunn */
 
-table.dataTable.stripe tbody tr.odd,
+/* table.dataTable.stripe tbody tr.odd,
 table.dataTable.display tbody tr.odd {
 	background-color: #5CC05C
 }
@@ -155,10 +155,10 @@ table.dataTable.display tbody tr.selected>.sorting_1,
 table.dataTable.display tbody tr.selected>.sorting_2,
 table.dataTable.display tbody tr.selected>.sorting_3 {
 	background-color: #acbad4
-}
+} */
 
 /* This changes the background color of the Search ID table colunn */
-table.dataTable.display tbody tr.odd>.sorting_1,
+/* table.dataTable.display tbody tr.odd>.sorting_1,
 table.dataTable.order-column.stripe tbody tr.odd>.sorting_1 {
 	background-color: #0f020e
 }
@@ -270,7 +270,7 @@ table.dataTable.order-column.hover tbody tr:hover.selected>.sorting_3,
 table.dataTable.order-column.hover tbody tr.odd:hover.selected>.sorting_3,
 table.dataTable.order-column.hover tbody tr.even:hover.selected>.sorting_3 {
 	background-color: #a4b2cb
-}
+} */
 
 table.dataTable.no-footer {
 	border-bottom: 1px solid #111
