@@ -1,0 +1,1348 @@
+<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>Home</label>
+  <description>Global Monitoring Console Framework</description>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel id="UsersPanel">
+      <title>Users Logged into the Platform Today</title>
+      <table>
+        <search>
+          <query>| from lookup:splunk_index_audit_user_login_tracker_sh_kv_store_lookup 
+| `get_shcluster_label(Splunk_Instance)` 
+| eval Days_Latest_Access = round((now() - Latest_Access) / 86400 ) 
+| where Days_Latest_Access=0 
+| `strftime_format(Latest_Access)` 
+| `get_identity_info(user)` 
+| eval shcluster_label = if(isnull(shcluster_label), Splunk_Instance, shcluster_label) 
+| `get_geo_info(emp_city,emp_region1,emp_country)` 
+| `get_iplocation_info2(Login_Source)` 
+| stats 
+    Last(*) as * by user 
+| table user emp_name emp_title shcluster_label Login_Source Latest_Access emp_lob1 emp_lob2 emp_dep emp_location emp_city emp_region1 emp_country 
+| `rename_common_fields` 
+| `rename_identity_fields`</query>
+          <earliest>@d</earliest>
+          <latest>now</latest>
+          <refresh>10m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="work_city">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="work_country">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="OS_Version">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Browser_Version">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="shcluster_label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="NumUsersPanel">
+      <title>Total</title>
+      <single>
+        <search>
+          <query>| from lookup:splunk_index_audit_user_login_tracker_sh_kv_store_lookup 
+| eval Days_Latest_Access = round((now() - Latest_Access) / 86400 ) 
+| where Days_Latest_Access = 0 
+| stats count</query>
+          <earliest>@d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">230</option>
+        <option name="rangeColors">["0x53a051","0xFF1493"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="UsersPanel2">
+      <title>Number of Users Logged into the Platform over time In the last 30 days</title>
+      <chart>
+        <search>
+          <query>index=`setup_summary_index` source=splunk_audit_user_login_idx_summary_tracker earliest=-30d@d
+| fields _time User Splunk_Instance Login_Source OS_Name OS_Version Browser_Name Browser_Version 
+| timechart  span=1d
+    Dc(User) As Num_Users</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+          <refresh>10m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.maximumNumber">5000</option>
+        <option name="charting.axisY.minimumNumber">1</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">269</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_21" depends="$gadget_lib_loaded$">
+      <title>Users not logging into the platform in more than ($Days_Latest_Access_1$) Days</title>
+      <input type="text" token="Days_Latest_Access_1" searchWhenChanged="true">
+        <label>Days Since Latest Access</label>
+        <default>14</default>
+        <initialValue>14</initialValue>
+      </input>
+      <html>
+        <style>#panel_accordion_togglepanel_false_21{ width:85% !important; }</style>
+      </html>
+      <table>
+        <search>
+          <query>| from lookup:splunk_rest_identities_kv_store_lookup 
+| `get_instance_roles(Splunk_Instance)` 
+| `get_splunk_roles_info(shcluster_label,splunk_role_map)` 
+| stats 
+    Values(email) As email
+    Values(emp_dep) As emp_dep
+    Values(emp_lob) As emp_lob
+    Values(emp_name) As emp_name
+    Values(emp_status) As emp_status
+    Values(emp_title) As emp_title
+    Values(emp_type) As emp_type
+    Values(endDate) As endDate
+    Values(emp_manager) As emp_manager
+    By shcluster_label identity 
+| lookup splunk_index_audit_user_login_tracker_sh_kv_store_lookup user AS identity OUTPUTNEW Latest_Access Splunk_Instance Login_Source 
+| eval time_diff=now()-Latest_Access 
+| eval Days_Latest_Access=$Days_Latest_Access_1$*24*60*60 
+| where time_diff &gt; Days_Latest_Access AND emp_type!="Service" AND identity!="admin" 
+| `gmc_convert_runtime(time_diff)` 
+| `strftime_format(Latest_Access)` 
+| rename time_diff As "Time Since Latest Login" 
+| table identity Latest_Access shcluster_label "Time Since Latest Login" emp_name emp_title emp_dep emp_lob1 emp_type emp_status 
+| `rename_identity_fields` 
+| `rename_common_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="identity">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Identity">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User LOB">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User Department">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_22" depends="$gadget_lib_loaded$">
+      <title>Total</title>
+      <html>
+        <style>#panel_accordion_togglepanel_false_22{ width:15% !important; }</style>
+      </html>
+      <single>
+        <search>
+          <query>| from lookup:splunk_rest_identities_kv_store_lookup 
+| `get_instance_roles(Splunk_Instance)` 
+| `get_splunk_roles_info(shcluster_label,splunk_role_map)` 
+| stats 
+    Values(email) As email
+    Values(emp_dep) As emp_dep
+    Values(emp_lob) As emp_lob
+    Values(emp_name) As emp_name
+    Values(emp_status) As emp_status
+    Values(emp_title) As emp_title
+    Values(emp_type) As emp_type
+    Values(endDate) As endDate
+    Values(emp_manager) As emp_manager
+    By shcluster_label identity 
+| lookup splunk_index_audit_user_login_tracker_sh_kv_store_lookup user AS identity OUTPUTNEW Latest_Access Splunk_Instance Login_Source 
+| eval time_diff=now()-Latest_Access 
+| eval Days_Latest_Access=$Days_Latest_Access_1$*24*60*60 
+| where time_diff &gt; Days_Latest_Access AND emp_type!="Service" AND identity!="admin" 
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">230</option>
+        <option name="rangeColors">["0xdc4e41","0xf1813f"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_31" depends="$gadget_lib_loaded$">
+      <title>Users Accessing the platform in the last ($Days_Latest_Access_2$) Days</title>
+      <input type="text" token="Days_Latest_Access_2" searchWhenChanged="true">
+        <label>Days Since Latest Access</label>
+        <default>30</default>
+        <initialValue>30</initialValue>
+      </input>
+      <input type="text" token="exclusions_1" searchWhenChanged="true">
+        <label>Dashboard Exclusions</label>
+        <default>home</default>
+        <initialValue>home</initialValue>
+      </input>
+      <html>
+        <style>#panel_accordion_togglepanel_false_31{ width:85% !important; }</style>
+      </html>
+      <table>
+        <search>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+    count
+    latest(_time) As _time
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Introspection_Search_Usage 
+    AND index=_introspection 
+    AND Search_Activity.Introspection_Search_Usage.search_type3 = "adhoc"
+    NOT Search_Activity.Introspection_Search_Usage.user3 IN (admin, splunk-system-user)
+    NOT Search_Activity.Introspection_Search_Usage.provenance IN (*$exclusions_1$*)
+    earliest=-$Days_Latest_Access_2$d
+    BY host Search_Activity.Introspection_Search_Usage.user3 
+| `gmc_drop_dm_object_name(Search_Activity.Introspection_Search_Usage)` 
+| rename user3 As identity 
+| `get_shcluster_info(host)` 
+| `get_identity_info(shcluster_label,identity)` 
+| `get_identity_info(identity)` 
+| search NOT emp_type IN (service)
+| `fillnull_identity_info` 
+| `strftime_format(_time)` 
+| table identity _time shcluster_label  emp_name emp_title emp_dep emp_lob1 emp_type emp_status 
+| `rename_common_fields` 
+| `rename_identity_fields`</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User Full Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User Department">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User LOB">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Identity">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_32" depends="$gadget_lib_loaded$">
+      <title>Total</title>
+      <html>
+        <style>#panel_accordion_togglepanel_false_32{ width:15% !important; }</style>
+      </html>
+      <single>
+        <search>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+    count
+    latest(_time) As _time
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Introspection_Search_Usage 
+    AND index=_introspection 
+    AND Search_Activity.Introspection_Search_Usage.search_type3 = "adhoc"
+    NOT Search_Activity.Introspection_Search_Usage.user3 IN (admin, splunk-system-user)
+    NOT Search_Activity.Introspection_Search_Usage.provenance IN (*$exclusions_1$*)
+    earliest=-$Days_Latest_Access_2$d
+    BY host Search_Activity.Introspection_Search_Usage.user3 
+| `gmc_drop_dm_object_name(Search_Activity.Introspection_Search_Usage)` 
+| rename user3 As identity 
+| `get_shcluster_info(host)` 
+| `get_identity_info(shcluster_label,identity)` 
+| `get_identity_info(identity)` 
+| search NOT emp_type IN (service)
+| stats dc(identity)</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">230</option>
+        <option name="rangeColors">["0x53a051","0x1f75fe"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_61" depends="$gadget_lib_loaded$">
+      <title>Users Accessing and leveraging the platform in the last ($Days_Latest_Access_3$) Days</title>
+      <input type="text" token="Days_Latest_Access_3" searchWhenChanged="true">
+        <label>Days Since Latest Access</label>
+        <default>30</default>
+        <initialValue>30</initialValue>
+      </input>
+      <input type="text" token="exclusions_2" searchWhenChanged="true">
+        <label>Dashboard Exclusions</label>
+        <default>home,setup,home,setup,overview,inputs,lookup_list,lookup_edit,table,configure,welcome,configuration,contents</default>
+        <initialValue>home,setup,home,setup,overview,inputs,lookup_list,lookup_edit,table,configure,welcome,configuration,contents</initialValue>
+      </input>
+      <html>
+        <style>#panel_accordion_togglepanel_false_61{ width:85% !important; }</style>
+      </html>
+      <html>
+        <style>#panel_accordion_togglepanel_true_61{ width:85% !important; }</style>
+      </html>
+      <table>
+        <search>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+    count
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Introspection_Search_Usage 
+    AND index=_introspection 
+    AND Search_Activity.Introspection_Search_Usage.search_type3 = "adhoc"
+    AND Search_Activity.Introspection_Search_Usage.provenance = "UI:*"
+    NOT Search_Activity.Introspection_Search_Usage.user3 IN (admin, splunk-system-user)
+    NOT Search_Activity.Introspection_Search_Usage.provenance IN (*$exclusions_2$*)
+    earliest=-$Days_Latest_Access_3$d
+    BY host Search_Activity.Introspection_Search_Usage.user3 
+| `gmc_drop_dm_object_name(Search_Activity.Introspection_Search_Usage)` 
+| rename user3 As user 
+| `get_shcluster_info(host)` 
+| `get_identity_info(shcluster_label,user)` 
+| `get_identity_info(user)` 
+| search NOT emp_type IN (service) 
+| `fillnull_identity_info` 
+| table shcluster_label user emp_name emp_title emp_dep emp_lob1 emp_type emp_status 
+| `rename_identity_fields` 
+| `rename_common_fields`</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="user">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_62" depends="$gadget_lib_loaded$">
+      <title>Total</title>
+      <html>
+        <style>#panel_accordion_togglepanel_false_62{ width:15% !important; }</style>
+      </html>
+      <single>
+        <search>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+    count
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Introspection_Search_Usage 
+    AND index=_introspection 
+    AND Search_Activity.Introspection_Search_Usage.search_type3 = "adhoc"
+    AND Search_Activity.Introspection_Search_Usage.provenance = "UI:*"
+    NOT Search_Activity.Introspection_Search_Usage.user3 IN (admin, splunk-system-user)
+    NOT Search_Activity.Introspection_Search_Usage.provenance IN (*$exclusions_2$*)
+    earliest=-$Days_Latest_Access_3$d
+    BY host Search_Activity.Introspection_Search_Usage.user3 
+| `gmc_drop_dm_object_name(Search_Activity.Introspection_Search_Usage)` 
+| rename user3 As user 
+| `get_shcluster_info(host)` 
+| `get_identity_info(shcluster_label,user)` 
+| `get_identity_info(user)` 
+| search NOT emp_type IN (service) 
+| stats dc(user)</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">230</option>
+        <option name="rangeColors">["0x53a051","0xFF1493"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="DashboardsPanel">
+      <title>Platform Dashboards</title>
+      <table>
+        <search>
+          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup 
+| eval Splunk_Tier = case ( match(label, "IDX"), "Indexer", match(label, "SH"), "Search Head", match(label, "UF"), "Forwarder", true(), "Other") 
+| table shcluster_label Splunk_Tier label description updated 
+| `strftime_format(updated)` 
+| `rename_dashboards_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Macro Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Dashboard Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="NumDashboardsPanel">
+      <title>Total</title>
+      <single>
+        <search>
+          <query>| inputlookup splunk_rest_data_ui_views_sh_kv_store_lookup 
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">230</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x53a051"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_42" depends="$gadget_lib_loaded$">
+      <title>Dashboard Accessed in the last ($Days_Latest_Access_4$) Days</title>
+      <input type="text" token="Days_Latest_Access_4" searchWhenChanged="true">
+        <label>Days Since Latest Access</label>
+        <default>30</default>
+        <initialValue>30</initialValue>
+      </input>
+      <input type="text" token="exclusions_3" searchWhenChanged="true">
+        <label>Dashboard Exclusions</label>
+        <default>home,setup,home,setup,overview,inputs,lookup_list,lookup_edit,table,configure,welcome,configuration,contents</default>
+        <initialValue>home,setup,home,setup,overview,inputs,lookup_list,lookup_edit,table,configure,welcome,configuration,contents</initialValue>
+      </input>
+      <html>
+        <style>#panel_accordion_togglepanel_false_42{ width:85% !important; }</style>
+      </html>
+      <table>
+        <search>
+          <query>index=`setup_summary_index` source=splunk_internal_web_access_idx_summary_tracker earliest=-$Days_Latest_Access_4$d App!="global_monitoring_console" NOT Dashboard_Name IN ($exclusions_3$)
+| fields _time User Splunk_Instance App OS_Name avg_spent Dashboard_Name Latest_Access 
+| `get_shcluster_label(Splunk_Instance)` 
+| `get_identity_info(shcluster_label, User)` 
+| stats 
+    Dc(User) As Num_Users 
+    Values(emp_lob) As emp_lob1 
+    Values(emp_dep) As emp_dep
+    Latest(_time) As _time
+    By shcluster_label App Dashboard_Name 
+| table  shcluster_label App Dashboard_Name _time emp_name emp_title emp_dep emp_lob1 emp_type emp_status Num_Users 
+| `strftime_format(_time)` 
+| `rename_identity_fields` 
+| `rename_common_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Dashboard_Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_52" depends="$gadget_lib_loaded$">
+      <title>Total</title>
+      <html>
+        <style>#panel_accordion_togglepanel_false_52{ width:15% !important; }</style>
+      </html>
+      <single>
+        <search>
+          <query>index=`setup_summary_index` source=splunk_internal_web_access_idx_summary_tracker earliest=-$Days_Latest_Access_4$d App!="global_monitoring_console" NOT title IN ($exclusions_3$)
+| fields _time User Splunk_Instance App OS_Name avg_spent Dashboard_Name Latest_Access 
+| `get_shcluster_label(Splunk_Instance)` 
+| `get_identity_info(shcluster_label, User)` 
+| stats 
+    Dc(Dashboard_Name)</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">230</option>
+        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_611" depends="$gadget_lib_loaded$">
+      <title>New Dashboards Created or Updated in the last ($Days_Latest_Access_5$) Days</title>
+      <input type="text" token="Days_Latest_Access_5" searchWhenChanged="true">
+        <label>Dashboards Created/Updated in the last (Days)</label>
+        <default>7</default>
+        <initialValue>7</initialValue>
+      </input>
+      <html>
+        <style>#panel_accordion_togglepanel_false_611{ width:85% !important; }</style>
+      </html>
+      <table>
+        <search>
+          <query>| from lookup:splunk_rest_data_ui_views_sh_kv_store_lookup 
+| eval time_diff=now()-updated 
+| eval Days_Latest_Access=$Days_Latest_Access_5$*24*60*60 
+| where time_diff &lt; Days_Latest_Access 
+| `strftime_format(updated)` 
+| `gmc_convert_runtime(time_diff)` 
+| `get_identity_info(shcluster_label, author)` 
+| `get_identity_info(author)` 
+| table shcluster_label label title updated app sharing author emp_name emp_title emp_dep emp_lob1 emp_type emp_status time_diff acl_perms_read acl_perms_write description 
+| rename time_diff As "Time Since Latest Login" 
+| `rename_dashboards_fields` 
+| `rename_common_fields` 
+| `rename_identity_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">3</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Dashboard Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="panel_accordion_togglepanel_false_622" depends="$gadget_lib_loaded$">
+      <title>Total</title>
+      <html>
+        <style>#panel_accordion_togglepanel_false_622{ width:15% !important; }</style>
+      </html>
+      <single>
+        <search>
+          <query>| from lookup:splunk_rest_data_ui_views_sh_kv_store_lookup 
+| eval time_diff=now()-updated 
+| eval Days_Latest_Access=$Days_Latest_Access_5$*24*60*60 
+| where time_diff &lt; Days_Latest_Access 
+| stats Dc(title)</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">230</option>
+        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="ReportsPanel">
+      <title>Platform Scheduled Reports/Alerts</title>
+      <table>
+        <search>
+          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup 
+| where is_scheduled=1 AND disabled=0
+| fields shcluster_label app savedsearch_name description updated cron_schedule  Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew schedule_priority
+| stats values(scheduled_times) as scheduled_times values(next_scheduled_time) as next_scheduled_time last(*) as * by shcluster_label app savedsearch_name 
+| `strftime_format(updated)` 
+| eval scheduled_times=mvindex(scheduled_times,0,3) ,scheduled_times=mvindex(scheduled_times,1,3) , TimeZone=strftime(strptime(next_scheduled_time,"%m/%d/%Y %H:%M:%S"), "%Y%m%d%H%M%S") + " -500" , EST_Time=strftime(strptime(TimeZone,"%Y%m%d%H%M%S %Z"),"%Y/%m/%d %H:%M:%S %Z") 
+| `get_saved_searches_usage(shcluster_label,app,savedsearch_name)` 
+| eval "Job Class" = case ( match(savedsearch_name, "_tracker$"), "Tracking Jobs", match(savedsearch_name, "_lookup_gen"), "Lookup Gen Jobs", true(), "Other") 
+| table shcluster_label savedsearch_name description updated cron_schedule  Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew schedule_priority
+| `strftime_format(scheduled_times)` 
+| `strftime_format(next_scheduled_time)` 
+| `rename_saved_searches_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Macro Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Cron Schedule">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Scheduled">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Job Class">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Run_Time">
+          <option name="unit">s</option>
+        </format>
+        <format type="color" field="Job Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Job Schedule Human">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="NumReportsPanel">
+      <title>Total</title>
+      <single>
+        <search>
+          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup 
+| where is_scheduled=1 AND disabled=0 
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">230</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="LookupsPanel">
+      <title>Platform Lookups</title>
+      <table>
+        <search>
+          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup 
+| `strftime_format(updated)` 
+| eval Index="GMC"
+| lookup splunk_gmc_kb_csv_lookup Index Field_Name As Lookup OUTPUTNEW Field_Description
+| rename Field_Description As Description
+| table shcluster_label Lookup Type Description Filename Collection updated
+| `rename_lookup_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Macro Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup_File">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Fields_List">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Lookup Collection Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="NumLookupsPanel">
+      <title>Total</title>
+      <single>
+        <search>
+          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup 
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">230</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0xFA5B3D"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="MacrosPanel">
+      <title>New Scheduled Jobs Created or Updated in the last ($Days_Latest_Access_5$) Days</title>
+      <input type="text" token="Days_Latest_Access_1" searchWhenChanged="true">
+        <label>Days Since Latest Access</label>
+        <default>30</default>
+        <initialValue>30</initialValue>
+      </input>
+      <table>
+        <search>
+          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup 
+| where is_scheduled=1 AND disabled=0
+| eval time_diff=now()-updated 
+| eval Days_Latest_Access=$Days_Latest_Access_5$*24*60*60 
+| where time_diff &lt; Days_Latest_Access 
+| `gmc_convert_runtime(time_diff)` 
+| fields shcluster_label app savedsearch_name description updated cron_schedule  Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew schedule_priority
+| stats values(scheduled_times) as scheduled_times values(next_scheduled_time) as next_scheduled_time last(*) as * by shcluster_label app savedsearch_name 
+| `strftime_format(updated)` 
+| eval scheduled_times=mvindex(scheduled_times,0,3) ,scheduled_times=mvindex(scheduled_times,1,3) , TimeZone=strftime(strptime(next_scheduled_time,"%m/%d/%Y %H:%M:%S"), "%Y%m%d%H%M%S") + " -500" , EST_Time=strftime(strptime(TimeZone,"%Y%m%d%H%M%S %Z"),"%Y/%m/%d %H:%M:%S %Z") 
+| `get_saved_searches_usage(shcluster_label,app,savedsearch_name)` 
+| eval "Job Class" = case ( match(savedsearch_name, "_tracker$"), "Tracking Jobs", match(savedsearch_name, "_lookup_gen"), "Lookup Gen Jobs", true(), "Other") 
+| table shcluster_label savedsearch_name description updated cron_schedule  Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew schedule_priority
+| `strftime_format(scheduled_times)` 
+| `strftime_format(next_scheduled_time)` 
+| `rename_saved_searches_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">3</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Macro Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Macro Class">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Macro Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Macro Arguments">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Job Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Job Schedule Human">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="Run_Time">
+          <option name="unit">s</option>
+        </format>
+        <format type="color" field="Job Allow Skew">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Job Schedule Window">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Job Schedule Priority">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel id="NumMacrosPanel">
+      <title>Total</title>
+      <single>
+        <search>
+          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup 
+| where is_scheduled=1 AND disabled=0 
+| eval time_diff=now()-updated 
+| eval Days_Latest_Access=$Days_Latest_Access_5$*24*60*60 
+| where time_diff &lt; Days_Latest_Access 
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">230</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x1f75fe"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">none</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_9" depends="$gadget_lib_loaded$">
+      <title>Top 10 Usage by Splunk SH Cluster/Instance by LOB</title>
+      <table>
+        <search>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+    count
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Introspection_Search_Usage 
+    AND index=_introspection 
+    AND Search_Activity.Introspection_Search_Usage.search_type3 = "adhoc"
+    AND Search_Activity.Introspection_Search_Usage.provenance = "UI:*"
+    NOT Search_Activity.Introspection_Search_Usage.user3 IN (admin, splunk-system-user)
+    BY host Search_Activity.Introspection_Search_Usage.user3 
+| `gmc_drop_dm_object_name(Search_Activity.Introspection_Search_Usage)` 
+| rename user3 As user 
+| `get_shcluster_info(host)` 
+| `get_identity_info(shcluster_label,user)` 
+| `get_identity_info(user)` 
+| top 10 emp_lob by shcluster_label 
+| `rename_identity_fields` 
+| `rename_common_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User LOB">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="percent">
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_10" depends="$gadget_lib_loaded$">
+      <title>Top 10 Usage by Splunk SH Cluster/Instance by Department</title>
+      <table>
+        <search>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+    count
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Introspection_Search_Usage 
+    AND index=_introspection 
+    AND Search_Activity.Introspection_Search_Usage.search_type3 = "adhoc"
+    AND Search_Activity.Introspection_Search_Usage.provenance = "UI:*"
+    NOT Search_Activity.Introspection_Search_Usage.user3 IN (admin, splunk-system-user)
+    BY host Search_Activity.Introspection_Search_Usage.user3 
+| `gmc_drop_dm_object_name(Search_Activity.Introspection_Search_Usage)` 
+| rename user3 As user 
+| `get_shcluster_info(host)` 
+| `get_identity_info(shcluster_label,user)` 
+| `get_identity_info(user)` 
+| top 10 emp_dep by shcluster_label 
+| `rename_identity_fields` 
+| `rename_common_fields`</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="number" field="percent">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User Department">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_11" depends="$gadget_lib_loaded$">
+      <title>Knowledge Object Creation by LOB/Department (ongoing development activities)</title>
+      <table>
+        <search>
+          <query>| from lookup:splunk_rest_data_ui_views_sh_kv_store_lookup 
+| `get_identity_info(shcluster_label,author)` 
+| `get_identity_info(author)` 
+| `fillnull_identity_info` 
+| `strftime_format(updated)` 
+| stats count by emp_lob 
+| `rename_identity_fields`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="User LOB">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User LOB">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_112" depends="$gadget_lib_loaded$">
+      <title>Splunk Knowledge Objects that has been created or updated in the last ($Days_Latest_Access_7$) Days</title>
+      <input type="text" token="Days_Latest_Access_7" searchWhenChanged="true">
+        <label>Days Since Latest Access</label>
+        <default>30</default>
+        <initialValue>30</initialValue>
+      </input>
+      <table>
+        <search>
+          <query>index=`setup_summary_index` source IN (splunk_rest_admin_eventtypes_sh_summary_data, splunk_rest_admin_lookup_table_files_sh_summary_data, splunk_rest_admin_transforms_lookup_sh_summary_data, splunk_rest_configs_conf_props_sh_summary_data, splunk_rest_data_macros_sh_summary_data, splunk_rest_data_models_sh_summary_data, splunk_rest_data_props_calcfields_sh_summary_data, splunk_rest_data_props_extractions_sh_summary_data, splunk_rest_data_props_fieldaliases_sh_summary_data, splunk_rest_data_props_lookups_sh_summary_data, splunk_rest_data_transforms_extractions_sh_summary_data, splunk_rest_data_ui_views_sh_summary_data, splunk_rest_saved_searches_sh_summary_data) NOT author IN (system, admin, splunk-system-user) updated=* earliest=-$Days_Latest_Access_7$d 
+| eval time_diff = now() - updated 
+| eval Days_Latest_Access = $Days_Latest_Access_7$*24*60*60 
+| where time_diff &lt; Days_Latest_Access 
+| `get_ko_type` 
+| eval title = case (
+    source="splunk_rest_admin_lookup_table_files_sh_summary_data", Filename,
+    source="splunk_rest_admin_transforms_lookup_sh_summary_data", Lookup,
+    source="splunk_rest_saved_searches_sh_summary_data", savedsearch_name,
+    source="splunk_rest_data_props_calcfields_sh_summary_data", name,
+    match(source, "splunk_rest_data_props_fieldaliases_sh_summary_data|splunk_rest_data_props_extractions_sh_summary_data|splunk_rest_data_props_lookups_sh_summary_data"), attribute,
+    true(), title) 
+| stats 
+    Latest(updated) As updated 
+    Latest(time_diff) As time_diff
+    earliest(sharing) AS start_share
+    latest(sharing) AS end_share
+    dc(sharing) AS share_states
+    count by shcluster_label Knowledge_Object_Type app author title 
+| eval sharing=end_share, sharing_change=if(share_states&gt;1, "From ". start_share ." to ". end_share, "No change"), sharing_change=if(start_share=end_share, "No change", sharing_change) 
+| `get_identity_info(shcluster_label,author)` 
+| `get_identity_info(author)` 
+| `strftime_format(updated)` 
+| `gmc_convert_runtime(time_diff)` 
+| table shcluster_label Knowledge_Object_Type title app sharing sharing_change author emp_name emp_title emp_dep emp_lob1 emp_type emp_status updated time_diff 
+| `rename_identity_fields` 
+| `rename_common_fields` 
+| rename Knowledge_Object_Type As "Knowledge Object Type", title As "Knowledge Object Name" app As App updated As "Knowledge Object Update Time" time_diff As "Updated in the last" author As User, sharing_change AS "Sharing Change"</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Knowledge Object Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="sharing">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="User Employment Status">
+          <colorPalette type="map">{"Active":#53A051,"Terminated":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="Sharing Change">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Count of SHC Scheduler Executions Over Time by Status (Excludes Data Models &amp; Continuous Jobs)</title>
+      <input type="time" token="timerange" searchWhenChanged="false">
+        <label>Time Range</label>
+        <default>
+          <earliest>-4h@h</earliest>
+          <latest>-0h@h</latest>
+        </default>
+      </input>
+      <input type="text" token="span">
+        <label>span</label>
+        <default>15m</default>
+        <initialValue>15m</initialValue>
+      </input>
+      <chart>
+        <title>Earliest: $timerange.earliest$ Latest=$timerange.latest$</title>
+        <search>
+          <done>
+            <eval token="hr_earl">$job.earliestTime$)</eval>
+            <eval token="hr_latest">$job.latestTime$</eval>
+          </done>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE 
+    `tstats_gmc_internal`
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Internal_Scheduler
+    index=_internal
+    AND Search_Activity.Internal_Scheduler.info2 IN (success, skipped, continued, delegated_remote_completion) 
+    AND Search_Activity.Internal_Scheduler.search_type2 != "*acceleration"
+    BY _time Search_Activity.Internal_Scheduler.search_id2 
+| `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)` 
+| rename search_id2 As search_id , info AS status 
+| fields _time host app concurrency_category concurrency_context concurrency_limit dispatch_time priority reason result_count total_run_time savedsearch_id savedsearch_name scheduled_time search_id search_type skipped_count status user window_time alert_actions event_message 
+| timechart span=$span$
+    count(eval(status=="delegated_remote_completion")) AS SHC_COMP_EXEC
+    count(eval(status=="skipped")) AS Skipped_EXEC
+    count(eval(status=="delegated_remote_completion" OR status=="skipped")) AS SHC_TOT_EXEC 
+| eval Skip_Ratio = round ( ( Skipped_EXEC / SHC_TOT_EXEC ) * 100, 0) 
+| fields - SHC_TOT_EXEC</query>
+          <earliest>$timerange.earliest$</earliest>
+          <latest>$timerange.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <search type="annotation" base="annotation_sh">
+          <query>
+</query>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">1</option>
+        <option name="charting.axisY2.scale">log</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.overlayFields">Skip_Ratio</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">425</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Ad-Hoc Searches By Status in the last 24 Hours</title>
+      <chart>
+        <search>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+    count
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Audit_Search
+    index=_audit
+    AND Search_Activity.Audit_Search.search_type1 = "adhoc"
+    AND Search_Activity.Audit_Search.info1!="granted"
+    AND earliest=-24h@h
+    BY Search_Activity.Audit_Search.search_id1 Search_Activity.Audit_Search.info1 
+| `gmc_drop_dm_object_name(Search_Activity.Audit_Search)` 
+| stats count by info1
+| rename info1 As Status</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.001</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">700</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Ad-Hoc Searches By Status in the last 24 Hours with Number of Users</title>
+      <table>
+        <search>
+          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE 
+    count
+    FROM DATAMODEL=GMC
+    WHERE nodename=Search_Activity.Audit_Search
+    index=_audit
+    AND Search_Activity.Audit_Search.search_type1 = "adhoc"
+    AND Search_Activity.Audit_Search.info1!="granted"
+    AND earliest=-24h@h
+    BY Search_Activity.Audit_Search.search_id1 Search_Activity.Audit_Search.user1 Search_Activity.Audit_Search.info1 
+| `gmc_drop_dm_object_name(Search_Activity.Audit_Search)` 
+| stats count As Num_Searches dc(user1) as Num_Users by info1</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="info1">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="info1">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Num_Users">
+          <colorPalette type="minMidMax" maxColor="#B6C75A" midColor="#FFFFFF" minColor="#294E70"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Number of Scheduled Jobs/Alerts in the last ($Days_Latest_Access_5$) Days</title>
+      <input type="text" token="Days_Latest_Access_9" searchWhenChanged="true">
+        <label>Days Since Latest Access</label>
+        <default>90</default>
+        <initialValue>90</initialValue>
+      </input>
+      <chart>
+        <search>
+          <query>index=`setup_summary_index` source="splunk_rest_saved_searches_sh_summary_data" is_scheduled=1 disabled=0 NOT app IN ("*global_monitoring_console","splunk_instance_monitoring","skynet-rest","cloud-monitoring-console-summarizer") earliest=-$Days_Latest_Access_9$d@d | where shcluster_label!="No-shcluster_label" 
+| fields _time shcluster_label app savedsearch_name savedsearch_type author disabled is_scheduled sharing cron_schedule schedule_priority schedule_window updated allow_skew 
+| bin _time span=1d 
+| stats 
+    count
+    BY _time shcluster_label app author sharing savedsearch_name 
+| stats count As Num_Scheduled_Jobs by _time</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">297</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Number of Scheduled Jobs/Alerts in the last ($Days_Latest_Access_5$) Days By Employee Department</title>
+      <input type="dropdown" token="gmc_identity" searchWhenChanged="true">
+        <label>GMC Identity Fields</label>
+        <choice value="emp_lob1">Employee LOB</choice>
+        <choice value="emp_lob2">Employee LOB2</choice>
+        <choice value="emp_lob3">Employee LOB3</choice>
+        <choice value="emp_dep">Employee Department</choice>
+        <choice value="emp_type">Employee Type</choice>
+        <choice value="emp_status">Employee Status</choice>
+        <choice value="emp_city">Employee City</choice>
+        <choice value="emp_region1">Employee Region1</choice>
+        <choice value="emp_region2">Employee Region2</choice>
+        <choice value="emp_country">Employee Country</choice>
+        <default>emp_dep</default>
+        <initialValue>emp_dep</initialValue>
+        <fieldForLabel>gmc_identity</fieldForLabel>
+        <fieldForValue>gmc_identity</fieldForValue>
+      </input>
+      <input type="text" token="Days_Latest_Access_15" searchWhenChanged="true">
+        <label>Days Since Latest Access</label>
+        <default>90</default>
+        <initialValue>90</initialValue>
+      </input>
+      <chart>
+        <search>
+          <query>index=`setup_summary_index` source="splunk_rest_saved_searches_sh_summary_data" is_scheduled=1 disabled=0 NOT app IN ("*global_monitoring_console","splunk_instance_monitoring","skynet-rest","cloud-monitoring-console-summarizer") earliest=-$Days_Latest_Access_15$d@d 
+| fields _time shcluster_label app savedsearch_name savedsearch_type author sharing updated 
+| `get_identity_info(author)` 
+| fillnull value="Other" $gmc_identity$ 
+| bin _time span=1d 
+| stats 
+    count
+    BY _time shcluster_label app sharing author $gmc_identity$ savedsearch_name 
+| timechart useother=f usenull=f fixedrange=false
+    count by $gmc_identity$</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.stackMode">stacked100</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">1</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">698</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$alwaysHideCSS$">
+      <html>
+            <style>#UsersPanel{
+             width:85% !important;
+           }
+           #NumUsersPanel{
+             width:15% !important;
+           }</style>
+           <style>#MacrosPanel{
+             width:85% !important;
+           }
+           #NumMacrosPanel{
+             width:15% !important;
+           }</style>
+           <style>#ReportsPanel{
+             width:85% !important;
+           }
+           #NumReportsPanel{
+             width:15% !important;
+           }</style>
+           <style>#LookupsPanel{
+             width:85% !important;
+           }
+           #NumLookupsPanel{
+             width:15% !important;
+           }</style>
+           <style>#DashboardsPanel{
+             width:85% !important;
+           }
+           #NumDashboardsPanel{
+             width:15% !important;
+           }</style>
+         </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| noop</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>

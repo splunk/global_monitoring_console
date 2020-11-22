@@ -1,0 +1,487 @@
+[nav/default_full]
+export = system
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.753859000
+
+[nav/default]
+export = system
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.754555000
+
+[nav/default_ioc]
+export = system
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.755430000
+
+[views/gmc_01_splunk_internal_logs_analysis_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.792114000
+
+[views/gmc_app_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.793139000
+
+[views/gmc_101_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.797017000
+
+[views/gmc_home_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.900228000
+
+[views/gmc_docs_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.908928000
+
+[views/gmc_assets_identities_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.921423000
+
+[views/gmc_setup_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.922554000
+
+[views/gmc_kb_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.925814000
+
+[views/gmc_setup_dashboard_v1_ioc]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.926984000
+
+[transforms/help_entries]
+export = system
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.942676000
+
+[collections/help_entries]
+export = system
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.962701000
+
+[views/splunk_idx_01_data_quality_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098294.999973000
+
+[views/splunk_idx_02_indexes_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.085862000
+
+[views/splunk_idx_03_network_statistics_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.098426000
+
+[views/splunk_idx_04_disk_io_statistics_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.107020000
+
+[views/splunk_idx_05_inputs_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.115256000
+
+[views/splunk_idx_07_indexer_queues_cloud_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.128699000
+
+[views/splunk_idx_06_cluster_bucket_status_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.130897000
+
+[views/splunk_idx_07_indexer_queues_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.133160000
+
+[views/splunk_idx_09_http_event_collector_cloud_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.134794000
+
+[views/splunk_idx_09_http_event_collector_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.193758000
+
+[views/splunk_sh_01_dashboards_deep_analysis_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.459054000
+
+[views/splunk_sh_03_lookups_deep_analysis_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.463274000
+
+[views/splunk_idx_11_executive_summaries_by_business_unit_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.475880000
+
+[views/splunk_sh_04_audit_search_activity_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.480983000
+
+[views/splunk_sh_02_reports_alerts_deep_analysis_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.501965000
+
+[views/splunk_sh_07_fields_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.507949000
+
+[views/splunk_sh_05_audit_users_activity_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.511366000
+
+[views/splunk_sh_06_skipped_and_deferred_search_analysis_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.512790000
+
+[views/splunk_sh_06_skipped_and_deferred_search_analysis_dashboard_v2]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.514229000
+
+[views/splunk_sh_09_macros_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.686520000
+
+[views/splunk_sh_11_data_models_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.688036000
+
+[views/splunk_sh_08_event_types_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.697012000
+
+[views/splunk_sh_10_source_types_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.706103000
+
+[views/splunk_sh_13_config_files_cloud_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.719594000
+
+[views/splunk_sh_13_config_files_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.723007000
+
+[views/splunk_sh_12_scheduled_search_balance_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.724525000
+
+[views/splunk_sh_14_app_validation_certification_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.730789000
+
+[views/splunk_sh_15_business_app_analysis_splunk_virtual_core_svc_usage_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.736484000
+
+[views/splunk_sh_16_splunk_apps_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.881630000
+
+[views/splunk_sh_18_resource_usage_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.893943000
+
+[views/splunk_sh_19_gmc_automation_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.906527000
+
+[views/splunk_sh_17_gmc_automation_dashboard_v2]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.917012000
+
+[views/splunk_sh_20_adoption_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.918157000
+
+[views/splunk_uf_01_forwarding_analysis_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.934563000
+
+[views/splunk_sh_23_gmc_summary_data_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.937681000
+
+[views/splunk_sh_21_deploying_splunk_with_base_configs_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.941511000
+
+[views/splunk_uf_02_forwarding_analysis_summary_index_dashboard_v1]
+export = none
+owner = akhamis
+version = 8.1.0
+modtime = 1604098295.943076000
+
+[indexes/gmc_summary]
+owner = akhamis
+version = 8.1.0
+modtime = 1604098539.903088000
+
+[views/all_assets_identities_dashboard_v1]
+version = 8.1.0
+modtime = 1604183607.324278000
+
+[views/all_01_splunk_internal_logs_analysis_v1]
+version = 8.1.0
+modtime = 1604183622.133623000
+
+[views/all_kb_dashboard_v1]
+version = 8.1.0
+modtime = 1604183869.985579000
+
+[views/all_101_dashboard_v1]
+version = 8.1.0
+modtime = 1605751823.082800000
+
+[views/all_08_config_files_dashboard_v1]
+version = 8.1.0
+modtime = 1605232093.271637000
+
+[views/all_11_app_validation_certification_dashboard_v1]
+version = 8.1.0
+modtime = 1605113963.878414000
+
+[views/rest_dashboard]
+owner = akhamis
+version = 8.1.0
+modtime = 1604192682.235528000
+
+[views/all_13_rest_dashboard_v1]
+version = 8.1.0
+modtime = 1605980318.299381000
+
+[views/all_10_summary_data_dashboard_v1]
+version = 8.1.0
+modtime = 1604195855.400439000
+
+[views/all_09_resource_usage_dashboard_v1]
+version = 8.1.0
+modtime = 1604531663.433695000
+
+[views/all_12_deploying_splunk_with_base_configs_dashboard_v1]
+version = 8.1.0
+modtime = 1605113991.216545000
+
+[views/idx_05_inputs_dashboard_v1]
+version = 8.1.0
+modtime = 1605113807.828396000
+
+[views/all_07_setup_dashboard_v1]
+version = 8.1.0
+modtime = 1605575172.794054000
+
+[views/sh_06_skipped_and_deferred_search_analysis_dashboard_v2]
+version = 8.1.0
+modtime = 1605574718.875827000
+
+[views/sh_17_automation_dashboard_v2]
+version = 8.1.0
+modtime = 1605574967.487202000
+
+[views/all_02_internal_logs_analysis_v1]
+version = 8.1.0
+modtime = 1605481814.879901000
+
+[views/all_03_app_dashboard_v1]
+version = 8.1.0
+modtime = 1605620895.384006000
+
+[views/all_07_setup_dashboard_ioc_v1]
+version = 8.1.0
+modtime = 1604697937.579228000
+
+[datamodels/GMC]
+version = 8.1.0
+modtime = 1605574752.803175000
+
+[views/sh_07_fields_dashboard_v1]
+version = 8.1.0
+modtime = 1605241967.479565000
+
+[models/GMC]
+version = 8.1.0
+modtime = 1604544378.650281000
+
+[views/all_01_assets_identities_dashboard_v1]
+version = 8.1.0
+modtime = 1605114558.061157000
+
+[views/sh_05_audit_users_activity_dashboard_v1]
+version = 8.1.0
+modtime = 1605574629.851372000
+
+[lookups/__mlspl_license_usage_state_space_forecast_version1.mlmodel]
+version = 8.1.0
+modtime = 1605928073.608015000
+
+[views/idx_07_indexer_queues_dashboard_v1]
+version = 8.1.0
+modtime = 1605573990.906506000
+
+[views/idx_09_http_event_collector_dashboard_v1]
+version = 8.1.0
+modtime = 1605113835.547097000
+
+[views/sh_10_source_types_dashboard_v1]
+version = 8.1.0
+modtime = 1605114074.358583000
+
+[views/idx_01_data_quality_dashboard_v1]
+version = 8.1.0
+modtime = 1604534681.705738000
+
+[views/sh_01_dashboards_deep_analysis_dashboard_v1]
+version = 8.1.0
+modtime = 1605620334.355713000
+
+[views/sh_02_reports_alerts_deep_analysis_dashboard_v1]
+version = 8.1.0
+modtime = 1605574148.195367000
+
+[views/sh_03_lookups_deep_analysis_dashboard_v1]
+version = 8.1.0
+modtime = 1604973384.786351000
+
+[views/all_05_home_dashboard_v1]
+version = 8.1.0
+modtime = 1605573341.457512000
+
+[views/idx_03_network_statistics_dashboard_v1]
+version = 8.1.0
+modtime = 1605113785.750274000
+
+[views/idx_04_disk_io_statistics_dashboard_v1]
+version = 8.1.0
+modtime = 1605113797.149362000
+
+[views/idx_06_cluster_bucket_status_dashboard_v1]
+version = 8.1.0
+modtime = 1605114449.527151000
+
+[views/sh_08_event_types_dashboard_v1]
+version = 8.1.0
+modtime = 1605113909.985395000
+
+[views/sh_09_macros_dashboard_v1]
+version = 8.1.0
+modtime = 1605114066.022502000
+
+[views/sh_11_data_models_dashboard_v1]
+version = 8.1.0
+modtime = 1605114091.805237000
+
+[views/sh_16_splunk_apps_dashboard_v1]
+version = 8.1.0
+modtime = 1605114113.425552000
+
+[views/sh_20_adoption_dashboard_v1]
+version = 8.1.0
+modtime = 1605574471.522684000
+
+[views/uf_01_forwarding_analysis_dashboard_v1]
+version = 8.1.0
+modtime = 1605114152.112545000
+
+[views/uf_02_forwarding_analysis_summary_index_dashboard_v1]
+version = 8.1.0
+modtime = 1605114166.247143000
+
+[views/sh_15_business_app_analysis_splunk_virtual_core_svc_usage_dashboard_v1]
+version = 8.1.0
+modtime = 1605574880.099009000
+
+[views/sh_04_audit_search_activity_dashboard_v1]
+version = 8.1.0
+modtime = 1605620454.879924000

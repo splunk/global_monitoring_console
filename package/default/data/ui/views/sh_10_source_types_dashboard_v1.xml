@@ -1,0 +1,580 @@
+<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>SH - 10 - Source Types - Dashboard - v1</label>
+  <description>Splunk  Source Types Information Dashboard</description>
+  <search id="sh_10_source_types">
+    <query>| from lookup:splunk_rest_configs_conf_props_sh_kv_store_lookup
+| search $Exclusions$ (app="$app$" title="*$title$*" sharing="$sharing$" author="$author$")
+| fields cluster_label Splunk_Instance app title sharing author TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER TRUNCATE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER KV_MODE INDEXED_EXTRACTIONS EVENT_BREAKER_ENABLE EVENT_BREAKER ANNOTATE_PUNCT LEARN_SOURCETYPE LEARN_MODEL MAX_EVENTS maxDist updated ADD_EXTRA_TIME_FIELDS AUTO_KV_JSON CHARSET CHECK_FOR_HEADER CHECK_METHOD DEPTH_LIMIT FIELD_DELIMITER FIELD_HEADER_REGEX HEADER_FIELD_DELIMITER HEADER_MODE JSON_TRIM_BRACES_IN_ARRAY_NAMES LINE_BREAKER_LOOKBEHIND MATCH_LIMIT MAX_DAYS_AGO MAX_DAYS_HENCE MAX_DIFF_SECS_AGO MAX_DIFF_SECS_HENCE METRIC-SCHEMA-TRANSFORMS METRICS_PROTOCOL MUST_NOT_BREAK_AFTER MUST_NOT_BREAK_BEFORE NO_BINARY_CHECK PREFIX_SOURCETYPE TIMESTAMP_FIELDS TRANSFORMS TZ category disabled invalid_cause is_valid priority pulldown_type rename 
+
+| `get_instance_roles(Splunk_Instance)`
+
+| `get_identity_info(cluster_label,author)` | `get_identity_info(author)` | `fillnull_identity_info`
+| `strftime_format(updated)`
+
+| fillnull value="auto" KV_MODE 
+| fillnull value="128" MAX_TIMESTAMP_LOOKAHEAD 
+| fillnull value="300" maxDist 
+| fillnull value="256" MAX_EVENTS 
+| fillnull value="0" EVENT_BREAKER_ENABLE CHECK_FOR_HEADER FIELD_HEADER_REGEX JSON_TRIM_BRACES_IN_ARRAY_NAMES NO_BINARY_CHECK
+| fillnull value="1" ANNOTATE_PUNCT LEARN_MODEL SHOULD_LINEMERGE LEARN_SOURCETYPE BREAK_ONLY_BEFORE_DATE ADD_EXTRA_TIME_FIELDS AUTO_KV_JSON PREFIX_SOURCETYPE is_valid
+| fillnull value="10000" TRUNCATE 
+| fillnull value="^" TIME_PREFIX 
+| fillnull value="([\r\n]+)" LINE_BREAKER 
+| fillnull value="\r\n" EVENT_BREAKER 
+| fillnull value="/etc/datetime.xml" DATETIME_CONFIG 
+| fillnull value="not-set" INDEXED_EXTRACTIONS 
+| fillnull value="UTF-8" CHARSET 
+| fillnull value="endpoint_md5" CHECK_METHOD 
+| fillnull value="1000" DEPTH_LIMIT 
+| fillnull value="100" LINE_BREAKER_LOOKBEHIND 
+| fillnull value="100000" MATCH_LIMIT 
+| fillnull value="2000" MAX_DAYS_AGO 
+| fillnull value="2" MAX_DAYS_HENCE 
+| fillnull value="3600" MAX_DIFF_SECS_AGO 
+| fillnull value="604800" MAX_DIFF_SECS_HENCE 
+
+| search cluster_label="$cluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" MAX_TIMESTAMP_LOOKAHEAD="$MAX_TIMESTAMP_LOOKAHEAD$" SHOULD_LINEMERGE="$SHOULD_LINEMERGE$" EVENT_BREAKER_ENABLE="$EVENT_BREAKER_ENABLE$" TRUNCATE="$TRUNCATE$" LEARN_SOURCETYPE="$LEARN_SOURCETYPE$" KV_MODE="$KV_MODE$" INDEXED_EXTRACTIONS="$INDEXED_EXTRACTIONS$"
+emp_status="$emp_status$" emp_type IN ($emp_type$) emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_lob2="$emp_lob2$" emp_lob3="$emp_lob3$" emp_title="$emp_title$" emp_cc="$emp_cc$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$"</query>
+  </search>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+      <title>1. Source Types Filters</title>
+      <input type="dropdown" token="cluster_label" searchWhenChanged="true">
+        <label>1. Splunk SH (Cluster/Instance)</label>
+        <fieldForLabel>cluster_label</fieldForLabel>
+        <fieldForValue>cluster_label</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by cluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2.1 Splunk Roles</label>
+        <fieldForLabel>Splunk_Roles</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Splunk_Roles" searchWhenChanged="true">
+        <label>2.2 Splunk Roles (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance" searchWhenChanged="true">
+        <label>3.1 Splunk Instance</label>
+        <fieldForLabel>Splunk_Instance</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by Splunk_Instance</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="Splunk_Instance" searchWhenChanged="true">
+        <label>3.2 Splunk Instance (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="title" searchWhenChanged="true">
+        <label>4.1 Source Type Name</label>
+        <fieldForLabel>title</fieldForLabel>
+        <fieldForValue>title</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by title</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="title" searchWhenChanged="true">
+        <label>4.2 Source Type Name (Contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app" searchWhenChanged="true">
+        <label>6. App</label>
+        <fieldForLabel>app</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by app</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="sharing" searchWhenChanged="true">
+        <label>7. App Sharing</label>
+        <fieldForLabel>sharing</fieldForLabel>
+        <fieldForValue>sharing</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by sharing</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="SHOULD_LINEMERGE" searchWhenChanged="true">
+        <label>8. Line Merging (index-time)</label>
+        <fieldForLabel>SHOULD_LINEMERGE</fieldForLabel>
+        <fieldForValue>SHOULD_LINEMERGE</fieldForValue>
+        <choice value="*">All</choice>
+        <choice value="1">Yes (Bad!)</choice>
+        <choice value="0">No (Good)</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="LEARN_SOURCETYPE" searchWhenChanged="true">
+        <label>9. Source Type Learning</label>
+        <fieldForLabel>LEARN_SOURCETYPE</fieldForLabel>
+        <fieldForValue>LEARN_SOURCETYPE</fieldForValue>
+        <choice value="*">All</choice>
+        <choice value="1">Yes (Bad)</choice>
+        <choice value="0">No (Good)</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="EVENT_BREAKER_ENABLE" searchWhenChanged="true">
+        <label>10. Event Breaking (ChunkedLBProcessor) UF Only</label>
+        <fieldForLabel>EVENT_BREAKER_ENABLE</fieldForLabel>
+        <fieldForValue>EVENT_BREAKER_ENABLE</fieldForValue>
+        <choice value="*">All</choice>
+        <choice value="1">Yes (Good)</choice>
+        <choice value="0">No (Bad)</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="INDEXED_EXTRACTIONS" searchWhenChanged="true">
+        <label>11. Extraction Method (index-time)</label>
+        <fieldForLabel>INDEXED_EXTRACTIONS</fieldForLabel>
+        <fieldForValue>INDEXED_EXTRACTIONS</fieldForValue>
+        <choice value="*">All</choice>
+        <choice value="CSV">CSV</choice>
+        <choice value="TSV">TSV</choice>
+        <choice value="PSV">PSV</choice>
+        <choice value="W3C">W3C</choice>
+        <choice value="JSON">JSON</choice>
+        <choice value="HEC">HEC</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="MAX_TIMESTAMP_LOOKAHEAD" searchWhenChanged="true">
+        <label>12. Timestamp Look Ahead (index-time)</label>
+        <fieldForLabel>MAX_TIMESTAMP_LOOKAHEAD</fieldForLabel>
+        <fieldForValue>MAX_TIMESTAMP_LOOKAHEAD</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by MAX_TIMESTAMP_LOOKAHEAD
+| sort 0 MAX_TIMESTAMP_LOOKAHEAD</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="KV_MODE" searchWhenChanged="true">
+        <label>13. Field/Value extraction mode (search-time)</label>
+        <fieldForLabel>KV_MODE</fieldForLabel>
+        <fieldForValue>KV_MODE</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by KV_MODE</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="TRUNCATE" searchWhenChanged="true">
+        <label>14. Maximum Line Length (index-time)</label>
+        <fieldForLabel>TRUNCATE</fieldForLabel>
+        <fieldForValue>TRUNCATE</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by TRUNCATE</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="checkbox" token="Exclusions" searchWhenChanged="true">
+        <label>24. Exclusions</label>
+        <choice value="app!=&quot;system&quot;">Exclude system App</choice>
+        <choice value="app!=&quot;search&quot;">Exclude search App</choice>
+        <choice value="*">No Exclusions</choice>
+        <delimiter>AND</delimiter>
+        <prefix>(</prefix>
+        <suffix>)</suffix>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_02" depends="$gadget_lib_loaded$">
+      <title>2. Identity Filters</title>
+      <input type="dropdown" token="author" searchWhenChanged="true">
+        <label>1.1 Identity (author)</label>
+        <fieldForLabel>author</fieldForLabel>
+        <fieldForValue>author</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by author</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="author" searchWhenChanged="true">
+        <label>1.2 Identity (author) (contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="author2" searchWhenChanged="true">
+        <label>1.3 Identity (author) (Does not contain)</label>
+        <default>none</default>
+        <initialValue>none</initialValue>
+      </input>
+      <input type="dropdown" token="emp_name" searchWhenChanged="true">
+        <label>2.1 Full Name</label>
+        <fieldForLabel>emp_name</fieldForLabel>
+        <fieldForValue>emp_name</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_name</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="emp_name" searchWhenChanged="true">
+        <label>2.2 Full Name (contains)</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_title" searchWhenChanged="true">
+        <label>3. Employee Title</label>
+        <fieldForLabel>emp_title</fieldForLabel>
+        <fieldForValue>emp_title</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_title</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="multiselect" token="emp_type" searchWhenChanged="false">
+        <label>4. Employee Type</label>
+        <fieldForLabel>emp_type</fieldForLabel>
+        <fieldForValue>emp_type</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_type</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="dropdown" token="emp_status" searchWhenChanged="true">
+        <label>5. Employee Status</label>
+        <fieldForLabel>emp_status</fieldForLabel>
+        <fieldForValue>emp_status</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_status</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob1" searchWhenChanged="true">
+        <label>6.1 Line of Business</label>
+        <fieldForLabel>emp_lob1</fieldForLabel>
+        <fieldForValue>emp_lob1</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_lob1</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob2" searchWhenChanged="true">
+        <label>6.2 Line of Business 2</label>
+        <fieldForLabel>emp_lob2</fieldForLabel>
+        <fieldForValue>emp_lob2</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_lob2</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob3" searchWhenChanged="true">
+        <label>6.3 Line of Business 3</label>
+        <fieldForLabel>emp_lob3</fieldForLabel>
+        <fieldForValue>emp_lob3</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_lob3</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_dep" searchWhenChanged="true">
+        <label>7. Employee Department</label>
+        <fieldForLabel>emp_dep</fieldForLabel>
+        <fieldForValue>emp_dep</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_dep</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_cc" searchWhenChanged="true">
+        <label>8. Cost Center</label>
+        <fieldForLabel>emp_cc</fieldForLabel>
+        <fieldForValue>emp_cc</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_cc</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="vendor" searchWhenChanged="true">
+        <label>9. Vendor</label>
+        <fieldForLabel>vendor</fieldForLabel>
+        <fieldForValue>vendor</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by vendor</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_manager" searchWhenChanged="true">
+        <label>10. Manager Name</label>
+        <fieldForLabel>emp_manager</fieldForLabel>
+        <fieldForValue>emp_manager</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_manager</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_city" searchWhenChanged="true">
+        <label>11. City</label>
+        <fieldForLabel>emp_city</fieldForLabel>
+        <fieldForValue>emp_city</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_city</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_region1" searchWhenChanged="true">
+        <label>12. Region</label>
+        <fieldForLabel>emp_region1</fieldForLabel>
+        <fieldForValue>emp_region1</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_region1</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_country" searchWhenChanged="true">
+        <label>13.  Country</label>
+        <fieldForLabel>emp_country</fieldForLabel>
+        <fieldForValue>emp_country</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_country</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_location" searchWhenChanged="true">
+        <label>14.  Employee Location</label>
+        <fieldForLabel>emp_location</fieldForLabel>
+        <fieldForValue>emp_location</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by emp_location</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_22" depends="$gadget_lib_loaded$">
+      <title>3.  Source Types List</title>
+      <table>
+        <search base="sh_10_source_types">
+          <query>| table cluster_label app title sharing author emp_name emp_lob1 emp_dep TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER TRUNCATE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER KV_MODE INDEXED_EXTRACTIONS EVENT_BREAKER_ENABLE EVENT_BREAKER ANNOTATE_PUNCT LEARN_SOURCETYPE LEARN_MODEL MAX_EVENTS maxDist updated ADD_EXTRA_TIME_FIELDS AUTO_KV_JSON CHARSET CHECK_FOR_HEADER CHECK_METHOD DEPTH_LIMIT FIELD_DELIMITER FIELD_HEADER_REGEX HEADER_FIELD_DELIMITER HEADER_MODE JSON_TRIM_BRACES_IN_ARRAY_NAMES LINE_BREAKER_LOOKBEHIND MATCH_LIMIT MAX_DAYS_AGO MAX_DAYS_HENCE MAX_DIFF_SECS_AGO MAX_DIFF_SECS_HENCE METRIC-SCHEMA-TRANSFORMS METRICS_PROTOCOL MUST_NOT_BREAK_AFTER MUST_NOT_BREAK_BEFORE NO_BINARY_CHECK PREFIX_SOURCETYPE TIMESTAMP_FIELDS TRANSFORMS TZ category disabled invalid_cause is_valid priority pulldown_type rename 
+| sort 0 cluster_label app title 
+| `rename_common_fields` 
+| `rename_identity_fields` 
+| `rename_rest_fields` 
+| rename title AS "Source Type"</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Splunk_Instance">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Splunk Roles">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Macro Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Source Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Owner">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="ANNOTATE_PUNCT">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="LEARN_SOURCETYPE">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="EVENT_BREAKER_ENABLE">
+          <colorPalette type="map">{"0":#DC4E41,"1":#53A051}</colorPalette>
+        </format>
+        <format type="color" field="SHOULD_LINEMERGE">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+      <single>
+        <title>Total Number of Source Types</title>
+        <search base="sh_10_source_types">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x53a051"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
+      <title>4. Data Source Types By $split_by_tok_1$</title>
+      <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
+        <label>1. Split By</label>
+        <choice value="cluster_label">SH Cluster Label</choice>
+        <choice value="Splunk_Instance">Splunk Instance</choice>
+        <choice value="app">App</choice>
+        <choice value="sharing">App Sharing</choice>
+        <choice value="author">Author (User)</choice>
+        <choice value="emp_name">Employee Name</choice>
+        <choice value="emp_lob1">Employee LOB</choice>
+        <choice value="emp_dep">Employee Department</choice>
+        <choice value="emp_cc">Employee Cost Center</choice>
+        <choice value="emp_title">Employee Title</choice>
+        <choice value="emp_type">Employee Type</choice>
+        <choice value="emp_status">Employee Status</choice>
+        <choice value="updated">Update Date</choice>
+        <choice value="SHOULD_LINEMERGE">SHOULD_LINEMERGE</choice>
+        <choice value="TIME_FORMAT">TIME_FORMAT</choice>
+        <choice value="LINE_BREAKER">LINE_BREAKER</choice>
+        <choice value="TRUNCATE">TRUNCATE</choice>
+        <choice value="KV_MODE">KV_MODE</choice>
+        <choice value="EVENT_BREAKER_ENABLE">EVENT_BREAKER_ENABLE</choice>
+        <choice value="EVENT_BREAKER">EVENT_BREAKER</choice>
+        <choice value="MAX_TIMESTAMP_LOOKAHEAD">MAX_TIMESTAMP_LOOKAHEAD</choice>
+        <choice value="LEARN_SOURCETYPE">LEARN_SOURCETYPE</choice>
+        <choice value="ANNOTATE_PUNCT">ANNOTATE_PUNCT</choice>
+        <choice value="TIME_PREFIX">TIME_PREFIX</choice>
+        <default>app</default>
+        <initialValue>app</initialValue>
+      </input>
+      <chart>
+        <search base="sh_10_source_types">
+          <query>| stats count by $split_by_tok_1$</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.001</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">700</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_true_4" depends="$gadget_lib_loaded$">
+      <title>5. Associated GMC Job(s) - $env:page$</title>
+      <html>
+            <ol>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_props_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Source Types KV Store Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_props_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Source Types Summary Index Gen Job From REST</a>
+               </li>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_summary_configs_conf_props_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Source Types KV Store Gen Job From Summary Index</a>
+               </li>
+            </ol>
+            <div class="btn-group1">
+               <div id="mod_info">
+                  <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_rest_configs_conf_props_sh_kv_store&amp;type=kv">
+                     View Sourcetypes KV Store
+                     <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+               <div id="mod_att" class="hide">
+                  <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
+                     Attention
+                     <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
+                  </a>
+               </div>
+            </div>
+         </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Dashboard Latest Refresh</title>
+        <search base="sh_10_source_types">
+          <query>| stats count by _time 
+| fields _time 
+| `strftime_format(_time)`
+| rename _time As "Dashboard Latest Refresh"</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+      </single>
+    </panel>
+  </row>
+</form>

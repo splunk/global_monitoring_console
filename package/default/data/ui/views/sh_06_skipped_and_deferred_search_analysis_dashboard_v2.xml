@@ -1,0 +1,1523 @@
+<!--sh_06_skipped_and_deferred_search_analysis_with_scheduled_time_dashboard_v1-->
+<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+    <label>SH - 06 - Skipped and Deferred Search Analysis - Dashboard - v2</label>
+    <description>Last Update: Thu Oct 22 5PM</description>
+    <!-- Base Searche Section Starts -->
+    <search id="sh_06_skipp_deferred_1">
+        <query>index=_internal sourcetype=scheduler (search_group=dmc_group_search_head OR host=sh-i-*) host IN (*$host$*) savedsearch_name=* 
+| bin _time span=$bin$
+| `get_shcluster_label(host)` 
+| `get_saved_searches_info(shcluster_label,app,savedsearch_name)` 
+| rex "status=(?&lt;status_rex&gt;\w+)" 
+| eval status_rex = Case ( status_rex="continued", "deferred", status_rex="delegated_remote_completion" OR status_rex="success", "completed", true(), status_rex)
+| search status_rex IN ($status_rex$)
+| eval search_type_eval = case ( 
+match(alert_actions, "summary_index"), "summary_indexing",
+match(search_type, "datamodel_acceleration") OR savedsearch_name LIKE "_ACCELERATE_DM%" OR sid LIKE "DM_%", "datamodel_acceleration",
+match(search_type, "report_acceleration"), "report_acceleration",
+match(search_type, "scheduled") OR match(sid, "^scheduler_") OR (status_rex="delegated_remote_error" AND isnotnull(savedsearch_name)), "scheduled",
+sid LIKE "rt%", "realtime",
+sid LIKE "subsearch%", "subsearch",
+(sid LIKE "SummaryDirector%" OR sid LIKE "summarize_SummaryDirector%"), "summary_director",
+true(), "adhoc")
+| search search_type_eval IN ($search_type_eval$)
+| `get_normalized_search_id(sid)`
+| eval Scheduling_Mode=if(realtime_schedule = 0, "Continuous", "Real-Time") 
+| fields _time shcluster_label app user status_rex scheduled_time member_label success_rex priority reason concurrency_category concurrency_context concurrency_limit window_time skipped_count search_id_normalized savedsearch_name cron_schedule allow_skew description dispatch_earliest_time dispatch_ttl realtime_schedule savedsearch_search schedule_priority schedule_window sharing search_type_eval Scheduling_Mode host run_time author
+| `get_identity_info(user)`
+| stats 
+Count(eval(status_rex=="completed")) AS COMP_EXEC
+Count(eval(status_rex=="deferred")) AS Deferred_EXEC
+Count(eval(status_rex=="skipped")) AS RT_Skipped_EXEC
+values(reason) As reason
+values(priority) As priority
+Max(run_time) As run_time
+latest(_time) As _time
+values(*) as *
+by shcluster_label app user savedsearch_name scheduled_time 
+| eval Skipped_EXEC=if(COMP_EXEC &gt; 0, 0, 1) , Status=if(COMP_EXEC &gt; 0, "Succeeded", "Skipped") 
+| eval Skip_Reason = Case (
+COMP_EXEC &gt; 0 AND Deferred_EXEC = 0 AND realtime_schedule = 0, "Succeeded after (0) Deferred Executions (Scheduling_Mode=Continuous)", 
+COMP_EXEC &gt; 0 AND realtime_schedule = 1, "Succeeded (Scheduling_Mode=Real-Time)", 
+COMP_EXEC &gt; 0 AND Deferred_EXEC &gt; 0 AND realtime_schedule = 0, "Succeeded after (" . Deferred_EXEC . ") Deferred Executions for the following Reason(s) (Scheduling_Mode=Continuous):", 
+COMP_EXEC = 0 AND realtime_schedule = 1, "Skipped (Scheduling_Mode=Real-Time)", 
+COMP_EXEC = 0 AND realtime_schedule = 0, "Skipped after (" . Deferred_EXEC . ") Deferred Executions for the following Reason(s) (Scheduling_Mode=Continuous):", 
+true(), reason) 
+| search shcluster_label=$shcluster_label$
+| eventstats sum(COMP_EXEC) as Jobs_Success_Exec sum(Skipped_EXEC) as Jobs_Skip_Exec
+| eval Jobs_Exec = Jobs_Success_Exec + Jobs_Skip_Exec , Jobs_Skip_Ratio = round(Jobs_Skip_Exec/Jobs_Exec * 100, 2) 
+| fillnull value="default" priority
+| fillnull value=0 allow_skew schedule_window
+| fillnull value="no-skips" reason
+| fillnull value="undefined" app user savedsearch_name Scheduling_Mode scheduled_time cron_schedule
+| search app IN ($app$) user IN ($user$) savedsearch_name IN ($savedsearch_name$) Scheduling_Mode=$Scheduling_Mode$ cron_schedule IN ($cron_schedule$) schedule_window IN ($schedule_window$) priority IN ($priority$) allow_skew IN ($allow_skew$)
+| eventstats sum(COMP_EXEC) as Job_Success_Exec sum(Skipped_EXEC) as Job_Skip_Exec by savedsearch_name 
+| eval Job_Exec = Job_Success_Exec + Job_Skip_Exec , Job_Skip_Ratio = round(Job_Skip_Exec/Job_Exec * 100, 2) 
+| eventstats sum(COMP_EXEC) as Jobs_Success_Exec1 sum(Skipped_EXEC) as Jobs_Skip_Exec1 
+| eval Jobs_Exec1 = Jobs_Success_Exec1 + Jobs_Skip_Exec1 , Jobs_Skip_Ratio1 = round(Jobs_Skip_Exec1/Jobs_Exec1 * 100, 2) 
+| fields _time shcluster_label app sharing user savedsearch_name description savedsearch_search scheduled_time Status cron_schedule Scheduling_Mode dispatch_earliest_time schedule_window priority allow_skew dispatch_ttl Job_Exec Job_Success_Exec Job_Skip_Exec Job_Skip_Ratio Jobs_Exec* Jobs_Success_Exec* Jobs_Skip_Exec* Jobs_Skip_Ratio* Skip_Reason reason search_type_eval status_rex host run_time author emp_*</query>
+        <earliest>$TimeRangePkr.earliest$</earliest>
+        <latest>$TimeRangePkr.latest$</latest>
+    </search>
+    <search id="sh_06_skipp_deferred_2">
+        <query>
+| inputlookup splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup | search shcluster_label IN ($shcluster_label$)
+</query>
+    </search>
+    <search id="sh_06_skipp_deferred_3">
+        <query>
+| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup | search shcluster_label IN ($shcluster_label$)
+</query>
+    </search>
+    <!-- Base Searche Section Ends -->
+    <fieldset submitButton="true" autoRun="false"></fieldset>
+    <row>
+        <panel id="panel_accordion_togglepanel_false_Dashboards_0" depends="$gadget_lib_loaded$">
+            <title>1. Input Filters</title>
+            <input type="time" token="TimeRangePkr" searchWhenChanged="false">
+                <label>Earliest: $TimeRangePkr.earliest$ / Latest: $TimeRangePkr.latest$</label>
+                <default>
+                    <earliest>-1h@h</earliest>
+                    <latest>-0h@h</latest>
+                </default>
+            </input>
+            <input type="link" token="shcluster_label" searchWhenChanged="false">
+                <label>SH Cluster Or Standalone Instance</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>shcluster_label</fieldForLabel>
+                <fieldForValue>shcluster_label</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by shcluster_label</query>
+                </search>
+                <initialValue>*</initialValue>
+                <prefix>"</prefix>
+                <suffix>"</suffix>
+            </input>
+            <input type="multiselect" token="host" searchWhenChanged="false">
+                <label>Host List</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>host</fieldForLabel>
+                <fieldForValue>host</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by host</query>
+                </search>
+                <delimiter>,</delimiter>
+                <initialValue>*</initialValue>
+            </input>
+            <input type="text" token="host">
+                <label>Host Contains</label>
+                <default>*</default>
+            </input>
+            <input type="multiselect" token="app">
+                <label>App Name</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>app</fieldForLabel>
+                <fieldForValue>app</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by app</query>
+                </search>
+                <delimiter>,</delimiter>
+                <initialValue>*</initialValue>
+            </input>
+            <input type="multiselect" token="user">
+                <label>User</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>user</fieldForLabel>
+                <fieldForValue>user</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by user</query>
+                </search>
+                <delimiter>,</delimiter>
+                <initialValue>*</initialValue>
+            </input>
+            <input type="multiselect" token="search_type_eval">
+                <label>Search Type(s) List</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>search_type_eval</fieldForLabel>
+                <fieldForValue>search_type_eval</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by search_type_eval</query>
+                </search>
+                <delimiter>,</delimiter>
+                <initialValue>scheduled</initialValue>
+            </input>
+            <input type="dropdown" token="Scheduling_Mode">
+                <label>Scheduling Mode</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>Scheduling_Mode</fieldForLabel>
+                <fieldForValue>Scheduling_Mode</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by Scheduling_Mode</query>
+                </search>
+                <default>*</default>
+            </input>
+            <input type="multiselect" token="status_rex">
+                <label>Job Status(es) List</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>status_rex</fieldForLabel>
+                <fieldForValue>status_rex</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by status_rex</query>
+                </search>
+                <delimiter>,</delimiter>
+                <initialValue>completed,deferred,skipped</initialValue>
+            </input>
+            <input type="multiselect" token="savedsearch_name">
+                <label>Job Name</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>savedsearch_name</fieldForLabel>
+                <fieldForValue>savedsearch_name</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by savedsearch_name</query>
+                </search>
+                <valuePrefix>"</valuePrefix>
+                <valueSuffix>"</valueSuffix>
+                <delimiter>,</delimiter>
+                <initialValue>*</initialValue>
+            </input>
+            <input type="multiselect" token="cron_schedule">
+                <label>Job Cron Schedule</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>cron_schedule</fieldForLabel>
+                <fieldForValue>cron_schedule</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by cron_schedule</query>
+                </search>
+                <valuePrefix>"</valuePrefix>
+                <valueSuffix>"</valueSuffix>
+                <delimiter>,</delimiter>
+                <initialValue>*</initialValue>
+            </input>
+            <input type="multiselect" token="priority">
+                <label>Job Schedule Priority</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>priority</fieldForLabel>
+                <fieldForValue>priority</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by priority</query>
+                </search>
+                <delimiter>,</delimiter>
+                <initialValue>*</initialValue>
+            </input>
+            <input type="multiselect" token="schedule_window">
+                <label>Job Schedule Window</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>schedule_window</fieldForLabel>
+                <fieldForValue>schedule_window</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by schedule_window</query>
+                </search>
+                <delimiter>,</delimiter>
+                <initialValue>*</initialValue>
+            </input>
+            <input type="multiselect" token="allow_skew">
+                <label>Job Allow Skew</label>
+                <choice value="*">All</choice>
+                <fieldForLabel>allow_skew</fieldForLabel>
+                <fieldForValue>allow_skew</fieldForValue>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by allow_skew</query>
+                </search>
+                <delimiter>,</delimiter>
+                <initialValue>*</initialValue>
+            </input>
+            <input type="text" token="bin">
+                <label>Time Bins</label>
+                <default>1m</default>
+            </input>
+        </panel>
+    </row>
+    <row>
+        <panel id="panel_accordion_togglepanel_false_Dashboards_5" depends="$gadget_lib_loaded$">
+            <title>2. Job Stats for the following SH Cluster Or Standalone Instance:</title>
+            <html>
+                <h1 style="color:CHARTREUSE">
+                    <b>$shcluster_label$</b>
+                </h1>
+            </html>
+            <single>
+                <title># of Logged-In Users</title>
+                <search>
+                    <query>index=`setup_summary_index` source=splunk_audit_user_login_idx_summary_tracker 
+| `get_shcluster_label(Splunk_Instance)` 
+| search shcluster_label IN ($shcluster_label$) 
+| timechart Dc(User) As Num_Users</query>
+                    <earliest>-125m@m</earliest>
+                    <latest>-5m@m</latest>
+                </search>
+                <option name="colorBy">trend</option>
+                <option name="colorMode">none</option>
+                <option name="drilldown">none</option>
+                <option name="height">200</option>
+                <option name="numberPrecision">0</option>
+                <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+                <option name="rangeValues">[0]</option>
+                <option name="refresh.display">preview</option>
+                <option name="showSparkline">1</option>
+                <option name="showTrendIndicator">1</option>
+                <option name="trendColorInterpretation">inverse</option>
+                <option name="trendDisplayMode">absolute</option>
+                <option name="trendInterval">-1h</option>
+                <option name="underLabel"># Usera compared to an hour ago</option>
+                <option name="unitPosition">after</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title># of Scheduled Jobs</title>
+                <search>
+                    <query>index=`setup_summary_index` source="splunk_rest_saved_searches_sh_summary_data" shcluster_label IN ($shcluster_label$) is_scheduled=1 disabled=0 earliest=-21d@d 
+| bin _time span=1d 
+| stats count BY _time shcluster_label app author sharing savedsearch_name 
+| stats count As Num_Scheduled_Jobs by _time</query>
+                    <earliest>$earliest$</earliest>
+                    <latest>$latest$</latest>
+                </search>
+                <option name="colorBy">trend</option>
+                <option name="colorMode">none</option>
+                <option name="drilldown">none</option>
+                <option name="height">200</option>
+                <option name="numberPrecision">0</option>
+                <option name="rangeColors">["0x53a051","0xf8be34"]</option>
+                <option name="rangeValues">[0]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="showSparkline">1</option>
+                <option name="showTrendIndicator">1</option>
+                <option name="trendColorInterpretation">inverse</option>
+                <option name="trendDisplayMode">absolute</option>
+                <option name="trendInterval">-7d</option>
+                <option name="underLabel"># Jobs compared to a week ago</option>
+                <option name="unitPosition">after</option>
+                <option name="useColors">1</option>
+            </single>
+        </panel>
+    </row>
+    <row>
+        <panel id="panel_accordion_togglepanel_true_Dashboards_6" depends="$gadget_lib_loaded$">
+            <title>3. SHC Cocurrency Settings</title>
+            <html>
+                <h2 style="color:CHARTREUSE">KV Store: splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup</h2>
+            </html>
+            <single>
+                <title>Max # of searches the scheduler can run</title>
+                <search base="sh_06_skipp_deferred_2">
+                    <query>| fields max_searches_perc</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x006d9c","0x006d9c"]</option>
+                <option name="rangeValues">[1]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title>Added to Max # of searches</title>
+                <search base="sh_06_skipp_deferred_2">
+                    <query>| fields base_max_searches</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x006d9c","0x006d9c"]</option>
+                <option name="rangeValues">[1]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title>Max Scheduled Searches (# of Slots)</title>
+                <search base="sh_06_skipp_deferred_2">
+                    <query>| fields max_hist_scheduled_searches</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x006d9c","0x006d9c"]</option>
+                <option name="rangeValues">[0]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <table>
+                <title>Cocurrency Settings Table</title>
+                <search base="sh_06_skipp_deferred_2">
+                    <query>| table _time shcluster_label 
+max_hist_scheduled_searches
+max_hist_searches
+base_max_searches
+max_searches_per_cpu
+max_searches_perc
+auto_summary_perc
+max_auto_summary_searches
+max_rt_scheduled_searches
+max_rt_search_multiplier
+max_rt_searches</query>
+                </search>
+                <option name="count">1</option>
+                <option name="drilldown">none</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="wrap">true</option>
+                <format type="color" field="max_hist_scheduled_searches">
+                    <colorPalette type="sharedList"></colorPalette>
+                    <scale type="sharedCategory"></scale>
+                </format>
+                <format type="color" field="shcluster_label">
+                    <colorPalette type="sharedList"></colorPalette>
+                    <scale type="sharedCategory"></scale>
+                </format>
+                <format type="color" field="base_max_searches">
+                    <colorPalette type="sharedList"></colorPalette>
+                    <scale type="sharedCategory"></scale>
+                </format>
+                <format type="color" field="max_searches_perc">
+                    <colorPalette type="sharedList"></colorPalette>
+                    <scale type="sharedCategory"></scale>
+                </format>
+                <format type="color" field="max_searches_per_cpu">
+                    <colorPalette type="sharedList"></colorPalette>
+                    <scale type="sharedCategory"></scale>
+                </format>
+                <format type="color" field="max_hist_searches">
+                    <colorPalette type="sharedList"></colorPalette>
+                    <scale type="sharedCategory"></scale>
+                </format>
+            </table>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
+        </panel>
+    </row>
+    <row>
+        <panel id="panel_accordion_togglepanel_false_Dashboards_2" depends="$gadget_lib_loaded$">
+            <title>4.1 Number of RSS  which have been skipped for their scheduled run time</title>
+            <html>
+                <h1 style="color:CHARTREUSE">Number of RSS  which have been skipped for their scheduled run time</h1>
+            </html>
+            <single>
+                <title>mode: realtime scheduling</title>
+                <search base="sh_06_skipp_deferred_3">
+                    <query>| where is_scheduled=1 AND disabled=0 AND realtime_schedule=1
+| stats count</query>
+                </search>
+                <option name="colorMode">none</option>
+                <option name="drilldown">all</option>
+                <option name="rangeColors">["0x65a637","0x53a051"]</option>
+                <option name="rangeValues">[0]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+                <drilldown>
+                    <set token="scount">$click.value$</set>
+                </drilldown>
+            </single>
+            <html>
+                <h2>
+                    <span style="color: #ffcc00;">Real-time scheduling:</span>
+                </h2>
+                <p>(Not to be confused with a realtime search)</p>
+                <p class="mw-collapsed">Real-time scheduling ensures that the most recent run of the search returns current data. A scheduled search with real-time scheduling runs at its scheduled run time, or not at all. Real-time scheduled searches can be skipped because longer-running searches have not finished, or because multiple searches with real-time scheduling are set to run at the same time, and their number is higher than the concurrent scheduled search limit and the scheduler is oversubscribed.</p>
+                <p class="mw-collapsed">The scheduler always prioritizes searches with real-time scheduling over reports with continuous scheduling.</p>
+                <p class="mw-collapsed">
+                    <span style="color: #00ccff;">
+                        <strong>status</strong>:
+
+                    
+                    
+                    </span>
+                    <span style="color: #00ff00;">Success/Completed</span> , 
+
+                    
+                    
+                    <span style="color: #ff0000;">Skipped</span>
+                </p>
+            </html>
+        </panel>
+        <panel id="panel_accordion_togglepanel_false_Dashboards_3" depends="$gadget_lib_loaded$">
+            <title>4.2 Number of CSS which have been deferred past their scheduled run time</title>
+            <html>
+                <h1 style="color:CHARTREUSE">Number of CSS which have been deferred past their scheduled run time</h1>
+            </html>
+            <single>
+                <title>mode: continuous scheduling (ie: summary index populating searches)</title>
+                <search base="sh_06_skipp_deferred_3">
+                    <query>| where is_scheduled=1 AND disabled=0 AND realtime_schedule=0
+| stats count</query>
+                </search>
+                <option name="colorMode">none</option>
+                <option name="drilldown">all</option>
+                <option name="rangeColors">["0x53a051","0xf8be34","0xf1813f","0xdc4e41"]</option>
+                <option name="rangeValues">[0,25,50]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+                <option name="useThousandSeparators">0</option>
+                <drilldown>
+                    <set token="css_count">$click.value$</set>
+                </drilldown>
+            </single>
+            <html>
+                <h2>
+                    <span style="color: #ffcc00;">Continuous scheduling:</span>
+                </h2>
+                <p class="mw-collapsed">Use continuous scheduling for situations where there cannot be a gap in the collection of report data. Continuous scheduling ensures that each scheduled run of a report is eventually performed. If a report with continuous scheduling cannot run now, it will run in the future, after other reports finish.</p>
+                <p class="mw-collapsed">The report scheduler gives all scheduled reports the real-time scheduling mode by default, unless they are enabled for summary indexing, in which case it changes their scheduling mode to continuous. It does this because summary indexes are not trustworthy when the scheduled reports that populate them are skipped.</p>
+                <p class="mw-collapsed">
+                    <span style="color: #00ccff;">
+                        <strong>status:</strong>
+                    </span>
+                    <span style="color: #00ff00;">Success/Completed</span> , 
+
+                    
+                    
+                    <span style="color: #ff0000;">Deferred (a.k.a Continued)</span>
+                </p>
+            </html>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
+        </panel>
+    </row>
+    <row>
+        <panel id="panel_accordion_togglepanel_false_Dashboards_4" depends="$gadget_lib_loaded$">
+            <title>5. Deployment-Wide Total Concurrent Scheduled Searches</title>
+            <html>
+                <h1 style="color:CHARTREUSE">Deployment-Wide Total Concurrent Scheduled Searches</h1>
+            </html>
+            <chart>
+                <search>
+                    <query>index=_introspection sourcetype=splunk_resource_usage (component=PerProcess data.search_props.sid::*) "data.search_props.type"!="ad-hoc" (search_group=dmc_group_search_head OR host=sh-i-*) 
+| `get_shcluster_label(host)` 
+| search shcluster_label IN ($shcluster_label$) 
+| bin _time span=10s 
+| stats dc(data.search_props.sid) AS distinct_search_count by _time 
+| stats sum(distinct_search_count) AS distinct_search_count by _time 
+| timechart minspan=10s max(distinct_search_count) AS Num_Jobs 
+| join 
+[| inputlookup splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup where shcluster_label=$shcluster_label$ 
+| fields + max_searches_perc, auto_summary_perc, base_max_searches, max_rt_search_multiplier, max_searches_per_cpu, max_auto_summary_searches, max_hist_scheduled_searches, max_hist_searches, max_rt_scheduled_searches, max_rt_searches run_time author 
+| stats max(max_hist_scheduled_searches) as Cluster_Wide_Scheduler_Concurrency] 
+| append 
+[ search index=`setup_summary_index` source=splunk_audit_user_login_idx_summary_tracker 
+| `get_shcluster_label(Splunk_Instance)` 
+| search shcluster_label IN ($shcluster_label$) 
+| timechart Dc(User) As Num_Users minspan=1h ]</query>
+                    <earliest>$TimeRangePkr.earliest$</earliest>
+                    <latest>$TimeRangePkr.latest$</latest>
+                </search>
+                <option name="charting.axisTitleX.visibility">visible</option>
+                <option name="charting.axisTitleY.visibility">visible</option>
+                <option name="charting.axisTitleY2.visibility">visible</option>
+                <option name="charting.axisY.abbreviation">none</option>
+                <option name="charting.axisY.scale">linear</option>
+                <option name="charting.axisY2.abbreviation">none</option>
+                <option name="charting.axisY2.enabled">0</option>
+                <option name="charting.axisY2.scale">log</option>
+                <option name="charting.backgroundColor">FFFF31</option>
+                <option name="charting.chart">column</option>
+                <option name="charting.chart.overlayFields">Cluster_Wide_Scheduler_Concurrency,Num_Users</option>
+                <option name="charting.chart.showDataLabels">all</option>
+                <option name="charting.chart.stackMode">default</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.fieldColors">{"Cluster_Wide_Scheduler_Concurrency": FD0E35, "Num_Jobs":214FC6, "Num_Users": FFD12A, "Max_Scheduled_Searches":FF00CC, "Skip_Ratio": FD0E35, "Skipped_EXEC": ED0A3F, "NULL":0xC4C4C0}</option>
+                <option name="charting.fieldDashStyles">{"Cluster_Wide_Scheduler_Concurrency": "longDashDot", "Skip_Ratio": "Num_Users", "SH_TOT_EXEC": "shortDot", "Num_Users2": "shortDashDotDot"}</option>
+                <option name="charting.layout.splitSeries">0</option>
+                <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+                <option name="charting.legend.placement">right</option>
+                <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+                <option name="height">600</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="trellis.enabled">0</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <chart>
+                <search>
+                    <query>index=_introspection sourcetype=splunk_resource_usage (component=PerProcess "data.process_type"=search ) (search_group=dmc_group_search_head OR host=sh-i-*) 
+| rename data.* as * 
+| rename search_props.* as * 
+| `get_shcluster_label(host)` 
+| search shcluster_label IN ($shcluster_label$) 
+| eval label=if(label="N/A", null(), label) 
+| bin _time span=10s 
+| stats 
+count(eval(type=="scheduled")) AS scheduled
+count(eval(type=="datamodel acceleration")) AS datamodel_acceleration
+count(eval(type=="report acceleration")) AS report_acceleration
+count(eval(type=="ad-hoc")) AS ad_hoc
+count(eval(type=="summary index")) AS summary_index
+count(eval(type=="other")) AS other
+dc(sid) AS distinct_search
+dc(user) AS distinct_user
+dc(label) AS distinct_label
+count as total
+By _time 
+| stats 
+sum(scheduled) AS scheduled_sum
+sum(datamodel_acceleration) As datamodel_acceleration_sum
+sum(report_acceleration) As report_acceleration_sum
+sum(ad_hoc) As ad_hoc_sum
+sum(summary_index) As summary_index_sum
+sum(other) As other_sum
+sum(distinct_search) AS distinct_search_count
+sum(distinct_user) AS distinct_user_count 
+sum(distinct_label) AS distinct_label_count 
+sum(total) As total_count
+by _time 
+| timechart minspan=10s 
+max(scheduled_sum) AS Num_scheduled
+max(datamodel_acceleration_sum) AS Num_datamodel_acceleration
+max(report_acceleration_sum) AS Num_report_acceleration_sum
+max(ad_hoc_sum) AS Num_ad_hoc
+max(summary_index_sum) AS Num_summary_index_sum
+max(other_sum) AS Num_other_sum
+max(distinct_search_count) AS Num_Jobs
+max(distinct_user_count) AS Num_Users
+max(distinct_label_count) AS Num_Labels
+max(total_count) AS Total_Count</query>
+                    <earliest>$TimeRangePkr.earliest$</earliest>
+                    <latest>$TimeRangePkr.latest$</latest>
+                </search>
+                <option name="charting.axisTitleX.visibility">collapsed</option>
+                <option name="charting.axisTitleY.visibility">collapsed</option>
+                <option name="charting.axisTitleY2.visibility">collapsed</option>
+                <option name="charting.axisY.abbreviation">none</option>
+                <option name="charting.axisY.scale">linear</option>
+                <option name="charting.axisY2.abbreviation">none</option>
+                <option name="charting.axisY2.enabled">0</option>
+                <option name="charting.axisY2.scale">log</option>
+                <option name="charting.backgroundColor">FFFF31</option>
+                <option name="charting.chart">column</option>
+                <option name="charting.chart.overlayFields">Num_Jobs</option>
+                <option name="charting.chart.showDataLabels">all</option>
+                <option name="charting.chart.stackMode">stacked</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.fieldColors">{"Cluster_Wide_Scheduler_Concurrency": FD0E35, "Num_Jobs":214FC6, "Num_Users": FFD12A, "Max_Scheduled_Searches":FF00CC, "Skip_Ratio": FD0E35, "Skipped_EXEC": ED0A3F, "NULL":0xC4C4C0}</option>
+                <option name="charting.fieldDashStyles">{"Cluster_Wide_Scheduler_Concurrency": "longDashDot", "Skip_Ratio": "Num_Users", "SH_TOT_EXEC": "shortDot", "Num_Users2": "shortDashDotDot"}</option>
+                <option name="charting.layout.splitSeries">0</option>
+                <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+                <option name="charting.legend.placement">top</option>
+                <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+                <option name="height">600</option>
+                <option name="refresh.display">progressbar</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <chart>
+                <search>
+                    <query>index=_introspection sourcetype=splunk_resource_usage (component=PerProcess "data.process_type"=search ) (search_group=dmc_group_search_head OR host=sh-i-*) 
+| rename data.* as * 
+| rename search_props.* as * 
+| `get_shcluster_label(host)` 
+| search shcluster_label IN ($shcluster_label$) 
+| eval label=if(label="N/A", null(), label) 
+| timechart
+count(eval(type=="scheduled")) AS Scheduled
+count(eval(type=="datamodel acceleration")) AS Datamodel_Acceleration
+count(eval(type=="report acceleration")) AS Report_Acceleration
+count(eval(type=="ad-hoc")) AS ad_hoc
+count(eval(type=="summary index")) AS Summary_Index
+count(eval(type=="other")) AS Other
+dc(user) AS Users
+count as All_Jobs 
+| join 
+[| inputlookup splunk_rest_admin_search_concurrency_settings_handler_sh_kv_store_lookup 
+| search shcluster_label IN ($shcluster_label$) 
+| fields + max_searches_perc, auto_summary_perc, base_max_searches, max_rt_search_multiplier, max_searches_per_cpu, max_auto_summary_searches, max_hist_scheduled_searches, max_hist_searches, max_rt_scheduled_searches, max_rt_searches run_time author 
+| stats max(max_hist_scheduled_searches) as Cluster_Wide_Scheduler_Concurrency]</query>
+                    <earliest>$TimeRangePkr.earliest$</earliest>
+                    <latest>$TimeRangePkr.latest$</latest>
+                </search>
+                <option name="charting.axisTitleX.visibility">visible</option>
+                <option name="charting.axisTitleY.visibility">visible</option>
+                <option name="charting.axisTitleY2.visibility">visible</option>
+                <option name="charting.chart">column</option>
+                <option name="charting.chart.overlayFields">Users,All_Jobs,Cluster_Wide_Scheduler_Concurrency</option>
+                <option name="charting.chart.showDataLabels">all</option>
+                <option name="charting.chart.stackMode">stacked</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+                <option name="charting.legend.placement">right</option>
+                <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+                <option name="height">865</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="trellis.enabled">0</option>
+                <option name="trellis.scales.shared">0</option>
+                <option name="trellis.size">large</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
+        </panel>
+    </row>
+    <row>
+        <panel id="panel_accordion_togglepanel_false_Dashboards_7" depends="$gadget_lib_loaded$">
+            <title>6.1 Execution Details for All Jobs</title>
+            <html>
+                <h1 style="color:CHARTREUSE">Execution Details for All Jobs regardless of any filters above for this time period | Earliest Time: $TimeRangePkr.earliest$ / Latest Time: $TimeRangePkr.latest$</h1>
+            </html>
+            <single>
+                <title>Total Executions</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by Jobs_Exec</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x006d9c","0x006d9c"]</option>
+                <option name="rangeValues">[1]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title>Succeeded</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by Jobs_Success_Exec</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x53a051","0x53a051"]</option>
+                <option name="rangeValues">[1]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title>Skipped</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by Jobs_Skip_Exec</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x53a051","0xdc4e41"]</option>
+                <option name="rangeValues">[0]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title>Skip Ratio</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| timechart  max(Jobs_Skip_Ratio) As Jobs_Skip_Ratio</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="numberPrecision">0.00</option>
+                <option name="rangeColors">["0x53a051","0xf8be34","0xf1813f","0xdc4e41"]</option>
+                <option name="rangeValues">[0,30,60]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="showSparkline">0</option>
+                <option name="showTrendIndicator">0</option>
+                <option name="trendDisplayMode">absolute</option>
+                <option name="trendInterval">-1h</option>
+                <option name="unit">%</option>
+                <option name="useColors">1</option>
+            </single>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
+        </panel>
+    </row>
+    <row>
+        <panel id="panel_accordion_togglepanel_true_Dashboards_8" depends="$gadget_lib_loaded$">
+            <title>6.2 Execution Details For Cluster/Instance:</title>
+            <html>
+                <h1 style="color:CHARTREUSE">$shcluster_label$ | App Name: "$app$" | User(s) : "$user$"</h1>
+            </html>
+            <single>
+                <title>Total Executions</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by Jobs_Exec1</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x006d9c","0x006d9c"]</option>
+                <option name="rangeValues">[1]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title>Succeeded</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by Jobs_Success_Exec1</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x53a051","0x53a051"]</option>
+                <option name="rangeValues">[1]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title>Skipped</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by Jobs_Skip_Exec1</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x53a051","0xdc4e41"]</option>
+                <option name="rangeValues">[0]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title>Skip Ratio</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by Jobs_Skip_Ratio1</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="numberPrecision">0.00</option>
+                <option name="rangeColors">["0x53a051","0xf8be34","0xf1813f","0xdc4e41"]</option>
+                <option name="rangeValues">[0,25,50]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="unit">%</option>
+                <option name="useColors">1</option>
+            </single>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
+        </panel>
+    </row>
+    <row>
+        <panel id="panel_accordion_togglepanel_false_Dashboards_9" depends="$gadget_lib_loaded$">
+            <title>7.1 Execution Stats By Job</title>
+            <html>
+                <h1 style="color:CHARTREUSE">Execution Stats By Job for $shcluster_label$</h1>
+            </html>
+            <html>
+                <h1>Click on any Dashboard Title Name to open all Drill Down Panels</h1>
+            </html>
+            <table>
+                <title>Jobs that Skipped for Splunk Cluster or Instance Name: $shcluster_label$ /  App Name: $app$</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats latest(*) as * by savedsearch_name 
+| where Job_Skip_Exec &gt; 0
+| eval Max_Run_Time_H=run_time
+| `gmc_convert_runtime(Max_Run_Time_H)` 
+| table savedsearch_name shcluster_label Job_Exec Job_Success_Exec Job_Skip_Exec Job_Skip_Ratio run_time Max_Run_Time_H app author user emp_first emp_last emp_lob2 emp_dep emp_email 
+| rename run_time As Max_Run_Time</query>
+                </search>
+                <option name="drilldown">cell</option>
+                <option name="rowNumbers">false</option>
+                <option name="totalsRow">false</option>
+                <option name="wrap">false</option>
+                <format type="color" field="shcluster_label">
+                    <colorPalette type="sharedList"></colorPalette>
+                    <scale type="sharedCategory"></scale>
+                </format>
+                <format type="number" field="Job_Exec">
+                    <option name="precision">0</option>
+                    <option name="unit">Jobs</option>
+                </format>
+                <format type="number" field="Job_Success_Exec">
+                    <option name="precision">0</option>
+                    <option name="unit">Success</option>
+                </format>
+                <format type="color" field="Job_Success_Exec">
+                    <colorPalette type="list">[#53A051,#53A051]</colorPalette>
+                    <scale type="threshold">0</scale>
+                </format>
+                <format type="number" field="Job_Skip_Exec">
+                    <option name="precision">0</option>
+                    <option name="unit">Skip</option>
+                </format>
+                <format type="number" field="Job_Skip_Ratio">
+                    <option name="unit">% Skip Ratio</option>
+                </format>
+                <format type="number" field="Max_Run_Time">
+                    <option name="unit">s</option>
+                </format>
+                <format type="color" field="user">
+                    <colorPalette type="sharedList"></colorPalette>
+                    <scale type="sharedCategory"></scale>
+                </format>
+                <format type="color" field="Job_Skip_Ratio">
+                    <colorPalette type="list">[#53A051,#006D9C,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+                    <scale type="threshold">0,30,70,100</scale>
+                </format>
+                <format type="color" field="Job_Skip_Exec">
+                    <colorPalette type="list">[#53A051,#006D9C,#F8BE34,#F1813F,#DC4E41]</colorPalette>
+                    <scale type="threshold">0,15,30,60</scale>
+                </format>
+                <drilldown>
+                    <condition field="savedsearch_name">
+                        <set token="selected_savedsearch_name">$click.value2$</set>
+                        <set token="show_single_value">true</set>
+                        <unset token="show_event_list"></unset>
+                    </condition>
+                </drilldown>
+            </table>
+        </panel>
+    </row>
+    <row>
+        <panel depends="$show_single_value$">
+            <title>7.2 Execution Stats &amp; Job Details for:</title>
+            <html>
+                <h1 style="color:CHARTREUSE">$selected_savedsearch_name$</h1>
+            </html>
+            <html>
+                <h1>Click anywhere to close this panel</h1>
+            </html>
+            <table>
+                <title>Earliest Time: $TimeRangePkr.earliest$ / Latest Time: $TimeRangePkr.latest$</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| where savedsearch_name="$selected_savedsearch_name$" AND scheduled_time!=0 
+| fields shcluster_label app sharing user savedsearch_name description savedsearch_search scheduled_time Status cron_schedule Scheduling_Mode dispatch_earliest_time schedule_window priority allow_skew dispatch_ttl Job_Exec Job_Success_Exec Job_Skip_Exec Job_Skip_Ratio Jobs_Exec Jobs_Success_Exec Jobs_Skip_Exec Jobs_Skip_Ratio Skip_Reason reason run_time author 
+| sort 0 savedsearch_name scheduled_time 
+| convert ctime(scheduled_time) 
+| table scheduled_time Status cron_schedule Scheduling_Mode dispatch_earliest_time schedule_window priority allow_skew Skip_Reason reason</query>
+                </search>
+                <option name="count">10</option>
+                <option name="dataOverlayMode">none</option>
+                <option name="drilldown">cell</option>
+                <option name="percentagesRow">false</option>
+                <option name="rowNumbers">false</option>
+                <option name="totalsRow">true</option>
+                <option name="wrap">false</option>
+                <format type="color" field="sid">
+                    <colorPalette type="sharedList"></colorPalette>
+                    <scale type="sharedCategory"></scale>
+                </format>
+                <format type="color" field="savedsearch_name">
+                    <colorPalette type="sharedList"></colorPalette>
+                    <scale type="sharedCategory"></scale>
+                </format>
+                <format type="color" field="Status">
+                    <colorPalette type="map">{"Succeeded":#53A051,"Skipped":#DC4E41}</colorPalette>
+                </format>
+                <format type="color" field="Scheduling_Mode">
+                    <colorPalette type="map">{"Continuous":#F1813F,"Real-Time":#53A051}</colorPalette>
+                </format>
+                <format type="color" field="priority">
+                    <colorPalette type="map">{"default":#006D9C,"higher":#F8BE34,"highest":#DC4E41}</colorPalette>
+                </format>
+                <format type="color" field="scheduled_time">
+                    <colorPalette type="sharedList"></colorPalette>
+                    <scale type="sharedCategory"></scale>
+                </format>
+                <drilldown>
+                    <unset token="show_single_value"></unset>
+                </drilldown>
+            </table>
+            <single>
+                <title>Total Executions</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| where savedsearch_name="$selected_savedsearch_name$" 
+| stats count by Job_Exec</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x006d9c","0x006d9c"]</option>
+                <option name="rangeValues">[1]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title>Succeeded</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| where savedsearch_name="$selected_savedsearch_name$" 
+| stats count by Job_Success_Exec</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x53a051","0x53a051"]</option>
+                <option name="rangeValues">[1]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title>Skipped</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| where savedsearch_name="$selected_savedsearch_name$" 
+| stats count by Job_Skip_Exec</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="rangeColors">["0x53a051","0xdc4e41"]</option>
+                <option name="rangeValues">[0]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="useColors">1</option>
+            </single>
+            <single>
+                <title>Skip Ratio</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| where savedsearch_name="$selected_savedsearch_name$" 
+| stats count by Job_Skip_Ratio</query>
+                </search>
+                <option name="colorMode">block</option>
+                <option name="drilldown">none</option>
+                <option name="height">50</option>
+                <option name="numberPrecision">0</option>
+                <option name="rangeColors">["0x53a051","0xf8be34","0xf1813f","0xdc4e41"]</option>
+                <option name="rangeValues">[0,25,50]</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="unit">%</option>
+                <option name="useColors">1</option>
+            </single>
+            <viz type="timeline_app.timeline">
+                <title>7.3 Skipped/Scucceded Timeline    | eval _time=dispatch_time, start=dispatch_time , end=dispatch_time+run_time ,class=status_rex  | table _time end status_rex   | | eval _time=scheduled_time | table _time Status</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| where savedsearch_name="$selected_savedsearch_name$" AND scheduled_time!=0 
+| table scheduled_time Status user</query>
+                </search>
+                <option name="height">115</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="timeline_app.timeline.axisTimeFormat">MINUTES</option>
+                <option name="timeline_app.timeline.colorMode">categorical</option>
+                <option name="timeline_app.timeline.maxColor">#dc4e41</option>
+                <option name="timeline_app.timeline.minColor">#53a051</option>
+                <option name="timeline_app.timeline.numOfBins">9</option>
+                <option name="timeline_app.timeline.tooltipTimeFormat">SUBSECONDS</option>
+                <option name="timeline_app.timeline.useColors">0</option>
+                <drilldown>
+                    <condition field="savedsearch_name">
+                        <set token="selected_savedsearch_name">$click.value2$</set>
+                        <set token="show_single_value">true</set>
+                        <unset token="show_event_list"></unset>
+                    </condition>
+                </drilldown>
+            </viz>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
+        </panel>
+    </row>
+    <row>
+        <panel id="panel_accordion_togglepanel_true_Dashboards_11" depends="$gadget_lib_loaded$">
+            <title>8. Job Stats</title>
+            <html>
+                <h1 style="color:CHARTREUSE">Job Stats</h1>
+            </html>
+            <chart>
+                <title>Jobs Cron Schedules</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by cron_schedule</query>
+                </search>
+                <option name="charting.backgroundColor">FFFF31</option>
+                <option name="charting.chart">pie</option>
+                <option name="charting.chart.sliceCollapsingThreshold">0.05</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+                <option name="refresh.display">progressbar</option>
+            </chart>
+            <chart>
+                <title>Jobs Allow Skews</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by allow_skew</query>
+                </search>
+                <option name="charting.backgroundColor">FFFF31</option>
+                <option name="charting.chart">pie</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+                <option name="refresh.display">progressbar</option>
+            </chart>
+            <chart>
+                <title>Job Scheduling Modes</title>
+                <search base="sh_06_skipp_deferred_1">
+                    <query>| stats count by Scheduling_Mode</query>
+                </search>
+                <option name="charting.backgroundColor">FFFF31</option>
+                <option name="charting.chart">pie</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+                <option name="refresh.display">progressbar</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel id="panel_accordion_togglepanel_true_Dashboards_14" depends="$gadget_lib_loaded$">
+            <title>README</title>
+            <html>
+                <h1 style="color:CHARTREUSE">Readme</h1>
+            </html>
+            <html>
+                <div id="toc_container">
+                    <h1 class="toc_title">Table of Contents</h1>
+                    <ul class="toc_list">
+                        <li>
+                            <a href="#First_Point_Header">1. What does the scheduler do?</a>
+                            <ul>
+                                <li>
+                                    <a href="#First_Sub_Point_1">Why do scheduled searches get skipped or deferred?</a>
+                                </li>
+                                <li>
+                                    <a href="#First_Sub_Point_2">What is skipped vs deferred?</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#Second_Point_Header">Scheduler Behavior</a>
+                        </li>
+                        <li>
+                            <a href="#Third_Point_Header">Scheduling Modes</a>
+                        </li>
+                        <ul>
+                            <li>
+                                <a href="#Third_Sub_Point_1">Real-time scheduling</a>
+                            </li>
+                            <li>
+                                <a href="#Third_Sub_Point_2">Continuous scheduling</a>
+                            </li>
+                        </ul>
+                        <li>
+                            <a href="#Fourth_Point_Header">How to Configure the priority of scheduled Reports/Alerts</a>
+                        </li>
+                        <li>
+                            <a href="#Fifth_Point_Header">How to prioritize concurrently scheduled Reports/Alerts</a>
+                        </li>
+                        <li>
+                            <a href="#Sixth_Point_Header">Scheduling Enterprise Security correlation searches</a>
+                        </li>
+                        <li>
+                            <a href="#Seventh_Point_Header">Helpful Links</a>
+                        </li>
+                    </ul>
+                </div>
+                <h1 id="First_Point_Header" style="color:CHARTREUSE">1. What does the scheduler do?</h1>
+                <ul>
+                    <li>When a Report or Alert is scheduled the scheduler manages it if and when that Report/Alert runs.</li>
+                    <li>In a SHC the scheduler runs on the SHC captain node and delegates which member runs the scheduled search. The captain reports in scheduler.log when a search is skipped/deferred.</li>
+                    <li>The scheduler enforces concurrency limits/quotas</li>
+                    <li>The scheduler has prioritization/scoring rules applied to scheduled searches</li>
+                </ul>
+                <h2 id="First_Sub_Point_1" style="color:CHARTREUSE">Why do scheduled searches get skipped or deferred?</h2>
+                <ul>
+                    <li>Some concurrency limit or quota has been reached</li>
+                    <li>Need to look at the reason reported in scheduler.log to determine why</li>
+                </ul>
+                <h2 id="First_Sub_Point_2" style="color:CHARTREUSE">What is skipped vs deferred?</h2>
+                <ul>
+                    <li>Behavior depends on scheduling mode (real-time or continuous scheduling)</li>
+                    <li>Realtime scheduling mode searches will report a status of: completed/skipped</li>
+                    <li>Continuous scheduling mode searches will report a status of: completed/deferred</li>
+                </ul>
+                <h1 id="Second_Point_Header" style="color:CHARTREUSE">Scheduler Behavior:</h1>
+                <ul>
+                    <li>
+                        <strong>skipped</strong>: scheduler 
+
+                        
+                        
+                        <strong>will not</strong> attempt to re-run the search for the 
+
+                        
+                        
+                        <strong>scheduled_time t0</strong> if it has not been successful getting the search run by the time the next scheduled time comes due 
+
+                        
+                        
+                        <strong>at t1</strong>. The scheduler will re-attempt every second until the next scheduled time.
+
+                    
+                    
+                    </li>
+                    <li>
+                        <strong>deferred</strong>: scheduler 
+
+                        
+                        
+                        <strong>will</strong> attempt to re-run the search for the 
+
+                        
+                        
+                        <strong>scheduled_time</strong>
+                        <strong>t0</strong> at a future point in time. The scheduler will re-attempt every second until it is able to run the search.
+
+                    
+                    
+                    </li>
+                </ul>
+                <h1 id="Third_Point_Header" style="color:CHARTREUSE">Two possible scheduling modes for scheduled searches:</h1>
+                <h2 id="Third_Sub_Point_1" style="color:CHARTREUSE">I. Real-time scheduling</h2>
+                <ul>
+                    <li>Ensures that the most recent run of the report returns current data. A scheduled report with real-time scheduling runs at its scheduled run time, or not at all.</li>
+                    <li>Real-time scheduled reports can be skipped because longer-running reports have not finished, or because multiple reports with real-time scheduling are set to run at the same time, and their number is higher than the concurrent scheduled report limit.</li>
+                    <li>The report scheduler always prioritizes reports with real-time scheduling over reports with continuous scheduling.</li>
+                </ul>
+                <h3>savedsearches.conf: realtime_schedule = 1</h3>
+                <a href="https://docs.splunk.com/Documentation/Splunk/latest/Admin/savedsearchesconf" target="_blank">savedsearches.conf.spec</a>
+                <ul>
+                    <li>Controls the way the scheduler computes the next execution time of a scheduled search.</li>
+                    <li>If this value is set to 1, the scheduler bases its determination of the next scheduled search execution time on the current time.</li>
+                    <li>If set to 1, the scheduler might skip some execution periods to make sure that the scheduler is executing the searches running over the most recent time range.</li>
+                    <li>Defaults to 1, (Defaults to 0 for summary index populating searches)</li>
+                </ul>
+                <h2 id="Third_Sub_Point_2" style="color:CHARTREUSE">II. Continuous scheduling</h2>
+                <ul>
+                    <li>Ensures that each scheduled run of a report is eventually performed. If a report with continuous scheduling cannot run now, it will run in the future, after other reports finish.</li>
+                </ul>
+                <h3>savedsearches.conf: realtime_schedule = 0</h3>
+                <ul>
+                    <li>This is called continuous scheduling.</li>
+                    <li>If this value is set to 0, the scheduler bases its determination of the next scheduled search on the last search execution time.</li>
+                    <li>If set to 0, the scheduler never skips scheduled execution periods however, the execution of the saved search might fall behind depending on the scheduler's load. Summary indexing searches are continuous by default.</li>
+                    <li>The scheduler tries to execute searches that have
+
+                        
+                        
+                        <strong>realtime_schedule = 1</strong> before it executes searches that have continuous scheduling i.e. 
+
+                        
+                        
+                        <strong>realtime_schedule = 0</strong>
+                    </li>
+                </ul>
+                <h3>
+                    <a href="https://docs.splunk.com/Documentation/Splunk/latest/Admin/Limitsconf" target="_blank">limits.conf.spec</a>
+                    <em>max_continuous_scheduled_search_lookback</em>= &lt;duration-specifier&gt;
+
+                
+                
+                </h3>
+                <ul>
+                    <li>The maximum amount of time to run missed continuous scheduled searches for once Splunk comes back up in the event it was down.</li>
+                    <li>Use [&lt;int&gt;]&lt;unit&gt; to specify a duration; a missing &lt;int&gt; defaults to 1.</li>
+                    <li>Relevant units are: m, min, minute, mins, minutes, h, hr, hour, hrs, hours, d, day, days, w, week, weeks, mon, month, months.</li>
+                    <li>For example: "5m" = 5 minutes, "1h" = 1 hour.</li>
+                    <li>A value of 0 means no lookback. Default: 24h</li>
+                </ul>
+                <p>
+                    <strong>Important Note:</strong> If the scheduler is so backed up that it has not run some continuous scheduling mode searches with a scheduled_time older than 24hrs and Splunk is restarted, the scheduler will by default only look back 24hrs to catch up on those searches. This can lead to gaps in summary index data. If you need to manually backfill data in a summary index see : 
+
+                    
+                    
+                    <a href="https://docs.splunk.com/Documentation/Splunk/latest/Knowledge/Managesummaryindexgapsandoverlaps" target="_blank">
+                        <syrong>How to Manage summary index gaps</syrong>
+                    </a>
+                </p>
+                <hr/>
+                <h1 id="Fourth_Point_Header" style="color:CHARTREUSE">
+                    <a href="https://docs.splunk.com/Documentation/Splunk/latest/Report/Configurethepriorityofscheduledreports" target="_blank">How to Configure the priority of scheduled Reports/Alerts</a>
+                </h1>
+                <p>The Splunk software's report scheduler manages scheduled reports and alerts. Based on your system configuration, the report scheduler sets a limit on the number of reports that can run concurrently. When more reports are scheduled to run than can run concurrently, it prioritizes the excess reports and tries to run them in priority order.</p>
+                <p>The report scheduler sets limits to ensure that few reports get skipped disproportionally more than others. Reports can be skipped when slow-to-complete scheduled reports crowd out quick-to-complete reports and cause them to miss their scheduled run times.</p>
+                <p>
+                    <strong>Click on the above link for the details</strong>
+                </p>
+                <hr/>
+                <h1 id="Fifth_Point_Header" style="color:CHARTREUSE">
+                    <a href="https://docs.splunk.com/Documentation/Splunk/latest/Report/PrioritizescheduledreportsinSplunkWeb" target="_blank">How to prioritize concurrently scheduled Reports/Alerts</a>
+                </h1>
+                <p>When a scheduled report does not run before its next scheduled start time, the scheduler skips that run of the report and moves on to the next one. Use the
+
+                    
+                    
+                    <strong>Schedule Priority</strong>
+                    <strong>Schedule Window</strong>settings to help ensure that important reports are skipped rarely, if ever.
+
+                
+                
+                </p>
+                <p>
+                    <strong>Click on the above link for the details</strong>
+                </p>
+                <hr/>
+                <h1 id="Sixth_Point_Header" style="color:CHARTREUSE">
+                    <a href="https://docs.splunk.com/Documentation/ES/latest/Tutorials/ScheduleCorrelationSearch" target="_blank">Scheduling Enterprise Security correlation searches</a>
+                </h1>
+                <p>Decide how often you want the search to run, and how often you want response actions to be triggered in response to search matches. You can adjust the schedule window and throttling to make sure that duplicate events are not created, which could result in duplicate actions being taken by analysts or the automated response actions that you set up.</p>
+                <p>
+                    <strong>Click on the above link for the details</strong>
+                </p>
+                <hr/>
+                <h1 id="Seventh_Point_Header" style="color:CHARTREUSE">Helpful Links</h1>
+                <h2>
+                    <a href="https://www.splunk.com/blog/2017/10/10/schedule-windows-vs-skewing.html" target="_blank">Scheduled Windows vs Skewing</a>
+                </h2>
+                <h2>
+                    <a href="https://docs.splunk.com/Documentation/Splunk/latest/Workloads/Aboutworkloadmanagement" target="_blank">Workload Management</a>
+                </h2>
+                <p>
+                    <ul>
+                        <li>
+                            <strong>schedule_priority = [default | higher | highest]</strong>
+                        </li>
+                        <li>Raises the scheduling priority of a search:
+
+                            
+                            
+                            <ul>
+                                <li>When set to "default", this setting specifies that there is no increase to the scheduling priority.</li>
+                                <li>When set to "higher", this setting specifies that the scheduling priority</li>
+                                <li>is higher than other searches of the same scheduling tier. While there are four tiers of priority for scheduled searches, only the following are affected by this setting:
+
+                                    
+                                    
+                                    <ol>
+                                        <li>Real-Time-Scheduled (realtime_schedule=1).</li>
+                                        <li>Continuous-Scheduled (realtime_schedule=0).</li>
+                                    </ol>
+                                </li>
+                                <li>When set to "highest", this setting specifies that the scheduling priority is higher than other searches regardless of scheduling tier. However, real-time-scheduled searches with 'schedule_priority = highest' always have priority over continuous scheduled searches with 'schedule_priority = highest'.</li>
+                            </ul>
+                        </li>
+                        <li>The high-to-low order is:
+
+                            
+                            
+                            <ul>
+                                <li>RTSS(H) &gt; CSS(H) &gt; RTSS(h) &gt; RTSS(d) &gt; CSS(h) &gt; CSS(d)</li>
+                                <li>Where:
+
+                                    
+                                    
+                                    <ul>
+                                        <li>RTSS = real-time-scheduled search</li>
+                                        <li>CSS = continuous-scheduled search</li>
+                                        <li>d = default</li>
+                                        <li>h = higher</li>
+                                    </ul>
+                                </li>
+                                <li>H = highest</li>
+                            </ul>
+                        </li>
+                        <li>The scheduler honors a non-default priority only when the search owner has the 'edit_search_schedule_priority' capability.</li>
+                        <li>A non-default priority is mutually exclusive with a non-zero 'schedule_window' (see below). If a user specifies both for a scheduled search, the scheduler honors the priority only. However, if a user specifies both settings for a search, but the search owner does not have the 'edit_search_scheduler_priority' capability, then the scheduler ignores the priority setting and honors the 'schedule_window'.</li>
+                        <li>CAUTION: Having too many searches with a non-default priority impedes the ability of the scheduler to minimize search starvation. Use this setting only for mission-critical searches.</li>
+                        <li>
+                            <strong>Default: default</strong>
+                        </li>
+                    </ul>
+                </p>
+                <h1>Scheduling modes by search type table</h1>
+                <table style="border-color: AQUAMARINE;" border="1" width="1200">
+                    <tbody>
+                        <tr>
+                            <td width="139">
+                                <p>
+                                    <strong>Search Type</strong>
+                                </p>
+                            </td>
+                            <td width="126">
+                                <p>
+                                    <strong>Default Mode</strong>
+                                </p>
+                            </td>
+                            <td width="125">
+                                <p>
+                                    <strong>Savedsearches.conf</strong>
+                                </p>
+                            </td>
+                            <td width="132">
+                                <p>
+                                    <strong>Status (scheduler.log)</strong>
+                                </p>
+                            </td>
+                            <td width="123">
+                                <p>
+                                    <strong>Status (MonitorConsole)</strong>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="139">
+                                <p>
+                                    <strong>scheduled</strong>
+                                </p>
+                            </td>
+                            <td width="126">
+                                <p>real-time scheduling</p>
+                            </td>
+                            <td width="125">
+                                <p>realtime_schedule = 1</p>
+                            </td>
+                            <td width="132">
+                                <p>success / skipped</p>
+                            </td>
+                            <td width="123">
+                                <p>completed / skipped</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="139">
+                                <p>
+                                    <strong>report acceleration</strong>
+                                </p>
+                            </td>
+                            <td width="126">
+                                <p>real-time scheduling</p>
+                                <p></p>
+                            </td>
+                            <td width="125">
+                                <p>realtime_schedule = 1</p>
+                            </td>
+                            <td width="132">
+                                <p>success / skipped</p>
+                                <p></p>
+                            </td>
+                            <td width="123">
+                                <p>completed / skipped</p>
+                                <p></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="139">
+                                <p>
+                                    <strong>datamodel acceleration</strong>
+                                </p>
+                            </td>
+                            <td width="126">
+                                <p>real-time scheduling</p>
+                                <p></p>
+                            </td>
+                            <td width="125">
+                                <p>realtime_schedule = 1</p>
+                            </td>
+                            <td width="132">
+                                <p>success / skipped</p>
+                                <p></p>
+                            </td>
+                            <td width="123">
+                                <p>completed / skipped</p>
+                                <p></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="139">
+                                <p>
+                                    <strong>summary index</strong>
+                                </p>
+                            </td>
+                            <td width="126">
+                                <p>continuous scheduling</p>
+                            </td>
+                            <td width="125">
+                                <p>realtime_schedule = 0</p>
+                            </td>
+                            <td width="132">
+                                <p>success / continued</p>
+                                <p></p>
+                            </td>
+                            <td width="123">
+                                <p>completed / deferred</p>
+                                <p></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr/>
+                <h1>concurrency limits calculations (limits.conf SH):</h1>
+                <h2>Standalone SH:
+
+                    
+                    
+                    <br/> max. total searches = (max_searches_per_cpu  number_of_CPUs + base_max_searches)
+
+                
+                
+                </h2>
+                <hr/>
+                <h2>Search Head Cluster :
+
+                    
+                    
+                    <br/> Deployment-Wide Total Concurrent Searches (Adhoc + Scheduled):
+
+                    
+                    
+                    <br/> (max_searches_per_cpu  number_of_CPUs + base_max_searches)  #cluster_members
+
+                
+                
+                </h2>
+                <p>Example for 3 node SHC with 8 cpu cores per member
+
+                    
+                    
+                    <br/> ((1*8+6)*3 = 42
+
+                
+                
+                </p>
+                <hr/>
+                <h2>Deployment-Wide Total Concurrent Scheduled Searches:
+
+                    
+                    
+                    <br/> ((max_searches_per_cpu  number_of_CPUs + base_max_searches)  max_searches_perc)  #cluster_members
+
+                    
+                    
+                    <br/> ((1*8+6)*.5)*3 = 21
+
+                
+                
+                </h2>
+                <hr/>
+                <h2>Deployment-Wide Total Concurrent Auto-Summarization Searches:
+
+                    
+                    
+                    <br/> (((max_searches_per_cpu  number_of_CPUs + base_max_searches)  max_searches_perc)  auto_summary_perc)  #cluster_members
+
+                    
+                    
+                    <br/> (((1*8+6)*.5)*.5) = 3.5 round down to 3, * 3 =9
+                
+                </h2>
+                <hr/>
+                <p>
+                    <strong>Note:</strong> number_of_CPUs is based on virtual CPUs detected on SHC captain node
+
+                    
+                    
+                    <br/> 01-31-2019 14:53:21.086 -0500 INFO loader Detected 8 (virtual) CPUs, 8 CPU cores, and 7822MB RAM
+                    
+                    <p>|rest splunk_server=captain /services/server/info | table splunk_server numberOfVirtualCores</p>
+                  <p>| rest splunk_server=captain "/services/server/status/limits/search-concurrency?cluster_wide_quota=1" | table max*</p>
+
+                
+                
+                </p>
+                <hr/>
+                <h1>Review</h1>
+                <ul>
+                    <li>If mode is real-time scheduling and type is scheduled and the scheduler cannot run the search at the start of the scheduled_time it will report status=delayed in scheduler.log only if savedSplunker component is in DEBUG and keep trying until the next scheduled time. If it can fit it in, the search runs but runs later than scheduled_time so there is latency.</li>
+                    <li>If mode is real-time scheduling and type is scheduled and the scheduler cannot run the search within its period for the scheduled_time the search gets skipped for good for that scheduled_time.</li>
+                    <li>If mode is real-time scheduling and the type is auto-summarization (report or datamodel acceleration) and scheduler skips the search for its scheduled_time, the next time the search runs Splunk uses the summary range to determine earliest time to look over and accelerate buckets. These types of searches are more tolerable to skipping for their scheduled_time and have the lowest priority.</li>
+                    <li>If the mode is continuous scheduling and the scheduler cannot run the search at the scheduled_time, the search is deferred until a later time when the scheduler has capacity to run it. Scheduler keeps track of which scheduled_time to go back and run so summary indexes don't have data gaps.</li>
+                </ul>
+                <hr/>
+            </html>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
+        </panel>
+    </row>
+</form>

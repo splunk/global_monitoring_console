@@ -1,7 +1,7 @@
 <nav search_view="search" color="#ffde63">
-    <view name="all_05_home_dashboard_v1" default="true" />
+    <view name="all_05_home_dashboard_v1" />
     <view name="search" />
-    <view name="all_101_dashboard_v1" />
+    <view name="all_101_dashboard_v1" default="true" />
     <view name="all_06_kb_dashboard_v1" />
     <collection label="Quick Access">
         <a href="all_01_assets_identities_dashboard_v1" target="_blank" rel="noopener">01 - Assets and Identities</a>
@@ -61,7 +61,6 @@
     <collection label="App">
         <view name="all_03_app_dashboard_v1" />
         <view name="all_07_setup_dashboard_v1" />
-        <view name="all_07_setup_dashboard_ioc_v1" />
     </collection>
     <collection label="MC">
         <collection label="Indexing">
