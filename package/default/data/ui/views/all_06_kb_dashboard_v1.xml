@@ -1,5 +1,6 @@
-<form theme="dark">
-  <label>KB</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark">
+  <label>06 - KB</label>
   <description>Splunk Fields explanation including a complete guide to fields under Job Inspect</description>
   <search id="Help">
     <query>
@@ -9,7 +10,10 @@
 | search Index IN ($Index$) Component IN ($Component$) Field_Name="*$Field_Name$*" Field_Description="*$Field_Description$*" Field_Display_Name="*$Field_Display_Name$*" Sub_Component="*$Sub_Component$*"
       </query>
   </search>
-  <fieldset submitButton="false" autoRun="true">
+  
+  <row><panel><html><h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">GMC - 06 - KB - Dashboard - v1 (Updated: Jan 31, 2021)</h1></html></panel></row>
+  <row><panel>
+  
     <input type="multiselect" token="Index" searchWhenChanged="true">
       <label>1. Category</label>
       <choice value="*">All</choice>
@@ -97,7 +101,7 @@
       <default>*</default>
       <initialValue>*</initialValue>
     </input>
-  </fieldset>
+  </panel></row>
   <row>
     <panel>
       <html> 

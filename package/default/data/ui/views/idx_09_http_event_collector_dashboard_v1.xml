@@ -1,5 +1,6 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>IDX - 09 - HTTP Event Collector - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>IDX - 09 - HTTP Event Collector Analysis - Dashboard - v3.0.7</label>
   <description>Splunk HTTP Event Collector (HEC) Inputs Information Dashboard</description>
   <search id="idx_09_http_event_collector_1">
     <query>| from lookup:splunk_rest_data_inputs_http_sh_kv_store_lookup
@@ -16,7 +17,7 @@
 | lookup splunk_rest_data_inputs_http_sh_kv_store_lookup token_name As token_name OUTPUT sourcetype_name app token index_name indexes source_name useACK 
 | `get_cluster_label(host)`
 | fillnull value=0 useACK disabled
-| fillnull value="Undefined" app title token_name token index indexes source_name sourcetype_name
+| fillnull value="Undefined" app title token_name token index indexes source_name sourcetype_name index_name
 | search cluster_label="$cluster_label$" token_name="$token_name$" index_name="$index_name$"</query>
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
@@ -36,6 +37,13 @@
     <latest>$TimeRangePkr.latest$</latest>
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">IDX - 09 - HTTP Event Collector - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
       <title>1. HTTP Event Collector Inputs Filters</title>
@@ -403,7 +411,7 @@
     <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
       <title>4. HTTP Event Collector Valid vs Invalid Requests</title>
       <chart>
-        <search base="idx_09_http_event_collector_1">
+        <search base="idx_09_http_event_collector_2">
           <query>| bin _time minspan=1m 
 | stats sum(num_of_events) as events_total, sum(num_of_requests) as requests_total, sum(num_of_requests_to_disabled_token) as disabled_token_total, sum(num_of_requests_to_incorrect_url) as incorrect_url_total, sum(num_of_auth_failures) as auth_fail_total, sum(num_of_parser_errors) as parser_error_total, sum(total_bytes_indexed) as data_indexed, sum(total_bytes_received) as data_received by _time 
 | eval incorrect_url_total=if(isnull(incorrect_url_total), 0, incorrect_url_total) 
@@ -667,9 +675,7 @@
       <title>9. Associated GMC Job(s) - $env:page$</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_http_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Http Event Collector (HEC) Inputs KV Store Gen Job From REST</a>
-               </li>
+               
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_http_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Http Event Collector (HEC) Inputs Summary Index Gen Job From REST</a>
                </li>
@@ -695,23 +701,27 @@
     </panel>
   </row>
   <row>
-    <panel>
+    <panel id="panel_accordion_togglepanel_true_8" depends="$gadget_lib_loaded$">
       <title>10. HTTP Event Collector global configuration tokens and application tokens</title>
       <table>
         <search>
-          <query>| from lookup:splunk_gmc_kb_csv_lookup 
-| where Index="REST" AND Component="inputs"
-| table Component Sub_Component Field_Name Field_Display_Name Datatype Default Field_Description
-| sort Field_Name</query>
-          <earliest>-1s</earliest>
+          <query>| inputlookup splunk_gmc_kb_csv_lookup 
+| where Index="REST" AND Component="HEC" 
+| table Field_Name Field_Display_Name Default Field_Description
+| sort Field_Name
+| rename Field_Name As Name, Field_Display_Name As Datatype, Field_Description As Description</query>
+          <earliest>-24h@h</earliest>
           <latest>now</latest>
         </search>
-        <option name="count">10</option>
+        <option name="count">20</option>
         <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
-        <option name="wrap">true</option>
-        <format type="color" field="Field_Name">
+        <format type="color" field="Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Datatype">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
@@ -720,8 +730,8 @@
   </row>
   <row>
     <panel>
+      <title>HEC Inputs Latest Refresh</title>
       <single>
-        <title>11. HEC Inputs Latest Refresh</title>
         <search base="idx_09_http_event_collector_1">
           <query>| stats count by _time 
 | fields _time 
@@ -732,6 +742,13 @@
         <option name="height">50</option>
         <option name="refresh.display">progressbar</option>
       </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
     </panel>
   </row>
 </form>

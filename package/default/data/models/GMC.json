@@ -3,7 +3,7 @@
     "displayName": "Global Monitoring Console (GMC)",
     "description": "Global Monitoring Console (GMC) Data Model",
     "objectSummary": {
-        "Event-Based": 8,
+        "Event-Based": 4,
         "Transaction-Based": 0,
         "Search-Based": 0
     },
@@ -66,7 +66,7 @@
             "calculations": [],
             "constraints": [
                 {
-                    "search": "(`gmc_setup_dm_constraints_search`) (index=_audit sourcetype=audittrail action=search search_id=* (search=* OR info=terminate)) OR ( index=_internal AND ((sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd_access uri=\"*delegatejob*\" spent>500) OR (sourcetype=splunkd component=DispatchManager username=* \"QUEUED\"))) OR (index=_introspection sourcetype=splunk_resource_usage component=PerProcess \"data.process_type\"=search \"data.search_props.app\"=*)",
+                    "search": "(`setup_dm_constraints_search`) (index=_audit sourcetype=audittrail ((action=search search_id=*) OR info=terminate)) OR ( index=_internal AND ((sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd component=DispatchManager username=* \"QUEUED\"))) OR (index=_introspection sourcetype=splunk_resource_usage component=PerProcess \"data.process_type\"=search \"data.search_props.app\"=*)",
                     "owner": "Search_Activity"
                 }
             ],
@@ -606,11 +606,319 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "IF ( ISNUM (max_count), max_count, NULL())"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_name1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Full Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "i3pyxbmqqy",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_name) OR emp_name=\"\" OR len(emp_name) > 50, NULL(), trim(emp_name, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_first1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee First Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "o0fv5jivuxq",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_first) OR emp_first =\"\", NULL(), trim(emp_first, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_last1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Last Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "8xfi9w08d4",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_last) OR emp_last =\"\", NULL(), trim(emp_last, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_title1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Title",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "minu9i6x8ep",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_title) OR emp_title =\"\", NULL(), trim(emp_title, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_email1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Email",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "o9n1zjdb6vk",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_email) OR emp_email =\"\", NULL(), trim(emp_email, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_type1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Type",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "j4ec45c26in",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_type) OR emp_type=\"\", NULL(), trim(emp_type, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_status1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Status",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "x5fb9rrf7w8",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_status) OR emp_status=\"\", NULL(), trim(emp_status, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_dep1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Department",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "gwbaohj8pkb",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_dep) OR emp_dep=\"\", NULL(), trim(emp_dep, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_lob11",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee LOB1",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "dlv1yl5s7bi",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_lob1) OR emp_lob1=\"\", NULL(), trim(emp_lob1, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_lob21",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee LOB2",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "pex4hc6yacp",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_lob2) OR emp_lob2=\"\", NULL(), trim(emp_lob2, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_lob31",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee LOB3",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "1ibtviyh7y9",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_lob3) OR emp_lob3=\"\", NULL(), trim(emp_lob3, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_city1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee City",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "59zngmxbjq6",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_city) OR emp_city =\"\", NULL(), trim(emp_city, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_region11",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Region1",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "a6hjnmt8umn",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_region1) OR emp_region1 =\"\", NULL(), trim(emp_region1, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_country1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Country",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "34dpfengjni",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_country) OR emp_country =\"\", NULL(), trim(emp_country, \"'\"))"
                 }
             ],
             "constraints": [
                 {
-                    "search": "(index=_audit sourcetype=audittrail action=search search_id=* (search=* OR info=terminate))",
+                    "search": "(index=_audit sourcetype=audittrail ((action=search search_id=*) OR info=terminate))",
                     "owner": "Search_Activity.Audit_Search"
                 }
             ],
@@ -1040,7 +1348,7 @@
                     "editable": true,
                     "comment": "",
                     "calculationType": "Eval",
-                    "expression": "case ( \n    match(alert_actions, \"summary_index\"), \"summary_indexing\",\n    match(search_type, \"scheduled\"), \"scheduled\",\n    match(search_type, \"datamodel_acceleration\"), \"datamodel_acceleration\",\n    (search_id2 LIKE \"DM_%\" OR savedsearch_name LIKE \"_ACCELERATE_DM%\"), \"datamodel_acceleration\", \n    savedsearch_name LIKE \"_ACCELERATE_DM%\", \"datamodel_acceleration\",\n    match(search_type, \"report_acceleration\"), \"report_acceleration\",\n    match(search_id2, \"^scheduler__\") OR match(search_id2, \"^scheduler__\") , \"scheduled\",\n    search_id2 LIKE \"rt%\", \"realtime\",\n    search_id2 LIKE \"subsearch%\", \"subsearch\",\n    (search_id2 LIKE \"SummaryDirector%\" OR search_id2 LIKE \"summarize_SummaryDirector%\"), \"summary_director\",\n    true(), \"adhoc\")"
+                    "expression": "case ( \n    match(alert_actions, \"summary_index\"), \"summary_indexing\",\n    match(search_type, \"scheduled\"), \"scheduled\",\n    match(_raw, \"SavedSplunker\") AND (isnotnull(savedsearch_name2) OR savedsearch_name2=\"\"), \"scheduled\",\n    match(search_type, \"datamodel_acceleration\"), \"datamodel_acceleration\",\n    (search_id2 LIKE \"DM_%\" OR savedsearch_name2 LIKE \"_ACCELERATE_DM%\"), \"datamodel_acceleration\", \n    savedsearch_name2 LIKE \"_ACCELERATE_DM%\", \"datamodel_acceleration\",\n    match(search_type, \"report_acceleration\"), \"report_acceleration\",\n    match(search_id2, \"^scheduler__\") OR match(search_id2, \"^scheduler__\") , \"scheduled\",\n    search_id2 LIKE \"rt%\", \"realtime\",\n    search_id2 LIKE \"subsearch%\", \"subsearch\",\n    (search_id2 LIKE \"SummaryDirector%\" OR search_id2 LIKE \"summarize_SummaryDirector%\"), \"summary_director\",\n    true(), \"adhoc\")"
                 },
                 {
                     "outputFields": [
@@ -1129,11 +1437,319 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "IF(ISNULL(uri_path) OR uri_path=\"\", NULL(), uri_path)"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_name2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Full Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "zyep9pfr6i",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_name) OR emp_name =\"\", NULL(), trim(emp_name, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_first2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee First Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "ocasg738gze",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_first) OR emp_first =\"\", NULL(), trim(emp_first, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_last2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Last Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "8fx005i089m",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_last) OR emp_last =\"\", NULL(), trim(emp_last, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_title2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Title",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "qnd73y1lca",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_title) OR emp_title =\"\", NULL(), trim(emp_title, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_email2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Email",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "atmebxpoqwr",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_email) OR emp_email =\"\", NULL(), trim(emp_email, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_type2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Type",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "qvar8ub99s",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_type) OR emp_type =\"\", NULL(), trim(emp_type, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_status2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Status",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "0cwvdyauygrc",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_status) OR emp_status =\"\", NULL(), trim(emp_status, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_dep2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Department",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "xuqkv7s903",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_dep) OR emp_dep =\"\", NULL(), trim(emp_dep, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_lob12",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee LOB1",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "vfkwbh69lg",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_lob1) OR emp_lob1 =\"\", NULL(), trim(emp_lob1, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_lob22",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee LOB2",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "vbjiuistdq",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_lob2) OR emp_lob2 =\"\", NULL(), trim(emp_lob2, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_lob32",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee LOB3",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "jpm7agkedte",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_lob3) OR emp_lob3 =\"\", NULL(), trim(emp_lob3, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_city2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee City",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "xfi4yzwa2h",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_city) OR emp_city =\"\", NULL(), trim(emp_city, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_region12",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Region1",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "lli12uz7kbc",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_region1) OR emp_region1 =\"\", NULL(), trim(emp_region1, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_country2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Country",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "14gr3v4shcl",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_country) OR emp_country =\"\", NULL(), trim(emp_country, \"'\"))"
                 }
             ],
             "constraints": [
                 {
-                    "search": "(index=_internal AND ( (sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd_access uri=\"*delegatejob*\" spent>500) OR (sourcetype=splunkd component=DispatchManager username=* \"QUEUED\")))",
+                    "search": "(index=_internal AND ( (sourcetype=scheduler app=*) OR (component=SearchProcessMemoryTracker) OR (sourcetype=splunkd component=DispatchManager username=* \"QUEUED\")))",
                     "owner": "Search_Activity.Internal_Scheduler"
                 }
             ],
@@ -1673,6 +2289,314 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "IF(ISNULL('data.search_props.mode') OR 'data.search_props.mode'=\"\", NULL(), 'data.search_props.mode')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_name3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Full Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "h9c8muygpqa",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_name) OR emp_name =\"\", NULL(), trim(emp_name, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_first3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee First Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "g0i2hdejl6v",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_first) OR emp_first =\"\", NULL(), trim(emp_first, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_last3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Last Name",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "lqlqcvxncmf",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_last) OR emp_last =\"\", NULL(), trim(emp_last, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_title3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Title",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "i70q1l0ln8",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_title) OR emp_title =\"\", NULL(), trim(emp_title, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_email3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Email",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "l5kw8bjl76",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_email) OR emp_email =\"\", NULL(), trim(emp_email, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_type3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Type",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "0vjo8urk4j7",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_type) OR emp_type =\"\", NULL(), trim(emp_type, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_status3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Status",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "26h91eh9cfd",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_status) OR emp_status =\"\", NULL(), trim(emp_status, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_dep3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Department",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "m1m5sry2zz9",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_dep) OR emp_dep =\"\", NULL(), trim(emp_dep, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_lob13",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee LOB1",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "f943tsrpvap",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_lob1) OR emp_lob1 =\"\", NULL(), trim(emp_lob1, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_lob23",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee LOB2",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "b8bcbcgxila",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_lob2) OR emp_lob2 =\"\", NULL(), trim(emp_lob2, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_lob33",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee LOB3",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "i3z25sw4up",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_lob3) OR emp_lob3 =\"\", NULL(), trim(emp_lob3, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_city3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee City",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "98h64au3sq7",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_city) OR emp_city =\"\", NULL(), trim(emp_city, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_region13",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Region1",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "3mb09zasnoo",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_region1) OR emp_region1 =\"\", NULL(), trim(emp_region1, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "emp_country3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Employee Country",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "oowbruxsk3",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(emp_country) OR emp_country =\"\", NULL(), trim(emp_country, \"'\"))"
                 }
             ],
             "constraints": [
@@ -1682,76 +2606,12 @@
                 }
             ],
             "lineage": "Search_Activity.Introspection_Search_Usage"
-        },
-        {
-            "objectName": "Audit_Total_Executions",
-            "displayName": "Audit Total Executions",
-            "parentName": "Audit_Search",
-            "comment": "",
-            "fields": [],
-            "calculations": [],
-            "constraints": [
-                {
-                    "search": "info1 IN (\"*completed\", \"canceled\", \"failed\")",
-                    "owner": "Search_Activity.Audit_Search.Audit_Total_Executions"
-                }
-            ],
-            "lineage": "Search_Activity.Audit_Search.Audit_Total_Executions"
-        },
-        {
-            "objectName": "Internal_Total_Executions",
-            "displayName": "Internal Total Executions",
-            "parentName": "Internal_Scheduler",
-            "comment": "",
-            "fields": [],
-            "calculations": [],
-            "constraints": [
-                {
-                    "search": "info2 IN (\"completed\", \"skipped\")",
-                    "owner": "Search_Activity.Internal_Scheduler.Internal_Total_Executions"
-                }
-            ],
-            "lineage": "Search_Activity.Internal_Scheduler.Internal_Total_Executions"
-        },
-        {
-            "objectName": "Internal_Skipped_Executions",
-            "displayName": "Internal Skipped Executions",
-            "parentName": "Internal_Scheduler",
-            "comment": "",
-            "fields": [],
-            "calculations": [],
-            "constraints": [
-                {
-                    "search": "info2=\"skipped\"",
-                    "owner": "Search_Activity.Internal_Scheduler.Internal_Skipped_Executions"
-                }
-            ],
-            "lineage": "Search_Activity.Internal_Scheduler.Internal_Skipped_Executions"
-        },
-        {
-            "objectName": "Audit_Successful_Executions",
-            "displayName": "Audit Successful Executions",
-            "parentName": "Audit_Search",
-            "comment": "",
-            "fields": [],
-            "calculations": [],
-            "constraints": [
-                {
-                    "search": "info1=\"completed\"",
-                    "owner": "Search_Activity.Audit_Search.Audit_Successful_Executions"
-                }
-            ],
-            "lineage": "Search_Activity.Audit_Search.Audit_Successful_Executions"
         }
     ],
     "objectNameList": [
         "Search_Activity",
         "Audit_Search",
         "Internal_Scheduler",
-        "Introspection_Search_Usage",
-        "Audit_Total_Executions",
-        "Internal_Total_Executions",
-        "Internal_Skipped_Executions",
-        "Audit_Successful_Executions"
+        "Introspection_Search_Usage"
     ]
 }

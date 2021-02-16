@@ -1,16 +1,17 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>13 - Config Files - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>08 - Config Files Analysis - Dashboard - v3.0.7</label>
   <description>Splunk Config Files Information Dashboard: limits.conf server.conf distsearch.conf outputs.conf web.conf ui-prefs.conf props.conf transforms.conf</description>
   <search id="a08_config_files">
     <query>| from lookup:splunk_rest_configs_conf_files_all_kv_store_lookup
-| fields _time Splunk_Instance config_file app sharing author stanza title updated
+| fields _time cluster_label Splunk_Instance config_file app sharing author stanza title updated
 | search $Exclusions$ (author="$author$" app="*$app$*" config_file="*$config_file$*" sharing="$sharing$" stanza="*$stanza$*")
 | `get_instance_roles(Splunk_Instance)`
-| `get_cluster_label(Splunk_Instance)` 
 | `strftime_format(updated)`
 | makemv delim="###" title
 | mvexpand title | search title!="\[*" 
-| rex field=title "(?&lt;Property&gt;^\w+)\s*=\s*(?&lt;Value&gt;.*?)$"
+| rex field=title "(?&lt;Property&gt;.*?)\s*=" 
+| rex field=title "^.*=(?&lt;Value&gt;.*)"
 | rex field=Value mode=sed "s/\"//g"
 | stats 
   Latest(_time) As _time
@@ -32,6 +33,13 @@
     <latest>$TimeRangePkr.latest$</latest>
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">GMC - 08 - Config Files - Dashboard - v1 (Updated: Feb 10, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. Config Files Filters</title>
@@ -199,8 +207,8 @@
       <table>
         <title>splunk_rest_configs_conf_files_all_kv_store_lookup</title>
         <search base="a08_config_files">
-          <query>| table shcluster_label config_file author app sharing stanza Property Value  | where Property!="updated"
-| sort 0 shcluster_label app stanza Property 
+          <query>| table cluster_label config_file author app sharing stanza Property Value  | where Property!="updated"
+| sort 0 cluster_label app stanza Property 
 | `rename_common_fields` 
 | `rename_rest_fields` 
 | rename config_file AS "Config File" title AS "Configuration Entry"</query>
@@ -399,8 +407,9 @@
           <latest>$latest$</latest>
         </search>
         <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
-        <option name="wrap">true</option>
+        <option name="wrap">false</option>
         <format type="color" field="SH Cluster Label">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
@@ -477,8 +486,9 @@
           <latest>$latest$</latest>
         </search>
         <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
-        <option name="wrap">true</option>
+        <option name="wrap">false</option>
         <format type="color" field="SH Cluster Label">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
@@ -532,7 +542,7 @@
       <title>8. Config Files Stats By $split_by_tok_1$</title>
       <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
         <label>1. Split By</label>
-        <choice value="shcluster_label">SH Cluster Label</choice>
+        <choice value="cluster_label">SH Cluster Label</choice>
         <choice value="Splunk_Instance">Splunk Instance</choice>
         <choice value="app">App</choice>
         <choice value="sharing">App Sharing</choice>
@@ -572,9 +582,7 @@
       <title>1o. Associated GMC Job(s) - $env:page$</title>
       <html>
                 <ol>
-                    <li>
-                        <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_files_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Configuration Files: (limits, server, distsearch, outputs, ui-prefs, props and transforms) KV Store Gen Job From REST</a>
-                    </li>
+                    
                     <li>
                         <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_files_summary_data_gen" target="_blank" rel="noopener">Splunk Configuration Files: (limits, server, distsearch, outputs, ui-prefs, props and transforms) Summary Index Gen Job From REST</a>
                     </li>

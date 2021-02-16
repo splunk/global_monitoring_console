@@ -1,9 +1,10 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>SH - 10 - Source Types - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>SH - 10 - Source Types Analysis - Dashboard - v3.0.7</label>
   <description>Splunk  Source Types Information Dashboard</description>
   <search id="sh_10_source_types">
     <query>| from lookup:splunk_rest_configs_conf_props_sh_kv_store_lookup
-| search $Exclusions$ (app="$app$" title="*$title$*" sharing="$sharing$" author="$author$")
+| search NOT app IN ($app_excl_wild$) app IN ($app$) NOT app IN ($app_excl$) title="*$title$*" sharing="$sharing$" author="$author$"
 | fields cluster_label Splunk_Instance app title sharing author TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER TRUNCATE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER KV_MODE INDEXED_EXTRACTIONS EVENT_BREAKER_ENABLE EVENT_BREAKER ANNOTATE_PUNCT LEARN_SOURCETYPE LEARN_MODEL MAX_EVENTS maxDist updated ADD_EXTRA_TIME_FIELDS AUTO_KV_JSON CHARSET CHECK_FOR_HEADER CHECK_METHOD DEPTH_LIMIT FIELD_DELIMITER FIELD_HEADER_REGEX HEADER_FIELD_DELIMITER HEADER_MODE JSON_TRIM_BRACES_IN_ARRAY_NAMES LINE_BREAKER_LOOKBEHIND MATCH_LIMIT MAX_DAYS_AGO MAX_DAYS_HENCE MAX_DIFF_SECS_AGO MAX_DIFF_SECS_HENCE METRIC-SCHEMA-TRANSFORMS METRICS_PROTOCOL MUST_NOT_BREAK_AFTER MUST_NOT_BREAK_BEFORE NO_BINARY_CHECK PREFIX_SOURCETYPE TIMESTAMP_FIELDS TRANSFORMS TZ category disabled invalid_cause is_valid priority pulldown_type rename 
 
 | `get_instance_roles(Splunk_Instance)`
@@ -37,6 +38,13 @@
 emp_status="$emp_status$" emp_type IN ($emp_type$) emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_lob2="$emp_lob2$" emp_lob3="$emp_lob3$" emp_title="$emp_title$" emp_cc="$emp_cc$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$"</query>
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 10 - Source Types - Dashboard - v1 (Updated: Feb 12, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. Source Types Filters</title>
@@ -99,8 +107,8 @@ emp_status="$emp_status$" emp_type IN ($emp_type$) emp_dep="$emp_dep$" emp_lob1=
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="app" searchWhenChanged="true">
-        <label>6. App</label>
+      <input type="multiselect" token="app" searchWhenChanged="true">
+        <label>6.1 App</label>
         <fieldForLabel>app</fieldForLabel>
         <fieldForValue>app</fieldForValue>
         <search base="sh_10_source_types">
@@ -109,6 +117,23 @@ emp_status="$emp_status$" emp_type IN ($emp_type$) emp_dep="$emp_dep$" emp_lob1=
         <choice value="*">All</choice>
         <default>*</default>
         <initialValue>*</initialValue>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="app_excl" searchWhenChanged="true">
+        <label>6.2 App Exclusions</label>
+        <fieldForLabel>app_excl</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search base="sh_10_source_types">
+          <query>| stats count by app</query>
+        </search>
+        <choice value="none">NONE</choice>
+        <initialValue>search,system,learned,splunk_archiver,splunk_secure_gateway</initialValue>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="text" token="app_excl_wild" searchWhenChanged="true">
+        <label>6.3 App Exclusions (wild card)</label>
+        <initialValue>NONE</initialValue>
+        <suffix>,</suffix>
       </input>
       <input type="dropdown" token="sharing" searchWhenChanged="true">
         <label>7. App Sharing</label>
@@ -196,17 +221,6 @@ emp_status="$emp_status$" emp_type IN ($emp_type$) emp_dep="$emp_dep$" emp_lob1=
           <query>| stats count by TRUNCATE</query>
         </search>
         <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="checkbox" token="Exclusions" searchWhenChanged="true">
-        <label>24. Exclusions</label>
-        <choice value="app!=&quot;system&quot;">Exclude system App</choice>
-        <choice value="app!=&quot;search&quot;">Exclude search App</choice>
-        <choice value="*">No Exclusions</choice>
-        <delimiter>AND</delimiter>
-        <prefix>(</prefix>
-        <suffix>)</suffix>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
@@ -413,7 +427,7 @@ emp_status="$emp_status$" emp_type IN ($emp_type$) emp_dep="$emp_dep$" emp_lob1=
   </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_22" depends="$gadget_lib_loaded$">
-      <title>3.  Source Types List</title>
+      <title>3.1  Source Types List Grouped By Server by App &amp; By Source Type</title>
       <table>
         <search base="sh_10_source_types">
           <query>| table cluster_label app title sharing author emp_name emp_lob1 emp_dep TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER TRUNCATE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER KV_MODE INDEXED_EXTRACTIONS EVENT_BREAKER_ENABLE EVENT_BREAKER ANNOTATE_PUNCT LEARN_SOURCETYPE LEARN_MODEL MAX_EVENTS maxDist updated ADD_EXTRA_TIME_FIELDS AUTO_KV_JSON CHARSET CHECK_FOR_HEADER CHECK_METHOD DEPTH_LIMIT FIELD_DELIMITER FIELD_HEADER_REGEX HEADER_FIELD_DELIMITER HEADER_MODE JSON_TRIM_BRACES_IN_ARRAY_NAMES LINE_BREAKER_LOOKBEHIND MATCH_LIMIT MAX_DAYS_AGO MAX_DAYS_HENCE MAX_DIFF_SECS_AGO MAX_DIFF_SECS_HENCE METRIC-SCHEMA-TRANSFORMS METRICS_PROTOCOL MUST_NOT_BREAK_AFTER MUST_NOT_BREAK_BEFORE NO_BINARY_CHECK PREFIX_SOURCETYPE TIMESTAMP_FIELDS TRANSFORMS TZ category disabled invalid_cause is_valid priority pulldown_type rename 
@@ -485,6 +499,67 @@ emp_status="$emp_status$" emp_type IN ($emp_type$) emp_dep="$emp_dep$" emp_lob1=
     </panel>
   </row>
   <row>
+    <panel id="panel_accordion_togglepanel_false_23" depends="$gadget_lib_loaded$">
+      <title>3.2  Source Types List Grouped by Source Type</title>
+      <table>
+        <search base="sh_10_source_types">
+          <query>| stats values(*) as * dc(cluster_label) As num_cluster_label dc(app) As num_app by title 
+| table title disabled cluster_label num_cluster_label app num_app sharing author emp_name TIME_PREFIX TIME_FORMAT MAX_TIMESTAMP_LOOKAHEAD DATETIME_CONFIG SHOULD_LINEMERGE LINE_BREAKER TRUNCATE BREAK_ONLY_BEFORE BREAK_ONLY_BEFORE_DATE MUST_BREAK_AFTER KV_MODE INDEXED_EXTRACTIONS EVENT_BREAKER_ENABLE EVENT_BREAKER MAX_EVENTS MAX_DAYS_AGO MAX_DAYS_HENCE MAX_DIFF_SECS_AGO MAX_DIFF_SECS_HENCE TRANSFORMS METRICS_PROTOCOL MUST_NOT_BREAK_AFTER MUST_NOT_BREAK_BEFORE TRANSFORMS TZ 
+| sort 0 - num_app
+| `rename_common_fields` 
+| `rename_identity_fields` 
+| `rename_rest_fields` 
+| rename title AS "Source Type"</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Splunk_Instance">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Splunk Roles">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Macro Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Source Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Owner">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Description">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="ANNOTATE_PUNCT">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="LEARN_SOURCETYPE">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="EVENT_BREAKER_ENABLE">
+          <colorPalette type="map">{"0":#DC4E41,"1":#53A051}</colorPalette>
+        </format>
+        <format type="color" field="SHOULD_LINEMERGE">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="App">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
     <panel id="panel_accordion_togglepanel_false_3" depends="$gadget_lib_loaded$">
       <title>4. Data Source Types By $split_by_tok_1$</title>
       <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
@@ -531,13 +606,40 @@ emp_status="$emp_status$" emp_type IN ($emp_type$) emp_dep="$emp_dep$" emp_lob1=
     </panel>
   </row>
   <row>
+    <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
+      <title>5. Sourcetype Renames</title>
+      <table>
+        <search>
+          <query>| inputlookup splunk_rest_data_props_sourcetype_rename_kv_store_lookup 
+| fields _time shcluster_label Splunk_Instance app sharing author stanza title value updated acl_perms_read acl_perms_write acl_removable 
+| search shcluster_label="$cluster_label$" Splunk_Instance="$Splunk_Instance$" 
+| table _time shcluster_label app sharing author stanza title value updated acl_perms_read acl_perms_write acl_removable 
+| `rename_common_fields` 
+| `rename_rest_fields`</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="SH Cluster Label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="title">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
     <panel id="panel_accordion_togglepanel_true_4" depends="$gadget_lib_loaded$">
-      <title>5. Associated GMC Job(s) - $env:page$</title>
+      <title>6. Associated GMC Job(s) - $env:page$</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_props_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Source Types KV Store Gen Job From REST</a>
-               </li>
+              
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_configs_conf_props_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Source Types Summary Index Gen Job From REST</a>
                </li>

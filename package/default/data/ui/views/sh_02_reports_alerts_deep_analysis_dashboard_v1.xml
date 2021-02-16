@@ -1,11 +1,11 @@
-<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 02 - Reports/Alerts Deep Analysis - Dashboard - v1</label>
-  <description>Reports/Alerts Analysis Dashboard</description>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>SH - 02 - Reports/Alerts Deep Analysis - Dashboard - v3.0.7</label>
+  <description>Reports/Alerts Deep Analysis Dashboard</description>
   <search id="sh_02_reports_alerts_1">
     <query>| from lookup:splunk_rest_saved_searches_sh_kv_store_lookup
 | search NOT app IN ($app21$)
 | `get_instance_roles(Splunk_Instance)`
-| `get_saved_searches_usage(shcluster_label, app, savedsearch_name)` 
 | `get_identity_info(author)` | `fillnull_identity_info`
 | `cron_descriptor(cron_schedule)`
 | `strftime_format(updated)` | `strftime_format(scheduled_times)` | `strftime_format(next_scheduled_time)`
@@ -14,12 +14,12 @@
 | fillnull value="no-actions" actions
 | fillnull value="Undefined" Splunk_Roles Splunk_Instance app savedsearch_name description savedsearch_type sharing author owner disabled is_visible is_scheduled cron_schedule scheduled_times next_scheduled_time auto_summarize dispatch_earliest_time dispatch_latest_time schedule_priority max_concurrent schedule_window allow_skew realtime_schedule alert_severity alert_track alert_type removable run_n_times run_on_startup savedsearch_search email_to cron_schedule_described action_summary_index_name populate_lookup_dest summary_index_name Index_Reference
 
-| search shcluster_label="$shcluster_label2$" Splunk_Roles="$Splunk_Roles2$" Splunk_Instance="$Splunk_Instance2$" app="$app2$" author=$author2$ sharing=$sharing2$ disabled="$is_disabled$" is_scheduled="$is_scheduled$" savedsearch_name="$savedsearch_name$" savedsearch_type="$savedsearch_type$" savedsearch_search="$savedsearch_search$" Lookup_Reference="$Lookup_Reference2$" Datamodel_Reference="$Datamodel_Reference2$" Macro_Reference="$Macro_Reference2$" Index_Reference="$Index_Reference2$" Sourcetype_Reference="$Sourcetype_Reference2$" Source_Reference="$Source_Reference2$" Eventtype_Reference="$Eventtype_Reference2$" Rest_Reference="$Rest_Reference2$" email_to="$email_to$" auto_summarize="$auto_summarize$" schedule_priority="$schedule_priority$" schedule_window="$schedule_window$" realtime_schedule="$realtime_schedule$" run_on_startup="$run_on_startup$" allow_skew="$allow_skew$" correlationsearch_enabled="$correlationsearch_enabled$" action_summary_index="$action_summary_index$" cron_schedule_described="$cron_schedule_described$" emp_name="$emp_name$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_cc="$emp_cc$" emp_title="$emp_title$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" dispatch_earliest_time_normalized="$dispatch_earliest_time_normalized$" dispatch_earliest_time="$dispatch_earliest_time$" dispatch_latest_time="$dispatch_latest_time$" actions="$actions$" dispatch_auto_cancel="$dispatch_auto_cancel$" updated="$updated$" populate_lookup="$populate_lookup$" populate_lookup_dest="$populate_lookup_dest$" summary_index_name="$summary_index_name$" job_class="$job_class$" acl_removable=$acl_removable$
+| search shcluster_label="$shcluster_label2$" Splunk_Roles="$Splunk_Roles2$" Splunk_Instance="$Splunk_Instance2$" app="$app2$" author=$author2$ sharing=$sharing2$ disabled="$is_disabled$" is_scheduled="$is_scheduled$" savedsearch_name="$savedsearch_name$" savedsearch_type="$savedsearch_type$" savedsearch_search="$savedsearch_search$" Lookup_Reference="$Lookup_Reference2$" Datamodel_Reference="$Datamodel_Reference2$" Macro_Reference="$Macro_Reference2$" Index_Reference="$Index_Reference2$" Sourcetype_Reference="$Sourcetype_Reference2$" Source_Reference="$Source_Reference2$" Eventtype_Reference="$Eventtype_Reference2$" Rest_Reference="$Rest_Reference2$" email_to="$email_to$" auto_summarize="$auto_summarize$" schedule_priority="$schedule_priority$" schedule_window="$schedule_window$" realtime_schedule="$realtime_schedule$" run_on_startup="$run_on_startup$" allow_skew="$allow_skew$" correlationsearch_enabled="$correlationsearch_enabled$" action_summary_index="$action_summary_index$" cron_schedule_described="$cron_schedule_described$" emp_name="$emp_name$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_cc="$emp_cc$" emp_title="$emp_title$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" dispatch_earliest_time_normalized="$dispatch_earliest_time_normalized$" dispatch_earliest_time="$dispatch_earliest_time$" dispatch_latest_time="$dispatch_latest_time$" actions="$actions$" dispatch_auto_cancel="$dispatch_auto_cancel$" updated="$updated$" populate_lookup="$populate_lookup$" populate_lookup_dest="$populate_lookup_dest$" summary_index_name="$summary_index_name$" job_class="$job_class$" acl_removable=$acl_removable$ orphan=$orphan$
 </query>
   </search>
   <search id="sh_02_reports_alerts_2">
     <query>index=`setup_summary_index` source=splunk_internal_scheduler_jobs_idx_summary_tracker 
-| fields _time Splunk_Instance savedsearch_name app user scheduled_time dispatch_time priority window_time total_run_time result_count
+| fields _time Splunk_Instance savedsearch_name app user scheduled_time dispatch_time priority window_time total_run_time emp_* result_count
 | `get_instance_roles(Splunk_Instance)` 
 | `get_shcluster_label(Splunk_Instance)` 
 | `get_saved_searches_info(shcluster_label,app,savedsearch_name)`
@@ -29,10 +29,9 @@
   </search>
   <search id="sh_02_reports_alerts_3">
     <query>index=`setup_summary_index` source="splunk_rest_search_jobs_sh_summary_tracker"
-| fields _time shcluster_label Splunk_Instance search_id_normalized status search_et search_lt pid app savedsearch_name ttl user priority provenance delegate diskUsage doneProgress available_count event_count isEventsPreviewEnabled isPreviewEnabled isRemoteTimeline meanPreviewPeriod numPreviews result_count resultIsStreaming resultPreviewCount total_run_time sampleRatio sampleSeed scan_count searchCanBeEventType runtime_auto_cancel runtime_auto_pause error_messages
+| fields _time shcluster_label Splunk_Instance search_id_normalized status search_et search_lt pid app savedsearch_name ttl user priority provenance delegate diskUsage doneProgress available_count event_count isEventsPreviewEnabled isPreviewEnabled isRemoteTimeline meanPreviewPeriod numPreviews result_count resultIsStreaming resultPreviewCount total_run_time sampleRatio sampleSeed scan_count searchCanBeEventType runtime_auto_cancel runtime_auto_pause error_messages emp_*
 | eval total_run_time_Sec=total_run_time , doneProgressPerc=doneProgress*100 
 | `gmc_byte2human(diskUsage,2)` 
-| `get_identity_info(user)`
 | fillnull value=0 total_run_time_Sec diskUsage
 | fillnull value="Undefined" app savedsearch_name status ttl error_messages provenance
 | search shcluster_label="$shcluster_label2$" Splunk_Instance="$Splunk_Instance2$" app="$app2$" savedsearch_name="$savedsearch_name$" status="$status_tok8$" ttl="$ttl_tok8$" total_run_time_Sec &gt;= $total_run_time_tok8$ diskUsage &gt;= $diskUsage_MB_tok8$ error_messages="$error_messages$" provenance="$provenance$"
@@ -41,6 +40,13 @@
     <latest>$TimeRangePkr3.latest$</latest>
   </search>
   <fieldset submitButton="true" autoRun="false"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 02 - Reports/Alerts Deep Analysis - Dashboard - v1 (Updated: Feb 8, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row id="tabs">
     <panel>
       <html>
@@ -53,13 +59,6 @@
                </li>
             </ul>
          </html>
-    </panel>
-  </row>
-  <row>
-    <panel>
-      <html>
-        <h1 style="color:rgb(207,49,128);font-size:50px;text-align:center">SH - 02 - Reports/Alerts Deep Analysis - Dashboard - v1</h1>
-      </html>
     </panel>
   </row>
   <row id="Reports_Alerts_Inputs1">
@@ -137,7 +136,7 @@
         <fieldForValue>sharing2</fieldForValue>
       </input>
       <input type="dropdown" token="savedsearch_name" searchWhenChanged="false">
-        <label>savedsearch_name</label>
+        <label>6.1 Report/Alert Name (Contains)</label>
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>savedsearch_name</fieldForLabel>
@@ -148,7 +147,7 @@
         <default>*</default>
       </input>
       <input type="text" token="savedsearch_name" searchWhenChanged="true">
-        <label>6.2. Report/Alert Name (Contains)</label>
+        <label>6.2 Report/Alert Name (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
@@ -521,6 +520,16 @@
         <fieldForValue>acl_removable</fieldForValue>
         <default>*</default>
       </input>
+      <input type="dropdown" token="orphan" searchWhenChanged="false">
+        <label>10. Orphaned?</label>
+        <choice value="*">All</choice>
+        <choice value="1">Yes</choice>
+        <choice value="0">No</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>orphan</fieldForLabel>
+        <fieldForValue>orphan</fieldForValue>
+        <default>*</default>
+      </input>
     </panel>
   </row>
   <row id="Reports_Alerts_Inputs4">
@@ -650,7 +659,7 @@
       </html>
       <table>
         <search base="sh_02_reports_alerts_1">
-          <query>| table savedsearch_name savedsearch_type disabled is_scheduled updated shcluster_label app sharing description dispatch_earliest_time dispatch_earliest_time_normalized dispatch_latest_time cron_schedule cron_schedule_described scheduled_times next_scheduled_time realtime_schedule schedule_priority schedule_window allow_skew author emp_name emp_title emp_dep emp_lob1 emp_type emp_status run_n_times run_on_startup max_concurrent is_visible acl_perms_read acl_perms_write email email_to populate_lookup_dest script summary_index summary_index_name webhook webhook_param_url actions auto_summarize auto_summarize_cron_schedule dispatch_ttl dispatch_as logevent logevent_param_event lookup lookup_append lookup_filename script_filename 
+          <query>| table savedsearch_name savedsearch_type disabled is_scheduled updated shcluster_label app author sharing description dispatch_earliest_time dispatch_earliest_time_normalized dispatch_latest_time cron_schedule cron_schedule_described scheduled_times next_scheduled_time realtime_schedule schedule_priority schedule_window allow_skew  emp_name emp_title emp_dep emp_lob1 emp_type emp_status run_n_times run_on_startup max_concurrent is_visible acl_perms_read acl_perms_write email email_to populate_lookup_dest script summary_index summary_index_name webhook webhook_param_url actions auto_summarize auto_summarize_cron_schedule dispatch_ttl dispatch_as logevent logevent_param_event lookup lookup_append lookup_filename script_filename 
 | eval scheduled_times=mvindex(scheduled_times,0,0) 
 | `rename_reference_fields` 
 | `rename_saved_searches_fields` 
@@ -911,11 +920,11 @@
       <table>
         <title>Powered by : splunk_internal_splunkd_ui_access_ko_changes_idx_summary_tracker (Runs once every 5 Minutes)</title>
         <search>
-          <query>index=`setup_summary_index` source="splunk_internal_splunkd_ui_access_ko_changes_idx_summary_tracker" Knowledge_Object="$selected_savedsearch_name$" earliest=-7d@d 
-| table _time shcluster_label User Client_IP Knowledge_Object_Type Knowledge_Object Change_Status Duration Change_Time Provenance 
-| sort 0 - _time 
-| `ustime_format(_time)` 
-| `ustime_format(updated)`</query>
+          <query>index=`setup_summary_index` source="splunk_internal_splunkd_ui_access_ko_changes_idx_summary_tracker" Knowledge_Object_Type=Reports_Alerts Knowledge_Object="$selected_savedsearch_name$" earliest=-7d@d 
+| fields _time Change_Time shcluster_label user Client_IP Knowledge_Object_Type Knowledge_Object Change_Status Duration Provenance 
+| stats count latest(*) as * by shcluster_label Knowledge_Object
+| `ustime_format(updated)` 
+| `ustime_format(Change_Time)`</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
         </search>
@@ -924,7 +933,7 @@
         <option name="refresh.display">preview</option>
         <option name="rowNumbers">true</option>
         <option name="totalsRow">false</option>
-        <option name="wrap">true</option>
+        <option name="wrap">false</option>
         <format type="color" field="shcluster_label">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
@@ -1010,6 +1019,7 @@
         <choice value="auto_summarize">Auto Summarize</choice>
         <choice value="logevent">Log Event</choice>
         <choice value="acl_removable">Removable?</choice>
+        <choice value="orphan">Orphaned?</choice>
         <default>app</default>
         <initialValue>app</initialValue>
       </input>
@@ -1146,15 +1156,15 @@
     dc(user) As Num_Users
     By $split_by_tok_22$ where Max in top$top_tok2$</query>
         </search>
-        <option name="charting.backgroundColor">FFFF31</option>
-        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.backgroundColor">FFFF31</option>
         <option name="charting.chart">column</option>
-        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.showDataLabels">all</option>
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="height">600</option>
         <option name="refresh.display">progressbar</option>
       </chart>
@@ -1267,7 +1277,6 @@
     Latency=round(dispatch_time - scheduled_time, 2) ,
     scheduled_time=strftime(scheduled_time,"%m/%d/%Y %I:%M:%S"),
     dispatch_time=strftime(dispatch_time,"%m/%d/%Y %I:%M:%S") 
-| `get_identity_info(user)` 
 | table _time shcluster_label savedsearch_name app user emp_name scheduled_time dispatch_time Latency cron_schedule dispatch_earliest_time_human dispatch_earliest_time allow_skey priority window_time total_run_time total_run_time_Human result_count Status 
 | sort 0 - total_run_time</query>
         </search>
@@ -1441,7 +1450,6 @@
     EarliestTime=strftime(search_et,"%m/%d/%Y %I:%M:%S"),
     LatestTime=strftime(search_lt,"%m/%d/%Y %I:%M:%S"),
     total_run_time_Human = total_run_time 
-| `get_identity_info(User)` 
 | `gmc_convert_runtime(total_run_time_Human)` 
 | table _time search_id_normalized pid shcluster_label provenance savedsearch_name app EarliestTime LatestTime user status ttl priority diskUsage_MB total_run_time total_run_time_Human doneProgressPerc result_count event_count available_count scan_count searchCanBeEventType error_messages 
 | `rename_job_activity_fields` 
@@ -1525,9 +1533,7 @@
       <title>9. Reports/Alerts Associated GMC Job(s)</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Reports/Alerts (Saved Searches) KV Store Gen Job From REST</a>
-               </li>
+               
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_saved_searches_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Reports/Alerts (Saved Searches) Summary Index Gen Job From REST</a>
                </li>
@@ -1548,23 +1554,6 @@
                      </a>
                   </div>
                </div>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (KV Store)</a>
-                  <div class="btn-group1">
-                     <div id="mod_info">
-                        <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_index_internal_scheduler_jobs_tracker_sh_kv_store&amp;type=kv">
-                           View Reports/Alerts Access Tracker KV Store
-                           <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
-                        </a>
-                     </div>
-                     <div id="mod_att" class="hide">
-                        <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">
-                           Attention
-                           <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
-                        </a>
-                     </div>
-                  </div>
-               </li>
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_internal_scheduler_jobs_idx_summary_tracker" target="_blank" rel="noopener">Track Reports/Alerts Executions (Summary Indexing)</a>
                </li>

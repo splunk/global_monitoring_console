@@ -1,5 +1,6 @@
-<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 01 - Dashboards Deep Analysis - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>SH - 01 - Dashboards Deep Analysis - Dashboard - v3.0.7</label>
   <description>Splunk Dashboards, Reports/Alerts &amp; Lookups Analysis Dashboard</description>
   <search id="sh_01_dashboards_1">
     <query>| from lookup:splunk_rest_data_ui_views_sh_kv_store_lookup 
@@ -7,8 +8,7 @@
 | search NOT app IN ($app21$) NOT title IN ($title21$)
 | eval url="http://" . shcluster_label . ":8000/en-US/app/" . app . "/" . title
 | `get_instance_roles(Splunk_Instance)`
-| `get_dashboards_usage(shcluster_label,app,title)` 
-| `get_identity_info(shcluster_label,author)` | `get_identity_info(author)` | `fillnull_identity_info`
+| `get_identity_info(author)` | `fillnull_identity_info`
 | `get_macro_definition(shcluster_label,Macro_Reference)`
 | `strftime_format(updated)`
 | eval Num_Searches=mvcount(search)
@@ -17,11 +17,11 @@
 | fillnull value="false" autoRun | fillnull value="none" submitButton acl_perms_read acl_perms_write auto_refresh_delay panel_title
 | fillnull value="no-dashboard-reference" Dashboard_Reference | fillnull value="no-report-reference" Report_Reference
 | fillnull value="Undefined"
-| search shcluster_label="$shcluster_label1$" Splunk_Roles="$Splunk_Roles1$" Splunk_Instance="$Splunk_Instance1$" app="$app1$" author=$author1$ sharing=$sharing1$ title="$title$" label="$label$" Report_Reference="$Report_Reference1$" Dashboard_Reference="$Dashboard_Reference1$" Lookup_Reference="$Lookup_Reference1$" Datamodel_Reference="$Datamodel_Reference1$" Macro_Reference="$Macro_Reference1$" Index_Reference="$Index_Reference1$" Sourcetype_Reference="$Sourcetype_Reference1$" Source_Reference="$Source_Reference1$" Eventtype_Reference="$Eventtype_Reference1$" Rest_Reference="$Rest_Reference1$" BaseSearch="$BaseSearch$" dashboard_size &lt;= $dashboard_size$ search="*$search$*" Days_Latest_Access &lt;= "$Days_Latest_Access1$" Days_Latest_Access &gt;= "$Days_Latest_Access2$" emp_name="$emp_name$" emp_title="$emp_title$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_cc="$emp_cc$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" time_range="$time_range$" auto_refresh_delay="$auto_refresh_delay$" submitButton="$submitButton$" acl_perms_read="$acl_perms_read$" acl_perms_write="$acl_perms_write$" panel_title="*$panel_title$*" autoRun="$autoRun$" num_panels &gt;= $num_panels$ Num_Searches &gt;= $Num_Searches$</query>
+| search shcluster_label="$shcluster_label1$" Splunk_Roles="$Splunk_Roles1$" Splunk_Instance="$Splunk_Instance1$" app="$app1$" author=$author1$ sharing=$sharing1$ title="$title$" label="$label$" Report_Reference="$Report_Reference1$" Dashboard_Reference="$Dashboard_Reference1$" Lookup_Reference="$Lookup_Reference1$" Datamodel_Reference="$Datamodel_Reference1$" Macro_Reference="$Macro_Reference1$" Index_Reference="$Index_Reference1$" Sourcetype_Reference="$Sourcetype_Reference1$" Source_Reference="$Source_Reference1$" Eventtype_Reference="$Eventtype_Reference1$" Rest_Reference="$Rest_Reference1$" BaseSearch="$BaseSearch$" dashboard_size &lt;= $dashboard_size$ search="*$search$*" emp_name="$emp_name$" emp_title="$emp_title$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_cc="$emp_cc$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" time_range="$time_range$" auto_refresh_delay="$auto_refresh_delay$" submitButton="$submitButton$" acl_perms_read="$acl_perms_read$" acl_perms_write="$acl_perms_write$" panel_title="*$panel_title$*" autoRun="$autoRun$" num_panels &gt;= $num_panels$ Num_Searches &gt;= $Num_Searches$</query>
   </search>
   <search id="sh_01_dashboards_2">
     <query>index=`setup_summary_index` source=splunk_internal_web_access_idx_summary_tracker 
-| fields _time user Splunk_Instance app OS_Name avg_spent Dashboard_Name Latest_Access 
+| fields _time shcluster_label Splunk_Instance app Dashboard_Name user Latest_Access min_spent max_spent avg_spent
 | `get_instance_roles(Splunk_Instance)` 
 | `get_shcluster_label(Splunk_Instance)` 
 | `get_dashboards_info(shcluster_label,app,Dashboard_Name)`
@@ -33,7 +33,7 @@
   <row>
     <panel>
       <html>
-          <h1 style="color:rgb(207,49,128);font-size:50px;text-align:center">SH - 01 - Dashboards Deep Analysis - Dashboard - v1</h1>
+          <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 01 - Dashboards Deep Analysis - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
         </html>
     </panel>
   </row>
@@ -45,7 +45,7 @@
                         <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Dashboards_Inputs1,Dashboards_Inputs2,Dashboards_Inputs3,Dashboards_Inputs4,Dashboards_Panel1,Dashboards_Panel2,Dashboards_Panel3,Dashboards_Panel4,Dashboards_Panel5,Dashboards_Panel6,Dashboards_Panel7,Dashboards_Panel8,Dashboards_Panel9">1. Dashboards Metadata info from KV Store</a>
                     </li>
                     <li>
-                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Dashboards_Inputs21,Dashboards_Inputs22,Dashboards_Inputs23,Dashboards_Inputs24,Dashboards_Panel21,Dashboards_Panel22,Dashboards_Panel23,Dashboards_Panel24,Dashboards_Panel25,Dashboards_Panel26,Dashboards_Panel27,Dashboards_Panel28,Dashboards_Panel29">2. Dashboards Execution from Summary Index</a>
+                        <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Dashboards_Panel21,Dashboards_Panel22,Dashboards_Panel23,Dashboards_Panel24,Dashboards_Panel25,Dashboards_Panel26,Dashboards_Panel27,Dashboards_Panel28,Dashboards_Panel29">2. Dashboards Execution from Summary Index</a>
                     </li>
                 </ul>
             </html>
@@ -99,8 +99,8 @@
       </input>
       <input type="text" token="app21" searchWhenChanged="true">
         <label>4.2 App Exclusion</label>
-        <default>splunk_monitoring_console, splunk_archiver, simple_xml_examples, *global_monitoring_console,gmc*</default>
-        <initialValue>splunk_monitoring_console, splunk_archiver, simple_xml_examples, *global_monitoring_console,gmc*</initialValue>
+        <default>none</default>
+        <initialValue>none</initialValue>
       </input>
       <input type="dropdown" token="sharing1" searchWhenChanged="true">
         <label>5. App Sharing</label>
@@ -312,45 +312,23 @@
           <query>| stats count by BaseSearch</query>
         </search>
       </input>
-      <input type="dropdown" token="Days_Latest_Access1" searchWhenChanged="true">
-        <label>2. Days Since Latest Access (Less Than)</label>
-        <choice value="9999999">Any</choice>
-        <default>9999999</default>
-        <initialValue>9999999</initialValue>
-        <fieldForLabel>Days_Latest_Access_Display</fieldForLabel>
-        <fieldForValue>Days_Latest_Access</fieldForValue>
-        <search base="sh_01_dashboards_1">
-          <query>| stats count by Days_Latest_Access | sort Days_Latest_Access | `get_latest_access_human(Days_Latest_Access)`</query>
-        </search>
-      </input>
-      <input type="dropdown" token="Days_Latest_Access2" searchWhenChanged="true">
-        <label>3. Days Since Latest Access (More Than)</label>
-        <choice value="0">Any</choice>
-        <default>0</default>
-        <initialValue>0</initialValue>
-        <fieldForLabel>Days_Latest_Access_Display</fieldForLabel>
-        <fieldForValue>Days_Latest_Access</fieldForValue>
-        <search base="sh_01_dashboards_1">
-          <query>| stats count by Days_Latest_Access | sort Days_Latest_Access | `get_latest_access_human(Days_Latest_Access)`</query>
-        </search>
-      </input>
       <input type="text" token="dashboard_size" searchWhenChanged="true">
-        <label>4. Dashboard Size in Bytes &lt;=</label>
+        <label>2. Dashboard Size in Bytes &lt;=</label>
         <default>10000000</default>
         <initialValue>10000000</initialValue>
       </input>
       <input type="text" token="search" searchWhenChanged="true">
-        <label>5. Search By Dashboard Searches (Contains)</label>
+        <label>3. Search By Dashboard Searches (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
       <input type="text" token="panel_title" searchWhenChanged="true">
-        <label>6. Panel Title Name</label>
+        <label>4. Panel Title Name</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="autoRun" searchWhenChanged="true">
-        <label>7. Autorun Dashboard?</label>
+        <label>5. Autorun Dashboard?</label>
         <choice value="*">Any</choice>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -361,7 +339,7 @@
         </search>
       </input>
       <input type="dropdown" token="auto_refresh_delay" searchWhenChanged="true">
-        <label>8. Auto Refresh Delay</label>
+        <label>6. Auto Refresh Delay</label>
         <choice value="*">Any</choice>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -372,7 +350,7 @@
         </search>
       </input>
       <input type="dropdown" token="submitButton" searchWhenChanged="true">
-        <label>9. Submit Button?</label>
+        <label>7. Submit Button?</label>
         <choice value="*">Any</choice>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -383,7 +361,7 @@
         </search>
       </input>
       <input type="dropdown" token="acl_perms_read" searchWhenChanged="true">
-        <label>10.1 Read ACLs</label>
+        <label>8.1 Read ACLs</label>
         <choice value="*">Any</choice>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -394,7 +372,7 @@
         </search>
       </input>
       <input type="dropdown" token="acl_perms_write" searchWhenChanged="true">
-        <label>10.2 Write ACLs</label>
+        <label>8.2 Write ACLs</label>
         <choice value="*">Any</choice>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -526,7 +504,7 @@
       </input>
     </panel>
   </row>
-  <row id="Dashboards_Panel3">
+  <row id="Dashboards_Panel1">
     <panel id="panel_accordion_togglepanel_false_dashboards_4" depends="$gadget_lib_loaded$">
       <title>5.1 Dashboards - List</title>
       <input type="link" token="URI">
@@ -588,7 +566,7 @@
       </table>
     </panel>
   </row>
-  <row id="Dashboards_Panel6">
+  <row id="Dashboards_Panel2">
     <panel id="panel_accordion_togglepanel_false_dashboards_52" depends="$show_single_value$">
       <title>5.2 Searches for: $selected_title$</title>
       <html>
@@ -643,7 +621,8 @@
         <search base="sh_01_dashboards_1">
           <query>| where title="$selected_title$" 
 | stats count by panel_title 
-| fields panel_title</query>
+| fields panel_title
+| sort 0 panel_title</query>
         </search>
         <option name="count">10</option>
         <option name="drilldown">none</option>
@@ -696,7 +675,7 @@
       </table>
     </panel>
   </row>
-  <row id="Dashboards_Panel7">
+  <row id="Dashboards_Panel3">
     <panel id="panel_accordion_togglepanel_false_dashboards_55" depends="$show_single_value$">
       <title>5.5 Index/Source Type/Source/Event Type Reference for: $selected_title$</title>
       <table>
@@ -856,7 +835,7 @@
       </table>
     </panel>
   </row>
-  <row id="Dashboards_Panel9">
+  <row id="Dashboards_Panel4">
     <panel id="panel_accordion_togglepanel_false_dashboards_81" depends="$show_single_value$">
       <title>5.8 Macro Reference for: $selected_title$</title>
       <table>
@@ -949,6 +928,40 @@
     </panel>
   </row>
   <row id="Dashboards_Panel5">
+    <panel id="panel_accordion_togglepanel_false_Reports_55" depends="$show_single_value$">
+      <title>5.11 Dashboard Changes in the last 7 Days for: $selected_title$</title>
+      <table>
+        <title>Powered by : splunk_internal_splunkd_ui_access_ko_changes_idx_summary_tracker (Runs once every 5 Minutes)</title>
+        <search>
+          <query>index=`setup_summary_index` source="splunk_internal_splunkd_ui_access_ko_changes_idx_summary_tracker" Knowledge_Object_Type=Dashboards Knowledge_Object="$selected_title$" earliest=-7d@d 
+| fields _time Change_Time shcluster_label user Client_IP Knowledge_Object_Type Knowledge_Object Change_Status Duration Provenance 
+| stats count latest(*) as * by shcluster_label Knowledge_Object
+| `ustime_format(updated)` 
+| `ustime_format(Change_Time)`</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="shcluster_label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Knowledge_Object_Type">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Change_Status">
+          <colorPalette type="map">{"200":#53A051,"404":#DC4E41}</colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Dashboards_Panel6">
     <panel id="panel_accordion_togglepanel_false_dashboards_5" depends="$gadget_lib_loaded$">
       <title>6. Dashboards Stats</title>
       <single>
@@ -1160,14 +1173,12 @@
       </chart>
     </panel>
   </row>
-  <row id="Dashboards_Panel8">
+  <row id="Dashboards_Panel9">
     <panel id="panel_accordion_togglepanel_true_dashboards_11" depends="$gadget_lib_loaded$">
       <title>7. Dashboards Associated GMC Job(s)</title>
       <html>
                 <ol>
-                    <li>
-                        <a href="/app/global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Dashboards KV Store Gen Job From REST</a>
-                    </li>
+                   
                     <li>
                         <a href="/app/global_monitoring_console/search?s=splunk_rest_data_ui_views_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Dashboards Summary Index Gen Job From REST</a>
                     </li>
@@ -1188,23 +1199,6 @@
                             </a>
                         </div>
                     </div>
-                    <li>
-                        <a href="/app/global_monitoring_console/search?s=splunk_index_internal_web_access_tracker_sh_kv_store_lookup_tracker" target="_blank" rel="noopener">Track Dashboard Executions</a>
-                        <div class="btn-group1">
-                            <div id="mod_info">
-                                <a class="btn middle contour" target="blank" href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=TA_global_monitoring_console/&amp;lookup=splunk_index_internal_web_access_tracker_sh_kv_store&amp;type=kv">View Dashboard Access Tracker KV Store
-                                    
-                                    <i class="icon-data icon-modal-medium icon-color-brandColorD40 m-left"/>
-                                </a>
-                            </div>
-                            <div id="mod_att" class="hide">
-                                <a class="btn full" href="javascript:();" data-toggle="modal" data-target="#info">Attention
-                                    
-                                    <i class="icon-alert icon-modal-medium icon-color-brandColorD40 m-left"/>
-                                </a>
-                            </div>
-                        </div>
-                    </li>
                     <li>
                         <a href="/app/global_monitoring_console/search?s=splunk_internal_web_access_idx_summary_tracker" target="_blank" rel="noopener">Track Dashboards Executions (Summary Indexing)</a>
                     </li>

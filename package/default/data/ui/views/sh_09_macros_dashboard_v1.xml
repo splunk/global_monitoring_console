@@ -1,5 +1,6 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>SH - 09 - Macros - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>SH - 09 - Macros Analysis - Dashboard - v3.0.7</label>
   <description>Splunk Macros Information Dashboard</description>
   <search id="sh_09_macros">
     <query>| from lookup:splunk_rest_data_macros_sh_kv_store_lookup 
@@ -15,6 +16,13 @@
 | search shcluster_label="$shcluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" app="$app$" title="*$title$*" author="$author$" description="*$description$*" emp_name="$emp_name$" emp_title="$emp_title$" emp_lob1="$emp_lob1$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$" args="$args$" definition="*$definition$*" disabled=$disabled$ errormsg="*$errormsg$*" iseval=$iseval$ acl_removable=$acl_removable$</query>
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 09 - Macros - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. Macros Filters</title>
@@ -369,9 +377,7 @@
       <title>4. Associated GMC Job(s) - $env:page$</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_macros_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Macros KV Store Gen Job From REST</a>
-               </li>
+              
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_data_macros_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Macros Summary Index Gen Job From REST</a>
                </li>

@@ -1,5 +1,6 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>All - 11 - App Validation &amp; Certification - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>11 - App Validation &amp; Certification - Dashboard - v3.0.7</label>
   <description>App Validation &amp; Certification - Dashboard - v1</description>
   <search id="a11_app_validation_certification">
     <query>index=add_on_builder_index sourcetype=splunk:tabuilder:validation $Exclusions$
@@ -81,11 +82,14 @@
     <earliest>$TimeRangePkr2.earliest$</earliest>
     <latest>$TimeRangePkr2.latest$</latest>
   </search>
+  
+  <row><panel><html><h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">GMC - 11 - App Validation &amp; Certification - Dashboard - v1 (Updated: Jan 31, 2021)</h1></html></panel></row>
+  
   <fieldset submitButton="false"></fieldset>
   <row>
     <panel>
       <html>
-        <h1>This Dashboard is based on data generated using the Splunk Add-on Builder Validate &amp; Package feature which validates your add-on against best practices and other rules, and to determine whether your app is ready for Splunk App Certification. The generates an Overall Health Report in the App UI but it also indexes all the findings into the dedicated add_on_builder_index Splunk Index.  To Learn More please read this Splunk Document: https://docs.splunk.com/Documentation/AddonBuilder/latest/UserGuide/Validate</h1>
+        <h1 style="color:yellow">This Dashboard is based on data generated using the Splunk Add-on Builder Validate &amp; Package feature which validates your add-on against best practices and other rules, and to determine whether your app is ready for Splunk App Certification. The generates an Overall Health Report in the App UI but it also indexes all the findings into the dedicated add_on_builder_index Splunk Index.  To Learn More please read this Splunk Document: https://docs.splunk.com/Documentation/AddonBuilder/latest/UserGuide/Validate</h1>
       </html>
     </panel>
   </row>
@@ -667,14 +671,9 @@
   </row>
   <row>
     <panel>
-      <table>
-        <search>
-          <query>| noop</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
-        </search>
-        <option name="drilldown">none</option>
-      </table>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
     </panel>
   </row>
 </form>

@@ -1,30 +1,33 @@
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0  -->
+
 <div tabindex="-1" class="help_entry-edit-modal modal fade in hide">
 	<div class="modal-header">
 		<button type="button" class="close btn-dialog-close" data-dismiss="modal">x</button>
 		<h3 class="text-dialog-title">Add New GMC 101 Search</h3>
 	</div>
 	<div class="modal-body form form-horizontal modal-body-scrolling" style="padding-left: 0px; padding-right: 0px;">
-		<div id="help_entry-app-controls" class="control-group shared-controls-controlgroup">
-			<label class="control-label" for="help_entry-app">
-                Search ID: </label>
+		<div id="help_entry-srch_num-controls" class="control-group shared-controls-controlgroup">
+			<label class="control-label" for="help_entry-srch_num">
+                ID: </label>
 			<div class="controls ">
-				<input type="text" name="help_entry-app" id="help_entry-app" />
+				<input type="text" name="help_entry-srch_num" id="help_entry-srch_num" />
 				<span class="help-inline"></span>
 			</div>
 		</div>
-		<div id="help_entry-view-controls" class="control-group shared-controls-controlgroup">
-			<label class="control-label" for="help_entry-view">
+		<div id="help_entry-srch_nme-controls" class="control-group shared-controls-controlgroup">
+			<label class="control-label" for="help_entry-srch_nme">
                 Search Name: </label>
 			<div class="controls ">
-				<input type="text" name="help_entry-view" id="help_entry-view" />
+				<input type="text" name="help_entry-srch_nme" id="help_entry-srch_nme" />
 				<span class="help-inline"></span>
 			</div>
 		</div>
 		<div class="control-group shared-controls-controlgroup">
-			<label class="control-label" for="help_entry-classification">
+			<label class="control-label" for="help_entry-srch_cat">
                 Category: </label>
 			<div class="controls ">
-				<select id="help_entry-classification">
+				<select id="help_entry-srch_cat">
 
 <option value="Access_Control">Access_Control</option>
 <option value="AIOPS">AIOPS</option>
@@ -32,13 +35,16 @@
 <option value="Analytics">Analytics</option>
 <option value="Apps">Apps</option>
 <option value="Cloud">Cloud</option>
+<option value="Cluster_Master">Cluster_Master</option>
+<option value="Clustering">Clustering</option>
 <option value="Commands">Commands</option>
 <option value="Configuration_Files">Configuration_Files</option>
 <option value="Configurations">Configurations</option>
 <option value="Dashboards">Dashboards</option>
 <option value="Data_Models">Data_Models</option>
 <option value="Data_Onboarding">Data_Onboarding</option>
-<option value="DeVos">DeVos</option>
+<option value="Deployer">Deployer</option>
+<option value="Deployment_Server">Deployment_Server</option>
 <option value="DSP">DSP</option>
 <option value="Errors">Errors</option>
 <option value="ES">ES</option>
@@ -46,7 +52,7 @@
 <option value="Framework">Framework</option>
 <option value="GMC">GMC</option>
 <option value="Health">Health</option>
-<option value="Heavy_Forwarders">Heavy_Forwarders</option>
+<option value="Heavy_Forwarder">Heavy_Forwarder</option>
 <option value="Identities">Identities</option>
 <option value="Indexer_Cluster">Indexer_Cluster</option>
 <option value="Indexes">Indexes</option>
@@ -71,6 +77,7 @@
 <option value="Scheduled_Jobs">Scheduled_Jobs</option>
 <option value="Scheduler">Scheduler</option>
 <option value="Search">Search</option>
+<option value="Search_Head">Search_Head</option>
 <option value="Search_Head_Cluster">Search_Head_Cluster</option>
 <option value="Security">Security</option>
 <option value="SignalFx">SignalFx</option>
@@ -78,7 +85,7 @@
 <option value="SPL">SPL</option>
 <option value="Technology_Add-ons">Technology_Add-ons</option>
 <option value="UBA">UBA</option>
-<option value="Universal_Forwarders">Universal_Forwarders</option>
+<option value="Universal_Forwarder">Universal_Forwarder</option>
 <option value="Usage">Usage</option>
 <option value="User_Interface">User_Interface</option>
 <option value="Web">Web</option>
@@ -88,28 +95,28 @@
                </select>
 			</div>
 		</div>
-		<div id="help_entry-panel-controls" class="control-group shared-controls-controlgroup">
-			<label class="control-label" for="help_entry-panel">
+		<div id="help_entry-srch_tag-controls" class="control-group shared-controls-controlgroup">
+			<label class="control-label" for="help_entry-srch_tag">
                 Tags: </label>
 			<div class="controls ">
-				<input type="text" name="help_entry-panel" id="help_entry-panel" />
+				<input type="text" name="help_entry-srch_tag" id="help_entry-srch_tag" />
 				<span class="help-inline"></span>
 			</div>
 		</div>
-		<div id="help_entry-text-controls" class="control-group shared-controls-controlgroup">
-			<label class="control-label" for="help_entry-text">
+		<div id="help_entry-srch_des-controls" class="control-group shared-controls-controlgroup">
+			<label class="control-label" for="help_entry-srch_des">
                 Description: </label>
 			<div class="controls ">
-				<textarea name="help_entry-text" id="help_entry-text" rows="10" cols="10"></textarea>
+				<textarea name="help_entry-srch_des" id="help_entry-srch_des" rows="10" cols="10"></textarea>
 				<span class="help-inline"></span>
 			</div>
 		</div>
 
-		<div id="help_entry-app_version-controls" class="control-group shared-controls-controlgroup">
-			<label class="control-label" for="help_entry-app_version">
+		<div id="help_entry-srch_str-controls" class="control-group shared-controls-controlgroup">
+			<label class="control-label" for="help_entry-srch_str">
                 Search String: </label>
 			<div class="controls ">
-				<textarea name="help_entry-app_version" id="help_entry-app_version" rows="10" cols="10"></textarea>
+				<textarea name="help_entry-srch_str" id="help_entry-srch_str" rows="10" cols="10"></textarea>
 
 				<span class="help-inline"></span>
 			</div>
@@ -134,9 +141,9 @@
 <table id="table" class="table table-striped display">
     <thead>
 		<tr>
-			<th>Search ID</th>
+			<th>ID</th>
             <th>Search Name</th>
-            <th>Description</th> 
+            <th>Tags</th> 
             <th>Category</th>
             <% if (!insufficient_permissions){ %>
 			<th>Actions</th> <% } %>
@@ -152,26 +159,26 @@
                 
             %>
             <tr>
-                <td><%- help_entries[c].app %></td>
-                <td><%- help_entries[c].view %></td>
-                <td><%- help_entries[c].text %></td>
-                <td><%- help_entries[c].classification %></td>
+                <td><%- help_entries[c].srch_num %></td>
+                <td><%- help_entries[c].srch_nme %></td>
+                <td><%- help_entries[c].srch_tag %></td>
+                <td><%- help_entries[c].srch_cat %></td>
                 
 
                 <% if(!insufficient_permissions){ %>
                 <td>
                     <% if(allow_editing_collection){ %>
-                        <% if(help_entries[c].disabled){ %>
-                            <a class="enable_help_entry" data-disabled="false" data-key="<%- help_entry._key %>" href="#">Enable</a> | 
+                        <% if(help_entries[c].srch_sts){ %>
+                            <a class="enable_help_entry" data-srch_sts="false" data-key="<%- help_entry._key %>" href="#">Enable</a> | 
                         <% } else { %>
-                            <a class="disable_help_entry" data-disabled="true" data-key="<%- help_entry._key %>" href="#">Disable</a> |
+                            <a class="disable_help_entry" data-srch_sts="true" data-key="<%- help_entry._key %>" href="#">Disable</a> |
                         <% } %>
                       <a class="edit_help_entry" data-key="<%- help_entry._key %>" data-suppression-title="<%- help_entry.title %>" data-suppression-type="<%- help_entry.type %>" data-scope="<%- help_entry.scope %>" href="#">Edit</a>
                     | <a class="remove_help_entry" data-key="<%- help_entry._key %>" href="#">Remove</a>
                     <% } %>
                 </td>
                 <% } %>
-                <td><%- help_entries[c].app_version %></td>
+                <td><%- help_entries[c].srch_str %></td>
             </tr>
         <% } %>
     </tbody>        

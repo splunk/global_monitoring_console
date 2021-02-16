@@ -1,5 +1,6 @@
-<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 07 - Calculated Fields / Field Extractions &amp; Transformations / Field Aliases - Dashboard - v2.0.10</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>SH - 07 - Calculated Fields / Field Extractions &amp; Transformations / Field Aliases - Dashboard - v3.0.7</label>
   <description>Splunk Calculated Fields, Field Extractions/Transformations and Field Aliases Dashboard</description>
   <search id="sh_07_field_calculated">
     <query>| from lookup:splunk_rest_data_props_calcfields_sh_kv_store_lookup 
@@ -8,7 +9,7 @@
   |	`get_identity_info_simple(shcluster_label,author)`
   | `strftime_format(updated)`
   | fillnull value="Undefined" Splunk_Instance Splunk_Roles app sharing stanza name value author
-  | search shcluster_label="$shcluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" app="$app$" author="$author$" name="*$name$*" stanza="$stanza$" emp_name="$emp_name$" emp_title="$emp_title$" emp_lob1="$emp_lob1$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$" acl_removable=$acl_removable$</query>
+  | search shcluster_label="$shcluster_label$" Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$" app="$app$" author="$author$" name="$name$" stanza="$stanza$" stanza="*$stanza2$*" emp_name="$emp_name$" emp_title="$emp_title$" emp_lob1="$emp_lob1$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$" acl_removable=$acl_removable$</query>
   </search>
   <search id="sh_07_field_extractions">
     <query>| from lookup:splunk_rest_data_props_extractions_sh_kv_store_lookup 
@@ -16,11 +17,14 @@
 | `get_instance_roles(Splunk_Instance)`
 |	`get_identity_info_simple(shcluster_label,author)`
 | `strftime_format(updated)`
-| lookup local=True splunk_rest_data_transforms_extractions_sh_kv_store_lookup shcluster_label app title as value OUTPUTNEW Type FORMAT REGEX DELIMS CLEAN_KEYS DEST_KEY FIELDS MV_ADD REPEAT_MATCH SOURCE_KEY WRITE_META
+| makemv delim="," value
+| mvexpand value
+| eval value=trim(value)
+| lookup splunk_rest_data_transforms_extractions_sh_kv_store_lookup shcluster_label app title as value OUTPUTNEW FORMAT REGEX DELIMS CLEAN_KEYS DEST_KEY FIELDS MV_ADD REPEAT_MATCH SOURCE_KEY WRITE_META
 | eval Transform_Type = case(match(attribute, "^REPORT"), "REPORT", match(attribute, "^EXTRACT"), "EXTRACT", true(), attribute)
 | rex field=attribute mode=sed "s/^REPORT-|^EXTRACT-//g"
 | fillnull value="Undefined" Splunk_Instance app sharing stanza attribute value author type Type FORMAT REGEX DELIMS CLEAN_KEYS DEST_KEY FIELDS MV_ADD REPEAT_MATCH SOURCE_KEY WRITE_META
-| search shcluster_label="$shcluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" app="$app$" author="$author$" attribute="*$attribute$*" type="$type$" stanza="$stanza$" emp_name="$emp_name$" emp_title="$emp_title$" emp_lob1="$emp_lob1$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$" Transform_Type="$Transform_Type$" acl_removable=$acl_removable$</query>
+| search shcluster_label="$shcluster_label$" Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$" app="$app$" author="$author$" attribute="$attribute$" type="$type$" stanza="$stanza$" stanza="*$stanza2$*" emp_name="$emp_name$" emp_title="$emp_title$" emp_lob1="$emp_lob1$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$" Transform_Type="$Transform_Type$" acl_removable=$acl_removable$</query>
   </search>
   <search id="sh_07_field_aliases">
     <query>| from lookup:splunk_rest_data_props_fieldaliases_sh_kv_store_lookup 
@@ -30,9 +34,16 @@
 | `strftime_format(updated)`
 | rex field=attribute mode=sed "s/FIELDALIAS-//g"
 | fillnull value="Undefined" Splunk_Instance Splunk_Roles app author stanza attribute value sharing
-| search shcluster_label="$shcluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" app="$app$" author="$author$" attribute="*$attribute$*" stanza="$stanza$" emp_name="$emp_name$" emp_title="$emp_title$" emp_lob1="$emp_lob1$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$" acl_removable=$acl_removable$</query>
+| search shcluster_label="$shcluster_label$" Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$" app="$app$" author="$author$" attribute="$attribute$" stanza="$stanza$" stanza="*$stanza2$*" emp_name="$emp_name$" emp_title="$emp_title$" emp_lob1="$emp_lob1$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$" acl_removable=$acl_removable$</query>
   </search>
   <fieldset submitButton="false" autoRun="false"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 07 - Calculated Fields / Field Extractions &amp; Transformations / Field Aliases - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row id="tabs">
     <panel>
       <html>
@@ -109,13 +120,18 @@
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="stanza" searchWhenChanged="true">
-        <label>6. Source Type</label>
+        <label>6.1 Source Type</label>
         <fieldForLabel>stanza</fieldForLabel>
         <fieldForValue>stanza</fieldForValue>
         <search base="sh_07_field_calculated">
           <query>| stats count by stanza</query>
         </search>
         <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="stanza2" searchWhenChanged="true">
+        <label>6.2 Source Type (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
@@ -335,9 +351,7 @@
       <title>4. Associated GMC Job(s) - $env:page$</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_calcfields_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Calculated Fields (EVAL-) KV Store Gen Job From REST</a>
-               </li>
+              
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_calcfields_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Calculated Fields (EVAL-) Summary Index Gen Job From REST</a>
                </li>
@@ -421,13 +435,18 @@
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="stanza" searchWhenChanged="true">
-        <label>6. Source Type</label>
+        <label>6.1 Source Type</label>
         <fieldForLabel>stanza</fieldForLabel>
         <fieldForValue>stanza</fieldForValue>
         <search base="sh_07_field_extractions">
           <query>| stats count by stanza</query>
         </search>
         <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="stanza2" searchWhenChanged="true">
+        <label>6.2 Source Type (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
@@ -712,18 +731,14 @@
       <title>4. Associated GMC Job(s)</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Extractions (EXTRACT-) KV Store Gen Job From REST</a>
-               </li>
+              
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_extractions_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Field Extractions (EXTRACT-) Summary Index Gen Job From REST</a>
                </li>
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_summary_data_props_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Extractions (EXTRACT-) KV Store Gen Job From Summary Index</a>
                </li>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_transforms_extractions_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Transformations (TRANSFORM- OR REPORT-) KV Store Gen Job From REST</a>
-               </li>
+               
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_data_transforms_extractions_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Field Transformations (TRANSFORM- OR REPORT-) Summary Index Gen Job From REST</a>
                </li>
@@ -807,13 +822,18 @@
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="stanza" searchWhenChanged="true">
-        <label>6. Source Type</label>
+        <label>6.1 Source Type</label>
         <fieldForLabel>stanza</fieldForLabel>
         <fieldForValue>stanza</fieldForValue>
         <search base="sh_07_field_aliases">
           <query>| stats count by stanza</query>
         </search>
         <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="stanza2" searchWhenChanged="true">
+        <label>6.2 Source Type (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
@@ -1025,9 +1045,7 @@
       <title>4. Associated GMC Job(s)</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_fieldaliases_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Field Aliases (FIELDALIAS-) KV Store Gen Job From REST</a>
-               </li>
+              
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_data_props_fieldaliases_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Field Aliases (FIELDALIAS-) Summary Index Gen Job From REST</a>
                </li>
