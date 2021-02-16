@@ -1,5 +1,6 @@
-<form onunloadCancelJobs="true" stylesheet="load.css" script="load.js" theme="dark">
-  <label>IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form onunloadCancelJobs="true" stylesheet="load.css" script="load.js" theme="dark">
+  <label>IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v3.0.7</label>
   <description>Splunk Indexes deep analysis by Indexer Cluster with many filters and important index settings</description>
   <!--splunk_rest_data_indexes_idx_kv_store_lookup-->
   <search id="idx_02_indexes_1">
@@ -9,11 +10,11 @@
 | rename title AS Index_Name
 | join idxcluster_label Index_Name type=left 
     [ search index=`setup_summary_index` source=splunk_internal_index_license_usage_idx_summary_tracker earliest=-1d@d latest=-0d@d 
-    | fields _time idxcluster_label Index_Name License_Usage 
+    | fields _time idxcluster_label Index_Name Lic_Sourcetype License_Usage 
     | stats 
         Sum(License_Usage) AS License_Usage
-        BY _time idxcluster_label Index_Name 
-    | fields _time idxcluster_label Index_Name License_Usage ] 
+        BY _time idxcluster_label Index_Name Lic_Sourcetype
+    | fields _time idxcluster_label Index_Name Lic_Sourcetype License_Usage ] 
 | `get_instance_roles(Splunk_Instance)` 
 | rex field=homePath "volume:(?&lt;HotWarm_Volume&gt;\w+)" 
 | rex field=coldPath "volume:(?&lt;Cold_Volume&gt;\w+)" 
@@ -45,7 +46,7 @@
 | `secs_2_days(quarantineFutureSecs, Quarantine Future Days)` 
 | `secs_2_days(maxHotSpanSecs, maxHotSpanSecs)` 
 | `strftime_format(updated)` 
-| `gmc_license_to_lob(idxcluster_label,Index_Name)`
+| `gmc_license_to_lob(idxcluster_label,Index_Name,Lic_Sourcetype)`
 | fillnull value="0" License_Usage_MB,License_Usage_GB,License_Usage_TB,datamodel_summary_size_MB,datamodel_summary_size_GB,datamodel_summary_size_TB,home_warm_bucket_size_MB,home_warm_bucket_size_GB home_warm_bucket_size_TB,total_bucket_count_avg,cold_bucket_size_MB,cold_bucket_size_GB,cold_bucket_size_TB,Time_Diff_Days,Days_Diff_From_Retention,archiver_enableDataArchive,archiver_maxDataArchiveRetentionPeriod,assureUTF8,cold_bucket_count,cold_bucket_size,cold_capacity,cold_event_count,cold_event_max_time,cold_event_min_time,coldPath_maxDataSizeMB,compressRawdata,currentDBSizeMB,datamodel_summary_size,disabled,enableDataIntegrityControl,enableOnlineBucketRepair,enableRealtimeSearch,enableTsidxReduction,fileSystemExecutorWorkers,frozenTimePeriodInSecs,home_capacity,home_event_count,home_event_max_time,home_event_min_time,home_hot_bucket_count,home_warm_bucket_count,home_warm_bucket_size,homePath_maxDataSizeMB,hotBucketTimeRefreshInterval,isInternal,isReady,isVirtual,lastInitSequenceNumber,lastInitTime,maxBucketSizeCacheEntries,maxConcurrentOptimizes,maxGlobalDataSizeMB,maxGlobalRawDataSizeMB,maxHotIdleSecs,maxMemMB,maxMetaEntries,maxRunningProcessGroups,maxRunningProcessGroupsLowPriority,maxTime,maxTimeUnreplicatedNoAcks,maxTimeUnreplicatedWithAcks,minRawFileSyncSecs,minStreamGroupQueueSize,minTime,partialServiceMetaPeriod,processTrackerServiceInterval,rawChunkSizeBytes,repFactor,rtRouterQueueSize,serviceInactiveIndexesPeriod,serviceMetaPeriod,serviceSubtaskTimingPeriod,streamingTargetTsidxSyncPeriodMsec,suspendHotRollByDeleteQuery,sync,syncMeta,throttleCheckPeriod,timePeriodInSecBeforeTsidxReduction,total_bucket_count,total_capacity,total_event_count,total_raw_size,total_size,totalEventCount,tsidxReductionCheckPeriodInSec,updated,waitPeriodInSecsForManifestWrite,License_Usage
 | fillnull value="3" maxHotBuckets 
 | fillnull value="60" rotatePeriodInSecs 
@@ -59,7 +60,8 @@
 | fillnull value="event" datatype 
 | fillnull value="not-enabled" archiver_coldStorageProvider archiver_coldStorageRetentionPeriod
 | fillnull value="undefined"
-| search currentDBSize_$unit_tok7$ &gt;= $currentDBSize$ Splunk_Roles="*$Splunk_Roles$*" coldToFrozenDir="$coldToFrozenDir$" datatype="$datatype$" HotWarm_Volume="$HotWarm_Volume$" Cold_Volume="$Cold_Volume$" DM_Volume="$DM_Volume$" Retention_Days="$Retention_Days$" maxDataSize="$maxDataSize$" coldToFrozenDir="$coldToFrozenDir$" thawedPath="$thawedPath$"tstatsHomePath="$tstatsHomePath$" app="$app$" isInternal="$isInternal$" homePath="*$homePath$*" coldPath="*$coldPath$*" coldPath_maxDataSizeMB="$coldPath_maxDataSizeMB$" homePath_maxDataSizeMB="$homePath_maxDataSizeMB$" maxTotalDataSizeMB="$maxTotalDataSizeMB$" maxWarmDBCount="$maxWarmDBCount$" License_Usage_$unit_tok7$ &gt;= $License_Usage$ enableRealtimeSearch="$enableRealtimeSearch$" archiver_coldStorageProvider="$archiver_coldStorageProvider$"</query>
+| search currentDBSize_$unit_tok7$ &gt;= $currentDBSize$ Splunk_Roles="*$Splunk_Roles$*" datatype="$datatype$" HotWarm_Volume="$HotWarm_Volume$" Cold_Volume="$Cold_Volume$" Retention_Days="$Retention_Days$" maxDataSize="$maxDataSize$" app="$app$" isInternal="$isInternal$" coldPath_maxDataSizeMB="$coldPath_maxDataSizeMB$" homePath_maxDataSizeMB="$homePath_maxDataSizeMB$" maxTotalDataSizeMB="$maxTotalDataSizeMB$" maxWarmDBCount="$maxWarmDBCount$" License_Usage_$unit_tok7$ &gt;= $License_Usage$ enableRealtimeSearch="$enableRealtimeSearch$" archiver_coldStorageProvider="$archiver_coldStorageProvider$" enableTsidxReduction=$enableTsidxReduction$
+</query>
   </search>
   <!--splunk_internal_license_rollover_summary_idx_summary_tracker-->
   <search id="idx_02_indexes_2">
@@ -75,8 +77,6 @@
   <search id="idx_02_indexes_3">
     <query>index=`setup_summary_index` source=splunk_internal_index_license_usage_idx_summary_tracker idxcluster_label="$idxcluster_label$" Index_Name="$Index_Name$" Lic_Sourcetype="$Lic_Sourcetype$"
 | fields _time source idxcluster_label Lic_Pool Lic_Pool_Size Lic_Stack_Size type Index_Name Lic_Sourcetype Lic_Source Lic_Host License_Usage 
-| makemv delim=" " Lic_Source 
-| makemv delim=" " Lic_Host 
 | stats 
     Values(Lic_Source) AS Lic_Source
     Values(Lic_Host) AS Lic_Host
@@ -109,11 +109,14 @@
     <earliest>$TimeRangePkr5.earliest$</earliest>
     <latest>$TimeRangePkr5.latest$</latest>
   </search>
-  <fieldset submitButton="false" autoRun="false"></fieldset>
+  
+  <row><panel><html><h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v1 (Updated: Jan 31, 2021)</h1></html></panel></row>
+  
+  <fieldset submitButton="true" autoRun="false"></fieldset>
   <row>
     <panel id="panel_accordion_togglepanel_false_inputs_1" depends="$gadget_lib_loaded$">
       <title>1. Indexes - Basic Filters</title>
-      <input type="dropdown" token="idxcluster_label" searchWhenChanged="true">
+      <input type="dropdown" token="idxcluster_label" searchWhenChanged="false">
         <label>1. Indexer Cluster</label>
         <fieldForLabel>idxcluster_label</fieldForLabel>
         <fieldForValue>idxcluster_label</fieldForValue>
@@ -124,7 +127,7 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="false">
         <label>2. Splunk Roles</label>
         <fieldForLabel>Splunk_Roles</fieldForLabel>
         <fieldForValue>Splunk_Roles</fieldForValue>
@@ -135,7 +138,7 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="app" searchWhenChanged="true">
+      <input type="dropdown" token="app" searchWhenChanged="false">
         <label>3. App</label>
         <fieldForLabel>app</fieldForLabel>
         <fieldForValue>app</fieldForValue>
@@ -146,7 +149,7 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="Index_Name" searchWhenChanged="true">
+      <input type="dropdown" token="Index_Name" searchWhenChanged="false">
         <label>4. Index Name</label>
         <fieldForLabel>Index_Name</fieldForLabel>
         <fieldForValue>Index_Name</fieldForValue>
@@ -157,7 +160,7 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="datatype" searchWhenChanged="true">
+      <input type="dropdown" token="datatype" searchWhenChanged="false">
         <label>5. Datatype</label>
         <fieldForLabel>datatype</fieldForLabel>
         <fieldForValue>datatype</fieldForValue>
@@ -167,7 +170,7 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="isInternal" searchWhenChanged="true">
+      <input type="dropdown" token="isInternal" searchWhenChanged="false">
         <label>6. IS Internal?</label>
         <fieldForLabel>isInternal</fieldForLabel>
         <fieldForValue>isInternal</fieldForValue>
@@ -177,7 +180,7 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="Retention_Days" searchWhenChanged="true">
+      <input type="dropdown" token="Retention_Days" searchWhenChanged="false">
         <label>7. Retention In Days</label>
         <fieldForLabel>Retention_Days</fieldForLabel>
         <fieldForValue>Retention_Days</fieldForValue>
@@ -214,7 +217,7 @@
   <row>
     <panel id="panel_accordion_togglepanel_true_inputs_2" depends="$gadget_lib_loaded$">
       <title>2. Indexes - Advanced Filters</title>
-      <input type="dropdown" token="maxTotalDataSizeMB" searchWhenChanged="true">
+      <input type="dropdown" token="maxTotalDataSizeMB" searchWhenChanged="false">
         <label>1. Max Size of Index (maxTotalDataSizeMB)</label>
         <fieldForLabel>maxTotalDataSizeMB</fieldForLabel>
         <fieldForValue>maxTotalDataSizeMB</fieldForValue>
@@ -225,7 +228,7 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="homePath_maxDataSizeMB" searchWhenChanged="true">
+      <input type="dropdown" token="homePath_maxDataSizeMB" searchWhenChanged="false">
         <label>2. Max Size of Hot/Warm (homePath_maxDataSizeMB)</label>
         <fieldForLabel>homePath_maxDataSizeMB</fieldForLabel>
         <fieldForValue>homePath_maxDataSizeMB</fieldForValue>
@@ -236,7 +239,7 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="coldPath_maxDataSizeMB" searchWhenChanged="true">
+      <input type="dropdown" token="coldPath_maxDataSizeMB" searchWhenChanged="false">
         <label>3. Max Size of Cold (coldPath_maxDataSizeMB)</label>
         <fieldForLabel>coldPath_maxDataSizeMB</fieldForLabel>
         <fieldForValue>coldPath_maxDataSizeMB</fieldForValue>
@@ -247,7 +250,7 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="maxDataSize" searchWhenChanged="true">
+      <input type="dropdown" token="maxDataSize" searchWhenChanged="false">
         <label>4. Max Size of Hot/Warm/Cold Buckets (maxDataSize)</label>
         <fieldForLabel>maxDataSize</fieldForLabel>
         <fieldForValue>maxDataSize</fieldForValue>
@@ -258,7 +261,7 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="HotWarm_Volume" searchWhenChanged="true">
+      <input type="dropdown" token="HotWarm_Volume" searchWhenChanged="false">
         <label>5. Hot/Warm Volume</label>
         <fieldForLabel>HotWarm_Volume</fieldForLabel>
         <fieldForValue>HotWarm_Volume</fieldForValue>
@@ -269,19 +272,8 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="homePath" searchWhenChanged="true">
-        <label>6. Home Path (Hot/Warm Volume i.e. homePath)</label>
-        <fieldForLabel>homePath</fieldForLabel>
-        <fieldForValue>homePath</fieldForValue>
-        <search base="idx_02_indexes_1">
-          <query>| stats count by homePath</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="Cold_Volume" searchWhenChanged="true">
-        <label>7. Cold Volume</label>
+      <input type="dropdown" token="Cold_Volume" searchWhenChanged="false">
+        <label>6. Cold Volume</label>
         <fieldForLabel>Cold_Volume</fieldForLabel>
         <fieldForValue>Cold_Volume</fieldForValue>
         <search base="idx_02_indexes_1">
@@ -291,41 +283,8 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="coldPath" searchWhenChanged="true">
-        <label>8. Cold Path  (Cold Volume i.e. coldPath)</label>
-        <fieldForLabel>coldPath</fieldForLabel>
-        <fieldForValue>coldPath</fieldForValue>
-        <search base="idx_02_indexes_1">
-          <query>| stats count by coldPath</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="coldToFrozenDir" searchWhenChanged="true">
-        <label>9. Frozen Path (Archiving i.e. coldToFrozenDir)</label>
-        <fieldForLabel>coldToFrozenDir</fieldForLabel>
-        <fieldForValue>coldToFrozenDir</fieldForValue>
-        <search base="idx_02_indexes_1">
-          <query>| stats count by coldToFrozenDir</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="thawedPath" searchWhenChanged="true">
-        <label>10. Thawed Path (thawedPath)</label>
-        <fieldForLabel>thawedPath</fieldForLabel>
-        <fieldForValue>thawedPath</fieldForValue>
-        <search base="idx_02_indexes_1">
-          <query>| stats count by thawedPath</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="maxWarmDBCount" searchWhenChanged="true">
-        <label>11. Max # of Warm Buckets (maxWarmDBCount)</label>
+      <input type="dropdown" token="maxWarmDBCount" searchWhenChanged="false">
+        <label>7. Max # of Warm Buckets (maxWarmDBCount)</label>
         <fieldForLabel>maxWarmDBCount</fieldForLabel>
         <fieldForValue>maxWarmDBCount</fieldForValue>
         <search base="idx_02_indexes_1">
@@ -335,44 +294,30 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="DM_Volume" searchWhenChanged="true">
-        <label>12. Data Model Volume</label>
-        <fieldForLabel>DM_Volume</fieldForLabel>
-        <fieldForValue>DM_Volume</fieldForValue>
-        <search base="idx_02_indexes_1">
-          <query>| stats count by DM_Volume</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="tstatsHomePath" searchWhenChanged="true">
-        <label>13. Data Model Acceleration TSIDX (tstatsHomePath)</label>
-        <fieldForLabel>tstatsHomePath</fieldForLabel>
-        <fieldForValue>tstatsHomePath</fieldForValue>
-        <search base="idx_02_indexes_1">
-          <query>| stats count by tstatsHomePath</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="enableRealtimeSearch" searchWhenChanged="true">
-        <label>14. Real-Time Searches (enableRealtimeSearch)</label>
+      <input type="dropdown" token="enableRealtimeSearch" searchWhenChanged="false">
+        <label>8. Real-Time Searches (enableRealtimeSearch)</label>
         <choice value="*">All</choice>
         <choice value="1">Enabled</choice>
         <choice value="0">Disabled</choice>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="archiver_coldStorageProvider" searchWhenChanged="true">
-        <label>15. Dynamic Data Active Archive (DDAA) Provider (archiver_coldStorageProvider)</label>
+      <input type="dropdown" token="archiver_coldStorageProvider" searchWhenChanged="false">
+        <label>9. Dynamic Data Active Archive (DDAA) Provider (archiver_coldStorageProvider)</label>
         <fieldForLabel>archiver_coldStorageProvider</fieldForLabel>
         <fieldForValue>archiver_coldStorageProvider</fieldForValue>
         <search base="idx_02_indexes_1">
           <query>| stats count by archiver_coldStorageProvider</query>
         </search>
         <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="enableTsidxReduction" searchWhenChanged="false">
+        <label>10. TSIDX Reduction (enableTsidxReduction)</label>
+        <choice value="*">All</choice>
+        <choice value="1">Enabled</choice>
+        <choice value="0">Disabled</choice>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
@@ -401,7 +346,7 @@
         <search base="idx_02_indexes_1">
           <query>| noop 
 | sort 0 - currentDBSize 
-| table idxcluster_label app Index_Name HotWarm_Volume Cold_Volume Retention_Days currentDBSize_$unit_tok7$ License_Usage_$unit_tok7$ home_warm_bucket_size_$unit_tok7$ cold_bucket_size_$unit_tok7$ archiver_coldStorageProvider, archiver_coldStorageRetentionPeriod datamodel_summary_size_$unit_tok7$ total_bucket_count_avg totalEventCount homePath_maxDataSize_$unit_tok7$ coldPath_maxDataSize_$unit_tok7$ "Earliest Event" "Latest Event" Time_Diff_Days Days_Diff_From_Retention maxDataSize maxHotBuckets maxWarmDBCount "Quarantine Past Days" "Quarantine Future Days" maxHotSpanSecs Num_Splunk_Instances datatype disabled updated enableRealtimeSearch total_raw_size total_bucket_count home_hot_bucket_count home_warm_bucket_count cold_bucket_count cold_event_count home_event_count maxHotIdleSecs total_event_count 
+| table idxcluster_label app Index_Name HotWarm_Volume Cold_Volume Retention_Days currentDBSize_$unit_tok7$ License_Usage_$unit_tok7$ home_warm_bucket_size_$unit_tok7$ cold_bucket_size_$unit_tok7$ archiver_coldStorageProvider archiver_coldStorageRetentionPeriod datamodel_summary_size_$unit_tok7$ total_bucket_count_avg totalEventCount homePath_maxDataSize_$unit_tok7$ coldPath_maxDataSize_$unit_tok7$ enableTsidxReduction "Earliest Event" "Latest Event" Time_Diff_Days Days_Diff_From_Retention maxDataSize maxHotBuckets maxWarmDBCount "Quarantine Past Days" "Quarantine Future Days" maxHotSpanSecs Num_Splunk_Instances enableRealtimeSearch total_raw_size total_bucket_count home_hot_bucket_count home_warm_bucket_count cold_bucket_count cold_event_count home_event_count maxHotIdleSecs total_event_count 
 | `rename_indexes_fields` 
 | `rename_license_fields` 
 | rename archiver_coldStorageProvider As "DDAA Provider" archiver_coldStorageRetentionPeriod As "DDAA Retention (Days)"</query>
@@ -601,6 +546,39 @@
         <format type="number" field="Warm Bucket Size (GB)">
           <option name="unit">GB</option>
         </format>
+        <format type="number" field="Total Event Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Max Hot Bucket Life">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Home Event Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Cold Event Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Cold Bucket Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Home and Warm Bucket Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Total Hot Bucket Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Total Bucket Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Real-time Searches">
+          <colorPalette type="map">{"0":#53A051,"1":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="Max Size of Hot/Warm/Cold Buckets (MB)">
+          <colorPalette type="map">{"auto":#53A051,"auto_high_volume":#DC4E41}</colorPalette>
+        </format>
+        <format type="color" field="Max Hot Buckets">
+          <colorPalette type="map">{"10":#DC4E41,"auto":#53A051}</colorPalette>
+        </format>
       </table>
       <single>
         <title>Total Number of Indexes</title>
@@ -724,7 +702,7 @@
         <title>Unit of Measurement: $unit_tok7$ / Earliest: $earliest$ / Latest: $latest$</title>
         <search base="idx_02_indexes_1">
           <query>| search NOT Index_Name IN ("_*", "*_summary*") 
-| table idxcluster_label Index_Name Retention_Days currentDBSize_$unit_tok7$ License_Usage_$unit_tok7$ totalEventCount biz_unit,biz_desc,biz_owner,biz_app,biz_dep,biz_lob,biz_lob2,biz_lob3,biz_env,biz_notes,biz_lic_commit,is_shared_infra 
+| table idxcluster_label Index_Name Lic_Sourcetype Retention_Days currentDBSize_$unit_tok7$ License_Usage_$unit_tok7$ totalEventCount biz_unit,biz_desc,biz_owner,biz_app,biz_dep,biz_lob,biz_lob2,biz_lob3,biz_env,biz_notes,biz_lic_commit,is_shared_infra 
 | `rename_indexes_fields` 
 | `rename_license_fields` 
 | `rename_license_lob_fields`</query>
@@ -1814,9 +1792,7 @@
       <title>16. Link to Associated GMC Job(s)</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_cluster_config_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexer Cluster node configuration details KV Store Gen Job From REST</a>
-               </li>
+               
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_cluster_config_idx_summary_data_gen" target="_blank" rel="noopener">Splunk Indexer Cluster node configuration details Summary Index Gen Job From REST</a>
                </li>
@@ -1824,16 +1800,10 @@
                   <a href="/app/global_monitoring_console/search?s=splunk_summary_cluster_config_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexer Cluster node configuration details KV Store Gen Job From Summary Index</a>
                </li>
                <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexes KV Store Gen Job From REST</a>
-               </li>
-               <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_data_indexes_idx_summary_data_gen" target="_blank" rel="noopener">Splunk Indexes Summary Index Gen Job From REST</a>
                </li>
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_summary_data_indexes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexes KV Store Gen Job From Summary Index</a>
-               </li>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_data_index_volumes_idx_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Indexer Volumes (logical drives) in use by the Splunk deployment KV Store Gen Job From REST</a>
                </li>
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_data_index_volumes_idx_summary_data_gen" target="_blank" rel="noopener">Splunk Indexer Volumes (logical drives) in use by the Splunk deployment Summary Index Gen Job From REST</a>

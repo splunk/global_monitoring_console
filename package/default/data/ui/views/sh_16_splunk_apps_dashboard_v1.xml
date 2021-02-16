@@ -1,26 +1,34 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>SH - 16 - Splunk Apps - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>SH - 16 - Splunk Apps - Dashboard - v3.0.7</label>
   <description>Splunk Apps Information Dashboard</description>
   <search id="sh_16_splunk_apps">
     <query>| from lookup:splunk_rest_apps_local_sh_kv_store_lookup
-| fields _time,shcluster_label,Splunk_Instance,title,label,core,author,version,build,check_for_updates,visible,sharing,disabled,configured,show_in_nav,state_change_requires_restart,description,details,updated,acl_perms_read,acl_perms_write,setup_view,attribution_link,update_appurl,update_homepage
+| fields _time,cluster_label,Splunk_Instance,title,label,core,author,version,build,check_for_updates,visible,sharing,disabled,configured,show_in_nav,state_change_requires_restart,description,details,updated,acl_perms_read,acl_perms_write,setup_view,attribution_link,update_appurl,update_homepage,docs_section_override,managed_by_deployment_client 
 | `get_instance_roles(Splunk_Instance)`
 | `strftime_format(updated)`    
 | rex field=details "id\/(?&lt;Splunkbase_App_Name&gt;\w+)" 
 | `get_app_info(title)`
 | fillnull value="Undefined" Splunk_Roles Splunk_Instance app_type title label core author version build check_for_updates visible sharing disabled configured show_in_nav state_change_requires_restart description details
-| search shcluster_label="$shcluster_label$" Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$" title="$title$" sharing="$sharing$" app_type IN ($app_type$) NOT app_type IN ($app_type2$)  label="$label$" author="$author$" check_for_updates="$check_for_updates$" visible="$visible$" disabled="$disabled$" configured="$configured$" show_in_nav="$show_in_nav$" description="$description$" details="$details$" acl_perms_read="$acl_perms_read$" acl_perms_write="$acl_perms_write$"</query>
+| search cluster_label="$cluster_label$" Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$" title="$title$" sharing="$sharing$" app_type IN ($app_type$) NOT app_type IN ($app_type2$)  label="$label$" author="$author$" check_for_updates="$check_for_updates$" visible="$visible$" disabled="$disabled$" configured="$configured$" show_in_nav="$show_in_nav$" description="$description$" details="$details$" acl_perms_read="$acl_perms_read$" acl_perms_write="$acl_perms_write$"</query>
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 16 - Splunk Apps - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. Splunk Apps Filters</title>
-      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
-        <label>1. Splunk SH (Cluster/Instance)</label>
-        <fieldForLabel>shcluster_label</fieldForLabel>
-        <fieldForValue>shcluster_label</fieldForValue>
+      <input type="dropdown" token="cluster_label" searchWhenChanged="true">
+        <label>1. Splunk (Cluster/Instance)</label>
+        <fieldForLabel>cluster_label</fieldForLabel>
+        <fieldForValue>cluster_label</fieldForValue>
         <search base="sh_16_splunk_apps">
-          <query>| stats count by shcluster_label</query>
+          <query>| stats count by cluster_label</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -217,13 +225,14 @@
       <table>
         <title>2. Apps List</title>
         <search base="sh_16_splunk_apps">
-          <query>| table shcluster_label title label version app_type build disabled sharing acl_perms_read acl_perms_write author check_for_updates visible configured show_in_nav state_change_requires_restart details description setup_view attribution_link update_appurl update_homepage 
+          <query>| table cluster_label title label version app_type build disabled sharing acl_perms_read acl_perms_write author check_for_updates visible configured show_in_nav state_change_requires_restart details description setup_view attribution_link update_appurl update_homepage docs_section_override managed_by_deployment_client 
 | `rename_common_fields` 
 | `rename_rest_fields` 
-| rename label AS Name app_type AS Type version AS Version configured AS Configured show_in_nav AS "Show in Navigation Menu" build AS Build visible AS Visible check_for_updates AS "Update Checking" details AS Details state_change_requires_restart AS "State Change Requires Restart" acl_perms_read As "Role Read Permissions" acl_perms_write As "Role Write Permissions" attribution_link As "Docs"</query>
+| rename label AS Name title As "Folder_Name" app_type AS Type version AS Version configured AS Configured show_in_nav AS "Show in Navigation Menu" build AS Build visible AS Visible check_for_updates AS "Update Checking" details AS Details state_change_requires_restart AS "State Change Requires Restart" acl_perms_read As "Role Read Permissions" acl_perms_write As "Role Write Permissions" attribution_link As "Docs"</query>
         </search>
         <option name="count">10</option>
         <option name="drilldown">row</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="wrap">false</option>
         <format type="color" field="Splunk_Instance">
@@ -258,10 +267,6 @@
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
-        <format type="color" field="Name">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
         <format type="color" field="Configured">
           <colorPalette type="map">{"0":#F8BE34,"1":#53A051}</colorPalette>
         </format>
@@ -284,8 +289,12 @@
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
+        <format type="color" field="Folder_Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
         <drilldown>
-          <condition field="title">
+          <condition field="Folder_Name">
             <set token="selected_title">$click.value2$</set>
             <set token="show_single_value">true</set>
             <unset token="show_event_list"></unset>
@@ -319,10 +328,10 @@
       <table>
         <search base="sh_16_splunk_apps">
           <query>| where title="$selected_title$" 
-| stats latest(version) As version count by shcluster_label title 
+| stats latest(version) As version count by cluster_label title 
 | `get_sbase_app_info(title)` 
 | rename version as installed_version 
-| table shcluster_label title sbase_title uid appid installed_version latest_version type access appinspected archive_status categories created_by path updated_time support product_compatibility splunk_compatibility release_notes</query>
+| table cluster_label title sbase_title uid appid installed_version latest_version type access appinspected archive_status categories created_by path updated_time support product_compatibility splunk_compatibility release_notes</query>
         </search>
         <option name="count">10</option>
         <option name="drilldown">none</option>
@@ -335,6 +344,10 @@
           <scale type="sharedCategory"></scale>
         </format>
         <format type="color" field="title">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="latest_version">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
@@ -406,7 +419,7 @@
       <title>3. Apps Stats By $split_by_tok_1$</title>
       <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
         <label>1. Split By</label>
-        <choice value="shcluster_label">SH Cluster Label</choice>
+        <choice value="cluster_label">Cluster Label</choice>
         <choice value="Splunk_Instance">Splunk Instance</choice>
         <choice value="sharing">App Sharing</choice>
         <choice value="author">Author (User)</choice>
@@ -428,8 +441,8 @@
         <choice value="attribution_link">attribution_link</choice>
         <choice value="update_appurl">update_appurl</choice>
         <choice value="update_homepage">update_homepage</choice>
-        <default>shcluster_label</default>
-        <initialValue>shcluster_label</initialValue>
+        <default>cluster_label</default>
+        <initialValue>cluster_label</initialValue>
       </input>
       <chart>
         <search base="sh_16_splunk_apps">
@@ -450,9 +463,7 @@
       <title>4. Associated GMC Job(s) - $env:page$</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_apps_local_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Apps KV Store Gen Job From REST</a>
-               </li>
+              
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_apps_local_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Apps Summary Index Gen Job From REST</a>
                </li>

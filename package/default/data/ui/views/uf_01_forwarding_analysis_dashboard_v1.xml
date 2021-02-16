@@ -1,5 +1,6 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>UF - 01 - Forwarding Analysis - Index Based - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>UF - 01 - Forwarding Analysis - Index Based - Dashboard - v3.0.7</label>
   <description>Splunk Forwarding Analysis Information Index Based Dashboard</description>
   <search id="uf_01_forwarding_1">
     <query>(index=_internal sourcetype=splunkd (search_group=dmc_group_indexer OR host=idx-i-*) fwdType=* group=tcpin_connections guid=* connectionType IN (cooked, cookedSSL) )
@@ -22,6 +23,9 @@
 | eval last_connected=strftime(last_connected, "%m/%d/%Y %H:%M:%S")
     </query>
   </search>
+  
+  <row><panel><html><h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">UF - 01 - Forwarding Analysis - Index Based - Dashboard - v1 (Updated: Jan 31, 2021)</h1></html></panel></row>
+  
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
@@ -279,6 +283,8 @@
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
     <panel id="panel_accordion_togglepanel_false_4" depends="$gadget_lib_loaded$">
@@ -291,6 +297,8 @@
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
     <panel id="panel_accordion_togglepanel_false_5" depends="$gadget_lib_loaded$">
@@ -301,6 +309,8 @@
         </search>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
     <panel id="panel_accordion_togglepanel_false_6" depends="$gadget_lib_loaded$">
@@ -313,6 +323,8 @@
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
     <panel id="panel_accordion_togglepanel_false_7" depends="$gadget_lib_loaded$">
@@ -330,6 +342,8 @@
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
   </row>
@@ -350,6 +364,8 @@
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.placement">bottom</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
   </row>
@@ -369,6 +385,8 @@
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
   </row>
@@ -387,6 +405,8 @@
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
   </row>
@@ -406,6 +426,8 @@
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
   </row>
@@ -424,6 +446,8 @@
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
   </row>
@@ -443,6 +467,8 @@
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
   </row>
@@ -462,6 +488,8 @@
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
   </row>
@@ -482,6 +510,8 @@
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
         <option name="refresh.display">progressbar</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
   </row>
@@ -491,10 +521,9 @@
       <chart>
         <title>| tstats count where index="*" by splunk_server, _time span=10m  | timechart span=10m sum(count) by splunk_server</title>
         <search>
-          <query>| tstats count 
+          <query>| tstats count As Num_Events
     Where index=* 
-    By span=1m _time splunk_server 
-| eval Num_Events=round(count/1000,0)
+    By span=1s _time splunk_server 
 | timechart span=1m limit=9999
     Sum(Num_Events) as Num_Events by splunk_server</query>
           <earliest>-15m@m</earliest>
@@ -504,11 +533,13 @@
         <option name="charting.axisTitleY.text">Thousads</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.backgroundColor">FFFF31</option>
         <option name="charting.chart">column</option>
-        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.showDataLabels">all</option>
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="height">719</option>
         <option name="refresh.display">progressbar</option>
       </chart>
@@ -525,13 +556,24 @@
         </search>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.backgroundColor">FFFF31</option>
         <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">all</option>
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
         <option name="charting.legend.placement">bottom</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">452</option>
         <option name="refresh.display">progressbar</option>
       </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
     </panel>
   </row>
 </form>

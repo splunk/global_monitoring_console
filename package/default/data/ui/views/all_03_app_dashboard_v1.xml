@@ -1,4 +1,5 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
   <label>03 - App and Health Info</label>
   <description>Global Monitoring Console App for Splunk (GMC)</description>
   <!--  
@@ -13,6 +14,13 @@
   </row> 
   -->
   <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">GMC - 03 - App and Health Info - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel>
       <html>
@@ -58,7 +66,7 @@
 | `get_shcluster_label(host)` 
 | `get_saved_searches_info(shcluster_label,app,savedsearch_name)` 
 | `cron_descriptor(cron_schedule)` 
-| table shcluster_label savedsearch_name description info scheduled_time dispatch_time max_run_time cron_schedule cron_schedule_described user dispatch_earliest_time dispatch_latest_time allow_skew description 
+| table shcluster_label savedsearch_name description info scheduled_time dispatch_time realtime_schedule max_run_time cron_schedule cron_schedule_described user dispatch_earliest_time dispatch_latest_time allow_skew dispatch_ttl description 
 | rename info As "Job Run Status" , shcluster_label As "Search Head" , max_run_time As "Run Time" 
 | `rename_saved_searches_fields`</query>
           <earliest>-24h@h</earliest>
@@ -302,7 +310,6 @@
 | stats values(scheduled_times) as scheduled_times values(next_scheduled_time) as next_scheduled_time last(*) as * by shcluster_label app savedsearch_name 
 | `strftime_format(updated)` 
 | eval scheduled_times=mvindex(scheduled_times,0,3) ,scheduled_times=mvindex(scheduled_times,1,3) , TimeZone=strftime(strptime(next_scheduled_time,"%m/%d/%Y %H:%M:%S"), "%Y%m%d%H%M%S") + " -500" , EST_Time=strftime(strptime(TimeZone,"%Y%m%d%H%M%S %Z"),"%Y/%m/%d %H:%M:%S %Z") 
-| `get_saved_searches_usage(shcluster_label,app,savedsearch_name)` 
 | eval "Job Class" = case ( match(savedsearch_name, "_tracker$"), "Tracking Jobs", match(savedsearch_name, "_lookup_gen"), "Lookup Gen Jobs", true(), "Other") 
 | `cron_descriptor(cron_schedule)` 
 | table shcluster_label savedsearch_name description updated cron_schedule cron_schedule_described Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew 
@@ -379,10 +386,7 @@
         <search>
           <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="TA_global_monitoring_console"  
 | `strftime_format(updated)` 
-| eval Index="GMC"
-| lookup splunk_gmc_kb_csv_lookup Index Field_Name As Lookup OUTPUTNEW Field_Description
-| rename Field_Description As Description
-| table shcluster_label Lookup Type Description Filename Collection updated
+| table shcluster_label title type filename collection updated
 | `rename_lookup_fields`</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>

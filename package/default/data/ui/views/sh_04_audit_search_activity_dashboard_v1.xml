@@ -1,12 +1,13 @@
-<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
   <!--  comments -->
-  <label>SH - 04 - Audit Search Activity - Deep Analysis - Dashboard - v2</label>
+  <label>SH - 04 - Audit Search Activity - Deep Analysis - Dashboard - v3.0.7</label>
   <description>Audit all Splunk Search Activities using one normalized Data Model for Audit, Introspection &amp; Internal</description>
   <search id="sh_04_audit_search">
-    <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+    <query>| tstats SummariesOnly=True Allow_Old_Summaries=False
     `tstats_gmc_audit`
-    FROM DATAMODEL=GMC
-    WHERE nodename=Search_Activity.Audit_Search
+    From DataModel=GMC
+    Where nodename=Search_Activity.Audit_Search
     index=_audit
     AND Search_Activity.Audit_Search.search_type1 = "$search_type1$"
     AND Search_Activity.Audit_Search.info1 = "$info1$"
@@ -15,10 +16,10 @@
     AND host = "$host$"
     $Exclutions1$
     $Exclude_Status_Granted$
-    BY _time Search_Activity.Audit_Search.search_id1 Search_Activity.Audit_Search.info1 $span_period$
+    By _time Search_Activity.Audit_Search.search_id1 Search_Activity.Audit_Search.info1 $span_period$
 | `gmc_drop_dm_object_name(Search_Activity.Audit_Search)`
 | rename info1 AS info, search_id1 As search_id
-| fields _time host available_count considered_events datamodel decompressed_slices event_count dispatch_time exec_time info result_count roles savedsearch_name scan_count search search_et search_id search_lt search_startup_time search_type searched_buckets total_run_time total_slices user
+| fields _time host available_count considered_events datamodel decompressed_slices event_count dispatch_time exec_time info result_count roles savedsearch_name scan_count search search_et search_id search_lt search_startup_time search_type searched_buckets total_run_time total_slices user emp_*
 | `gmc_convert_runtime('total_run_time')`
 | `get_normalized_search_id(search_id)`
 | `get_lookup_reference(search)`
@@ -28,7 +29,7 @@
 | `get_rest_reference(search)`
 | `get_instance_info(host)` 
 | `get_shcluster_label(host)` 
-| `get_identity_info(shcluster_label,user)` | `get_identity_info(user)` | `fillnull_identity_info`
+| `fillnull_identity_info`
 | `get_saved_searches_info(shcluster_label,savedsearch_name)`
 | `cron_descriptor(cron_schedule)`
 | `get_itsi_search_name_info(shcluster_label,savedsearch_name)` 
@@ -37,16 +38,16 @@
 | eval Time_Diff_Sec = round((search_lt - search_et),0), Time_Diff_Days = round((search_lt - search_et)/60/60/24,2)
 | fillnull value="no-search_id" search_id_normalized 
 | fillnull value=0 available_count considered_events decompressed_slices event_count result_count scan_count searched_buckets total_run_time total_slices Time_Diff_Sec Time_Diff_Days
-| fillnull value="Undefined" shcluster_label datamodel savedsearch_type search cron_schedule_described service_title kpi_title auth_type
-| search shcluster_label="$shcluster_label$" search_id_normalized="*$search_id_normalized$*" datamodel="$datamodel1$" search="*$search$*" total_run_time&gt;$total_run_time$ searched_buckets&gt;$searched_buckets$ Splunk_Roles="$Splunk_Roles$" Lookup_Reference="*$Lookup_Reference$*" savedsearch_type="$savedsearch_type$" Macro_Reference="*$Macro_Reference$*" Datamodel_Reference="*$Datamodel_Reference$*" Index_Reference="*$Index_Reference$*" Sourcetype_Reference="*$Sourcetype_Reference$*" Source_Reference="*$Source_Reference$*" Eventtype_Reference="*$Eventtype_Reference$*" Rest_Reference="*$Rest_Reference$*" cron_schedule_described="$cron_schedule_described$" service_title="$service_title$" kpi_title="$kpi_title$" emp_name="$emp_name$" emp_title="$emp_title$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_cc="$emp_cc$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" auth_type="$auth_type$" result_count&lt;$result_count$ search_lt="$search_lt$" search_et="$search_et$" Time_Diff_Days&gt;$Time_Diff_Days$</query>
+| fillnull value="Undefined" shcluster_label datamodel savedsearch_type search cron_schedule_described service_title kpi_title
+| search shcluster_label="$shcluster_label$" search_id_normalized="*$search_id_normalized$*" datamodel="$datamodel1$" search="*$search$*" total_run_time&gt;$total_run_time$ searched_buckets&gt;$searched_buckets$ Splunk_Roles="$Splunk_Roles$" Lookup_Reference="*$Lookup_Reference$*" savedsearch_type="$savedsearch_type$" Macro_Reference="*$Macro_Reference$*" Datamodel_Reference="*$Datamodel_Reference$*" Index_Reference="*$Index_Reference$*" Sourcetype_Reference="*$Sourcetype_Reference$*" Source_Reference="*$Source_Reference$*" Eventtype_Reference="*$Eventtype_Reference$*" Rest_Reference="*$Rest_Reference$*" cron_schedule_described="$cron_schedule_described$" service_title="$service_title$" kpi_title="$kpi_title$" emp_name="$emp_name$" emp_title="$emp_title$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_lob2="$emp_lob2$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" result_count&lt;$result_count$ search_lt="$search_lt$" search_et="$search_et$" Time_Diff_Days&gt;$Time_Diff_Days$</query>
     <earliest>$AuditTimeRangePkr.earliest$</earliest>
     <latest>$AuditTimeRangePkr.latest$</latest>
   </search>
   <search id="sh_04_internal_search">
-    <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE 
+    <query>| tstats SummariesOnly=True Allow_Old_Summaries=False 
     `tstats_gmc_internal`
-    FROM DATAMODEL=GMC
-    WHERE nodename=Search_Activity.Internal_Scheduler
+    From DataModel=GMC
+    Where nodename=Search_Activity.Internal_Scheduler
     index=_internal
     AND Search_Activity.Internal_Scheduler.savedsearch_name2 = "$savedsearch_name$"
     AND Search_Activity.Internal_Scheduler.app2 = "$app$"
@@ -55,17 +56,17 @@
     AND Search_Activity.Internal_Scheduler.user2 = "$user$"
     AND host = "$host$"
     AND $Exclutions2$
-    BY _time host Search_Activity.Internal_Scheduler.search_id2 $span_period$
+    By _time host Search_Activity.Internal_Scheduler.search_id2 $span_period$
 | `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)`
 | rename search_id2 As search_id
 | `get_shcluster_label(host)` 
 | stats latest(*) As * values(host) as host by _time shcluster_label search_id
-| fields _time shcluster_label host app concurrency_category concurrency_context concurrency_limit dispatch_time priority reason result_count total_run_time savedsearch_id savedsearch_name scheduled_time search_id search_type skipped_count info user window_time alert_actions event_message
+| fields _time shcluster_label host app concurrency_category concurrency_context concurrency_limit dispatch_time priority reason result_count total_run_time savedsearch_id savedsearch_name scheduled_time search_id search_type skipped_count info user window_time alert_actions event_message emp_*
 | `gmc_convert_runtime('total_run_time')`
 | `get_normalized_search_id(search_id)`
 | `get_datamodel_fields(savedsearch_name)`
 | `get_instance_info(host)` 
-| `get_identity_info(shcluster_label,user)` | `get_identity_info(user)` | `fillnull_identity_info`
+| `fillnull_identity_info`
 | `get_saved_searches_info(shcluster_label,app,savedsearch_name)`
 | `get_memory_tracker_fields`
 | `cron_descriptor(cron_schedule)`
@@ -76,17 +77,17 @@
 | fillnull value="no-search_id" search_id_normalized 
 | fillnull value=0 total_run_time allow_skew schedule_window
 | fillnull value="no-skipps" concurrency_category concurrency_context concurrency_limit reason
-| fillnull value="Undefined" shcluster_label savedsearch_type priority cron_schedule_described window_time datamodel service_title kpi_title auth_type job_class app_type actions
-| search shcluster_label="$shcluster_label$" search_id_normalized = "*$search_id_normalized$*" priority="$priority$" window_time="$window_time$" concurrency_category="$concurrency_category$" concurrency_context="$concurrency_context$" concurrency_limit="$concurrency_limit$" reason="$reason$" total_run_time &gt; $total_run_time$ Splunk_Roles="$Splunk_Roles$" savedsearch_type="$savedsearch_type$" allow_skew="$allow_skew$" cron_schedule_described="$cron_schedule_described$" datamodel="$datamodel$" service_title="$service_title$" kpi_title="$kpi_title$" emp_name="$emp_name$" emp_title="$emp_title$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_cc="$emp_cc$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" auth_type="$auth_type$" job_class="$job_class$" app_type="*$app_type$*" realtime_schedule="$realtime_schedule$" actions IN ($actions$)</query>
+| fillnull value="Undefined" shcluster_label savedsearch_type priority cron_schedule_described window_time datamodel service_title kpi_title job_class app_type actions
+| search shcluster_label="$shcluster_label$" search_id_normalized = "*$search_id_normalized$*" priority="$priority$" window_time="$window_time$" concurrency_category="$concurrency_category$" concurrency_context="$concurrency_context$" concurrency_limit="$concurrency_limit$" reason="$reason$" total_run_time &gt; $total_run_time$ Splunk_Roles="$Splunk_Roles$" savedsearch_type="$savedsearch_type$" allow_skew="$allow_skew$" cron_schedule_described="$cron_schedule_described$" datamodel="$datamodel$" service_title="$service_title$" kpi_title="$kpi_title$" emp_name="$emp_name$" emp_title="$emp_title$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_lob2="$emp_lob2$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" job_class="$job_class$" app_type="*$app_type$*" realtime_schedule="$realtime_schedule$" actions IN ($actions$)</query>
     <earliest>$InternalTimeRangePkr.earliest$</earliest>
     <latest>$InternalTimeRangePkr.latest$</latest>
   </search>
   <search id="sh_04_introspection_search">
-    <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+    <query>| tstats SummariesOnly=True Allow_Old_Summaries=False
   `tstats_gmc_introspection`
   Latest(_time) As _time
-  FROM DATAMODEL=GMC
-  WHERE nodename=Search_Activity.Introspection_Search_Usage 
+  From DataModel=GMC
+  Where nodename=Search_Activity.Introspection_Search_Usage 
   AND index=_introspection AND Search_Activity.Introspection_Search_Usage.app3 = "$app$" 
   AND Search_Activity.Introspection_Search_Usage.search_type3 = "$search_type3$"
   AND Search_Activity.Introspection_Search_Usage.user3 = "$user$"
@@ -100,10 +101,10 @@
   NOT Search_Activity.Introspection_Search_Usage.mode = "$mode_excl$"
   AND host="$host$"
   $Exclutions3$
-  BY Search_Activity.Introspection_Search_Usage.search_id3 Search_Activity.Introspection_Search_Usage.pid
+  By Search_Activity.Introspection_Search_Usage.search_id3 Search_Activity.Introspection_Search_Usage.pid
 | `gmc_drop_dm_object_name(Search_Activity.Introspection_Search_Usage)`
 | rename search_id3 As search_id
-| fields _time host search_id search_head app user acceleration_id delta_scan_count total_run_time fd_used mem_used normalized_pct_cpu pct_cpu page_faults pid ppid provenance read_mb savedsearch_name scan_count search_type t_count written_mb mode
+| fields _time host search_id search_head app user acceleration_id delta_scan_count total_run_time fd_used mem_used normalized_pct_cpu pct_cpu page_faults pid ppid provenance read_mb savedsearch_name scan_count search_type t_count written_mb mode emp_*
 | `gmc_convert_runtime('total_run_time')`
 | `get_normalized_search_id(search_id)`
 | `get_provenance_fields(provenance)`
@@ -113,8 +114,7 @@
 | `get_saved_searches_info(shcluster_label,app,savedsearch_name)`
 | `get_dashboards_info(shcluster_label,app,Provenance_KO)` 
 | `get_dashboards_info(shcluster_label,Provenance_KO)`
-| `get_dashboards_usage(shcluster_label,app,Provenance_KO)`
-| `get_identity_info(shcluster_label,user)` | `get_identity_info(user)` | `fillnull_identity_info`
+| `fillnull_identity_info`
 | `cron_descriptor(cron_schedule)`
 | `get_itsi_search_name_info(shcluster_label,savedsearch_name)` 
 | `get_itsi_service_info(shcluster_label,service_id,kpi_id)`
@@ -128,12 +128,19 @@
 | fillnull value="no-search_id" search_id_normalized 
 | fillnull value=999999 Days_Latest_Dashboard_Access 
 | fillnull value=0 total_run_time mem_used normalized_pct_cpu pct_cpu
-| fillnull value="Undefined" shcluster_label Splunk_Roles search_id_normalized datamodel Provenance_Type Provenance_KO_Type Provenance_KO savedsearch_type Lookup_Reference Datamodel_Reference service_title kpi_title job_class auth_type 
-| search shcluster_label="$shcluster_label$" search_id_normalized="*$search_id_normalized$*" datamodel="$datamodel$" Provenance_Type="$Provenance_Type$" Provenance_KO_Type="$Provenance_KO_Type$" Provenance_KO="$Provenance_KO$" Splunk_Roles="$Splunk_Roles$" savedsearch_type="$savedsearch_type$" Lookup_Reference="*$Lookup_Reference$*" Datamodel_Reference="*$Datamodel_Reference$*" service_title="$service_title$" kpi_title="$kpi_title$" emp_name="$emp_name$" emp_title="$emp_title$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_cc="$emp_cc$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" app_type="*$app_type$*" job_class="$job_class$" auth_type="$auth_type$" Search_State="$Search_State$"</query>
+| fillnull value="Undefined" shcluster_label Splunk_Roles search_id_normalized datamodel Provenance_Type Provenance_KO_Type Provenance_KO savedsearch_type Lookup_Reference Datamodel_Reference service_title kpi_title job_class 
+| search shcluster_label="$shcluster_label$" search_id_normalized="*$search_id_normalized$*" datamodel="$datamodel$" Provenance_Type="$Provenance_Type$" Provenance_KO_Type="$Provenance_KO_Type$" Provenance_KO="$Provenance_KO$" Splunk_Roles="$Splunk_Roles$" savedsearch_type="$savedsearch_type$" Lookup_Reference="*$Lookup_Reference$*" Datamodel_Reference="*$Datamodel_Reference$*" service_title="$service_title$" kpi_title="$kpi_title$" emp_name="$emp_name$" emp_title="$emp_title$" emp_type="$emp_type$" emp_status="$emp_status$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_lob2="$emp_lob2$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" app_type="*$app_type$*" job_class="$job_class$" Search_State="$Search_State$"</query>
     <earliest>$IntrospectionTimeRangePkr.earliest$</earliest>
     <latest>$IntrospectionTimeRangePkr.latest$</latest>
   </search>
   <fieldset submitButton="true" autoRun="false"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 04 - Audit Search Activity - Deep Analysis - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row id="tabs">
     <panel>
       <html>
@@ -436,11 +443,22 @@
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="emp_lob1" searchWhenChanged="false">
-        <label>7. Employee LOB</label>
+        <label>7.1 Employee LOB 1</label>
         <fieldForLabel>emp_lob1</fieldForLabel>
         <fieldForValue>emp_lob1</fieldForValue>
         <search base="sh_04_introspection_search">
           <query>| stats count by emp_lob1</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob2" searchWhenChanged="false">
+        <label>7.2 Employee LOB 2</label>
+        <fieldForLabel>emp_lob2</fieldForLabel>
+        <fieldForValue>emp_lob2</fieldForValue>
+        <search base="sh_04_introspection_search">
+          <query>| stats count by emp_lob2</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -452,17 +470,6 @@
         <fieldForValue>emp_dep</fieldForValue>
         <search base="sh_04_introspection_search">
           <query>| stats count by emp_dep</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="emp_cc" searchWhenChanged="false">
-        <label>9. Employee Cost Center</label>
-        <fieldForLabel>emp_cc</fieldForLabel>
-        <fieldForValue>emp_cc</fieldForValue>
-        <search base="sh_04_introspection_search">
-          <query>| stats count by emp_cc</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -496,17 +503,6 @@
         <fieldForValue>emp_country</fieldForValue>
         <search base="sh_04_introspection_search">
           <query>| stats count by emp_country</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="auth_type" searchWhenChanged="false">
-        <label>13. Splunk Authentication Type</label>
-        <fieldForLabel>auth_type</fieldForLabel>
-        <fieldForValue>auth_type</fieldForValue>
-        <search base="sh_04_introspection_search">
-          <query>| stats count by auth_type</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -924,7 +920,7 @@
           <scale type="sharedCategory"></scale>
         </format>
         <drilldown>
-          <link target="_blank">/app/global_monitoring_console/sh_02_reports_alerts_deep_analysis_dashboard_v1?form.title=$row.Dashboard$</link>
+          <link target="_blank">/app/global_monitoring_console/sh_01_dashboards_deep_analysis_dashboard_v1?form.title=$row.Dashboard$</link>
         </drilldown>
       </table>
     </panel>
@@ -1016,7 +1012,7 @@
   <row id="Introspection_Panel5">
     <panel id="panel_accordion_togglepanel_false_introspection_19" depends="$gadget_lib_loaded$">
       <title>11. Top $split_by_tok_3$</title>
-      <input type="dropdown" token="shcluster_label" searchWhenChanged="false">
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
         <label>1. Splunk SH (Cluster/Instance)</label>
         <choice value="*">All</choice>
         <fieldForLabel>shcluster_label</fieldForLabel>
@@ -1027,7 +1023,7 @@
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="split_by_tok_3" searchWhenChanged="false">
+      <input type="dropdown" token="split_by_tok_3" searchWhenChanged="true">
         <label>2. Count By</label>
         <choice value="app">App</choice>
         <choice value="user">User</choice>
@@ -1036,9 +1032,9 @@
         <choice value="provenance">Provenance</choice>
         <choice value="shcluster_label">SH Cluster Label</choice>
         <choice value="savedsearch_type">Saved Search Type</choice>
-        <choice value="emp_lob1">Employee LOB</choice>
+        <choice value="emp_lob1">Employee LOB 1</choice>
+        <choice value="emp_lob2">Employee LOB 2</choice>
         <choice value="emp_dep">Employee Department</choice>
-        <choice value="emp_cc">Employee Cost Center</choice>
         <fieldForLabel>split_by_tok_3</fieldForLabel>
         <fieldForValue>split_by_tok_3</fieldForValue>
         <default>app</default>
@@ -1161,12 +1157,11 @@
         <choice value="provenance">Provenance</choice>
         <choice value="savedsearch_type">Saved Search Type</choice>
         <choice value="app_type">Splunk Premium Apps</choice>
-        <choice value="emp_lob1">Employee LOB</choice>
+        <choice value="emp_lob1">Employee LOB 1</choice>
+        <choice value="emp_lob2">Employee LOB 2</choice>
         <choice value="emp_dep">Employee  Department</choice>
-        <choice value="emp_cc">Employee Cost Center</choice>
         <choice value="emp_title">Employee Title</choice>
         <choice value="bunit">Employee Business Unit</choice>
-        <choice value="auth_type">User Authentication Type</choice>
         <choice value="datamodel">Data Model</choice>
         <choice value="search_id_normalized">Normalized Search ID</choice>
         <choice value="Search_State">Search State</choice>
@@ -1475,11 +1470,22 @@
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="emp_lob1" searchWhenChanged="false">
-        <label>7. Employee LOB</label>
+        <label>7.1 Employee LOB 1</label>
         <fieldForLabel>emp_lob1</fieldForLabel>
         <fieldForValue>emp_lob1</fieldForValue>
         <search base="sh_04_audit_search">
           <query>| stats count by emp_lob1</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob2" searchWhenChanged="false">
+        <label>7.2 Employee LOB 2</label>
+        <fieldForLabel>emp_lob2</fieldForLabel>
+        <fieldForValue>emp_lob2</fieldForValue>
+        <search base="sh_04_audit_search">
+          <query>| stats count by emp_lob2</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -1491,17 +1497,6 @@
         <fieldForValue>emp_dep</fieldForValue>
         <search base="sh_04_audit_search">
           <query>| stats count by emp_dep</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="emp_cc" searchWhenChanged="false">
-        <label>9. Employee Cost Center</label>
-        <fieldForLabel>emp_cc</fieldForLabel>
-        <fieldForValue>emp_cc</fieldForValue>
-        <search base="sh_04_audit_search">
-          <query>| stats count by emp_cc</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -1535,17 +1530,6 @@
         <fieldForValue>emp_country</fieldForValue>
         <search base="sh_04_audit_search">
           <query>| stats count by emp_country</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="auth_type" searchWhenChanged="false">
-        <label>13. Splunk Authentication Type</label>
-        <fieldForLabel>auth_type</fieldForLabel>
-        <fieldForValue>auth_type</fieldForValue>
-        <search base="sh_04_audit_search">
-          <query>| stats count by auth_type</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -2015,16 +1999,16 @@
       <title>16. Search Duration</title>
       <table>
         <search>
-          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE
+          <query>| tstats SummariesOnly=True Allow_Old_Summaries=False
     latest(Search_Activity.Audit_Search.search_et) AS search_et 
     latest(Search_Activity.Audit_Search.search_lt) AS search_lt 
     latest(Search_Activity.Audit_Search.search) AS search 
-    FROM DATAMODEL=GMC
-    WHERE nodename=Search_Activity.Audit_Search
+    From DataModel=GMC
+    Where nodename=Search_Activity.Audit_Search
     index=_audit
     AND Search_Activity.Audit_Search.info1 IN ("completed")
     AND Search_Activity.Audit_Search.search_type1 IN ("adhoc", "scheduled")
-    BY Search_Activity.Audit_Search.search_id1 Search_Activity.Audit_Search.user1 
+    By Search_Activity.Audit_Search.search_id1 Search_Activity.Audit_Search.user1 
 | `gmc_drop_dm_object_name(Search_Activity.Audit_Search)` 
 | rename user1 As user , search_id1 As search_id
 | eval u = case (
@@ -2042,7 +2026,7 @@
     first(et_diff) AS et_diff
     first(u) as u
     values(search) AS search 
-    BY search_id 
+    By search_id 
 | eval et_range = case (
     et_diff&lt;=0, "WTF", 
     et_diff&lt;2, "0_1m", 
@@ -2167,12 +2151,11 @@
         <choice value="search_type">Search Type</choice>
         <choice value="savedsearch_type">Saved Search Type</choice>
         <choice value="app_type">Splunk Premium Apps</choice>
-        <choice value="emp_lob1">Employee LOB</choice>
+        <choice value="emp_lob1">Employee LOB 1</choice>
+        <choice value="emp_lob2">Employee LOB 2</choice>
         <choice value="emp_dep">Employee Department</choice>
-        <choice value="emp_cc">Employee Cost Center</choice>
         <choice value="emp_title">Employee Title</choice>
         <choice value="bunit">Employee Business Unit</choice>
-        <choice value="auth_type">User Authentication Type</choice>
         <choice value="datamodel">Data Model</choice>
         <choice value="search_id_normalized">Normalized Search ID</choice>
         <choice value="info">info</choice>
@@ -2621,11 +2604,22 @@
         <initialValue>*</initialValue>
       </input>
       <input type="dropdown" token="emp_lob1" searchWhenChanged="false">
-        <label>7. Employee LOB</label>
+        <label>7.1 Employee LOB 1</label>
         <fieldForLabel>emp_lob1</fieldForLabel>
         <fieldForValue>emp_lob1</fieldForValue>
         <search base="sh_04_introspection_search">
           <query>| stats count by emp_lob1</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="emp_lob2" searchWhenChanged="false">
+        <label>7.2 Employee LOB 2</label>
+        <fieldForLabel>emp_lob2</fieldForLabel>
+        <fieldForValue>emp_lob2</fieldForValue>
+        <search base="sh_04_introspection_search">
+          <query>| stats count by emp_lob2</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -2637,17 +2631,6 @@
         <fieldForValue>emp_dep</fieldForValue>
         <search base="sh_04_introspection_search">
           <query>| stats count by emp_dep</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="emp_cc" searchWhenChanged="false">
-        <label>9. Employee Cost Center</label>
-        <fieldForLabel>emp_cc</fieldForLabel>
-        <fieldForValue>emp_cc</fieldForValue>
-        <search base="sh_04_introspection_search">
-          <query>| stats count by emp_cc</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -2681,17 +2664,6 @@
         <fieldForValue>emp_country</fieldForValue>
         <search base="sh_04_introspection_search">
           <query>| stats count by emp_country</query>
-        </search>
-        <choice value="*">All</choice>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
-      <input type="dropdown" token="auth_type" searchWhenChanged="false">
-        <label>13. Splunk Authentication Type</label>
-        <fieldForLabel>auth_type</fieldForLabel>
-        <fieldForValue>auth_type</fieldForValue>
-        <search base="sh_04_introspection_search">
-          <query>| stats count by auth_type</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -3326,17 +3298,17 @@
       <table>
         <title>Search Type=$search_type2$ / App=$app$ / User= $user$ / Splunk Instance=$host$ /  Splunk Roles="$Splunk_Roles$" / Savedsearch="$savedsearch_name$"  /      Note: In a Splunk Search Head Cluster environment we need to just look at the captain, set the Splunk Roles filter above to shc_captain which represents the current captain.</title>
         <search>
-          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE 
+          <query>| tstats SummariesOnly=True Allow_Old_Summaries=False 
     count
-    FROM DATAMODEL=GMC
-    WHERE nodename=Search_Activity.Internal_Scheduler
+    From DataModel=GMC
+    Where nodename=Search_Activity.Internal_Scheduler
     index=_internal
     AND Search_Activity.Internal_Scheduler.savedsearch_name2 = "$savedsearch_name$"
     AND Search_Activity.Internal_Scheduler.app2 = "$app$"
     AND Search_Activity.Internal_Scheduler.search_type2 = "$search_type2$"
     AND Search_Activity.Internal_Scheduler.user2 = "$user$"
     AND host = "$host$"
-    BY _time $span_period$ host Search_Activity.Internal_Scheduler.info2 Search_Activity.Internal_Scheduler.savedsearch_name2 Search_Activity.Internal_Scheduler.savedsearch_id Search_Activity.Internal_Scheduler.app2 Search_Activity.Internal_Scheduler.user2 Search_Activity.Internal_Scheduler.search_type2 
+    By _time $span_period$ host Search_Activity.Internal_Scheduler.info2 Search_Activity.Internal_Scheduler.savedsearch_name2 Search_Activity.Internal_Scheduler.savedsearch_id Search_Activity.Internal_Scheduler.app2 Search_Activity.Internal_Scheduler.user2 Search_Activity.Internal_Scheduler.search_type2 
 | `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)` 
 | rename info2 AS status app2 AS app savedsearch_name2 AS savedsearch_name user2 AS user search_type2 AS search_type 
 | stats 
@@ -3349,7 +3321,7 @@
     count(eval(status=="completed" OR status=="skipped")) AS SH_TOT_EXEC
     count(eval(status=="skipped")) AS Skipped_EXEC
     count(eval(status=="terminated")) AS Terminated_EXEC
-    BY _time host app savedsearch_name user search_type 
+    By _time host app savedsearch_name user search_type 
 | stats 
     sum(SHC_DLG_RMT_EXEC) AS SHC_DLG_RMT_EXEC 
     sum(SHC_DLG_RMT_ERR_EXEC) AS SHC_DLG_RMT_ERR_EXEC 
@@ -3360,7 +3332,7 @@
     sum(SH_TOT_EXEC) AS SH_TOT_EXEC 
     sum(Skipped_EXEC) AS Skipped_EXEC 
     sum(Terminated_EXEC) AS Terminated_EXEC 
-    BY host search_type 
+    By host search_type 
 | `get_instance_info(host)` 
 | `get_shcluster_info(host)` 
 | search (shcluster_label="$shcluster_label$" AND Splunk_Roles="$Splunk_Roles$") 
@@ -3578,17 +3550,17 @@
       <chart>
         <title>Span Period: $span_period$  / Earliest Time: $InternalTimeRangePkr.earliest$ / Latest Time: $InternalTimeRangePkr.latest$</title>
         <search>
-          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE 
+          <query>| tstats SummariesOnly=True Allow_Old_Summaries=False 
     count
-    FROM DATAMODEL=GMC
-    WHERE nodename=Search_Activity.Internal_Scheduler
+    From DataModel=GMC
+    Where nodename=Search_Activity.Internal_Scheduler
     index=_internal
     AND Search_Activity.Internal_Scheduler.savedsearch_name2 = "$savedsearch_name$"
     AND Search_Activity.Internal_Scheduler.app2 = "$app$"
     AND Search_Activity.Internal_Scheduler.search_type2 = "$search_type2$"
     AND Search_Activity.Internal_Scheduler.user2 = "$user$"
     AND host = "$host$"
-    BY _time span=1s host Search_Activity.Internal_Scheduler.info2 Search_Activity.Internal_Scheduler.savedsearch_name2 Search_Activity.Internal_Scheduler.savedsearch_id Search_Activity.Internal_Scheduler.app2 Search_Activity.Internal_Scheduler.user2 Search_Activity.Internal_Scheduler.search_type2 
+    By _time span=1s host Search_Activity.Internal_Scheduler.info2 Search_Activity.Internal_Scheduler.savedsearch_name2 Search_Activity.Internal_Scheduler.savedsearch_id Search_Activity.Internal_Scheduler.app2 Search_Activity.Internal_Scheduler.user2 Search_Activity.Internal_Scheduler.search_type2 
 | `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)` 
 | rename info2 AS status app2 AS app savedsearch_name2 AS savedsearch_name user2 AS user search_type2 AS search_type 
 | stats 
@@ -3601,7 +3573,7 @@
     count(eval(status=="completed" OR status=="skipped")) AS SH_TOT_EXEC
     count(eval(status=="skipped")) AS Skipped_EXEC
     count(eval(status=="terminated")) AS Terminated_EXEC
-    BY _time host app savedsearch_name user search_type 
+    By _time host app savedsearch_name user search_type 
 | stats 
     sum(SHC_DLG_RMT_EXEC) AS SHC_DLG_RMT_EXEC 
     sum(SHC_DLG_RMT_ERR_EXEC) AS SHC_DLG_RMT_ERR_EXEC 
@@ -3612,7 +3584,7 @@
     sum(SH_TOT_EXEC) AS SH_TOT_EXEC 
     sum(Skipped_EXEC) AS Skipped_EXEC 
     sum(Terminated_EXEC) AS Terminated_EXEC 
-    BY _time host search_type 
+    By _time host search_type 
 | `get_instance_info(host)` 
 | `get_shcluster_info(host)` 
 | search (shcluster_label="$shcluster_label$" AND Splunk_Roles="$Splunk_Roles$") 
@@ -3666,17 +3638,17 @@
       <title>20. Search Latency</title>
       <chart>
         <search>
-          <query>| tstats SUMMARIESONLY=TRUE ALLOW_OLD_SUMMARIES=FALSE 
+          <query>| tstats SummariesOnly=True Allow_Old_Summaries=False 
     latest(Search_Activity.Internal_Scheduler.dispatch_time2) AS dispatch_time
     latest(Search_Activity.Internal_Scheduler.scheduled_time) AS scheduled_time 
     latest(Search_Activity.Internal_Scheduler.window_time) AS window_time
-    FROM DATAMODEL=GMC
-    WHERE nodename=Search_Activity.Internal_Scheduler
+    From DataModel=GMC
+    Where nodename=Search_Activity.Internal_Scheduler
     index=_internal
     AND Search_Activity.Internal_Scheduler.info2 = "completed"
     AND host = "*"
     AND Search_Activity.Internal_Scheduler.app2="*"
-    BY _time host Search_Activity.Internal_Scheduler.search_id2 
+    By _time host Search_Activity.Internal_Scheduler.search_id2 
 | `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)` 
 | rename search_id2 As search_id 
 | `get_instance_info(host)` 
@@ -3771,10 +3743,8 @@
         <choice value="app_type">Splunk Premium Apps</choice>
         <choice value="emp_lob1">Employee LOB</choice>
         <choice value="emp_dep">Employee Department</choice>
-        <choice value="emp_cc">Employee Cost Center</choice>
         <choice value="emp_title">Employee Title</choice>
         <choice value="bunit">Employee Business Unit</choice>
-        <choice value="auth_type">User Authentication Type</choice>
         <choice value="datamodel">Data Model</choice>
         <choice value="search_id_normalized">Normalized Search ID</choice>
         <choice value="info">info</choice>
@@ -3942,15 +3912,9 @@
   </row>
   <row>
     <panel>
-      <single>
-        <search>
-          <query>| noop</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
-        </search>
-        <option name="drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
-      </single>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
     </panel>
   </row>
 </form>

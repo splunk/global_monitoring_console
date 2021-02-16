@@ -1,5 +1,6 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>IDX - 03 - Network Statistics - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>IDX - 03 - Network Statistics - Dashboard - v3.0.7</label>
   <description>Network Statistics using the Splunk_TA_nix netstat Scripted Inputs</description>
   <search id="idx_03_network_statistics">
     <query>index=osnixperf sourcetype=netstat host="$host$" | multikv | rename Proto as transport, State as state, Recv_Q as receive_queue, Send_Q as send_queue | rex field=LocalAddress "(?&lt;src_ip&gt;\d+.\d+.\d+.\d+):" | rex field=ForeignAddress "(?&lt;dest_ip&gt;\d+.\d+.\d+.\d+):" | rex field=LocalAddress ":(?&lt;src_port&gt;\d+?)$" | rex field=ForeignAddress ":(?&lt;dest_port&gt;\d+?)$" 
@@ -13,18 +14,25 @@
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
   </search>
-  <fieldset submitButton="false"></fieldset>
+  <fieldset submitButton="true" autoRun="false"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">IDX - 03 - Network Statistics - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. Network Statistics Filters</title>
-      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+      <input type="time" token="TimeRangePkr" searchWhenChanged="false">
         <label>1. Time Range</label>
         <default>
           <earliest>-15m</earliest>
           <latest>now</latest>
         </default>
       </input>
-      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="false">
         <label>2. Splunk_Roles</label>
         <choice value="*">All</choice>
         <default>*</default>
@@ -35,7 +43,7 @@
           <query>| stats count by Splunk_Roles</query>
         </search>
       </input>
-      <input type="dropdown" token="host" searchWhenChanged="true">
+      <input type="dropdown" token="host" searchWhenChanged="false">
         <label>3. Splunk Instance</label>
         <choice value="*">All</choice>
         <default>*</default>
@@ -46,7 +54,7 @@
           <query>| stats count by host</query>
         </search>
       </input>
-      <input type="dropdown" token="src_ip" searchWhenChanged="true">
+      <input type="dropdown" token="src_ip" searchWhenChanged="false">
         <label>4. Source IP</label>
         <choice value="*">All</choice>
         <default>*</default>
@@ -57,7 +65,7 @@
           <query>| stats count by src_ip</query>
         </search>
       </input>
-      <input type="dropdown" token="src_port" searchWhenChanged="true">
+      <input type="dropdown" token="src_port" searchWhenChanged="false">
         <label>5. Source Port</label>
         <choice value="*">All</choice>
         <default>*</default>
@@ -68,7 +76,7 @@
           <query>| stats count by src_port</query>
         </search>
       </input>
-      <input type="dropdown" token="dest_ip" searchWhenChanged="true">
+      <input type="dropdown" token="dest_ip" searchWhenChanged="false">
         <label>6. Destination IP</label>
         <choice value="*">All</choice>
         <default>*</default>
@@ -79,7 +87,7 @@
           <query>| stats count by dest_ip</query>
         </search>
       </input>
-      <input type="dropdown" token="dest_port" searchWhenChanged="true">
+      <input type="dropdown" token="dest_port" searchWhenChanged="false">
         <label>7. Destination Port</label>
         <choice value="*">All</choice>
         <default>*</default>
@@ -90,7 +98,7 @@
           <query>| stats count by dest_port</query>
         </search>
       </input>
-      <input type="dropdown" token="state" searchWhenChanged="true">
+      <input type="dropdown" token="state" searchWhenChanged="false">
         <label>8. State</label>
         <choice value="*">All</choice>
         <default>*</default>
@@ -101,22 +109,22 @@
           <query>| stats count by state</query>
         </search>
       </input>
-      <input type="text" token="send_queue" searchWhenChanged="true">
+      <input type="text" token="send_queue" searchWhenChanged="false">
         <label>9. Send-Q &gt;= X</label>
         <default>0</default>
         <initialValue>0</initialValue>
       </input>
-      <input type="text" token="receive_queue" searchWhenChanged="true">
+      <input type="text" token="receive_queue" searchWhenChanged="false">
         <label>10. Recv-Q &gt;= X</label>
         <default>0</default>
         <initialValue>0</initialValue>
       </input>
-      <input type="text" token="src_port" searchWhenChanged="true">
+      <input type="text" token="src_port" searchWhenChanged="false">
         <label>11. Source Port</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="text" token="dest_port" searchWhenChanged="true">
+      <input type="text" token="dest_port" searchWhenChanged="false">
         <label>12. Destination Port</label>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -402,14 +410,9 @@
   </row>
   <row>
     <panel>
-      <table>
-        <search>
-          <query>| noop</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
-        </search>
-        <option name="drilldown">none</option>
-      </table>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
     </panel>
   </row>
 </form>

@@ -1,5 +1,8 @@
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 -->
+
 <form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v1</label>
+  <label>IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v3.0.7</label>
   <description>Splunk Indexer Cluster Bucket Status Information Dashboard</description>
   <search id="idx_07_indexer_cluster_buckets">
     <query>
@@ -13,6 +16,9 @@ index=_internal (search_group=dmc_group_cluster_master OR host=c0m1-i-*) compone
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
   </search>
+  
+  <row><panel><html><h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v1 (Updated: Jan 31, 2021)</h1></html></panel></row>
+  
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
@@ -89,6 +95,13 @@ index=_internal (search_group=dmc_group_cluster_master OR host=c0m1-i-*) compone
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
       </chart>
+    </panel>
+  </row>
+    <row>
+    <panel>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
     </panel>
   </row>
 </form>

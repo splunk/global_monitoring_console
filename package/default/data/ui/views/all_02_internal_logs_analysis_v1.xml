@@ -1,5 +1,7 @@
-<form theme="dark" script="tabs.js, load.js, tooltip.js" stylesheet="tabs.css, load.css, tooltip.css" onunloadCancelJobs="true">
-  <label>01 - Splunk Internal Log Analysis - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js, tooltip.js" stylesheet="tabs.css, load.css, tooltip.css" onunloadCancelJobs="true">
+  <label>02 - Splunk Internal Log Analysis - v1</label>
+  <description>Splunk Internal Log Analysis Last Updated: January 2021</description>
   <search id="a02_internal_logs_analysis_1">
     <query>index=_internal sourcetype IN ($sourcetype$) NOT sourcetype IN ($sourcetype_excl$) source IN ($source$) host IN ($host$) TERM($term$) NOT "$term2$" CASE($case$) NOT component IN ($component_excl$)
 | `get_cluster_label(host)`
@@ -8,15 +10,16 @@
 | fillnull value="UNSET" cluster_label component group log_level event_message ShortMessage
 | search cluster_label IN ($cluster_label$) component IN ($component$) group IN ($group$) log_level IN ($log_level$) event_message IN ($event_message$)
 | rex field=source mode=sed "s/\/opt\/\w+\/var\/log\/\w+\///g" 
+| rex field=event_message "[cC]onsider\s*(?&lt;considerations&gt;.*?)\."
 | rex field=source mode=sed "s/\S:\\\Program Files\\\SplunkUniversalForwarder\\\var\\\log\\\splunk\\\//g" 
-| fields _time cluster_label host sourcetype source component group log_level event_message ShortMessage</query>
+| fillnull value="not-available" considerations
+| fields _time cluster_label host sourcetype source component group log_level event_message ShortMessage considerations</query>
     <earliest>$TimeRangePkr1.earliest$</earliest>
     <latest>$TimeRangePkr1.latest$</latest>
   </search>
   <search id="a02_internal_logs_analysis_2">
     <query>index=`setup_summary_index` source="splunk_rest_messages_sh_summary_tracker"
-| `get_cluster_label(server)` 
-| eval ShortMessage = substr(message,1,$ShortMessage$) 
+| rex field=message mode=sed "s/Search peer \w+ has the following message:\s+//g" | `decode_field(message)` | eval ShortMessage = substr(message,1,$ShortMessage$) 
 | stats 
     Latest(message) As message
     Latest(help) As help
@@ -24,15 +27,23 @@
     Dc(message) As num_messages
     Latest(message_alternate) As message_alternate
     Values(server) As server
-    Latest(timeCreated_epochSecs) As timeCreated
+    Latest(timecreated) As timecreated
+    Latest(_time) As _time
     By cluster_label ShortMessage 
 | `strftime_format(timeCreated)` 
 | eval severity=upper(severity) 
-| fields timeCreated cluster_label severity ShortMessage message help message_alternate num_messages</query>
+| fields _time timecreated cluster_label severity ShortMessage message help message_alternate num_messages</query>
     <earliest>$TimeRangePkr2.earliest$</earliest>
     <latest>$TimeRangePkr2.latest$</latest>
   </search>
   <fieldset submitButton="true" autoRun="false"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">GMC - 02 - Splunk Internal Log Analysis - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_Dashboards_0" depends="$gadget_lib_loaded$">
       <title>Input Filters</title>
@@ -79,7 +90,7 @@
         </search>
         <delimiter>,</delimiter>
       </input>
-      <input type="text" token="sourcetype_excl">
+      <input type="text" token="sourcetype_excl" searchWhenChanged="true">
         <label>5. Sourcetype Exclusions</label>
         <initialValue>none,nothing</initialValue>
         <default>none,nothing</default>
@@ -108,7 +119,7 @@
         </search>
         <delimiter>,</delimiter>
       </input>
-      <input type="text" token="component_excl">
+      <input type="text" token="component_excl" searchWhenChanged="true">
         <label>8. Component Exclusions</label>
         <initialValue>none,nothing</initialValue>
         <default>none,nothing</default>
@@ -125,7 +136,7 @@
         </search>
         <delimiter>,</delimiter>
       </input>
-      <input type="text" token="group_excl">
+      <input type="text" token="group_excl" searchWhenChanged="true">
         <label>10. Group Exclusions</label>
         <initialValue>none,nothing</initialValue>
         <default>none,nothing</default>
@@ -158,17 +169,17 @@
         <delimiter>,</delimiter>
         <initialValue>ERROR,FATAL</initialValue>
       </input>
-      <input type="text" token="term">
+      <input type="text" token="term" searchWhenChanged="true">
         <label>13. TERM</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="text" token="term2">
+      <input type="text" token="term2" searchWhenChanged="true">
         <label>14. Search Exclusions</label>
         <default>nothing</default>
         <initialValue>nothing</initialValue>
       </input>
-      <input type="text" token="case">
+      <input type="text" token="case" searchWhenChanged="true">
         <label>15. CASE</label>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -189,8 +200,9 @@
     latest(event_message) As event_message 
     count As Num_Errors 
     Dc(host) As Num_Hosts
+    Values(considerations) As Considerations
     by cluster_label sourcetype source component group log_level ShortMessage 
-| table _time ShortMessage cluster_label sourcetype source component group log_level Num_Errors Num_Hosts event_message 
+| table _time ShortMessage cluster_label sourcetype source component group log_level Considerations Num_Errors Num_Hosts event_message 
 | sort 0 - Num_Errors</query>
         </search>
         <option name="count">5</option>
@@ -244,8 +256,15 @@
   <row>
     <panel id="panel_accordion_togglepanel_true_Dashboards_2" depends="$gadget_lib_loaded$">
       <title>2. Report on All Splunk Bulletin Messages Across the entire environment</title>
+      <input type="time" token="TimeRangePkr2" searchWhenChanged="true">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
       <input type="multiselect" token="log_level2" searchWhenChanged="true">
-        <label>1. Log Level</label>
+        <label>2. Log Level</label>
         <choice value="INFO">INFO</choice>
         <choice value="WARN">WARN</choice>
         <choice value="ERROR">ERROR</choice>
@@ -256,13 +275,6 @@
         <fieldForValue>log_level</fieldForValue>
         <delimiter>,</delimiter>
         <initialValue>WARN,ERROR,FATAL</initialValue>
-      </input>
-      <input type="time" token="TimeRangePkr2" searchWhenChanged="true">
-        <label>1. Time Range</label>
-        <default>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
-        </default>
       </input>
       <html>
         <h1 style="color:GOLD">Powered by <b>splunk_rest_messages_sh_summary_tracker</b> job: index=`setup_summary_index` source=splunk_rest_messages_sh_summary_tracker</h1>

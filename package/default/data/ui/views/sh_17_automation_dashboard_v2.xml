@@ -1,5 +1,7 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>SH - 17 - Automation - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>SH - 17 - Automation - Dashboard - v3.0.7</label>
+  <description>GMC Automation Dashboard</description>
   <search id="sh_17_automation">
     <query>
 | from lookup:splunk_rest_saved_searches_sh_kv_store_lookup
@@ -67,6 +69,13 @@
 </query>
   </search>
   <fieldset submitButton="true" autoRun="false"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 17 - Automation - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_Reports_Inputs_1" depends="$gadget_lib_loaded$">
       <title>1. Reports/Alerts - Basic Filters</title>
@@ -682,9 +691,7 @@
 | eval encoded_title=savedsearch_name 
 | eval job_property=case("$job_property$"="disable" OR "$job_property$"="enable", "/$job_property$", true(), "") 
 | eval curl_options=case(!match("$job_property$", "delete|disable|enable"), "-d $job_property$=\"$property_value$\"", true(), "") 
-| rex field=encoded_title mode=sed
-    "s:%:%25:g s:\+:%2B:g s:\":%22:g s:\(:%28:g s:\):%29:g s: :%20:g  s:&lt;:%3C:g  s:&gt;:%3E:g  s:#:%23:g  s:{:%7B:g  s:}:%7D:g  s:\|:%7C:g s:\\\:%5C:g  s:\^:%5E:g  s:~:%7E:g
-     s:\[:%5B:g  s:\]:%5D:g  s:\`:%60:g  s:;:%3B:g  s:/:%2F:g  s:\?:%3F:g  s/:/%3A/g  s:@:%40:g  s:=:%3D:g  s:&amp;:%26:g  s:\$:%24:g  s:\!:%21:g  s:\*:%2A:g" 
+| `encode_field(encoded_title)`
 | eval rest_uri="https://" . shcluster_label_rest . ".splunkcloud.com:8089/servicesNS/" . fudge_author . "/" . app . "/saved/searches/" . encoded_title . job_property 
 | eval actions=if(match(author, "admin|system"), "no-email", "email") 
 | eval Request=case("$job_property$"="delete", "DELETE", true(), "POST") 
@@ -740,9 +747,7 @@
 | eval encoded_title=savedsearch_name 
 | eval job_property=case("$job_property$"="disable" OR "$job_property$"="enable", "/$job_property$", true(), "") 
 | eval curl_options=case(!match("$job_property$", "delete|disable|enable"), "-d $job_property$=\"$property_value$\"", true(), "") 
-| rex field=encoded_title mode=sed
-    "s:%:%25:g s:\+:%2B:g s:\":%22:g s:\(:%28:g s:\):%29:g s: :%20:g  s:&lt;:%3C:g  s:&gt;:%3E:g  s:#:%23:g  s:{:%7B:g  s:}:%7D:g  s:\|:%7C:g s:\\\:%5C:g  s:\^:%5E:g  s:~:%7E:g
-     s:\[:%5B:g  s:\]:%5D:g  s:\`:%60:g  s:;:%3B:g  s:/:%2F:g  s:\?:%3F:g  s/:/%3A/g  s:@:%40:g  s:=:%3D:g  s:&amp;:%26:g  s:\$:%24:g  s:\!:%21:g  s:\*:%2A:g" 
+| `encode_field(encoded_title)`
 | eval rest_uri="https://" . shcluster_label_rest . ".splunkcloud.com:8089/servicesNS/" . fudge_author . "/" . app . "/saved/searches/" . encoded_title . job_property 
 | eval actions=if(match(author, "admin|system"), "no-email", "email") 
 | eval Request=case("$job_property$"="delete", "DELETE", true(), "POST") 

@@ -1,6 +1,5 @@
-/*! DataTables 1.10.0
- * �2008-2014 SpryMedia Ltd - datatables.net/license
- */
+// SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+// SPDX-License-Identifier: Apache-2.0 
 
 /**
  * @summary     DataTables

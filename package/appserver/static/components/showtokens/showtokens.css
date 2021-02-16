@@ -1,7 +1,5 @@
-/* 
- * Sourced from Splunk Dashboard Examples app's
- * file showtokens.css (see https://splunkbase.splunk.com/app/1603)
- */
+/* SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0  */
 
 .show-tokens {
   background: white;

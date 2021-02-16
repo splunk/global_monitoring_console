@@ -1,14 +1,5 @@
-/**
- * @fileoverview Class definition for TogglePanel or Accordion panel feature
- * @author Ryan Thibodeaux
- * @version 1.0.0
- */
-
-/*
- * Copyright (c) 2016-2018, OctoInsight Inc., All rights reserved.
- * Authored by Ryan Thibodeaux
- * see included LICENSE file (BSD 3-clause)
- */
+// SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+// SPDX-License-Identifier: Apache-2.0 
 
 /*
  * Definition of custom TogglePanel class.

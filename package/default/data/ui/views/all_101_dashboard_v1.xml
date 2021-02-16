@@ -1,145 +1,164 @@
-<form script="help_entries_list.js, tooltip.js" stylesheet="tooltip.css" theme="dark">
-  <!-- 
-    app=ID name=view category=classification tags=panel desc=text search=app_version
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><!-- 
+    app=ID name=view srch_cat=classification srch_tag=panel desc=text search=srch_str
     splunk backup kvstore -appName global_monitoring_console -collectionName help_entries -archiveName gmc101 -auth admin: 
-  | from lookup:help_entries  | fields app, view, panel, classification, text, app_version, disabled  | eval classification=if(classification="os", "OS", classification)   | outputlookup help_entries createinapp=true create_empty=true override_if_empty=false
-  -->
+  | from lookup:help_entries  | fields app, view, panel, classification, text, srch_str, disabled  | eval classification=if(classification="os", "OS", classification)   | outputlookup help_entries createinapp=true create_empty=true override_if_empty=false
+  --><form theme="dark" script="help_entries_list.js, load.js, tooltip.js" stylesheet="load.css, tooltip.css" onunloadCancelJobs="true">
   <label>101 - Search Repository</label>
+  <description>Search Repository Last Updated: January 2021</description>
   <search id="a01_dashboard">
     <query>| from lookup:help_entries 
-    | fields app, view, panel, classification, text, app_version, disabled
-| rename app as search_num, view as search_name, panel as tags, classification as category, app_version as search, text As search_description
-| makemv delim="," tags
-| stats Values(*) As * by search_num
-| fillnull value="not-set" search_name,category,tags,search_description
-| search category IN ($category$) NOT category IN ($category2$) tags IN ($tags$) NOT tags IN ($tags2$) search_num IN ($search_num$) search_name IN ($search_name$) search="*$gmc_search1$*" search="*$gmc_search2$*" search_description="*$search_description$*"
-| $gmc$
+    | fields srch_num, srch_nme, srch_tag, srch_cat, srch_des, srch_str, srch_sts
+| makemv delim="," srch_tag
+| stats Values(*) As * by srch_num | rex field=srch_str max_match=99 "\|\s*rest\s+(/services/|/servicesNS/-/-/)(?&lt;REST&gt;.*?)\s" | rex field=srch_str "\|\s*(?&lt;spl_command&gt;\w+)"
+| fillnull value="not-set" srch_nme,srch_cat,srch_tag,srch_des,REST,spl_command
+| search srch_cat IN ($srch_cat$) NOT srch_cat IN ($srch_cat2$) srch_tag IN ($srch_tag$) NOT srch_tag IN ($srch_tag2$) srch_num IN ($srch_num$) srch_nme IN ($srch_nme$) srch_str="*$gmc_search1$*" srch_str="*$gmc_search2$*" srch_des="*$srch_des$*" REST IN ($REST$) spl_command IN ($spl_command$)
 </query>
   </search>
-  <fieldset submitButton="false" autoRun="true">
-    <input type="multiselect" token="category" searchWhenChanged="true">
-      <label>1.1 Category</label>
-      <choice value="*">All</choice>
-      <fieldForLabel>category</fieldForLabel>
-      <fieldForValue>category</fieldForValue>
-      <search base="a01_dashboard">
-        <query>| stats count by category</query>
-      </search>
-      <delimiter>,</delimiter>
-      <default>*</default>
-    </input>
-    <input type="multiselect" token="category2" searchWhenChanged="true">
-      <label>1.2 Category Exclusions</label>
-      <choice value="None">None</choice>
-      <fieldForLabel>category2</fieldForLabel>
-      <fieldForValue>category</fieldForValue>
-      <search base="a01_dashboard">
-        <query>| stats count by category</query>
-      </search>
-      <delimiter>,</delimiter>
-      <default>None</default>
-    </input>
-    <input type="multiselect" token="tags" searchWhenChanged="true">
-      <label>2.1 Tags</label>
-      <search base="a01_dashboard">
-        <query>| stats count by tags</query>
-      </search>
-      <fieldForLabel>tags</fieldForLabel>
-      <fieldForValue>tags</fieldForValue>
-      <choice value="*">All</choice>
-      <initialValue>*</initialValue>
-      <delimiter>,</delimiter>
-    </input>
-    <input type="multiselect" token="tags2" searchWhenChanged="true">
-      <label>2.2 Tag Exclusions</label>
-      <choice value="None">None</choice>
-      <fieldForLabel>tags2</fieldForLabel>
-      <fieldForValue>tags</fieldForValue>
-      <search base="a01_dashboard">
-        <query>| stats count by tags</query>
-      </search>
-      <delimiter>,</delimiter>
-      <initialValue>None</initialValue>
-    </input>
-    <input type="multiselect" token="search_num" searchWhenChanged="true">
-      <label>3. Search ID</label>
-      <choice value="*">All</choice>
-      <fieldForLabel>search_num</fieldForLabel>
-      <fieldForValue>search_num</fieldForValue>
-      <search base="a01_dashboard">
-        <query>| stats count by search_num</query>
-      </search>
-      <delimiter>,</delimiter>
-      <default>*</default>
-    </input>
-    <input type="multiselect" token="search_name" searchWhenChanged="true">
-      <label>4.1 Search Name</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>search_name</fieldForLabel>
-      <fieldForValue>search_name</fieldForValue>
-      <search base="a01_dashboard">
-        <query>| stats count by search_name</query>
-      </search>
-      <delimiter>,</delimiter>
-      <valuePrefix>"</valuePrefix>
-      <valueSuffix>"</valueSuffix>
-    </input>
-    <input type="text" token="search_name" searchWhenChanged="true">
-      <label>4.2 Search Name (Contains) I</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="text" token="gmc_search1" searchWhenChanged="true">
-      <label>5.1 Search (Contains) I</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="text" token="gmc_search2" searchWhenChanged="true">
-      <label>5.2 Search (Contains) II</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="text" token="search_description" searchWhenChanged="true">
-      <label>6 Description (Contains).</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="checkbox" token="gmc" searchWhenChanged="true">
-      <label>7. GMC Category Only</label>
-      <choice value="search search_num=&quot;GMC-*&quot;">Yes</choice>
-      <choice value="noop">No</choice>
-      <delimiter/>
-      <default>noop</default>
-      <initialValue>noop</initialValue>
-    </input>
-  </fieldset>
+  <fieldset submitButton="true" autoRun="false"></fieldset>
   <row>
     <panel>
       <html>
-        <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
-        <h1 style="color:rgb(207,49,128);font-size:50px;text-align:center">Search Repository</h1>
-        <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">GMC - 101 - Search Repository - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
       </html>
     </panel>
   </row>
   <row>
-    <panel>
+    <panel id="panel_accordion_togglepanel_false_Dashboards_00" depends="$gadget_lib_loaded$">
+      <title>Input Filters</title>
+      <input type="multiselect" token="srch_cat" searchWhenChanged="false">
+        <label>1.1 Category</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>srch_cat</fieldForLabel>
+        <fieldForValue>srch_cat</fieldForValue>
+        <search base="a01_dashboard">
+          <query>| stats count by srch_cat</query>
+        </search>
+        <delimiter>,</delimiter>
+        <default>*</default>
+      </input>
+      <input type="multiselect" token="srch_cat2" searchWhenChanged="false">
+        <label>1.2 Category Exclusions</label>
+        <choice value="None">None</choice>
+        <fieldForLabel>srch_cat2</fieldForLabel>
+        <fieldForValue>srch_cat</fieldForValue>
+        <search base="a01_dashboard">
+          <query>| stats count by srch_cat</query>
+        </search>
+        <delimiter>,</delimiter>
+        <default>None</default>
+      </input>
+      <input type="multiselect" token="srch_tag" searchWhenChanged="false">
+        <label>2.1 Tags</label>
+        <search base="a01_dashboard">
+          <query>| stats count by srch_tag</query>
+        </search>
+        <fieldForLabel>srch_tag</fieldForLabel>
+        <fieldForValue>srch_tag</fieldForValue>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="srch_tag2" searchWhenChanged="false">
+        <label>2.2 Tag Exclusions</label>
+        <choice value="None">None</choice>
+        <fieldForLabel>srch_tag2</fieldForLabel>
+        <fieldForValue>srch_tag</fieldForValue>
+        <search base="a01_dashboard">
+          <query>| stats count by srch_tag</query>
+        </search>
+        <delimiter>,</delimiter>
+        <initialValue>None</initialValue>
+      </input>
+      <input type="multiselect" token="srch_num" searchWhenChanged="false">
+        <label>3. Search ID</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>srch_num</fieldForLabel>
+        <fieldForValue>srch_num</fieldForValue>
+        <search base="a01_dashboard">
+          <query>| stats count by srch_num</query>
+        </search>
+        <delimiter>,</delimiter>
+        <default>*</default>
+      </input>
+      <input type="multiselect" token="srch_nme" searchWhenChanged="false">
+        <label>4.1 Search Name</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>srch_nme</fieldForLabel>
+        <fieldForValue>srch_nme</fieldForValue>
+        <search base="a01_dashboard">
+          <query>| stats count by srch_nme</query>
+        </search>
+        <delimiter>,</delimiter>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+      </input>
+      <input type="text" token="srch_nme" searchWhenChanged="true">
+        <label>4.2 Search Name (Contains) I</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="gmc_search1" searchWhenChanged="true">
+        <label>5.1 Search (Contains) I</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="gmc_search2" searchWhenChanged="true">
+        <label>5.2 Search (Contains) II</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="srch_des" searchWhenChanged="true">
+        <label>6 Description (Contains).</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="multiselect" token="REST" searchWhenChanged="false">
+        <label>7. REST Calls</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>REST</fieldForLabel>
+        <fieldForValue>REST</fieldForValue>
+        <search base="a01_dashboard">
+          <query>| stats count by REST</query>
+        </search>
+        <delimiter>,</delimiter>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+      </input>
+      <input type="multiselect" token="spl_command" searchWhenChanged="false">
+        <label>8. SPL Commands Used</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>spl_command</fieldForLabel>
+        <fieldForValue>spl_command</fieldForValue>
+        <search base="a01_dashboard">
+          <query>| stats count by spl_command</query>
+        </search>
+        <delimiter>,</delimiter>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_Dashboards_0" depends="$gadget_lib_loaded$">
       <title>1. List of matching searches</title>
       <html>
-        <h1 style="color:YELLOW;font-size:25px;text-align:center">Click on any search to run it</h1>
-      </html>
+                <h1 style="color:YELLOW;font-size:25px;text-align:center">Click on any search to run it</h1>
+            </html>
       <table id="tblToolTip">
+        <title>| rename srch_num As "Search ID", srch_nme As "Search Name", srch_des As "Search Description", srch_str As "GMC_Search", len_search As "Search Length"</title>
         <search base="a01_dashboard">
-          <query>| eval len_name=len(search_name), len_search=len(search) , num=search_num 
-| rex field=num mode=sed "s/^\w+-//g" 
-| table num search_num search_name category tags search search_description len_name len_search 
-| sort - num
-| rename search_num As "Search ID", search_name As "Search Name", search_description As "Search Description", search As "GMC_Search"</query>
+          <query>| eval len_search=len(srch_str) 
+| table srch_num srch_nme srch_cat srch_tag srch_str srch_des  
+| rename len_search As Length, srch_str As "GMC_Search", srch_num As ID, srch_nme As "Search Name", srch_des As Description, srch_tag As Tags, srch_cat As Category</query>
         </search>
-        <option name="count">5</option>
+        <option name="count">10</option>
         <option name="drilldown">row</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="wrap">true</option>
         <format type="color" field="Search Name">
@@ -165,7 +184,7 @@
       <single>
         <title>Latest Search Number</title>
         <search base="a01_dashboard">
-          <query>| search search_num="GMC-*"| stats count by search_num
+          <query>| search srch_num="GMC-*"| stats count by srch_num
 | tail 1</query>
         </search>
         <option name="colorMode">block</option>
@@ -178,18 +197,11 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <html>
-                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
-            </html>
-    </panel>
-  </row>
-  <row>
-    <panel>
+    <panel id="panel_accordion_togglepanel_true_Dashboards_1" depends="$gadget_lib_loaded$">
       <title>2. Search Management</title>
       <html>
-        <h1 style="color:YELLOW;font-size:25px;text-align:center">Add/Remove/Edit Searches here</h1>
-      </html>
+                <h1 style="color:YELLOW;font-size:25px;text-align:center">Add/Remove/Edit Searches here</h1>
+            </html>
       <html id="element1">
                 <div id="help_entries">
                     Loading
@@ -198,18 +210,11 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <html>
-                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
-            </html>
-    </panel>
-  </row>
-  <row>
-    <panel>
+    <panel id="panel_accordion_togglepanel_true_Dashboards_2" depends="$gadget_lib_loaded$">
       <title>3.1 Searches By Category</title>
       <chart>
         <search base="a01_dashboard">
-          <query>| stats count by category</query>
+          <query>| stats count by srch_cat</query>
         </search>
         <option name="charting.backgroundColor">FFFF31</option>
         <option name="charting.chart">pie</option>
@@ -220,11 +225,11 @@
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
-    <panel>
+    <panel id="panel_accordion_togglepanel_true_Dashboards_3" depends="$gadget_lib_loaded$">
       <title>3.2 Searches By Tags</title>
       <chart>
         <search base="a01_dashboard">
-          <query>| stats count by tags</query>
+          <query>| stats count by srch_tag</query>
         </search>
         <option name="charting.chart">pie</option>
         <option name="charting.chart.sliceCollapsingThreshold">0</option>
@@ -237,14 +242,7 @@
     </panel>
   </row>
   <row>
-    <panel>
-      <html>
-                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
-            </html>
-    </panel>
-  </row>
-  <row>
-    <panel>
+    <panel id="panel_accordion_togglepanel_true_Dashboards_5" depends="$gadget_lib_loaded$">
       <title>4. Repository Backup/Restore Jobs</title>
       <html>
                 <a href="/app/global_monitoring_console/search?s=ioc101_backup_lookup_gen" target="_blank" rel="noopener">
@@ -253,42 +251,6 @@
                 <a href="/app/global_monitoring_console/search?s=ioc101_restore_lookup_gen" target="_blank" rel="noopener">
                     <h1 style="color:red">Click here to Restore the GMC 101 DB to factory default!</h1>
                 </a>
-            </html>
-    </panel>
-  </row>
-  <row>
-    <panel depends="$alwaysHideCSS$">
-      <html>
-                <style>#Input1{
-             width:15% !important;
-           }
-           #Input2{
-             width:15% !important;
-           }</style>
-                <style>#Input3{
-             width:15% !important;
-           }
-           #Input4{
-             width:15% !important;
-           }</style>
-                <style>#Input5{
-             width:15% !important;
-           }
-           #Input6{
-             width:15% !important;
-           }</style>
-                <style>#Input7{
-             width:15% !important;
-           }
-           #Input8{
-             width:15% !important;
-           }</style>
-                <style>#Input9{
-             width:15% !important;
-           }
-           #Input10{
-             width:15% !important;
-           }</style>
             </html>
     </panel>
   </row>

@@ -1,5 +1,6 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>IDX - 04 - Disk IO Statistics - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>IDX - 04 - Disk IO Statistics - Dashboard - v3.0.7</label>
   <description>Disk IO Statistics using the Splunk_TA_nix iostat Scripted Inputs</description>
   <search id="splunk_idx_04_disk_io_statistics_dashboard_v1">
     <query>index=osnixperf sourcetype=iostat splunk_server_group=dmc_group_indexer
@@ -10,19 +11,26 @@
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
   </search>
-  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <fieldset submitButton="true" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">IDX - 04 - Disk IO Statistics - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. Disk IO Statistics Filters</title>
-      <input type="time" token="TimeRangePkr" searchWhenChanged="true">
+      <input type="time" token="TimeRangePkr" searchWhenChanged="false">
         <label>1. Time Range</label>
         <default>
           <earliest>-15m</earliest>
           <latest>now</latest>
         </default>
       </input>
-      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="true">
-        <label>2. Splunk_Roles</label>
+      <input type="dropdown" token="Splunk_Roles" searchWhenChanged="false">
+        <label>2. Splunk Roles</label>
         <choice value="*">All</choice>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -32,7 +40,7 @@
           <query>| stats count by Splunk_Roles</query>
         </search>
       </input>
-      <input type="dropdown" token="host" searchWhenChanged="true">
+      <input type="dropdown" token="host" searchWhenChanged="false">
         <label>3. Splunk Instance</label>
         <choice value="*">All</choice>
         <default>*</default>
@@ -193,14 +201,9 @@
   </row>
   <row>
     <panel>
-      <table>
-        <search>
-          <query>| noop</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
-        </search>
-        <option name="drilldown">none</option>
-      </table>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
     </panel>
   </row>
 </form>

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+// SPDX-License-Identifier: Apache-2.0 
+
 require.config({
     paths: {
         HelpEntryListerView: "../app/global_monitoring_console/views/HelpEntryListerView"

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+# SPDX-License-Identifier: Apache-2.0 
+
 import os
 import sys
 import cherrypy

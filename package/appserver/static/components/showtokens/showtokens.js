@@ -1,13 +1,6 @@
-// Modified version of Splunk Dashboard Examples app's
-// file showtokens.js (see https://splunkbase.splunk.com/app/1603)
-//
-// Edited by: Ryan Thibodeaux
-//   - updated definition to toggle
-//     visibility of token viewer
-//     and its listening for token
-//     changes
-//
-//
+// SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+// SPDX-License-Identifier: Apache-2.0 
+
 // Token debugger class that will display token
 // debug table at the bottom of a dashboard.
 // The debugger is controlled by the token "show_debug".
