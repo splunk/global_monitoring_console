@@ -1,13 +1,5 @@
-/**
- * @fileoverview Setup the paths and load the Developer Gadgets components
- * @author Ryan Thibodeaux
- * @version 1.0.0
- */
-
-/*
- * Copyright (c) 2017-2018, Ryan Thibodeaux. All Rights Reserved
- * see included LICENSE file (BSD 3-clause) in the app's root directory
- */
+// SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+// SPDX-License-Identifier: Apache-2.0 
 
 (function() {
   "use strict";

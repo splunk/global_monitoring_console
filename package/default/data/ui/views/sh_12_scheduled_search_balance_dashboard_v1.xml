@@ -1,94 +1,105 @@
-<form theme="dark">
-  <label>SH - 12 - Scheduled Search Balance - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark">
+  <label>SH - 12 - Scheduled Search Balance - Dashboard - v3.0.7</label>
   <description>Create an Ephemeral Account on the search head you need to run curl on, make that user admin.  Delete the user when you are done with your change.</description>
-  <fieldset submitButton="true" autoRun="true">
-    <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
-      <label>1. Splunk SH (Cluster/Instance)</label>
-      <fieldForLabel>shcluster_label</fieldForLabel>
-      <fieldForValue>shcluster_label</fieldForValue>
-      <search>
-        <query>| from lookup:splunk_rest_assets_kv_store_lookup 
+  <fieldset submitButton="true" autoRun="false"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 12 - Scheduled Search Balance - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <input type="dropdown" token="shcluster_label" searchWhenChanged="true">
+        <label>1. Splunk SH (Cluster/Instance)</label>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search>
+          <query>| from lookup:splunk_rest_assets_kv_store_lookup 
 | stats count by shcluster_label</query>
-      </search>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="multiselect" token="tok_app">
-      <label>2. App</label>
-      <choice value="*">ALL</choice>
-      <fieldForLabel>app</fieldForLabel>
-      <fieldForValue>app</fieldForValue>
-      <search>
-        <query>| from lookup:splunk_rest_saved_searches_sh_kv_store_lookup 
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="multiselect" token="tok_app">
+        <label>2. App</label>
+        <choice value="*">ALL</choice>
+        <fieldForLabel>app</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search>
+          <query>| from lookup:splunk_rest_saved_searches_sh_kv_store_lookup 
 | stats count by app</query>
-        <earliest>-15m</earliest>
-        <latest>now</latest>
-      </search>
-      <default>*</default>
-      <delimiter> </delimiter>
-    </input>
-    <input type="dropdown" token="tok_cron_cat">
-      <label>3. Cron Category</label>
-      <choice value="*">ALL</choice>
-      <default>*</default>
-      <fieldForLabel>category</fieldForLabel>
-      <fieldForValue>category</fieldForValue>
-      <search>
-        <query>| from lookup:cron_schedule_category_remapper_lookup
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </search>
+        <default>*</default>
+        <delimiter> </delimiter>
+      </input>
+      <input type="dropdown" token="tok_cron_cat">
+        <label>3. Cron Category</label>
+        <choice value="*">ALL</choice>
+        <default>*</default>
+        <fieldForLabel>category</fieldForLabel>
+        <fieldForValue>category</fieldForValue>
+        <search>
+          <query>| from lookup:cron_schedule_category_remapper_lookup
 | fields category</query>
-        <earliest>-15m</earliest>
-        <latest>now</latest>
-      </search>
-    </input>
-    <input type="text" token="tok_user">
-      <label>4. User</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-    <input type="text" token="stack">
-      <label>5. Stack Name</label>
-      <default>localhost</default>
-      <initialValue>localhost</initialValue>
-    </input>
-    <input type="text" token="account">
-      <label>6. Ephemeral Account ID</label>
-      <default>int_123</default>
-      <initialValue>int_123</initialValue>
-    </input>
-    <input type="text" token="password">
-      <label>7. Ephemeral Account Password</label>
-      <default>password</default>
-      <initialValue>password</initialValue>
-    </input>
-    <input type="dropdown" token="keeper">
-      <label>Include Balanced</label>
-      <choice value="noop">Yes</choice>
-      <choice value="where keeper=1">No</choice>
-      <default>where keeper=1</default>
-      <initialValue>where keeper=1</initialValue>
-    </input>
-    <input type="dropdown" token="cron_schedule_described">
-      <label>cron_schedule_described</label>
-      <choice value="*">All</choice>
-      <default>*</default>
-      <initialValue>*</initialValue>
-      <fieldForLabel>cron_schedule_described</fieldForLabel>
-      <fieldForValue>cron_schedule_described</fieldForValue>
-      <search>
-        <query>| from lookup:splunk_rest_saved_searches_sh_kv_store_lookup 
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+        </search>
+      </input>
+      <input type="text" token="tok_user">
+        <label>4. User</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="stack">
+        <label>5. Stack Name</label>
+        <default>localhost</default>
+        <initialValue>localhost</initialValue>
+      </input>
+      <input type="text" token="account">
+        <label>6. Ephemeral Account ID</label>
+        <default>int_123</default>
+        <initialValue>int_123</initialValue>
+      </input>
+      <input type="text" token="password">
+        <label>7. Ephemeral Account Password</label>
+        <default>password</default>
+        <initialValue>password</initialValue>
+      </input>
+      <input type="dropdown" token="keeper">
+        <label>Include Balanced</label>
+        <choice value="noop">Yes</choice>
+        <choice value="where keeper=1">No</choice>
+        <default>where keeper=1</default>
+        <initialValue>where keeper=1</initialValue>
+      </input>
+      <input type="dropdown" token="cron_schedule_described">
+        <label>cron_schedule_described</label>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>cron_schedule_described</fieldForLabel>
+        <fieldForValue>cron_schedule_described</fieldForValue>
+        <search>
+          <query>| from lookup:splunk_rest_saved_searches_sh_kv_store_lookup 
 | `cron_descriptor(cron_schedule)` 
 | stats count by cron_schedule_described</query>
-        <earliest>-24h@h</earliest>
-        <latest>now</latest>
-      </search>
-    </input>
-    <input type="text" token="cron_schedule_described">
-      <label>cron_schedule_described</label>
-      <default>*</default>
-      <initialValue>*</initialValue>
-    </input>
-  </fieldset>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+      </input>
+      <input type="text" token="cron_schedule_described">
+        <label>cron_schedule_described</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+    </panel>
+  </row>
   <row>
     <panel>
       <title>schedule generator</title>
@@ -110,7 +121,7 @@
     category="daily", 86400
     ) 
 | search `gmc_comment("LOOKUP TO GET new_category FROM category, AND reset_count")` 
-| lookup cron_schedule_category_remapper.csv category 
+| lookup cron_schedule_category_remapper_lookup category 
 | eval new_schedule_interval=case(
     new_category="every minute", 60,
     searchmatch("new_category=\"every * minutes\""), new_nth_minute*60,
@@ -250,7 +261,7 @@
     category="daily", 86400
     ) 
 | search `gmc_comment("LOOKUP TO GET new_category FROM category, AND reset_count")` 
-| lookup cron_schedule_category_remapper.csv category 
+| lookup cron_schedule_category_remapper_lookup category 
 | eval new_schedule_interval=case(
     new_category="every minute", 60,
     searchmatch("new_category=\"every * minutes\""), new_nth_minute*60,
@@ -291,6 +302,7 @@
         </search>
         <option name="colorMode">block</option>
         <option name="drilldown">none</option>
+        <option name="height">50</option>
         <option name="rangeColors">["0x53a051","0x53a051"]</option>
         <option name="rangeValues">[0]</option>
         <option name="refresh.display">progressbar</option>
@@ -329,7 +341,7 @@
 | search app IN ( $tok_app$ ) author IN ( $tok_user$ ) shcluster_label="$shcluster_label$" NOT (earliest_time=rt* OR latest_time=rt* OR summary_index=1 OR savedsearch_search=*timechart* OR savedsearch_search=*bin* OR savedsearch_search=*span* OR savedsearch_search=*bucket* ) 
 | search is_scheduled=1 disabled=0 
 | `gmc_categorize_cron_schedule(cron_schedule)` 
-| lookup cron_schedule_category_remapper.csv category 
+| lookup cron_schedule_category_remapper_lookup category 
 | fillnull value="uncategorized" new_category 
 | chart count BY new_category 
 | sort count desc</query>
@@ -366,7 +378,7 @@
     category="daily", 86400
     ) 
 | search `gmc_comment("LOOKUP TO GET new_category FROM category, AND reset_count")` 
-| lookup cron_schedule_category_remapper.csv category 
+| lookup cron_schedule_category_remapper_lookup category 
 | eval new_schedule_interval=case(
     new_category="every minute", 60,
     searchmatch("new_category=\"every * minutes\""), new_nth_minute*60,
@@ -413,6 +425,13 @@
         <option name="height">500</option>
         <option name="refresh.display">progressbar</option>
       </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
     </panel>
   </row>
 </form>

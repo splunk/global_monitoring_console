@@ -1,15 +1,23 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>IDX - 05 - Data Inputs - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>IDX - 05 - Data Inputs Analysis - Dashboard - v3.0.7</label>
   <description>All Splunk Instances Data Inputs Information Dashboard</description>
   <search id="idx_05_inputs">
     <query>| from lookup:splunk_rest_data_inputs_all_kv_store_lookup
-| fields _time cluster_label Splunk_Instance app title disabled sharing author type description source_name sourcetype_name index_name location acceleration whitelist blacklist crcSalt interval updated
+| fields _time cluster_label Splunk_Instance app title disabled sharing author type description source_name sourcetype_name index_name location acceleration whitelist blacklist crcSalt interval updated connection_host duration endtime exclude group host_resolved id_field host path port queue table
 | `get_instance_roles(Splunk_Instance)`
 |	`get_identity_info_simple(cluster_label,author)`
 | fillnull value="Undefined" Splunk_Instance Splunk_Roles app title disabled sharing author type description source_name sourcetype_name index_name location acceleration whitelist blacklist crcSalt interval
 | search cluster_label="$cluster_label$" Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" app="$app$" title="*$title$*" author="$author$" description="*$description$*" source_name="$source_name$" sourcetype_name="$sourcetype_name$" index_name="$index_name$" disabled="$disabled$" type="$type$" emp_name="$emp_name$" emp_title="$emp_title$" emp_lob1="$emp_lob1$" emp_dep="$emp_dep$" emp_type="$emp_type$" emp_status="$emp_status$" sharing="$sharing$"</query>
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">IDX - 05 - Data Inputs - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. Data Inputs Filters</title>
@@ -76,7 +84,6 @@
         <choice value="0">True</choice>
         <choice value="1">False</choice>
         <default>0</default>
-        <initialValue>0</initialValue>
       </input>
       <input type="dropdown" token="type" searchWhenChanged="true">
         <label>7. Input Type</label>
@@ -246,7 +253,7 @@
       <table>
         <title>2. Data Inputs List</title>
         <search base="idx_05_inputs">
-          <query>| table cluster_label title type disabled author app sharing description source_name sourcetype_name index_name location acceleration whitelist blacklist crcSalt interval emp_name emp_title emp_dep emp_lob1 emp_cc emp_type emp_status endDate 
+          <query>| table cluster_label title type disabled author app sharing description source_name sourcetype_name index_name location acceleration whitelist blacklist crcSalt interval emp_name emp_title emp_dep emp_lob1 emp_cc emp_type emp_status endDate connection_host duration endtime exclude group host_resolved id_field host path port queue table
 | sort 0 cluster_label app title 
 | `rename_common_fields` 
 | `rename_identity_fields` 
@@ -284,6 +291,7 @@
         </search>
         <option name="colorMode">block</option>
         <option name="drilldown">none</option>
+        <option name="height">50</option>
         <option name="rangeColors">["0x006d9c","0x006d9c"]</option>
         <option name="rangeValues">[0]</option>
         <option name="refresh.display">progressbar</option>
@@ -308,14 +316,14 @@
         <choice value="emp_title">Employee Title</choice>
         <choice value="emp_type">Employee Type</choice>
         <choice value="emp_status">Employee Status</choice>
-        <choice value="type">type</choice>
-        <choice value="disabled">disabled</choice>
-        <choice value="source_name">source</choice>
-        <choice value="sourcetype_name">sourcetype</choice>
+        <choice value="type">Type</choice>
+        <choice value="disabled">Disabled?</choice>
+        <choice value="source_name">Source</choice>
+        <choice value="sourcetype_name">Sourcetype</choice>
         <choice value="index_name">index</choice>
-        <choice value="whitelist">whitelist</choice>
-        <choice value="blacklist">blacklist</choice>
-        <choice value="interval">interval</choice>
+        <choice value="whitelist">Whitelist</choice>
+        <choice value="blacklist">Blacklist</choice>
+        <choice value="interval">Interval</choice>
         <choice value="crcSalt">crcSalt</choice>
         <default>app</default>
         <initialValue>app</initialValue>
@@ -340,9 +348,7 @@
       <title>4. Associated GMC Job(s) - $env:page$</title>
       <html>
            <ol>
-             <li>
-            <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_all_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Data Inputs KV Store Gen Job From REST</a>
-             </li>
+             
              <li>
             <a href="/app/global_monitoring_console/search?s=splunk_rest_data_inputs_all_summary_data_gen" target="_blank" rel="noopener">Splunk Data Inputs Summary Index Gen Job From REST</a>
              </li>

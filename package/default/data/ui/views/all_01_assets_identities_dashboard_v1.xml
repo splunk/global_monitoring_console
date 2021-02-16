@@ -1,13 +1,12 @@
-<form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>Assets &amp; Identities - Dashboard - v1</label>
-  <description>Assets &amp; Identities Information Dashboards
-
-Assets &amp; Identities Information Dashboard</description>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>01 - Assets &amp; Identities - Dashboard - v3.0.7</label>
+  <description>Assets &amp; Identities Information Dashboard</description>
   <search id="a01_assets_identities_tab1">
     <query>| from lookup:splunk_rest_assets_kv_store_lookup
 | fields _time Splunk_Instance Splunk_Roles serverName host host_short host_fqdn host_resolved host_ip idxcluster_label shcluster_label mode guid version build os_name os_name_extended cpu_arch os_version os_build startup_time kvStoreStatus numberOfCores numberOfVirtualCores physicalMemoryMB rtsearch_enabled master_uri master_guid licenseState isForwarding isTrial license_labels transparent_hugepages_defrag transparent_hugepages_effective_state transparent_hugepages_enabled ulimits_core_file_size ulimits_cpu_time ulimits_data_file_size ulimits_data_segment_size ulimits_nice ulimits_open_files ulimits_resident_memory_size ulimits_stack_size ulimits_user_processes ulimits_virtual_address_space_size SPLUNK_DB SPLUNK_HOME appServerPorts dfsDisabled dfsMasterPort enableSplunkWebSSL httpport kvStoreDisabled kvStorePort mgmtHostPort minFreeSpace sessionTimeout startwebserver trustedIP
 | eval isForwarding = if (match(Splunk_Roles, "indexer"), "N/A", isForwarding)
-| fillnull value="Undefined" idxcluster_label shcluster_label Splunk_Roles Splunk_Instance
+| fillnull value="undefined" idxcluster_label shcluster_label Splunk_Roles Splunk_Instance host_ip
 | search Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" os_name="$os_name$" version="$version$" isForwarding="$isForwarding$" kvStoreDisabled="$kvStoreDisabled$" enableSplunkWebSSL="$enableSplunkWebSSL$" startwebserver="$startwebserver$" idxcluster_label="$idxcluster_label$" shcluster_label="$shcluster_label$" guid="*$guid$*" host_ip="$host_ip$"</query>
   </search>
   <search id="a01_assets_identities_tab2">
@@ -63,19 +62,19 @@ Assets &amp; Identities Information Dashboard</description>
     Values(ldap_group_name) As ldap_group_name
     Values(ldap_group_type) As ldap_group_type
     Values(Splunk_Instance) As Splunk_Instance
+    Values(*) As *
     Latest(_time) As _time
     By shcluster_label identity
   | eval srchJobsQuota_Final = if(imported_srchJobsQuota &gt; srchJobsQuota, imported_srchJobsQuota ,srchJobsQuota)
 |`fillnull_identity_info`
-| fillnull value="undefined" shcluster_label Splunk_Instance Splunk_Roles identity splunk_role_map ldap_group_name ldap_group_type last_successful_login capabilities imported_capabilities imported_roles auth_type
+| fillnull value="undefined" shcluster_label Splunk_Instance Splunk_Roles identity splunk_role_map ldap_group_name ldap_group_type capabilities imported_capabilities imported_roles auth_type
 
-| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles$" identity="*$identity$*" emp_type="$emp_type$" emp_status="$emp_status$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" emp_location="$emp_location$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_cc="$emp_cc$" emp_name="$emp_name$" Splunk_Instance="$Splunk_Instance$" splunk_role_map="$splunk_role_map$" ldap_group_name="$ldap_group_name$" ldap_group_type="$ldap_group_type$" last_successful_login="$last_successful_login$" capabilities="$capabilities$" imported_capabilities="$imported_capabilities$" imported_roles="$imported_roles$" auth_type="$auth_type$" emp_last="$emp_last$" emp_first="$emp_first$"
+| search shcluster_label="$shcluster_label$" Splunk_Roles="$Splunk_Roles$" identity="*$identity$*" emp_type="$emp_type$" emp_status="$emp_status$" emp_city="$emp_city$" emp_region1="$emp_region1$" emp_country="$emp_country$" emp_location="$emp_location$" emp_dep="$emp_dep$" emp_lob1="$emp_lob1$" emp_cc="$emp_cc$" emp_name="$emp_name$" Splunk_Instance="$Splunk_Instance$" splunk_role_map="$splunk_role_map$" ldap_group_name="$ldap_group_name$" ldap_group_type="$ldap_group_type$" capabilities="$capabilities$" imported_capabilities="$imported_capabilities$" imported_roles="$imported_roles$" auth_type="$auth_type$" emp_last="$emp_last$" emp_first="$emp_first$"
 
 </query>
   </search>
   <search id="a01_assets_identities_tab2_2">
-    <query>index=_introspection sourcetype=splunk_disk_objects component=Partitions search_group=*
-    `gmc_comment("search_group=dmc_group_indexer")`
+    <query>index=_introspection sourcetype=splunk_disk_objects component=Partitions (splunk_server_group=dmc_group_indexer OR host=idx-i-*)
 | rename data.* as * , host As Splunk_Instance
 | fields _time Splunk_Instance mount_point fs_type available capacity free 
 | eval free = if(isnotnull(available), available, free) 
@@ -90,6 +89,13 @@ Assets &amp; Identities Information Dashboard</description>
     <latest>$TimeRangePkr2.latest$</latest>
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">GMC - 01 - Assets &amp; Identities - Dashboard - v1 (Updated: Feb 13, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row id="tabs">
     <panel>
       <html>
@@ -411,7 +417,7 @@ Assets &amp; Identities Information Dashboard</description>
     </panel>
   </row>
   <row id="Assets_Panel3">
-    <panel id="panel_accordion_togglepanel_true_61" depends="$gadget_lib_loaded$">
+    <panel id="panel_accordion_togglepanel_false_61" depends="$gadget_lib_loaded$">
       <title>6.1 Splunk Search Concurrency Metrics from Search Concurrency Settings KV Store</title>
       <table>
         <search>
@@ -486,7 +492,7 @@ Assets &amp; Identities Information Dashboard</description>
     values(Value) as Value
     by shcluster_label app config_file stanza Property 
 | search Property IN (auto_summary_perc, base_max_searches, max_searches_per_cpu, max_searches_perc, max_rt_search_multiplier) AND shcluster_label!="No-shcluster_label" 
-| table shcluster_label Property Value stanza app 
+| table shcluster_label app stanza Property Value 
 | sort shcluster_label Property 
 | `rename_search_concurrency_fields` 
 | `rename_shcluster_fields` 
@@ -539,14 +545,6 @@ Assets &amp; Identities Information Dashboard</description>
         <format type="number" field="Max Real-Time Searches">
           <option name="precision">0</option>
         </format>
-        <format type="color" field="Property">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-        <format type="color" field="Value">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
         <format type="number" field="Value">
           <option name="precision">0</option>
         </format>
@@ -594,7 +592,7 @@ Assets &amp; Identities Information Dashboard</description>
     </panel>
   </row>
   <row id="Assets_Panel5">
-    <panel id="panel_accordion_togglepanel_true_10" depends="$gadget_lib_loaded$">
+    <panel id="panel_accordion_togglepanel_false_10" depends="$gadget_lib_loaded$">
       <title>9. Assets Mount Points &amp; Capacity</title>
       <input type="time" token="TimeRangePkr2" searchWhenChanged="true">
         <label>1. Time Range</label>
@@ -708,9 +706,7 @@ Assets &amp; Identities Information Dashboard</description>
       <title>10. Associated Assets Job(s)</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_assets_kv_store_lookup_gen" target="_blank" rel="noopener">Assets KV Store Gen Job From REST</a>
-               </li>
+             
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_assets_summary_data_gen" target="_blank" rel="noopener">Assets Summary Index Gen Job From REST</a>
                </li>
@@ -1008,24 +1004,11 @@ Assets &amp; Identities Information Dashboard</description>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="last_successful_login" searchWhenChanged="true">
-        <label>24. Last Successful Login (From REST)</label>
-        <choice value="*">All</choice>
-        <fieldForLabel>last_successful_login_d</fieldForLabel>
-        <fieldForValue>last_successful_login</fieldForValue>
-        <search base="a01_assets_identities_tab2">
-          <query>| stats count by last_successful_login
-| eval last_successful_login_d = strftime(last_successful_login, "%m/%d/%Y %H:%M:%S")</query>
-        </search>
-        <default>*</default>
-        <initialValue>*</initialValue>
-      </input>
       <table>
         <title>Identities List with details</title>
         <search base="a01_assets_identities_tab2">
-          <query>| table identity shcluster_label first last emp_name emp_email last_successful_login auth_type emp_city emp_region1 emp_country emp_title emp_lob1 emp_dep emp_type emp_status emp_cc emp_location emp_floor emp_manager emp_startDate emp_endDate Contractor_Expiration locked-out phone
+          <query>| table identity shcluster_label emp_first emp_last emp_name emp_email auth_type emp_city emp_region1 emp_country emp_title emp_lob1 emp_dep emp_type emp_status emp_cc emp_location emp_floor emp_manager emp_startDate emp_endDate Contractor_Expiration locked-out phone
     `gmc_comment("capabilities,imported_capabilities")` 
-| convert ctime(last_successful_login) 
 | `rename_identity_fields` 
 | `rename_splunk_roles_fields` 
 | rename shcluster_label As "SH Cluster Label"</query>
@@ -1070,10 +1053,6 @@ Assets &amp; Identities Information Dashboard</description>
           <scale type="sharedCategory"></scale>
         </format>
         <format type="color" field="User Identity">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
-        </format>
-        <format type="color" field="User Full Name">
           <colorPalette type="sharedList"></colorPalette>
           <scale type="sharedCategory"></scale>
         </format>
@@ -1440,18 +1419,8 @@ Assets &amp; Identities Information Dashboard</description>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="exclude_users_no_login" searchWhenChanged="true">
-        <label>22. Filter out users didn't login to the platform</label>
-        <choice value="| where isnotnull(Latest_Access)">Yes</choice>
-        <choice value="| noop">No</choice>
-        <search>
-          <query/>
-        </search>
-        <default>| where isnotnull(Latest_Access)</default>
-        <initialValue>| where isnotnull(Latest_Access)</initialValue>
-      </input>
       <input type="text" token="identity" searchWhenChanged="true">
-        <label>23. Identity (User)</label>
+        <label>22. Identity (User)</label>
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
@@ -1465,8 +1434,6 @@ Assets &amp; Identities Information Dashboard</description>
     cumulativeSrchJobsQuota cumulativeRTSrchJobsQuota
     srchIndexesAllowed imported_srchIndexesAllowed 
     srchIndexesDefault imported_srchIndexesDefault srchJobsQuota_Final 
-| `get_identity_usage(identity)` 
-    $exclude_users_no_login$ 
 | table identity shcluster_label Latest_Access emp_name emp_type emp_title emp_dep emp_lob1 
     splunk_role_map imported_roles 
     srchDiskQuota imported_srchDiskQuota
@@ -1561,24 +1528,6 @@ Assets &amp; Identities Information Dashboard</description>
           <option name="precision">0</option>
         </format>
       </table>
-      <single>
-        <title>Total Number of Identities</title>
-        <search base="a01_assets_identities_tab2">
-          <query>| `get_identity_usage(identity)`
- $exclude_users_no_login$ 
-| stats dc(identity)</query>
-        </search>
-        <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
-        <option name="height">50</option>
-        <option name="numberPrecision">0</option>
-        <option name="rangeColors">["0x53a051","0x006d9c"]</option>
-        <option name="rangeValues">[0]</option>
-        <option name="refresh.display">preview</option>
-        <option name="unit">Users</option>
-        <option name="unitPosition">after</option>
-        <option name="useColors">1</option>
-      </single>
     </panel>
   </row>
   <row id="Identities_Panel4">
@@ -1638,18 +1587,14 @@ Assets &amp; Identities Information Dashboard</description>
       <title>11. Associated Identities Job(s)</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_identities_kv_store_lookup_gen" target="_blank" rel="noopener">Identities KV Store Gen Job From REST</a>
-               </li>
+           
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_identities_summary_data_gen" target="_blank" rel="noopener">Identities Summary Index Gen Job From REST</a>
                </li>
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_summary_identities_kv_store_lookup_gen" target="_blank" rel="noopener">Identitie KV Store Gen Job From Summary Index</a>
                </li>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_authorization_roles_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk User Roles KV Store Gen Job From REST</a>
-               </li>
+           
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_authorization_roles_sh_summary_data_gen" target="_blank" rel="noopener">Splunk User Roles Summary Index Gen Job From REST</a>
                </li>

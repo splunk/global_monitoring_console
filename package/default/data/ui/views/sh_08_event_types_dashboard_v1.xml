@@ -1,5 +1,6 @@
-<form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>SH - 08 - Event Types - Dashboard - v1</label>
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
+  <label>SH - 08 - Event Types Analysis - Dashboard - v3.0.7</label>
   <description>Splunk Event Types Information Dashboard</description>
   <search id="sh_15_event_types">
     <query>| from lookup:splunk_rest_admin_eventtypes_sh_kv_store_lookup
@@ -17,6 +18,13 @@
  Macro_Reference="$Macro_Reference2$" Index_Reference="$Index_Reference2$" Sourcetype_Reference="$Sourcetype_Reference2$" Source_Reference="$Source_Reference2$" Eventtype_Reference="$Eventtype_Reference2$" acl_removable=$acl_removable$</query>
   </search>
   <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 08 - Event Types - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
       <title>1. Event Types Filters</title>
@@ -412,14 +420,12 @@
       <title>4. Associated GMC Job(s) - $env:page$</title>
       <html>
             <ol>
-               <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Event Types KV Store Gen Job From REST</a>
-               </li>
+              
                <li>
                   <a href="/app/global_monitoring_console/search?s=splunk_rest_admin_eventtypes_sh_summary_data_gen" target="_blank" rel="noopener">Splunk Event Types Summary Index Gen Job From REST</a>
                </li>
                <li>
-                  <a href="/app/global_monitoring_console/search?s=splunk_summary_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Event Types Summary Index Gen Job From REST</a>
+                  <a href="/app/global_monitoring_console/search?s=splunk_summary_admin_eventtypes_sh_kv_store_lookup_gen" target="_blank" rel="noopener">Splunk Event KV Store Gen Job From Summary Index</a>
                </li>
             </ol>
             <div class="btn-group1">

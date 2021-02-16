@@ -1,15 +1,20 @@
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 -->
+
 <form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>UF - 02 - Forwarding Analysis - Summary Index Based - Dashboard - v1</label>
+  <label>UF - 02 - Forwarding Analysis - Summary Index Based - Dashboard - v3.0.7</label>
   <description>Splunk Forwarding Analysis Information Summary Index Based Dashboard</description>
   <search id="uf_02_forwarding">
     <query>
 index=`setup_summary_index` source="splunk_internal_forwarder_stats_idx_summary_tracker" ( idxcluster_label="$idxcluster_label$" Indexers="$Indexers$" hostname="*$hostname$*" sourceIp="*$sourceIp$*" os="$os$" version="$version$" fwdType="$fwdType$" connectionType="$connectionType$" arch="$arch$" ack="$ack$" ingest_pipe="$ingest_pipe$" ssl="$ssl$" )
 | fields _time source idxcluster_label Indexers hostname sourceHost sourceIp ack arch chan_new_kBps connectionType destPort evt_fields_kBps evt_fn_kBps evt_fn_meta_dyn_kBps evt_fn_meta_predef_kBps evt_fn_meta_str_kBps evt_fn_str_kBps evt_fv_fp_kBps evt_fv_kBps evt_fv_num_kBps evt_fv_offlen_kBps evt_fv_predef_kBps evt_fv_str_kBps evt_misc_kBps evt_raw_kBps fwdType guid ingest_pipe kb lastIndexer os process_time_ms sourcePort ssl tcp_avg_thruput tcp_Bps tcp_eps tcp_KBps tcp_Kprocessed udp_avg_thruput udp_Bps udp_eps udp_KBps udp_Kprocessed tz_kBps version
-| makemv delim="," ingest_pipe | makemv delim="," lastIndexer | makemv delim="," destPort | makemv delim="," Indexers
     </query>
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
   </search>
+  
+  <row><panel><html><h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">UF - 02 - Forwarding Analysis - Summary Index Based - Dashboard - v1 (Updated: Jan 31, 2021)</h1></html></panel></row>
+  
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
     <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+// SPDX-License-Identifier: Apache-2.0 
+
 require.config({
     paths: {
         datatables: "../app/global_monitoring_console/contrib/DataTables/js/jquery.dataTables",
@@ -66,7 +69,7 @@ function(_, mvc, $, SimpleSplunkView, HelpEntryListTemplate, dataTables) {
          * http://stackoverflow.com/questions/11634809/twitter-bootstrap-focus-on-textarea-inside-a-modal-on-click
          */
         focusView: function(){
-            $('#help_entry-text', this.$el).focus();
+            $('#help_entry-srch_des', this.$el).focus();
         },
 
 
@@ -94,28 +97,28 @@ function(_, mvc, $, SimpleSplunkView, HelpEntryListTemplate, dataTables) {
                 only_if_blank = false;
             }
                         
-            if( $('#help_entry-app', this.$el).val().length === 0 || !only_if_blank){
-                $('#help_entry-app', this.$el).val(help_entry.app);
+            if( $('#help_entry-srch_num', this.$el).val().length === 0 || !only_if_blank){
+                $('#help_entry-srch_num', this.$el).val(help_entry.srch_num);
             }
 
-            if( $('#help_entry-view', this.$el).val().length === 0 || !only_if_blank){
-                $('#help_entry-view', this.$el).val(help_entry.view);
+            if( $('#help_entry-srch_nme', this.$el).val().length === 0 || !only_if_blank){
+                $('#help_entry-srch_nme', this.$el).val(help_entry.srch_nme);
             }
 
-            if( $('#help_entry-panel', this.$el).val().length === 0 || !only_if_blank){
-                $('#help_entry-panel', this.$el).val(help_entry.panel);
+            if( $('#help_entry-srch_tag', this.$el).val().length === 0 || !only_if_blank){
+                $('#help_entry-srch_tag', this.$el).val(help_entry.srch_tag);
             }                        
             
-            if( help_entry.classification !== null && $('#help_entry-classification', this.$el).val() !== help_entry.classification){
-                $('#help_entry-classification', this.$el).val(help_entry.classification);
+            if( help_entry.srch_cat !== null && $('#help_entry-srch_cat', this.$el).val() !== help_entry.srch_cat){
+                $('#help_entry-srch_cat', this.$el).val(help_entry.srch_cat);
             }
 
-            if( $('#help_entry-text', this.$el).val().length === 0 || !only_if_blank){
-                $('#help_entry-text', this.$el).val(help_entry.text);
+            if( $('#help_entry-srch_des', this.$el).val().length === 0 || !only_if_blank){
+                $('#help_entry-srch_des', this.$el).val(help_entry.srch_des);
             }
 
-            if( $('#help_entry-app_version', this.$el).val().length === 0 || !only_if_blank){
-                $('#help_entry-app_version', this.$el).val(help_entry.app_version);
+            if( $('#help_entry-srch_str', this.$el).val().length === 0 || !only_if_blank){
+                $('#help_entry-srch_str', this.$el).val(help_entry.srch_str);
             } 
 
                         
@@ -134,12 +137,12 @@ function(_, mvc, $, SimpleSplunkView, HelpEntryListTemplate, dataTables) {
         },
 
         clearForm: function(){
-            $('#help_entry-app', this.$el).val("");
-            $('#help_entry-view', this.$el).val("");
-            $('#help_entry-panel', this.$el).val("");
-            $('#help_entry-classification', this.$el).val("low");
-            $('#help_entry-text', this.$el).val("");
-            $('#help_entry-app_version', this.$el).val("");
+            $('#help_entry-srch_num', this.$el).val("");
+            $('#help_entry-srch_nme', this.$el).val("");
+            $('#help_entry-srch_tag', this.$el).val("");
+            $('#help_entry-srch_cat', this.$el).val("low");
+            $('#help_entry-srch_des', this.$el).val("");
+            $('#help_entry-srch_str', this.$el).val("");
             $('#help_entry-key', this.$el).val("");
         },
 
@@ -169,15 +172,15 @@ function(_, mvc, $, SimpleSplunkView, HelpEntryListTemplate, dataTables) {
             }
             
             // Update the attributes
-            help_entry.app = $('#help_entry-app', this.$el).val();
-            help_entry.view = $('#help_entry-view', this.$el).val();
-            help_entry.panel = $('#help_entry-panel', this.$el).val();
-            help_entry.classification = $('#help_entry-classification', this.$el).val();
-            help_entry.text = $('#help_entry-text', this.$el).val();
-            help_entry.app_version = $('#help_entry-app_version', this.$el).val();
+            help_entry.srch_num = $('#help_entry-srch_num', this.$el).val();
+            help_entry.srch_nme = $('#help_entry-srch_nme', this.$el).val();
+            help_entry.srch_tag = $('#help_entry-srch_tag', this.$el).val();
+            help_entry.srch_cat = $('#help_entry-srch_cat', this.$el).val();
+            help_entry.srch_des = $('#help_entry-srch_des', this.$el).val();
+            help_entry.srch_str = $('#help_entry-srch_str', this.$el).val();
             
             if(is_new){
-                help_entry.disabled = false;
+                help_entry.srch_sts = false;
             }
             
             this.doUpdateToHelpEntry(help_entry, key);
@@ -189,7 +192,7 @@ function(_, mvc, $, SimpleSplunkView, HelpEntryListTemplate, dataTables) {
             var disabled = $(event.target).data('disabled');
             
             help_entry = this.getHelpEntry(key);
-            help_entry.disabled = disabled;
+            help_entry.srch_sts = disabled;
             this.doUpdateToHelpEntry(help_entry, key);
         },
 
@@ -197,7 +200,7 @@ function(_, mvc, $, SimpleSplunkView, HelpEntryListTemplate, dataTables) {
             var key = $(event.target).data('key');
             help_entry = this.getHelpEntry(key);
 
-            if (confirm('Are you sure you want to delete help entry for panel "'+ help_entry.panel +'" of view "'+ help_entry.view +'" in app "' + help_entry.app + '"?')) {
+            if (confirm('Are you sure you want to delete help entry for panel "'+ help_entry.srch_tag +'" of view "'+ help_entry.srch_nme +'" in app "' + help_entry.srch_num + '"?')) {
 
                 var uri = null;
                 

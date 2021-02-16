@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+// SPDX-License-Identifier: Apache-2.0 
+
 require.config({
     paths: {
         "app": "../app"
@@ -83,9 +86,9 @@ require([
     // Get help entries
     uri = Splunk.util.make_url("/splunkd/__raw/servicesNS/-/system/apps/local/" + app + "?output_mode=json");
     $.get(uri, function (data) {
-        var app_version = data["entry"][0]["content"]["version"];
+        var srch_str = data["entry"][0]["content"]["version"];
         var help_entries = false;
-        query = encodeURIComponent('{"app": "' + app + '", "view": "' + view + '", "disabled": false, "$or": [{ "app_version": "any"}, { "app_version": "' + app_version + '" }] }');
+        query = encodeURIComponent('{"app": "' + app + '", "view": "' + view + '", "disabled": false, "$or": [{ "srch_str": "any"}, { "srch_str": "' + srch_str + '" }] }');
         uri = Splunk.util.make_url("/splunkd/__raw/servicesNS/nobody/global_monitoring_console/storage/collections/data/help_entries?query=" + query + "&output_mode=json");
 
         jQuery.ajax({
@@ -115,16 +118,16 @@ require([
 
                     var panel_help_entry = _.filter(help_entries, function (item) { return item.panel == panel.id });
                     var editorUrl = Splunk.util.make_url('/app/global_monitoring_console/help_entry_editor');
-                    var message = '<i>For this panel (ID: ' + panel.id + ') doesn\'t exist any active help entry matching the app version ' + app_version + '.</i><br /><a href="' + editorUrl + '">Manage Help Entries</a></i>';
+                    var message = '<i>For this panel (ID: ' + panel.id + ') doesn\'t exist any active help entry matching the app version ' + srch_str + '.</i><br /><a href="' + editorUrl + '">Manage Help Entries</a></i>';
                     if (panel_help_entry.length > 0) {
-                        message = panel_help_entry[0].text;
+                        message = panel_help_entry[0].srch_des;
                     }
 
                     var title = headerEl.html();
                     createModal(panel.id, title, message);
 
-                    if (panel_help_entry.length > 0 && panel_help_entry[0].classification != "") {
-                        headerEl.append('<div style="float: right"><span class="classification-' + panel_help_entry[0].classification + '" style="margin-right: 6px">' + panel_help_entry[0].classification + '</span> <a data-toggle="modal" href="#' + panel.id + '" class="icon-info" style="text-decoration: none"> </a></div>');
+                    if (panel_help_entry.length > 0 && panel_help_entry[0].srch_cat != "") {
+                        headerEl.append('<div style="float: right"><span class="srch_cat-' + panel_help_entry[0].srch_cat + '" style="margin-right: 6px">' + panel_help_entry[0].srch_cat + '</span> <a data-toggle="modal" href="#' + panel.id + '" class="icon-info" style="text-decoration: none"> </a></div>');
                     } else {
                         headerEl.append('<div style="float: right"><a data-toggle="modal" href="#' + panel.id + '" class="icon-info" style="text-decoration: none"> </a></div>');
                     }
@@ -135,9 +138,9 @@ require([
                 // Update view description
                 var view_help_entry = _.filter(help_entries, function (item) { return item.panel == view });
                 if (view_help_entry.length > 0) {
-                    descEl.append('<div style="width: 50%"><div style="width: 30%; float: left"><b>Classification:</b></div><div><span class="classification-' + view_help_entry[0].classification + '">' + view_help_entry[0].classification + '</span></div></div>');
-                    if (view_help_entry[0].text != "") {
-                        descEl.append('<div style="width: 50%"><div style="width: 30%; float: left"><b>Info:</b></div><div style="display: table-cell;">' + view_help_entry[0].text + '</div></div>');
+                    descEl.append('<div style="width: 50%"><div style="width: 30%; float: left"><b>Classification:</b></div><div><span class="srch_cat-' + view_help_entry[0].srch_cat + '">' + view_help_entry[0].srch_cat + '</span></div></div>');
+                    if (view_help_entry[0].srch_des != "") {
+                        descEl.append('<div style="width: 50%"><div style="width: 30%; float: left"><b>Info:</b></div><div style="display: table-cell;">' + view_help_entry[0].srch_des + '</div></div>');
                     }
                 }
 

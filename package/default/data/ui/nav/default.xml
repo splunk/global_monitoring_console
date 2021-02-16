@@ -1,3 +1,6 @@
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 -->
+
 <nav search_view="search" color="#ffde63">
     <view name="all_05_home_dashboard_v1" />
     <view name="search" />
@@ -9,10 +12,11 @@
         <a href="sh_01_dashboards_deep_analysis_dashboard_v1" target="_blank" rel="noopener">SH-01 Dashboards Deep Analysis</a>
         <a href="sh_02_reports_alerts_deep_analysis_dashboard_v1" target="_blank" rel="noopener">SH-02 Reports/Alerts Deep Analysis</a>
         <a href="sh_03_lookups_deep_analysis_dashboard_v1" target="_blank" rel="noopener">SH-03 Lookups Deep Analysis</a>
-        <a href="sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a>
-        <a href="sh_05_audit_users_activity_dashboard_v1" target="_blank" rel="noopener">SH-05 Audit Users Activity</a>
+      	<a href="sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a>
+        <a href="sh_05_audit_users_activity_dashboard_v2" target="_blank" rel="noopener">SH-05 Audit Users Activity v2</a>
         <a href="sh_06_skipped_and_deferred_search_analysis_dashboard_v2" target="_blank" rel="noopener">SH-06 Skipped and Deferred Searches</a>
-        <a href="idx_02_indexes_dashboard_v1" target="_blank" rel="noopener">IDX-02 Splunk Indexes</a>
+        <a href="sh_15_business_app_analysis_splunk_virtual_core_svc_usage_dashboard_v1" target="_blank" rel="noopener">SH-15 Cloud SVC Usage Analysis</a>
+        <a href="idx_02_indexes_dashboard_v1" target="_blank" rel="noopener">IDX-02 Splunk Indexes Analysis</a>
     </collection>
     <collection label="Dashboards">
         <collection label="Search Head Tier">
@@ -20,47 +24,52 @@
             <a href="sh_02_reports_alerts_deep_analysis_dashboard_v1" target="_blank" rel="noopener">SH-02 Reports/Alerts Deep Analysis</a>
             <a href="sh_03_lookups_deep_analysis_dashboard_v1" target="_blank" rel="noopener">SH-03 Lookups Deep Analysis</a>
             <a href="sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a>
-            <a href="sh_05_audit_users_activity_dashboard_v1" target="_blank" rel="noopener">SH-05 Audit Users Activity</a>
+            <a href="sh_05_audit_users_activity_dashboard_v2" target="_blank" rel="noopener">SH-05 Audit Users Activity</a>
             <a href="sh_06_skipped_and_deferred_search_analysis_dashboard_v2" target="_blank" rel="noopener">SH-06 Skipped and Deferred Searches</a>
-            <a href="sh_07_fields_dashboard_v1" target="_blank" rel="noopener">SH-07 Fields</a>
-            <a href="sh_08_event_types_dashboard_v1" target="_blank" rel="noopener">SH-08 Event Types</a>
-            <a href="sh_09_macros_dashboard_v1" target="_blank" rel="noopener">SH-09 Macros</a>
-            <a href="sh_10_source_types_dashboard_v1" target="_blank" rel="noopener">SH-10 Source Types</a>
-            <a href="sh_11_data_models_dashboard_v1" target="_blank" rel="noopener">SH-11 Data Models</a>
+            <a href="sh_07_fields_dashboard_v1" target="_blank" rel="noopener">SH-07 Fields Analysis</a>
+            <a href="sh_08_event_types_dashboard_v1" target="_blank" rel="noopener">SH-08 Event Types Analysis</a>
+            <a href="sh_09_macros_dashboard_v1" target="_blank" rel="noopener">SH-09 Macros Analysis</a>
+            <a href="sh_10_source_types_dashboard_v1" target="_blank" rel="noopener">SH-10 Source Types Analysis</a>
+            <a href="sh_11_data_models_dashboard_v1" target="_blank" rel="noopener">SH-11 Data Models Analysis</a>
             <a href="sh_12_scheduled_search_balance_dashboard_v1" target="_blank" rel="noopener">SH-12 Scheduled Search Balance</a>
-            <a href="sh_15_business_app_analysis_splunk_virtual_core_svc_usage_dashboard_v1" target="_blank" rel="noopener">SH-15 Business App Analysis</a>
-            <a href="sh_16_splunk_apps_dashboard_v1" target="_blank" rel="noopener">SH-16 Splunk Apps</a>
+            <a href="sh_13_splunk_ko_archive_dashboard_v1" target="_blank" rel="noopener">SH-13 Archived Splunk Knowledge Objects</a>
+            <a href="sh_14_knowledge_objects_changes_dashboard_v1" target="_blank" rel="noopener">SH-14 Splunk Knowledge Object Changes</a>
+            <a href="sh_15_business_app_analysis_splunk_virtual_core_svc_usage_dashboard_v1" target="_blank" rel="noopener">SH-15 Splunk Cloud Virtual Core (SVC) Usage Analysis</a>
+            <a href="sh_16_splunk_apps_dashboard_v1" target="_blank" rel="noopener">SH-16 Splunk Apps Analysis</a>
             <a href="sh_17_automation_dashboard_v2" target="_blank" rel="noopener">SH-17 Automation v2</a>
-            <a href="sh_20_adoption_dashboard_v1" target="_blank" rel="noopener">SH-20 Splunk Adoption</a>
         </collection>
         <collection label="Indexer Tier">
-            <a href="idx_01_data_quality_dashboard_v1" target="_blank" rel="noopener">IDX-01 Data Quality</a>
-            <a href="idx_02_indexes_dashboard_v1" target="_blank" rel="noopener">IDX-02 Indexes</a>
+            <a href="idx_01_data_quality_dashboard_v1" target="_blank" rel="noopener">IDX-01 Data Quality Analysis</a>
+            <a href="idx_02_indexes_dashboard_v1" target="_blank" rel="noopener">IDX-02 Indexes Analysis</a>
             <a href="idx_03_network_statistics_dashboard_v1" target="_blank" rel="noopener">IDX-03 Network Statistics</a>
             <a href="idx_04_disk_io_statistics_dashboard_v1" target="_blank" rel="noopener">IDX-04 DISK IO Statistics</a>
-            <a href="idx_05_inputs_dashboard_v1" target="_blank" rel="noopener">IDX-05 Data Inputs</a>
-            <a href="idx_06_cluster_bucket_status_dashboard_v1" target="_blank" rel="noopener">IDX-06 Cluster Buckets</a>
-            <a href="idx_07_indexer_queues_dashboard_v1" target="_blank" rel="noopener">IDX-07 Queues</a>
+            <a href="idx_05_inputs_dashboard_v1" target="_blank" rel="noopener">IDX-05 Data Inputs Analysis</a>
+            <a href="idx_06_cluster_bucket_status_dashboard_v1" target="_blank" rel="noopener">IDX-06 Cluster Buckets Analysis</a>
+            <a href="idx_07_indexer_queues_dashboard_v1" target="_blank" rel="noopener">IDX-07 Queues Analysis</a>
             <a href="idx_09_http_event_collector_dashboard_v1" target="_blank" rel="noopener">IDX-09 HTTP Event Collector</a>
             <a href="idx_11_executive_summaries_by_business_unit_dashboard_v1" target="_blank" rel="noopener">IDX-11 ESBU</a>
         </collection>
         <collection label="Forwarder Tier">
             <a href="uf_01_forwarding_analysis_dashboard_v1" target="_blank" rel="noopener">UF-01 Forwarder Analysis</a>
             <a href="uf_02_forwarding_analysis_summary_index_dashboard_v1" target="_blank" rel="noopener">UF-02 Forwarder Analysis Summary</a>
+            <a href="uf_05_deployment_server_analysis_dashboard_v1" target="_blank" rel="noopener">UF-05 Deployment Server Analysis</a>
         </collection>
         <collection label="Resource Usage">
-            <a href="all_09_resource_usage_dashboard_v1" target="_blank" rel="noopener">09 - Resource Usage</a>
+            <a href="all_09_resource_usage_dashboard_v1" target="_blank" rel="noopener">09 - Resource Usage Analysis</a>
         </collection>
         <collection label="Configuration Files">
-            <a href="all_08_config_files_dashboard_v1" target="_blank" rel="noopener">08 - Configuration Files</a>
+            <a href="all_08_config_files_dashboard_v1" target="_blank" rel="noopener">08 - Configuration Files Analysis</a>
         </collection>
-         <collection label="REST Endpoints">
+         <collection label="Other">
+            <a href="all_11_app_validation_certification_dashboard_v1" target="_blank" rel="noopener">11 - App Validation / Certification</a>
+            <a href="all_12_deploying_splunk_with_base_configs_dashboard_v1" target="_blank" rel="noopener">12 - Deploying Splunk with Base Configs</a>
             <a href="all_13_rest_dashboard_v1" target="_blank" rel="noopener">13 - REST Reference</a>
         </collection>
     </collection>
     <collection label="App">
-        <view name="all_03_app_dashboard_v1" />
-        <view name="all_07_setup_dashboard_v1" />
+        <a href="all_03_app_dashboard_v1" target="_blank" rel="noopener">03 - App and Health Info</a>
+        <a href="all_07_ta_setup_dashboard_v1" target="_blank" rel="noopener">07A - TA Setup</a>
+        <a href="all_07_setup_dashboard_v1" target="_blank" rel="noopener">07B - App Setup</a>
     </collection>
     <collection label="MC">
         <collection label="Indexing">
