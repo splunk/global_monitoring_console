@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>IDX - 03 - Network Statistics - Dashboard - v3.0.7</label>
+  <label>IDX - 03 - Network Statistics - Dashboard - v2.0.80</label>
   <description>Network Statistics using the Splunk_TA_nix netstat Scripted Inputs</description>
   <search id="idx_03_network_statistics">
     <query>index=osnixperf sourcetype=netstat host="$host$" | multikv | rename Proto as transport, State as state, Recv_Q as receive_queue, Send_Q as send_queue | rex field=LocalAddress "(?&lt;src_ip&gt;\d+.\d+.\d+.\d+):" | rex field=ForeignAddress "(?&lt;dest_ip&gt;\d+.\d+.\d+.\d+):" | rex field=LocalAddress ":(?&lt;src_port&gt;\d+?)$" | rex field=ForeignAddress ":(?&lt;dest_port&gt;\d+?)$" 

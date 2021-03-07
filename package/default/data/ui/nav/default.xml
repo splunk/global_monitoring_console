@@ -12,10 +12,9 @@ SPDX-License-Identifier: Apache-2.0 -->
         <a href="sh_01_dashboards_deep_analysis_dashboard_v1" target="_blank" rel="noopener">SH-01 Dashboards Deep Analysis</a>
         <a href="sh_02_reports_alerts_deep_analysis_dashboard_v1" target="_blank" rel="noopener">SH-02 Reports/Alerts Deep Analysis</a>
         <a href="sh_03_lookups_deep_analysis_dashboard_v1" target="_blank" rel="noopener">SH-03 Lookups Deep Analysis</a>
-      	<a href="sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a>
+        <a href="sh_04_audit_search_activity_dashboard_v1" target="_blank" rel="noopener">SH-04 Audit Search Activity</a>
         <a href="sh_05_audit_users_activity_dashboard_v2" target="_blank" rel="noopener">SH-05 Audit Users Activity v2</a>
         <a href="sh_06_skipped_and_deferred_search_analysis_dashboard_v2" target="_blank" rel="noopener">SH-06 Skipped and Deferred Searches</a>
-        <a href="sh_15_business_app_analysis_splunk_virtual_core_svc_usage_dashboard_v1" target="_blank" rel="noopener">SH-15 Cloud SVC Usage Analysis</a>
         <a href="idx_02_indexes_dashboard_v1" target="_blank" rel="noopener">IDX-02 Splunk Indexes Analysis</a>
     </collection>
     <collection label="Dashboards">
@@ -68,8 +67,8 @@ SPDX-License-Identifier: Apache-2.0 -->
     </collection>
     <collection label="App">
         <a href="all_03_app_dashboard_v1" target="_blank" rel="noopener">03 - App and Health Info</a>
-        <a href="all_07_ta_setup_dashboard_v1" target="_blank" rel="noopener">07A - TA Setup</a>
-        <a href="all_07_setup_dashboard_v1" target="_blank" rel="noopener">07B - App Setup</a>
+        <a href="/app/TA_global_monitoring_console/all_07a_setup_dashboard_v1" target="_blank" rel="noopener">07A - TA Setup</a>
+        <a href="all_07b_setup_dashboard_v1" target="_blank" rel="noopener">07B - App Setup</a>
     </collection>
     <collection label="MC">
         <collection label="Indexing">

@@ -1,10 +1,10 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>01 - Assets &amp; Identities - Dashboard - v3.0.7</label>
+  <label>01 - Assets &amp; Identities - Dashboard - v2.0.80</label>
   <description>Assets &amp; Identities Information Dashboard</description>
   <search id="a01_assets_identities_tab1">
     <query>| from lookup:splunk_rest_assets_kv_store_lookup
-| fields _time Splunk_Instance Splunk_Roles serverName host host_short host_fqdn host_resolved host_ip idxcluster_label shcluster_label mode guid version build os_name os_name_extended cpu_arch os_version os_build startup_time kvStoreStatus numberOfCores numberOfVirtualCores physicalMemoryMB rtsearch_enabled master_uri master_guid licenseState isForwarding isTrial license_labels transparent_hugepages_defrag transparent_hugepages_effective_state transparent_hugepages_enabled ulimits_core_file_size ulimits_cpu_time ulimits_data_file_size ulimits_data_segment_size ulimits_nice ulimits_open_files ulimits_resident_memory_size ulimits_stack_size ulimits_user_processes ulimits_virtual_address_space_size SPLUNK_DB SPLUNK_HOME appServerPorts dfsDisabled dfsMasterPort enableSplunkWebSSL httpport kvStoreDisabled kvStorePort mgmtHostPort minFreeSpace sessionTimeout startwebserver trustedIP
+| fields _time Splunk_Instance Splunk_Roles serverName host host_short host_fqdn host_resolved host_ip idxcluster_label shcluster_label mode guid version build os_name os_name_extended cpu_arch os_version os_build startup_time kvStoreStatus numberOfCores numberOfVirtualCores physicalMemoryMB rtsearch_enabled master_uri master_guid licenseState isForwarding isTrial license_labels transparent_hugepages_defrag transparent_hugepages_effective_state transparent_hugepages_enabled ulimits_core_file_size ulimits_cpu_time ulimits_data_file_size ulimits_data_segment_size ulimits_nice ulimits_open_files ulimits_resident_memory_size ulimits_stack_size ulimits_user_processes ulimits_virtual_address_space_size SPLUNK_DB SPLUNK_HOME appServerPorts dfsDisabled dfsMasterPort enableSplunkWebSSL httpport kvStoreDisabled kvStorePort mgmtHostPort minFreeSpace sessionTimeout startwebserver trustedIP aws_type
 | eval isForwarding = if (match(Splunk_Roles, "indexer"), "N/A", isForwarding)
 | fillnull value="undefined" idxcluster_label shcluster_label Splunk_Roles Splunk_Instance host_ip
 | search Splunk_Instance="*$Splunk_Instance$*" Splunk_Roles="*$Splunk_Roles$*" os_name="$os_name$" version="$version$" isForwarding="$isForwarding$" kvStoreDisabled="$kvStoreDisabled$" enableSplunkWebSSL="$enableSplunkWebSSL$" startwebserver="$startwebserver$" idxcluster_label="$idxcluster_label$" shcluster_label="$shcluster_label$" guid="*$guid$*" host_ip="$host_ip$"</query>
@@ -263,12 +263,13 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
 | `gmc_convert_runtime(Time_Since_Startup_Time)` 
 | convert ctime(startup_time) 
 | eval Memory = round (physicalMemoryMB / 1024, 2) 
-| table Splunk_Instance  idxcluster_label shcluster_label host_fqdn guid host_short host_ip version numberOfCores numberOfVirtualCores Memory os_name os_version startup_time Time_Since_Startup_Time isForwarding ulimits_open_files ulimits_stack_size ulimits_user_processes transparent_hugepages_defrag transparent_hugepages_effective_state transparent_hugepages_enabled appServerPorts dfsDisabled dfsMasterPort enableSplunkWebSSL httpport kvStoreDisabled kvStorePort mgmtHostPort minFreeSpace sessionTimeout startwebserver trustedIP SPLUNK_DB SPLUNK_HOME
+| table Splunk_Instance  idxcluster_label shcluster_label host_fqdn aws_type guid host_short host_ip version numberOfCores numberOfVirtualCores Memory os_name os_version startup_time Time_Since_Startup_Time isForwarding ulimits_open_files ulimits_stack_size ulimits_user_processes transparent_hugepages_defrag transparent_hugepages_effective_state transparent_hugepages_enabled appServerPorts dfsDisabled dfsMasterPort enableSplunkWebSSL httpport kvStoreDisabled kvStorePort mgmtHostPort minFreeSpace sessionTimeout startwebserver trustedIP SPLUNK_DB SPLUNK_HOME
 | `rename_common_fields` 
 | `rename_instance_fields`</query>
         </search>
         <option name="count">10</option>
         <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="wrap">false</option>
         <format type="number" field="Memory">
@@ -1650,28 +1651,23 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
   </row>
   <row>
     <panel>
-      <table>
+      <single>
+        <title>Assets Latest Refresh</title>
         <search base="a01_assets_identities_tab1">
-          <query>| stats Latest(_time) As _time 
-| fields _time 
+          <query>| stats latest(_time) As _time
 | `strftime_format(_time)` 
 | rename _time As "splunk_rest_assets_kv_store Latest Refresh"</query>
         </search>
-        <option name="drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
-        <option name="wrap">false</option>
-      </table>
-      <table>
+      </single>
+      <single>
+        <title>Identities Latest Refresh</title>
         <search base="a01_assets_identities_tab2">
-          <query>| stats Latest(_time) As _time 
-| fields _time 
+          <query>| stats latest(_time) As _time 
 | `strftime_format(_time)` 
 | rename _time As "splunk_rest_identities_kv_store Latest Refresh"</query>
         </search>
-        <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
-        <option name="wrap">false</option>
-      </table>
+      </single>
     </panel>
   </row>
 </form>

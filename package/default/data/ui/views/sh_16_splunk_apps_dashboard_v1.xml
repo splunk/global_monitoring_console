@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
-SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>SH - 16 - Splunk Apps - Dashboard - v3.0.7</label>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
+  <label>SH - 16 - Installed Apps &amp; Splunkbase Apps Analysis - Dashboard - v2.0.80</label>
   <description>Splunk Apps Information Dashboard</description>
   <search id="sh_16_splunk_apps">
     <query>| from lookup:splunk_rest_apps_local_sh_kv_store_lookup
@@ -10,18 +10,41 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
 | rex field=details "id\/(?&lt;Splunkbase_App_Name&gt;\w+)" 
 | `get_app_info(title)`
 | fillnull value="Undefined" Splunk_Roles Splunk_Instance app_type title label core author version build check_for_updates visible sharing disabled configured show_in_nav state_change_requires_restart description details
-| search cluster_label="$cluster_label$" Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$" title="$title$" sharing="$sharing$" app_type IN ($app_type$) NOT app_type IN ($app_type2$)  label="$label$" author="$author$" check_for_updates="$check_for_updates$" visible="$visible$" disabled="$disabled$" configured="$configured$" show_in_nav="$show_in_nav$" description="$description$" details="$details$" acl_perms_read="$acl_perms_read$" acl_perms_write="$acl_perms_write$"</query>
+| search cluster_label="$cluster_label$" Splunk_Instance="$Splunk_Instance$" Splunk_Roles="$Splunk_Roles$" title="$title$" sharing="$sharing$" app_type IN ($app_type$) NOT app_type IN ($app_type2$)  label="$label$" author="$author1$" check_for_updates="$check_for_updates$" visible="$visible$" disabled="$disabled$" configured="$configured$" show_in_nav="$show_in_nav$" details="$details$" acl_perms_read="$acl_perms_read$" acl_perms_write="$acl_perms_write$" description="*$description1$*"
+</query>
   </search>
-  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <search id="sh_16_splunkbase_apps">
+    <query>| from lookup:splunk_base_apps_kv_store_lookup 
+| fields _time, uid, appid, access, type, appinspect_passed, appinspect_status, categories, cim_compatibility, content, created_time, description, author, documentation, download_count, fedramp_validation, install_count, install_method, install_method_distributed, install_method_single, license_name, license_url, notes, passed_validation, path, platform, product_compatibility, published_time, rating_average, rating_count, size, splunk_compatibility, support, version, updated_time, username
+| fillnull value=0 rating_average rating_count install_count download_count
+| fillnull value="undefined"
+| search type IN ($type$) AND appid=$appid$ AND product_compatibility IN ($product_compatibility$) AND categories IN ($categories$) AND content IN ($content$) AND splunk_compatibility IN ($splunk_compatibility$) AND cim_compatibility IN ($cim_compatibility$) install_method_single IN ($install_method_single$) install_method_distributed IN ($install_method_distributed$) author="*$author2$*" description="*$description2$*" rating_average >= $rating_average$ download_count >= $download_count$
+      </query>
+  </search>
+  <fieldset submitButton="true" autoRun="true"></fieldset>
   <row>
     <panel>
       <html>
-        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 16 - Splunk Apps - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 16 - Splunk Apps - Dashboard - v1 (Updated: Feb 28, 2021)</h1>
       </html>
     </panel>
   </row>
-  <row>
-    <panel id="panel_accordion_togglepanel_false_1" depends="$gadget_lib_loaded$">
+  <row id="tabs">
+    <panel>
+      <html>
+            <ul id="tabs" class="nav nav-tabs">
+               <li class="active">
+                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="installed_apps_Inputs,installed_apps_Panel1,installed_apps_Panel2,installed_apps_Panel3,installed_apps_Panel4,installed_apps_Panel5,installed_apps_Panel6">1. Installed Splunk Apps</a>
+               </li>
+               <li>
+                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="splunkbase_apps_Inputs,splunkbase_apps_Panel1,splunkbase_apps_Panel2,splunkbase_apps_Panel3,splunkbase_apps_Panel4,splunkbase_apps_Panel5">2. Splunkbase Apps</a>
+               </li>
+            </ul>
+         </html>
+    </panel>
+  </row>
+  <row id="installed_apps_Inputs">
+    <panel id="panel_accordion_togglepanel_false_11" depends="$gadget_lib_loaded$">
       <title>1. Splunk Apps Filters</title>
       <input type="dropdown" token="cluster_label" searchWhenChanged="true">
         <label>1. Splunk (Cluster/Instance)</label>
@@ -115,9 +138,9 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="author" searchWhenChanged="true">
+      <input type="dropdown" token="author1" searchWhenChanged="true">
         <label>8. Owner</label>
-        <fieldForLabel>author</fieldForLabel>
+        <fieldForLabel>author1</fieldForLabel>
         <fieldForValue>author</fieldForValue>
         <search base="sh_16_splunk_apps">
           <query>| stats count by author</query>
@@ -208,7 +231,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="text" token="description" searchWhenChanged="true">
+      <input type="text" token="description1" searchWhenChanged="true">
         <label>18. Description (Contains)</label>
         <default>*</default>
         <initialValue>*</initialValue>
@@ -220,10 +243,10 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       </input>
     </panel>
   </row>
-  <row>
-    <panel id="panel_accordion_togglepanel_false_2" depends="$gadget_lib_loaded$">
+  <row id="installed_apps_Panel1">
+    <panel id="panel_accordion_togglepanel_false_12" depends="$gadget_lib_loaded$">
+      <title>2. Apps List</title>
       <table>
-        <title>2. Apps List</title>
         <search base="sh_16_splunk_apps">
           <query>| table cluster_label title label version app_type build disabled sharing acl_perms_read acl_perms_write author check_for_updates visible configured show_in_nav state_change_requires_restart details description setup_view attribution_link update_appurl update_homepage docs_section_override managed_by_deployment_client 
 | `rename_common_fields` 
@@ -232,7 +255,6 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
         </search>
         <option name="count">10</option>
         <option name="drilldown">row</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="wrap">false</option>
         <format type="color" field="Splunk_Instance">
@@ -322,8 +344,8 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       </html>
     </panel>
   </row>
-  <row>
-    <panel id="panel_accordion_togglepanel_false_3" depends="$show_single_value$">
+  <row id="installed_apps_Panel2">
+    <panel id="panel_accordion_togglepanel_false_13" depends="$show_single_value$">
       <title>Splunkbase App Info for: $selected_title$</title>
       <table>
         <search base="sh_16_splunk_apps">
@@ -354,8 +376,8 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       </table>
     </panel>
   </row>
-  <row>
-    <panel id="panel_accordion_togglepanel_false_22" depends="$show_single_value$">
+  <row id="installed_apps_Panel3">
+    <panel id="panel_accordion_togglepanel_false_14" depends="$show_single_value$">
       <title>Splunkbase App Overview for: $selected_title$</title>
       <table>
         <search base="sh_16_splunk_apps">
@@ -384,7 +406,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
         </format>
       </table>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_23" depends="$show_single_value$">
+    <panel id="panel_accordion_togglepanel_false_15" depends="$show_single_value$">
       <title>Splunkbase App Details for: $selected_title$</title>
       <table>
         <search base="sh_16_splunk_apps">
@@ -414,8 +436,8 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       </table>
     </panel>
   </row>
-  <row>
-    <panel id="panel_accordion_togglepanel_false_21" depends="$gadget_lib_loaded$">
+  <row id="installed_apps_Panel4">
+    <panel id="panel_accordion_togglepanel_false_16" depends="$gadget_lib_loaded$">
       <title>3. Apps Stats By $split_by_tok_1$</title>
       <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
         <label>1. Split By</label>
@@ -423,14 +445,6 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
         <choice value="Splunk_Instance">Splunk Instance</choice>
         <choice value="sharing">App Sharing</choice>
         <choice value="author">Author (User)</choice>
-        <choice value="emp_name">Employee Name</choice>
-        <choice value="emp_lob1">Employee LOB</choice>
-        <choice value="emp_dep">Employee Department</choice>
-        <choice value="emp_cc">Employee Cost Center</choice>
-        <choice value="emp_title">Employee Title</choice>
-        <choice value="emp_type">Employee Type</choice>
-        <choice value="emp_status">Employee Status</choice>
-        <choice value="updated">Update Date</choice>
         <choice value="disabled">disabled</choice>
         <choice value="check_for_updates">check_for_updates</choice>
         <choice value="visible">visible</choice>
@@ -458,8 +472,8 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       </chart>
     </panel>
   </row>
-  <row>
-    <panel id="panel_accordion_togglepanel_true_4" depends="$gadget_lib_loaded$">
+  <row id="installed_apps_Panel5">
+    <panel id="panel_accordion_togglepanel_true_17" depends="$gadget_lib_loaded$">
       <title>4. Associated GMC Job(s) - $env:page$</title>
       <html>
             <ol>
@@ -488,19 +502,259 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
          </html>
     </panel>
   </row>
-  <row>
+  <row id="installed_apps_Panel6">
     <panel>
       <single>
         <title>Dashboard Latest Refresh</title>
         <search base="sh_16_splunk_apps">
-          <query>| stats count by _time 
-| fields _time 
+          <query>| stats latest(_time) As _time
 | `strftime_format(_time)`
 | rename _time As "Dashboard Latest Refresh"</query>
         </search>
         <option name="drilldown">none</option>
         <option name="height">50</option>
+        <option name="refresh.display">progressbar</option>
       </single>
+    </panel>
+  </row>
+  <row id="splunkbase_apps_Inputs">
+    <panel>
+      <title>1. Splunkbase Apps Filters</title>
+      <input type="text" token="appid" searchWhenChanged="true">
+        <label>App Name</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <prefix>"*</prefix>
+        <suffix>*"</suffix>
+      </input>
+      <input type="text" token="author2" searchWhenChanged="true">
+        <label>Author</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="text" token="description2" searchWhenChanged="true">
+        <label>Description</label>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="multiselect" token="product_compatibility" searchWhenChanged="false">
+        <label>PRODUCTS &amp; SOLUTIONS</label>
+        <search base="sh_16_splunkbase_apps">
+          <query>| stats count by product_compatibility</query>
+        </search>
+        <fieldForLabel>product_compatibility</fieldForLabel>
+        <fieldForValue>product_compatibility</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+        <choice value="*">All</choice>
+      </input>
+      <input type="multiselect" token="categories" searchWhenChanged="false">
+        <label>CATEGORIES</label>
+        <search base="sh_16_splunkbase_apps">
+          <query>| stats count by categories</query>
+        </search>
+        <delimiter>,</delimiter>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <fieldForLabel>categories</fieldForLabel>
+        <fieldForValue>categories</fieldForValue>
+      </input>
+      <input type="multiselect" token="type" searchWhenChanged="false">
+        <label>APP TYPE</label>
+        <delimiter>,</delimiter>
+        <choice value="*">All</choice>
+        <choice value="app">App</choice>
+        <choice value="addon">Addon</choice>
+        <default>*</default>
+        <fieldForLabel>type</fieldForLabel>
+        <fieldForValue>type</fieldForValue>
+      </input>
+      <input type="multiselect" token="content" searchWhenChanged="false">
+        <label>APP CONTENTS</label>
+        <search base="sh_16_splunkbase_apps">
+          <query>| stats count by content</query>
+        </search>
+        <delimiter>,</delimiter>
+        <choice value="*">All</choice>
+        <fieldForLabel>content</fieldForLabel>
+        <fieldForValue>content</fieldForValue>
+        <default>*</default>
+      </input>
+      <input type="multiselect" token="splunk_compatibility" searchWhenChanged="false">
+        <label>SPLUNK VERSION</label>
+        <search base="sh_16_splunkbase_apps">
+          <query>| stats count by splunk_compatibility</query>
+        </search>
+        <fieldForLabel>splunk_compatibility</fieldForLabel>
+        <fieldForValue>splunk_compatibility</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <delimiter>,</delimiter>
+        <choice value="*">All</choice>
+      </input>
+      <input type="multiselect" token="cim_compatibility" searchWhenChanged="false">
+        <label>CIM VERSION</label>
+        <search base="sh_16_splunkbase_apps">
+          <query>| stats count by cim_compatibility</query>
+        </search>
+        <delimiter>,</delimiter>
+        <choice value="*">All</choice>
+        <fieldForLabel>cim_compatibility</fieldForLabel>
+        <fieldForValue>cim_compatibility</fieldForValue>
+        <default>*</default>
+      </input>
+      <input type="multiselect" token="fedramp_validation" searchWhenChanged="false">
+        <label>VALIDATIONS</label>
+        <search base="sh_16_splunkbase_apps">
+          <query>| stats count by fedramp_validation</query>
+        </search>
+        <fieldForLabel>fedramp_validation</fieldForLabel>
+        <fieldForValue>fedramp_validation</fieldForValue>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <delimiter>,</delimiter>
+        <choice value="*">All</choice>
+      </input>
+      <input type="multiselect" token="platform" searchWhenChanged="false">
+        <label>Platform</label>
+        <search base="sh_16_splunkbase_apps">
+          <query>| stats count by platform</query>
+        </search>
+        <delimiter>,</delimiter>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <fieldForLabel>platform</fieldForLabel>
+        <fieldForValue>platform</fieldForValue>
+      </input>
+      <input type="text" token="download_count" searchWhenChanged="true">
+        <label>DLs &gt;=</label>
+        <default>0</default>
+        <initialValue>0</initialValue>
+      </input>
+      <input type="text" token="rating_average" searchWhenChanged="true">
+        <label>Rating &gt;=</label>
+        <default>0</default>
+        <initialValue>0</initialValue>
+      </input>
+      <input type="multiselect" token="install_method_single" searchWhenChanged="false">
+        <label>Splunk Cloud Installation Method (Single SH)</label>
+        <fieldForLabel>install_method_single</fieldForLabel>
+        <fieldForValue>install_method_single</fieldForValue>
+        <search base="sh_16_splunkbase_apps">
+          <query>| stats count by install_method_single</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <delimiter>,</delimiter>
+        <choice value="*">All</choice>
+      </input>
+      <input type="multiselect" token="install_method_distributed" searchWhenChanged="false">
+        <label>Splunk Cloud Installation Method (SHC)</label>
+        <fieldForLabel>install_method_distributed</fieldForLabel>
+        <fieldForValue>install_method_distributed</fieldForValue>
+        <search base="sh_16_splunkbase_apps">
+          <query>| stats count by install_method_distributed</query>
+        </search>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <delimiter>,</delimiter>
+        <choice value="*">All</choice>
+      </input>
+    </panel>
+  </row>
+  <row id="splunkbase_apps_Panel1">
+    <panel id="panel_accordion_togglepanel_false_21" depends="$gadget_lib_loaded$">
+      <title>2. Splunkbase Apps List</title>
+      <table>
+        <search base="sh_16_splunkbase_apps">
+          <query>| table appid, uid, version, product_compatibility, categories, type, author, splunk_compatibility, support, appinspect_passed, appinspect_status,fedramp_validation, passed_validation, cim_compatibility, content, path, platform, rating_average, download_count, install_count, rating_count, size, description, created_time, updated_time, published_time
+| `ustime_format(created_time)` 
+| `ustime_format(updated_time)` 
+| `ustime_format(published_time)` 
+| rename appid As "App Name", type As "APP TYPE", author As "BUILT BY", version As "VERSION", categories As CATEGORIES, cim_compatibility As "CIM VERSION", product_compatibility As "PRODUCTS &amp; SOLUTIONS", path As "Splunkbase URL", splunk_compatibility As "Splunk Versions", support As SUPPORT, content As "App Contents", platform As Platform</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">row</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="App Name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="BUILT BY">
+          <colorPalette type="map">{"Splunk Inc.":#53A051}</colorPalette>
+        </format>
+        <format type="color" field="SUPPORT">
+          <colorPalette type="map">{"not_supported":#DC4E41,"splunk":#53A051}</colorPalette>
+        </format>
+        <drilldown>
+          <link target="_blank">https://splunkbase.splunk.com</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row id="splunkbase_apps_Panel2">
+    <panel id="panel_accordion_togglepanel_false_22" depends="$gadget_lib_loaded$">
+      <title>3. Total Number of Splunkbase Apps</title>
+      <single>
+        <search base="sh_16_splunkbase_apps">
+          <query>| stats count</query>
+        </search>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+  </row>
+  <row id="splunkbase_apps_Panel3">
+    <panel id="panel_accordion_togglepanel_false_23" depends="$gadget_lib_loaded$">
+      <title>3. Apps Stats By $split_by_tok_1$</title>
+      <input type="dropdown" token="split_by_tok_2" searchWhenChanged="true">
+        <label>1. Split By</label>
+        <choice value="product_compatibility">product_compatibility</choice>
+        <choice value="categories">categories</choice>
+        <choice value="type">type</choice>
+        <choice value="splunk_compatibility">splunk_compatibility</choice>
+        <choice value="support">support</choice>
+        <choice value="appinspect_passed">appinspect_passed</choice>
+        <choice value="appinspect_status">appinspect_status</choice>
+        <choice value="fedramp_validation">fedramp_validation</choice>
+        <choice value="passed_validation">passed_validation</choice>
+        <choice value="cim_compatibility">cim_compatibility</choice>
+        <choice value="content">content</choice>
+        <choice value="platform">platform</choice>
+        <choice value="rating_average">rating_average</choice>
+        <default>product_compatibility</default>
+        <search>
+          <query/>
+        </search>
+      </input>
+      <chart>
+        <search base="sh_16_splunkbase_apps">
+          <query>| stats count by $split_by_tok_2$</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.001</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">700</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="splunkbase_apps_Panel4">
+    <panel id="panel_accordion_togglepanel_true_24" depends="$gadget_lib_loaded$">
+      <title>4. Associated GMC Job(s)</title>
+      <html>
+            <ol>
+               <li>
+                  <a href="/app/global_monitoring_console/search?s=splunk_base_apps_kv_store_lookup_gen" target="_blank" rel="noopener">Splunkbase Apps KV Store Gen Job From Summary Index</a>
+               </li>
+            </ol>
+         </html>
     </panel>
   </row>
 </form>

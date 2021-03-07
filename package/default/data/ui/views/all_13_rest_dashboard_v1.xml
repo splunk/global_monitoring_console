@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark">
-  <label>13 - REST API Reference - Dashboard - v3.0.7</label>
+  <label>13 - REST API Reference - Dashboard - v2.0.80</label>
   <description>To learn about available endpoints and operations for accessing resources. See the REST API User Manual to learn about the Splunk REST API basic concepts.</description>
   <fieldset submitButton="false"></fieldset>
   <row>

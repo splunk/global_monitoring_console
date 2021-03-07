@@ -1,11 +1,12 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark">
-  <label>09 - Resource Usage Analysis - Dashboard - v3.0.7</label>
+  <label>09 - Resource Usage Analysis - Dashboard - v2.0.80</label>
   <description>Splunk Resource Usage Information Dashboard</description>
   <search id="a09_resource_usage_1">
     <query>index=_introspection sourcetype=splunk_resource_usage (search_group="dmc_group_*" OR host IN (idx-i-*,sh-i-*,idm-i-*,c0m1-i-*)) component=$component$ host=$Splunk_Instance$
 | `get_cluster_label(host)` | `get_instance_roles(host)`
 | rename data.* as * , search_props.* As *
+| fields _time,acceleration_id, app, args, avg_service_ms, avg_total_ms, component, cpu_arch, cpu_count, cpu_idle_pct, cpu_pct, cpu_system_pct, cpu_user_pct, delta_scan_count, device, elapsed, fd_used, forks, fs_type, host, instance_guid, interval, label, list, mem, mem_used, mode, mount_point, normalized_load_avg_1min, normalized_pct_cpu, os_build, os_name, os_name_ext, os_version, page_faults, pct_cpu, pct_memory, pg_paged_out, pg_swapped_out, pid, ppid, process, process_type, provenance, read_mb, reads_kb_ps, reads_ps, role, runnable_process_count, scan_count, search_head, sid, splunk_version, status, swap, swap_used, t_count, type, user, vendor_name, virtual_cpu_count, workload_pool, workload_pool_cpu_shares, workload_pool_mem_limit, workload_pool_type, writes_kb_ps, writes_ps, written_mb, emp_dep, emp_lob1, emp_lob2
 | eval cpu_total_pct=cpu_user_pct+cpu_system_pct
 | eval process_class = case( 
     process=="splunk-optimize","index service", 
@@ -20,8 +21,9 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark">
     isnotnull(process_class), process_class) 
 | eval process_class = if(isnull(process_class),"other",process_class)
 | `get_app_info(app)`
+| `get_provenance_fields(provenance)`
 | fillnull value="undefined" cluster_label Splunk_Roles host app app_type mode user label search_head provenance
-| search cluster_label IN ($cluster_label$) Splunk_Roles="$Splunk_Roles$" app IN ($app$) app_type IN ($app_type$) mode="$mode$" user="$user$" label="$label$" provenance="$provenance$" search_head IN ($search_head$)
+| search cluster_label IN ($cluster_label$) Splunk_Roles="$Splunk_Roles$" app IN ($app$) app_type IN ($app_type$) mode="$mode$" user="$user$" label="$label$" search_head IN ($search_head$) workload_pool_type IN ($workload_pool_type$) workload_pool IN ($workload_pool$)
 </query>
     <earliest>$TimeRangePkr.earliest$</earliest>
     <latest>$TimeRangePkr.latest$</latest>
@@ -47,7 +49,7 @@ index=_introspection sourcetype=splunk_resource_usage component=$component$ earl
   <row>
     <panel>
       <html>
-        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">GMC - 09 - Resource Usage - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">GMC - 09 - Resource Usage - Dashboard - v1 (Updated: Mar 5, 2021)</h1>
       </html>
     </panel>
   </row>
@@ -107,12 +109,34 @@ index=_introspection sourcetype=splunk_resource_usage component=$component$ earl
         <default>*</default>
         <initialValue>*</initialValue>
       </input>
-      <input type="dropdown" token="provenance" searchWhenChanged="false">
-        <label>5. Provenance</label>
-        <fieldForLabel>provenance</fieldForLabel>
-        <fieldForValue>provenance</fieldForValue>
+      <input type="dropdown" token="Provenance_Type" searchWhenChanged="false">
+        <label>5. Provenance Type</label>
+        <fieldForLabel>Provenance_Type</fieldForLabel>
+        <fieldForValue>Provenance_Type</fieldForValue>
         <search base="a09_resource_usage_1">
-          <query>| stats count by provenance</query>
+          <query>| stats count by Provenance_Type</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Provenance_KO_Type" searchWhenChanged="false">
+        <label>5. Provenance Type</label>
+        <fieldForLabel>Provenance_KO_Type</fieldForLabel>
+        <fieldForValue>Provenance_KO_Type</fieldForValue>
+        <search base="a09_resource_usage_1">
+          <query>| stats count by Provenance_KO_Type</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Dashboard_Name" searchWhenChanged="false">
+        <label>5. Dashboard Name</label>
+        <fieldForLabel>Dashboard_Name</fieldForLabel>
+        <fieldForValue>Dashboard_Name</fieldForValue>
+        <search base="a09_resource_usage_1">
+          <query>| stats count by Dashboard_Name</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -157,6 +181,34 @@ index=_introspection sourcetype=splunk_resource_usage component=$component$ earl
         <valueSuffix>"</valueSuffix>
         <delimiter>,</delimiter>
       </input>
+      <input type="multiselect" token="workload_pool_type" searchWhenChanged="true">
+        <label>12.1 Filter by Workload Pool Type</label>
+        <fieldForLabel>workload_pool_type</fieldForLabel>
+        <fieldForValue>workload_pool_type</fieldForValue>
+        <search base="a09_resource_usage_1">
+          <query>| stats count by workload_pool_type</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="workload_pool" searchWhenChanged="true">
+        <label>12.2 Filter by Workload Pool</label>
+        <fieldForLabel>workload_pool</fieldForLabel>
+        <fieldForValue>workload_pool</fieldForValue>
+        <search base="a09_resource_usage_1">
+          <query>| stats count by workload_pool</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+      </input>
       <input type="dropdown" token="user" searchWhenChanged="false">
         <label>8. User</label>
         <fieldForLabel>user</fieldForLabel>
@@ -187,12 +239,13 @@ index=_introspection sourcetype=splunk_resource_usage component=$component$ earl
         <default>PerProcess</default>
         <initialValue>PerProcess</initialValue>
       </input>
-      <input type="dropdown" token="Metric1" searchWhenChanged="false">
+      <input type="dropdown" token="Metric1" searchWhenChanged="true">
         <label>11. Metric</label>
         <fieldForLabel>Metric2</fieldForLabel>
         <fieldForValue>Metric2</fieldForValue>
         <search base="a09_resource_usage_3">
-          <query>| stats values(*) AS * 
+          <query>| fields avg_service_ms avg_total_ms cpu_idle_pct cpu_pct cpu_system_pct cpu_user_pct delta_scan_count elapsed fd_used forks list mem_used normalized_load_avg_1min normalized_pct_cpu page_faults pct_cpu pct_memory pg_paged_out pg_swapped_out pid ppid read_mb reads_kb_ps reads_ps runnable_process_count scan_count swap_used t_count writes_kb_ps writes_ps written_mb 
+| stats values(*) AS * 
 | transpose 
 | fields column 
 | rename column AS Metric2</query>
@@ -213,7 +266,7 @@ index=_introspection sourcetype=splunk_resource_usage component=$component$ earl
         <default>Max</default>
         <initialValue>Max</initialValue>
       </input>
-      <input type="dropdown" token="Splitby1" searchWhenChanged="false">
+      <input type="dropdown" token="Splitby1" searchWhenChanged="true">
         <label>13. Select Split By</label>
         <choice value="">None</choice>
         <choice value="By type">Search Type</choice>
@@ -231,6 +284,12 @@ index=_introspection sourcetype=splunk_resource_usage component=$component$ earl
         <choice value="By search_head">Search Head</choice>
         <choice value="By host">Splunk Instance</choice>
         <choice value="By os_version">OS Version</choice>
+        <choice value="By workload_pool_type">Workload Pool Type</choice>
+        <choice value="By workload_pool">Workload Pool</choice>
+        <choice value="By emp_dep">Employee Department</choice>
+        <choice value="By emp_lob1">Employee LOB 1</choice>
+        <choice value="By emp_lob2">Employee LOB 2</choice>
+        <choice value="By Dashboard_Name">Dashboard</choice>
         <default></default>
         <search>
           <query/>

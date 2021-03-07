@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark">
-  <label>SH - 15 - Splunk Cloud Virtual Core (SVC) Usage Analysis - Dashboard - v3.0.7</label>
+  <label>SH - 15 - Splunk Cloud Virtual Core (SVC) Usage Analysis - Dashboard - v2.0.80</label>
   <description>Splunk Cloud Virtual Core (SVC) Usage Analysis Dashboard</description>
   <search id="sh_15_business_app_analysis_1">
     <query>| tstats SummariesOnly=True Allow_Old_Summaries=False
@@ -17,8 +17,6 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark">
 | `gmc_drop_dm_object_name(Search_Activity.Audit_Search)` 
 | rename user1 As user
 | fields user emp_*
-``` | lookup splunk_rest_identities_kv_store_lookup identity as user OUTPUTNEW emp_lob2 emp_dep
-| lookup splunk_identities_exceptions_sh_csv_lookup identity as user OUTPUTNEW emp_lob2 emp_dep ``` 
 | fillnull value="NO-Market-Data" emp_lob2
 | fillnull value="NO-Department-Data" emp_dep
 | search emp_lob2 IN ($emp_lob2$) emp_dep IN ($emp_dep$) user IN ($user$)</query>
@@ -49,7 +47,6 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark">
         Max(total_util) As Utilization 
         Max(License) As License
     | fields _time Utilization License ] 
-``` | lookup splunk_rest_identities_kv_store_lookup identity as user OUTPUTNEW emp_name emp_lob2 emp_dep emp_title ```
 | fillnull value="NO-Market-Data" emp_lob2
 | fillnull value="NO-Department-Data" emp_dep
 | fields _time user emp_name emp_title emp_dep emp_lob2 user_total_run_time user_total_run_time_perc grand_total_run_time Utilization License svc_usage

@@ -1,7 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
   <!--  comments -->
-  <label>SH - 04 - Audit Search Activity - Deep Analysis - Dashboard - v3.0.7</label>
+  <label>SH - 04 - Audit Search Activity - Deep Analysis - Dashboard - v2.0.80</label>
   <description>Audit all Splunk Search Activities using one normalized Data Model for Audit, Introspection &amp; Internal</description>
   <search id="sh_04_audit_search">
     <query>| tstats SummariesOnly=True Allow_Old_Summaries=False
@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
     By _time Search_Activity.Audit_Search.search_id1 Search_Activity.Audit_Search.info1 $span_period$
 | `gmc_drop_dm_object_name(Search_Activity.Audit_Search)`
 | rename info1 AS info, search_id1 As search_id
-| fields _time host available_count considered_events datamodel decompressed_slices event_count dispatch_time exec_time info result_count roles savedsearch_name scan_count search search_et search_id search_lt search_startup_time search_type searched_buckets total_run_time total_slices user emp_*
+| fields _time host available_count considered_events datamodel decompressed_slices event_count dispatch_time exec_time info result_count roles savedsearch_name scan_count search search_et search_id search_lt search_startup_time search_type searched_buckets total_run_time total_slices user emp_* workload_pool
 | `gmc_convert_runtime('total_run_time')`
 | `get_normalized_search_id(search_id)`
 | `get_lookup_reference(search)`
@@ -34,6 +34,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
 | `cron_descriptor(cron_schedule)`
 | `get_itsi_search_name_info(shcluster_label,savedsearch_name)` 
 | `get_itsi_service_info(shcluster_label,service_id,kpi_id)`
+| `normalize_earliest_time(dispatch_earliest_time)`
 | eval search_et=if(search_et="0", "All-Time", search_et)
 | eval Time_Diff_Sec = round((search_lt - search_et),0), Time_Diff_Days = round((search_lt - search_et)/60/60/24,2)
 | fillnull value="no-search_id" search_id_normalized 
@@ -61,7 +62,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
 | rename search_id2 As search_id
 | `get_shcluster_label(host)` 
 | stats latest(*) As * values(host) as host by _time shcluster_label search_id
-| fields _time shcluster_label host app concurrency_category concurrency_context concurrency_limit dispatch_time priority reason result_count total_run_time savedsearch_id savedsearch_name scheduled_time search_id search_type skipped_count info user window_time alert_actions event_message emp_*
+| fields _time shcluster_label host app concurrency_category concurrency_context concurrency_limit dispatch_time priority reason result_count total_run_time savedsearch_id savedsearch_name scheduled_time search_id search_type skipped_count info user window_time alert_actions event_message emp_* workload_pool
 | `gmc_convert_runtime('total_run_time')`
 | `get_normalized_search_id(search_id)`
 | `get_datamodel_fields(savedsearch_name)`
@@ -104,7 +105,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
   By Search_Activity.Introspection_Search_Usage.search_id3 Search_Activity.Introspection_Search_Usage.pid
 | `gmc_drop_dm_object_name(Search_Activity.Introspection_Search_Usage)`
 | rename search_id3 As search_id
-| fields _time host search_id search_head app user acceleration_id delta_scan_count total_run_time fd_used mem_used normalized_pct_cpu pct_cpu page_faults pid ppid provenance read_mb savedsearch_name scan_count search_type t_count written_mb mode emp_*
+| fields _time host search_id search_head app user acceleration_id delta_scan_count total_run_time fd_used mem_used normalized_pct_cpu pct_cpu page_faults pid ppid provenance read_mb savedsearch_name scan_count search_type t_count written_mb mode emp_* workload_pool_type workload_pool workload_pool_cpu_shares workload_pool_mem_limit
 | `gmc_convert_runtime('total_run_time')`
 | `get_normalized_search_id(search_id)`
 | `get_provenance_fields(provenance)`
@@ -116,14 +117,16 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
 | `get_dashboards_info(shcluster_label,Provenance_KO)`
 | `fillnull_identity_info`
 | `cron_descriptor(cron_schedule)`
-| `get_itsi_search_name_info(shcluster_label,savedsearch_name)` 
-| `get_itsi_service_info(shcluster_label,service_id,kpi_id)`
 | `get_app_info(host,app)`
 | `get_premium_app_job_class(savedsearch_name)`
+`gmc_comment("
+| `get_itsi_search_name_info(shcluster_label,savedsearch_name)` 
+| `get_itsi_service_info(shcluster_label,service_id,kpi_id)`
 | `get_audit_search_info(shcluster_label,search_id_normalized)`
 | `get_internal_search_info(shcluster_label,search_id_normalized)`
 | `get_search_jobs_info(shcluster_label,search_id_normalized,pid)`
 | eval Search_State = coalesce(status_internal, status_audit, status_search_jobs)
+")`
 | fillnull value="Unknown" Search_State
 | fillnull value="no-search_id" search_id_normalized 
 | fillnull value=999999 Days_Latest_Dashboard_Access 
@@ -149,7 +152,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
                   <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Introspection_Inputs1,Introspection_Inputs2,Introspection_Inputs3,Introspection_Panel1,Introspection_Panel2,Introspection_Panel3,Introspection_Panel4,Introspection_Panel5,Introspection_Panel6">1. Introspection (Mem/CPU)</a>
                </li>
                <li>
-                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Audit_Inputs1,Audit_Inputs2,Audit_Inputs3,Audit_Panel1,Audit_Panel2,Audit_Panel3,Audit_Panel4,Audit_Panel5,Audit_Panel6,Audit_Panel7">2. Audit (Everything)</a>
+                  <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Audit_Inputs1,Audit_Inputs2,Audit_Inputs3,Audit_Panel1,Audit_Panel2,Audit_Panel3,Audit_Panel4,Audit_Panel5,Audit_Panel6,Audit_Panel7,Audit_Panel8">2. Audit (Everything)</a>
                </li>
                <li>
                   <a href="#" class="toggle-tab" data-toggle="tab" data-elements="Internal_Inputs1,Internal_Inputs2,Internal_Inputs3,Internal_Panel1,Internal_Panel2,Internal_Panel3,Internal_Panel4,Internal_Panel5,Internal_Panel6,Internal_Panel7,Internal_Panel8,Internal_Panel9,Internal_Panel10">3. Internal (Jobs + Skips)</a>
@@ -638,13 +641,13 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
       <table>
         <title>To Drilldown on a Normalized Search ID to see information on it from _audit &amp; _internal click inside the field value of  the "Normalized Search ID" Field</title>
         <search base="sh_04_introspection_search">
-          <query>| fields search_id_normalized pid shcluster_label search_head host search_type mode Search_State diskUsage_MB mem_used normalized_pct_cpu 'total_run_time' total_run_time cron_schedule cron_schedule_described Provenance_Type Provenance_KO_Type Provenance_KO app savedsearch_name savedsearch_type user emp_name _time physicalMemoryGB pct_cpu page_faults max_hist_searches max_searches_per_cpu numberOfCores base_max_searches numberOfVirtualCores t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_title emp_lob1 emp_city emp_region1 emp_country schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches kpi_title service_title app_type perc_vCPU_Used job_class error_messages status_org 
+          <query>| fields search_id_normalized pid shcluster_label search_head host search_type mode Search_State diskUsage_MB mem_used normalized_pct_cpu 'total_run_time' total_run_time cron_schedule cron_schedule_described Provenance_Type Provenance_KO_Type Provenance_KO app savedsearch_name savedsearch_type user emp_name _time physicalMemoryGB pct_cpu page_faults max_hist_searches max_searches_per_cpu numberOfCores base_max_searches numberOfVirtualCores t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_title emp_lob1 emp_city emp_region1 emp_country schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches kpi_title service_title app_type perc_vCPU_Used job_class error_messages status_org workload_pool_type workload_pool workload_pool_cpu_shares workload_pool_mem_limit
 | stats 
     values(kpi_title) as kpi_title 
     values(service_title) as service_title 
     max(*) as * latest(_time) as _time 
     By search_id_normalized pid 
-| table search_id_normalized pid shcluster_label search_head search_type mode Search_State status_org mem_used normalized_pct_cpu pct_cpu numberOfVirtualCores perc_vCPU_Used 'total_run_time' total_run_time diskUsage_MB cron_schedule cron_schedule_described Provenance_Type Provenance_KO_Type Provenance_KO app app_type savedsearch_name job_class service_title kpi_title savedsearch_type user emp_name _time physicalMemoryGB page_faults max_hist_searches max_searches_per_cpu numberOfCores base_max_searches t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_title emp_lob1 emp_city emp_region1 emp_country schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches error_messages 
+| table search_id_normalized pid shcluster_label search_head search_type mode Search_State status_org mem_used normalized_pct_cpu pct_cpu numberOfVirtualCores perc_vCPU_Used 'total_run_time' total_run_time diskUsage_MB cron_schedule cron_schedule_described Provenance_Type Provenance_KO_Type Provenance_KO app app_type savedsearch_name job_class service_title kpi_title savedsearch_type user emp_name _time physicalMemoryGB page_faults max_hist_searches max_searches_per_cpu numberOfCores base_max_searches t_count fd_used read_mb written_mb scan_count delta_scan_count max_spent emp_dep emp_title emp_lob1 emp_city emp_region1 emp_country schedule_priority max_concurrent schedule_window allow_skew realtime_schedule dispatch_earliest_time dispatch_latest_time page_faults provenance search_head datamodel Datamodel_Reference Lookup_Reference ulimits_open_files ulimits_stack_size ulimits_user_processes startup_time version max_searches_perc auto_summary_perc max_auto_summary_searches max_hist_scheduled_searches error_messages workload_pool_type workload_pool workload_pool_cpu_shares workload_pool_mem_limit
 | sort 0 - mem_used 
 | `normalize_search_type(search_type)` 
 | `rename_common_fields` 
@@ -1728,7 +1731,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
       <table depends="$search_id_normalized$">
         <search base="sh_04_audit_search">
           <query>| eval Time_Diff_Human=Time_Diff_Sec 
-| table search_id_normalized shcluster_label host search_type info savedsearch_name savedsearch_type service_title kpi_title dispatch_time total_run_time 'total_run_time' _time search_et search_lt Time_Diff_Sec Time_Diff_Days Time_Diff_Human user emp_name emp_dep emp_lob1 emp_title emp_city emp_region1 emp_country datamodel scan_count event_count result_count available_count considered_events searched_buckets total_slices decompressed_slices cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Eventtype_Reference search 
+| table search_id_normalized shcluster_label host search_type info savedsearch_name savedsearch_type workload_pool service_title kpi_title dispatch_time total_run_time 'total_run_time' _time search_et search_lt Time_Diff_Sec Time_Diff_Days Time_Diff_Human user emp_name emp_dep emp_lob1 emp_title emp_city emp_region1 emp_country datamodel scan_count event_count result_count available_count considered_events searched_buckets total_slices decompressed_slices cron_schedule cron_schedule_described schedule_priority max_concurrent schedule_window allow_skew realtime_schedule Lookup_Reference Datamodel_Reference Macro_Reference Index_Reference Sourcetype_Reference Eventtype_Reference search 
 | `gmc_convert_runtime(Time_Diff_Human)` 
 | `normalize_search_status` 
 | `normalize_search_type(search_type)` 
@@ -1828,6 +1831,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         <option name="charting.legend.placement">none</option>
         <option name="height">322</option>
         <option name="refresh.display">none</option>
+        <option name="charting.seriesColors">[#457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
       </chart>
     </panel>
   </row>
@@ -2286,6 +2290,62 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         <option name="charting.legend.placement">bottom</option>
         <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
         <option name="height">550</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="Audit_Panel8">
+    <panel id="panel_accordion_togglepanel_false_Reports_26" depends="$gadget_lib_loaded$">
+      <title>18. Reports Stats By $split_by_tok_2$</title>
+      <input type="dropdown" token="split_by_tok_2" searchWhenChanged="true">
+        <label>1. Split By</label>
+        <choice value="shcluster_label">SH Cluster Label</choice>
+        <choice value="Splunk_Instance">Splunk Instance</choice>
+        <choice value="app">App</choice>
+        <choice value="sharing">App Sharing</choice>
+        <choice value="author">Author</choice>
+        <choice value="emp_name">Employee Name</choice>
+        <choice value="savedsearch_type">Saved Search Type</choice>
+        <choice value="emp_lob1">Employee LOB</choice>
+        <choice value="emp_dep">Employee Department</choice>
+        <choice value="emp_cc">Employee Cost Center</choice>
+        <choice value="emp_title">Employee Title</choice>
+        <choice value="emp_type">Employee Type</choice>
+        <choice value="emp_status">Employee Status</choice>
+        <choice value="updated">Update Date</choice>
+        <choice value="Index_Reference">Index Reference</choice>
+        <choice value="Lookup_Reference">Lookup Reference</choice>
+        <choice value="Datamodel_Reference">Data Model Reference</choice>
+        <choice value="Rest_Reference">Rest Reference</choice>
+        <choice value="Report_Reference">Report Reference</choice>
+        <choice value="schedule_priority">Schedule Priority</choice>
+        <choice value="schedule_window">Schedule Window</choice>
+        <choice value="allow_skew">Allow Skew</choice>
+        <choice value="realtime_schedule">Realtime Schedule?</choice>
+        <choice value="is_scheduled">IS Scheduled?</choice>
+        <choice value="disabled">Disabled?</choice>
+        <choice value="cron_schedule">Cron Schedule</choice>
+        <choice value="cron_schedule_described">Cron Schedule Humanly Readable</choice>
+        <choice value="dispatch_earliest_time">Dispatch Earliest Time</choice>
+        <choice value="dispatch_earliest_time_normalized">Dispatch Earliest Time Normalized</choice>
+        <choice value="populate_lookup_dest">Populate Lookup Destinations</choice>
+        <choice value="dispatch_ttl">Dispatch Time to Live</choice>
+        <choice value="summary_index">Summary Indexing?</choice>
+        <choice value="actions">Actions</choice>
+        <choice value="auto_summarize">Auto Summarize</choice>
+        <default>dispatch_earliest_time_normalized</default>
+      </input>
+      <chart>
+        <search base="sh_04_audit_search">
+          <query>| stats count by $split_by_tok_2$
+| search NOT $split_by_tok_2$ IN (Undefined,no-*-reference)</query>
+        </search>
+        <option name="charting.backgroundColor">FFFF31</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.seriesColors">[#09568d, #457725, #e06000, #964f8e, #a6001a, #664228, #ffbb00, #4F86F7, #84DE02, #FF00CC, #5E8C31, #214FC6, #5DADEC, #FA5B3D, #58427C]</option>
+        <option name="height">700</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
@@ -2764,7 +2824,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
       <table>
         <search base="sh_04_internal_search">
           <query>| eval service_title=mvdedup(service_title) , kpi_title=mvdedup(kpi_title) 
-| table search_id_normalized shcluster_label host search_type info savedsearch_name service_title kpi_title _time scheduled_time dispatch_time cron_schedule cron_schedule_described dispatch_earliest_time dispatch_latest_time schedule_priority max_concurrent schedule_window allow_skew realtime_schedule total_run_time 'total_run_time' app user emp_dep emp_lob1 emp_city emp_region1 emp_country datamodel result_count concurrency_category concurrency_context concurrency_limit skipped_count reason alert_actions Memory_Usage Memory_Threshold Lookup_Reference Datamodel_Reference Macro_Reference action_summary_index_name Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference savedsearch_search 
+| table search_id_normalized shcluster_label host search_type info workload_pool savedsearch_name service_title kpi_title _time scheduled_time dispatch_time cron_schedule cron_schedule_described dispatch_earliest_time dispatch_latest_time schedule_priority max_concurrent schedule_window allow_skew realtime_schedule total_run_time 'total_run_time' app user emp_dep emp_lob1 emp_city emp_region1 emp_country datamodel result_count concurrency_category concurrency_context concurrency_limit skipped_count reason alert_actions Memory_Usage Memory_Threshold Lookup_Reference Datamodel_Reference Macro_Reference action_summary_index_name Index_Reference Sourcetype_Reference Source_Reference Eventtype_Reference Rest_Reference savedsearch_search 
 | `normalize_search_status` 
 | `normalize_search_type(search_type)` 
 | `rename_common_fields` 

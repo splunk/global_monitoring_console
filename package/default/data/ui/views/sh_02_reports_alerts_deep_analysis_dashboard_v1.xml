@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 02 - Reports/Alerts Deep Analysis - Dashboard - v3.0.7</label>
+  <label>SH - 02 - Reports/Alerts Deep Analysis - Dashboard - v2.0.80</label>
   <description>Reports/Alerts Deep Analysis Dashboard</description>
   <search id="sh_02_reports_alerts_1">
     <query>| from lookup:splunk_rest_saved_searches_sh_kv_store_lookup
@@ -591,7 +591,9 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         <fieldForLabel>Macro_Reference2</fieldForLabel>
         <fieldForValue>Macro_Reference</fieldForValue>
         <search base="sh_02_reports_alerts_1">
-          <query>| stats count by Macro_Reference</query>
+          <query>| stats count by Macro_Reference
+| eval len=len(Macro_Reference)
+| where len&lt;100 AND len&gt;1</query>
         </search>
       </input>
       <input type="dropdown" token="Eventtype_Reference2" searchWhenChanged="false">
@@ -669,7 +671,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         <option name="drilldown">cell</option>
         <option name="refresh.display">preview</option>
         <option name="rowNumbers">true</option>
-        <option name="totalsRow">true</option>
+        <option name="totalsRow">false</option>
         <option name="wrap">false</option>
         <format type="color" field="Rest_Command">
           <colorPalette type="sharedList"></colorPalette>
@@ -812,7 +814,8 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
           <query>| where savedsearch_name="$selected_savedsearch_name$" 
 | stats count by shcluster_label Macro_Title 
 | `get_macro_definition(shcluster_label,Macro_Title)` 
-| fields Macro_Title Macro_Definition</query>
+| fields Macro_Title Macro_Definition 
+| stats count by Macro_Title Macro_Definition</query>
         </search>
         <option name="count">10</option>
         <option name="drilldown">none</option>
@@ -1264,7 +1267,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
       </input>
       <table>
         <search base="sh_02_reports_alerts_2">
-          <query>| search NOT savedsearch_name IN ("*_ACCELERATE_*") NOT app IN ("none")
+          <query>| search NOT savedsearch_name IN ("*_ACCELERATE_*") NOT app IN ("none") 
 | stats Max(total_run_time) As total_run_time
     Max(scheduled_time) As scheduled_time
     Max(dispatch_time) As dispatch_time
@@ -1273,11 +1276,13 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
     by shcluster_label app savedsearch_name 
 | eval total_run_time_Human=total_run_time 
 | `gmc_convert_runtime(total_run_time_Human)` 
+| `normalize_earliest_time(dispatch_earliest_time)` 
+| `cron_descriptor(cron_schedule)` 
 | eval
     Latency=round(dispatch_time - scheduled_time, 2) ,
     scheduled_time=strftime(scheduled_time,"%m/%d/%Y %I:%M:%S"),
     dispatch_time=strftime(dispatch_time,"%m/%d/%Y %I:%M:%S") 
-| table _time shcluster_label savedsearch_name app user emp_name scheduled_time dispatch_time Latency cron_schedule dispatch_earliest_time_human dispatch_earliest_time allow_skey priority window_time total_run_time total_run_time_Human result_count Status 
+| table _time shcluster_label savedsearch_name app user emp_name scheduled_time dispatch_time Latency cron_schedule cron_schedule_described dispatch_earliest_time dispatch_earliest_time_normalized allow_skey priority window_time total_run_time total_run_time_Human result_count Status 
 | sort 0 - total_run_time</query>
         </search>
         <option name="count">10</option>
@@ -1369,9 +1374,9 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
       <input type="dropdown" token="owner_tok8" searchWhenChanged="true">
         <label>6.1 User</label>
         <fieldForLabel>owner_tok8</fieldForLabel>
-        <fieldForValue>owner</fieldForValue>
+        <fieldForValue>user</fieldForValue>
         <search base="sh_02_reports_alerts_3">
-          <query>| stats count by owner</query>
+          <query>| stats count by user</query>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -1387,9 +1392,9 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         <choice value="*">All</choice>
         <initialValue>*</initialValue>
         <fieldForLabel>savedsearch_name</fieldForLabel>
-        <fieldForValue>label</fieldForValue>
+        <fieldForValue>savedsearch_name</fieldForValue>
         <search base="sh_02_reports_alerts_3">
-          <query>| stats count by label</query>
+          <query>| stats count by savedsearch_name</query>
         </search>
         <default>*</default>
       </input>
@@ -1566,8 +1571,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
       <single>
         <title>Dashboard Latest Refresh</title>
         <search base="sh_02_reports_alerts_1">
-          <query>| stats count by _time 
-| fields _time 
+          <query>| stats latest(_time) As _time
 | `strftime_format(_time)`
 | rename _time As "Dashboard Latest Refresh"</query>
         </search>

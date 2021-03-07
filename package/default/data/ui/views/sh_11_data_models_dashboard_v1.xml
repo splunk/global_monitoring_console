@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>SH - 11 - Data Models Analysis - Dashboard - v3.0.7</label>
+  <label>SH - 11 - Data Models Analysis - Dashboard - v2.0.80</label>
   <description>Splunk Data Models Information Dashboard</description>
   <search id="sh_11_data_models">
     <query>| from lookup:splunk_rest_data_models_sh_kv_store_lookup 
@@ -507,13 +507,13 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       <single>
         <title>Dashboard Latest Refresh</title>
         <search base="sh_11_data_models">
-          <query>| stats count by _time 
-| fields _time 
+          <query>| stats latest(_time) As _time
 | `strftime_format(_time)`
 | rename _time As "Dashboard Latest Refresh"</query>
         </search>
         <option name="drilldown">none</option>
         <option name="height">50</option>
+        <option name="refresh.display">progressbar</option>
       </single>
     </panel>
   </row>

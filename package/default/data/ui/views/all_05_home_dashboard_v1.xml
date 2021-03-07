@@ -1,12 +1,12 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>05 - Home</label>
+  <label>05 - Adoption</label>
   <description>Global Monitoring Console Framework</description>
   <fieldset submitButton="false" autoRun="true"></fieldset>
   <row>
     <panel>
       <html>
-        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">GMC - 05 - Home - Dashboard - v1 (Updated: Feb 10, 2021)</h1>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">GMC - 05 - Adoption - Dashboard - v1 (Updated: Feb 10, 2021)</h1>
       </html>
     </panel>
   </row>
@@ -365,10 +365,8 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
       </html>
       <table>
         <search>
-          <query>index=`setup_summary_index` source=splunk_internal_web_access_idx_summary_tracker earliest=-$Days_Latest_Access_4$d NOT Dashboard_Name IN ($exclusions_3$) 
-| table _time shcluster_label Splunk_Instance app Dashboard_Name user min_spent max_spent avg_spent 
-| `get_shcluster_label(Splunk_Instance)` 
-| `get_identity_info(user)` 
+          <query>index=`setup_summary_index` source=splunk_internal_web_access_idx_summary_tracker earliest=-$Days_Latest_Access_4$d NOT view IN ($exclusions_3$)
+| fields _time, shcluster_label, Splunk_Instance, app, view, user, spent, bytes, sid, useragent, emp_* 
 | stats 
     Dc(user) As Num_Users 
     Values(emp_lob1) As emp_lob1 
@@ -376,7 +374,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
     Values(emp_dep) As emp_dep
     Values(Splunk_Instance) As Splunk_Instance
     Latest(_time) As _time
-    By shcluster_label app Dashboard_Name 
+    By shcluster_label app view 
 | table shcluster_label Splunk_Instance app Dashboard_Name _time emp_dep emp_lob1 emp_lob2 Num_Users 
 | `strftime_format(_time)` 
 | `rename_identity_fields` 
@@ -400,12 +398,8 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
       </table>
       <single>
         <search>
-          <query>index=`setup_summary_index` source=splunk_internal_web_access_idx_summary_tracker earliest=-$Days_Latest_Access_4$d App!="global_monitoring_console" NOT title IN ($exclusions_3$)
-| fields _time shcluster_label Splunk_Instance app Dashboard_Name user Latest_Access min_spent max_spent avg_spent
-| `get_shcluster_label(Splunk_Instance)` 
-| `get_identity_info(shcluster_label, user)` 
-| stats 
-    Dc(Dashboard_Name)</query>
+          <query>index=`setup_summary_index` source=splunk_internal_web_access_idx_summary_tracker earliest=-$Days_Latest_Access_4$d NOT view IN ($exclusions_3$) 
+| stats Dc(view)</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
         </search>

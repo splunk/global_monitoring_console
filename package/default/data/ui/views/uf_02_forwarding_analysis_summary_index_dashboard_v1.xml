@@ -2,7 +2,7 @@
 SPDX-License-Identifier: Apache-2.0 -->
 
 <form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>UF - 02 - Forwarding Analysis - Summary Index Based - Dashboard - v3.0.7</label>
+  <label>UF - 02 - Forwarding Analysis - Summary Index Based - Dashboard - v2.0.80</label>
   <description>Splunk Forwarding Analysis Information Summary Index Based Dashboard</description>
   <search id="uf_02_forwarding">
     <query>

@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>08 - Config Files Analysis - Dashboard - v3.0.7</label>
+  <label>08 - Config Files Analysis - Dashboard - v2.0.80</label>
   <description>Splunk Config Files Information Dashboard: limits.conf server.conf distsearch.conf outputs.conf web.conf ui-prefs.conf props.conf transforms.conf</description>
   <search id="a08_config_files">
     <query>| from lookup:splunk_rest_configs_conf_files_all_kv_store_lookup
@@ -614,13 +614,13 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       <single>
         <title>Dashboard Latest Refresh</title>
         <search base="a08_config_files">
-          <query>| stats Latest(_time) As _time
-| fields _time 
+          <query>| stats latest(_time) As _time
 | `strftime_format(_time)`
 | rename _time As "splunk_rest_configs_conf_files_all_kv_store_lookup Refresh"</query>
         </search>
         <option name="drilldown">none</option>
         <option name="height">50</option>
+        <option name="refresh.display">progressbar</option>
       </single>
     </panel>
   </row>

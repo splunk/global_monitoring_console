@@ -91,7 +91,8 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       <single>
         <title># Scheduled Jobs</title>
         <search>
-          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup where app="TA_global_monitoring_console" AND is_scheduled=1 AND savedsearch_name="splunk_*"
+          <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup where app="TA_global_monitoring_console" AND is_scheduled=1 
+| stats count by savedsearch_name 
 | stats count</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
@@ -114,10 +115,8 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
     WHERE nodename=Search_Activity.Internal_Scheduler
     index=_internal
     AND Search_Activity.Internal_Scheduler.app2 = "TA_global_monitoring_console"
-    AND Search_Activity.Internal_Scheduler.search_type2 IN ("datamodel_acceleration", "scheduled")
-    AND (Search_Activity.Internal_Scheduler.savedsearch_name2 IN ("splunk_*") OR Search_Activity.Internal_Scheduler.search_type2="datamodel_acceleration")
     AND Search_Activity.Internal_Scheduler.info2 = "completed"
-    earliest=-$time_range$h@h
+    earliest=-24h@h
     BY Search_Activity.Internal_Scheduler.savedsearch_name2 
 | `gmc_drop_dm_object_name(Search_Activity.Internal_Scheduler)` 
 | stats count</query>
@@ -144,7 +143,6 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
     index=_internal
     AND Search_Activity.Internal_Scheduler.app2 = "TA_global_monitoring_console"
     AND Search_Activity.Internal_Scheduler.search_type2 IN ("datamodel_acceleration", "scheduled")
-    AND (Search_Activity.Internal_Scheduler.savedsearch_name2 IN ("splunk*") OR Search_Activity.Internal_Scheduler.search_type2="datamodel_acceleration")
     AND Search_Activity.Internal_Scheduler.info2 = "skipped"
     earliest=-$time_range$h@h
     BY Search_Activity.Internal_Scheduler.savedsearch_name2 
@@ -172,7 +170,6 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
     index=_internal
     AND Search_Activity.Internal_Scheduler.app2 = "TA_global_monitoring_console"
     AND Search_Activity.Internal_Scheduler.search_type2 IN ("datamodel_acceleration", "scheduled")
-    AND (Search_Activity.Internal_Scheduler.savedsearch_name2 IN ("splunk*") OR Search_Activity.Internal_Scheduler.search_type2="datamodel_acceleration")
     AND Search_Activity.Internal_Scheduler.info2 = "failed"
     earliest=-$time_range$h@h
     BY Search_Activity.Internal_Scheduler.savedsearch_name2 
@@ -306,13 +303,14 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       <table>
         <search>
           <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup where app="TA_global_monitoring_console" 
+| dedup savedsearch_name
 | fields shcluster_label app savedsearch_name description updated cron_schedule cron_schedule_described Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew 
 | stats values(scheduled_times) as scheduled_times values(next_scheduled_time) as next_scheduled_time last(*) as * by shcluster_label app savedsearch_name 
 | `strftime_format(updated)` 
 | eval scheduled_times=mvindex(scheduled_times,0,3) ,scheduled_times=mvindex(scheduled_times,1,3) , TimeZone=strftime(strptime(next_scheduled_time,"%m/%d/%Y %H:%M:%S"), "%Y%m%d%H%M%S") + " -500" , EST_Time=strftime(strptime(TimeZone,"%Y%m%d%H%M%S %Z"),"%Y/%m/%d %H:%M:%S %Z") 
 | eval "Job Class" = case ( match(savedsearch_name, "_tracker$"), "Tracking Jobs", match(savedsearch_name, "_lookup_gen"), "Lookup Gen Jobs", true(), "Other") 
 | `cron_descriptor(cron_schedule)` 
-| table shcluster_label savedsearch_name description updated cron_schedule cron_schedule_described Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew 
+| table savedsearch_name description updated cron_schedule cron_schedule_described Run_Time scheduled_times next_scheduled_time Scheduled_Time Dispatch_Time schedule_window allow_skew 
 | `strftime_format(scheduled_times)` 
 | `strftime_format(next_scheduled_time)` 
 | `rename_saved_searches_fields`</query>
@@ -356,6 +354,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
         <title>Total Number</title>
         <search>
           <query>| inputlookup splunk_rest_saved_searches_sh_kv_store_lookup where app="TA_global_monitoring_console" 
+| dedup savedsearch_name
 | stats count AS "Number of Scheduled Jobs"</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
@@ -385,8 +384,9 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       <table>
         <search>
           <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="TA_global_monitoring_console"  
+| dedup title
 | `strftime_format(updated)` 
-| table shcluster_label title type filename collection updated
+| table title type filename collection updated
 | `rename_lookup_fields`</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
@@ -429,8 +429,9 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       <single>
         <title>Total Number</title>
         <search>
-          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="TA_global_monitoring_console"  
-| stats  count</query>
+          <query>| inputlookup splunk_rest_admin_transforms_lookup_sh_kv_store_lookup where app="TA_global_monitoring_console" 
+| dedup title 
+| stats count</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
         </search>
@@ -489,6 +490,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       <table>
         <search>
           <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="TA_global_monitoring_console" 
+| dedup title
 | eval Macro_Class = case ( 
     match(title, "_reference"), "Gather Reference Info", 
     match(title, "_usage"), "Gather Usage Info", 
@@ -502,7 +504,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
 | fillnull value="Other GMC Macros" Macro_Class 
 | search Macro_Class="$Macro_Class$" AND title="*$title$*" 
 | `strftime_format(updated)` 
-| table shcluster_label title Macro_Class description updated args definition 
+| table title Macro_Class description updated args definition 
 | sort 0 title 
 | `rename_macros_fields`</query>
           <earliest>$earliest$</earliest>
@@ -533,7 +535,9 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       <single>
         <title>Total Number</title>
         <search>
-          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="TA_global_monitoring_console"  | search title="*$title$*" 
+          <query>| inputlookup splunk_rest_data_macros_sh_kv_store_lookup where app="TA_global_monitoring_console" 
+| dedup title
+| search title="*$title$*" 
 | stats count AS "Number of Macros"</query>
           <earliest>$earliest$</earliest>
           <latest>$latest$</latest>
