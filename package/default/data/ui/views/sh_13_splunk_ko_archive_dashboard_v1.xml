@@ -1,0 +1,169 @@
+<form theme="dark">
+  <label>SH - 13 - Archived Splunk Knowledge Objects - Dashboard - v2.0.80</label>
+  <description>Archived Splunk Knowledge Objects Dashboard</description>
+  <search id="splunk_sh_02_reports_alerts_deep_analysis_kv_store">
+    <query>| from lookup:splunk_ko_archive_kv_store_lookup
+| fields ko_name,ko_type,acl_perms_read,acl_perms_write,actions,allow_skew,app,author,correlationsearch_enabled,correlationsearch_label,correlationsearch_related_searches,cron_schedule,data,description,dispatch_as,dispatch_earliest_time,dispatch_latest_time,dispatch_ttl,email_to,notable_drilldown_name,notable_drilldown_search,notable_next_steps,notable_rule_description,notable_rule_title,notable_security_domain,notable_severity,onprem_url,realtime_schedule,schedule_priority,schedule_window,search,sharing,shcluster_label,updated 
+| fillnull value="saved_search" ko_type
+| search ko_type=$ko_type$ shcluster_label=$shcluster_label2$ app=$app2$ sharing=$sharing2$ ko_name=$ko_name$ author=$author2$ search="*$search$*"
+</query>
+  </search>
+  <fieldset submitButton="true" autoRun="false"></fieldset>
+   <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 13 - Archived Splunk Knowledge Objects - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
+   <row>
+    <panel>
+    <input type="dropdown" token="ko_type" searchWhenChanged="true">
+      <label>1. Knowledge Object Type</label>
+      <choice value="saved_search">Saved Searches</choice>
+      <choice value="dashboards">Dashboards</choice>
+      <default>saved_search</default>
+    </input>
+    <input type="dropdown" token="shcluster_label2" searchWhenChanged="true">
+      <label>2. Search Head</label>
+      <fieldForLabel>shcluster_label2</fieldForLabel>
+      <fieldForValue>shcluster_label</fieldForValue>
+      <search base="splunk_sh_02_reports_alerts_deep_analysis_kv_store">
+        <query>| stats count by shcluster_label</query>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="app2" searchWhenChanged="false">
+      <label>3. App</label>
+      <choice value="*">All</choice>
+      <initialValue>*</initialValue>
+      <fieldForLabel>app2</fieldForLabel>
+      <fieldForValue>app</fieldForValue>
+      <search base="splunk_sh_02_reports_alerts_deep_analysis_kv_store">
+        <query>| stats count by app</query>
+      </search>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="sharing2" searchWhenChanged="false">
+      <label>4. App Sharing</label>
+      <choice value="*">All</choice>
+      <choice value="app">App</choice>
+      <choice value="user">User</choice>
+      <choice value="global">Global</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>sharing2</fieldForLabel>
+      <fieldForValue>sharing2</fieldForValue>
+    </input>
+    <input type="dropdown" token="author2" searchWhenChanged="false">
+      <label>5. Owner (Employee)</label>
+      <choice value="*">All</choice>
+      <initialValue>*</initialValue>
+      <fieldForLabel>author2</fieldForLabel>
+      <fieldForValue>author</fieldForValue>
+      <search base="splunk_sh_02_reports_alerts_deep_analysis_kv_store">
+        <query>| stats count by author</query>
+      </search>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="ko_name" searchWhenChanged="false">
+      <label>6.1 Report/Alert Name</label>
+      <choice value="*">All</choice>
+      <initialValue>*</initialValue>
+      <fieldForLabel>ko_name</fieldForLabel>
+      <fieldForValue>ko_name</fieldForValue>
+      <search base="splunk_sh_02_reports_alerts_deep_analysis_kv_store">
+        <query>| stats count by ko_name</query>
+      </search>
+      <default>*</default>
+    </input>
+    <input type="text" token="savedsearch_name" searchWhenChanged="false">
+      <label>6.2. Report/Alert Name (Contains)</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="search" searchWhenChanged="false">
+      <label>6.2. Report/Alert search (Contains)</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+ </panel>
+  </row>
+ 
+  <row>
+    <panel>
+      <title>1. Knowledge Objects List</title>
+      <table>
+        <search base="splunk_sh_02_reports_alerts_deep_analysis_kv_store">
+          <query>| table shcluster_label,app,author,sharing,ko_type,ko_name,description,_time,updated,cron_schedule,realtime_schedule,schedule_priority,schedule_window,allow_skew,search
+| eval updated=trim(updated,"000000")
+| rename _time As "Archive Date", updated As "Last Updated", shcluster_label As "Search Head", ko_name As Name
+| convert ctime("Archive Date"), ctime("Last Updated")</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">row</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format type="color" field="ko_name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <drilldown>
+          <link target="_blank">search?q=$row.search$&amp;earliest=-15s&amp;latest=now</link>
+        </drilldown>
+      </table>
+      <single>
+        <search base="splunk_sh_02_reports_alerts_deep_analysis_kv_store">
+          <query>| stats count</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x555","0xf8be34"]</option>
+        <option name="rangeValues">[100]</option>
+        <option name="unit">Reports/Alerts</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <search base="splunk_sh_02_reports_alerts_deep_analysis_kv_store">
+          <query>| stats dc(author) As Num_Authors</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x555","0x006d9c"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">Authors</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>1. Knowledge Objects List</title>
+      <table>
+        <search base="splunk_sh_02_reports_alerts_deep_analysis_kv_store">
+          <query>| table ko_type,ko_name,acl_perms_read,acl_perms_write,dispatch_earliest_time,dispatch_latest_time,actions,search,correlationsearch_enabled,correlationsearch_label,correlationsearch_related_searches,data,dispatch_as,dispatch_ttl,email_to,notable_drilldown_name,notable_drilldown_search,notable_next_steps,notable_rule_description,notable_rule_title,notable_security_domain,notable_severity,onprem_url
+| eval updated=trim(updated,"000000")
+| rename _time As "Archive Date", updated As "Last Updated", shcluster_label As "Search Head", ko_name As Name
+| convert ctime("Archive Date"), ctime("Last Updated")</query>
+        </search>
+        <option name="count">1</option>
+        <option name="drilldown">row</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format type="color" field="ko_name">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <drilldown>
+          <link target="_blank">search?q=$row.search$&amp;earliest=$earliest$&amp;latest=$latest$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

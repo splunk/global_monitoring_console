@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>11 - App Validation &amp; Certification - Dashboard - v3.0.7</label>
+  <label>11 - App Validation &amp; Certification - Dashboard - v2.0.80</label>
   <description>App Validation &amp; Certification - Dashboard - v1</description>
   <search id="a11_app_validation_certification">
     <query>index=add_on_builder_index sourcetype=splunk:tabuilder:validation $Exclusions$

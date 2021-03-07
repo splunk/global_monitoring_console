@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>IDX - 05 - Data Inputs Analysis - Dashboard - v3.0.7</label>
+  <label>IDX - 05 - Data Inputs Analysis - Dashboard - v2.0.80</label>
   <description>All Splunk Instances Data Inputs Information Dashboard</description>
   <search id="idx_05_inputs">
     <query>| from lookup:splunk_rest_data_inputs_all_kv_store_lookup
@@ -378,8 +378,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" style
       <single>
         <title>Inputs Latest Refresh</title>
         <search base="idx_05_inputs">
-          <query>| stats count by _time 
-| fields _time 
+          <query>| stats latest(_time) As _time
 | `strftime_format(_time)`
 | rename _time As "Inputs Latest Refresh"</query>
         </search>

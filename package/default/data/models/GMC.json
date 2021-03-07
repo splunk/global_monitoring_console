@@ -209,7 +209,7 @@
                     "editable": true,
                     "comment": "",
                     "calculationType": "Eval",
-                    "expression": "case ( ISNULL(user) OR user=\"\", \"Undefined\", user=\"nobody\", \"system\", true(), user )"
+                    "expression": "case ( ISNULL(user) OR user=\"\", \"Undefined\", user=\"nobody\", \"system\", match(user, \"\\*\"), null(), true(), user )"
                 },
                 {
                     "outputFields": [
@@ -914,6 +914,28 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "IF(ISNULL(emp_country) OR emp_country =\"\", NULL(), trim(emp_country, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "workload_pool1",
+                            "owner": "Search_Activity.Audit_Search",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Workload Pool",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "hob7b1hmyjw",
+                    "owner": "Search_Activity.Audit_Search",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(workload_pool) OR workload_pool=\"\", NULL(), workload_pool)"
                 }
             ],
             "constraints": [
@@ -1745,6 +1767,28 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "IF(ISNULL(emp_country) OR emp_country =\"\", NULL(), trim(emp_country, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "workload_pool2",
+                            "owner": "Search_Activity.Internal_Scheduler",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Workload Pool",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "fn93814v7ym",
+                    "owner": "Search_Activity.Internal_Scheduler",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL(workload_pool) OR workload_pool=\"\", NULL(), workload_pool)"
                 }
             ],
             "constraints": [
@@ -2597,6 +2641,94 @@
                     "comment": "",
                     "calculationType": "Eval",
                     "expression": "IF(ISNULL(emp_country) OR emp_country =\"\", NULL(), trim(emp_country, \"'\"))"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "workload_pool3",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Workload Pool",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "dmm4tar0qxd",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL('data.workload_pool') OR 'data.workload_pool'=\"\", NULL(), 'data.workload_pool')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "workload_pool_type",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "string",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Workload Pool Type",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "nkdvyvci1j",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL('data.workload_pool_type') OR 'data.workload_pool_type'=\"\", NULL(), 'data.workload_pool_type')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "workload_pool_cpu_shares",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Workload Pool CPU Shares",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "omj18xx66yk",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL('data.workload_pool_cpu_shares') OR 'data.workload_pool_cpu_shares'=\"\", NULL(), 'data.workload_pool_cpu_shares')"
+                },
+                {
+                    "outputFields": [
+                        {
+                            "fieldName": "workload_pool_mem_limit",
+                            "owner": "Search_Activity.Introspection_Search_Usage",
+                            "type": "number",
+                            "fieldSearch": "",
+                            "required": false,
+                            "multivalue": false,
+                            "hidden": false,
+                            "editable": true,
+                            "displayName": "Workload Pool MEM Limit",
+                            "comment": ""
+                        }
+                    ],
+                    "calculationID": "ykzh3tarqhd",
+                    "owner": "Search_Activity.Introspection_Search_Usage",
+                    "editable": true,
+                    "comment": "",
+                    "calculationType": "Eval",
+                    "expression": "IF(ISNULL('data.workload_pool_mem_limit') OR 'data.workload_pool_mem_limit'=\"\", NULL(), 'data.workload_pool_mem_limit')"
                 }
             ],
             "constraints": [

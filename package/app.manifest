@@ -5,7 +5,7 @@
     "id": {
       "group": null, 
       "name": "global_monitoring_console", 
-      "version": "3.0.7"
+      "version": "2.0.80"
     }, 
     "author": [
       {

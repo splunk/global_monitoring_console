@@ -1,13 +1,10 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
-SPDX-License-Identifier: Apache-2.0 --><!-- 
-    app=ID name=view srch_cat=classification srch_tag=panel desc=text search=srch_str
-    splunk backup kvstore -appName global_monitoring_console -collectionName help_entries -archiveName gmc101 -auth admin: 
-  | from lookup:help_entries  | fields app, view, panel, classification, text, srch_str, disabled  | eval classification=if(classification="os", "OS", classification)   | outputlookup help_entries createinapp=true create_empty=true override_if_empty=false
-  --><form theme="dark" script="help_entries_list.js, load.js, tooltip.js" stylesheet="load.css, tooltip.css" onunloadCancelJobs="true">
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="help_entries_list.js, load.js, tooltip.js" stylesheet="load.css, tooltip.css" onunloadCancelJobs="true">
   <label>101 - Search Repository</label>
   <description>Search Repository Last Updated: January 2021</description>
   <search id="a01_dashboard">
     <query>| from lookup:help_entries 
+    `gmc_comment("| rename app as srch_num, app_version as srch_str, classification as srch_cat, panel as srch_tag, text as srch_des, view as srch_nme")`
     | fields srch_num, srch_nme, srch_tag, srch_cat, srch_des, srch_str, srch_sts
 | makemv delim="," srch_tag
 | stats Values(*) As * by srch_num | rex field=srch_str max_match=99 "\|\s*rest\s+(/services/|/servicesNS/-/-/)(?&lt;REST&gt;.*?)\s" | rex field=srch_str "\|\s*(?&lt;spl_command&gt;\w+)"
@@ -158,7 +155,6 @@ SPDX-License-Identifier: Apache-2.0 --><!--
         </search>
         <option name="count">10</option>
         <option name="drilldown">row</option>
-        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="wrap">true</option>
         <format type="color" field="Search Name">

@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>IDX - 07 - Indexer Queues Analysis - Dashboard - v3.0.7</label>
+  <label>IDX - 07 - Indexer Queues Analysis - Dashboard - v2.0.80</label>
   <description>Splunk Indexer Queues Information Dashboard</description>
   <search id="idx_07_indexer_queues">
     <query>index=_internal sourcetype=splunkd component=Metrics host=$host$ (splunk_server_group=dmc_group_indexer OR host=idx-i-*) group=queue name IN (auditqueue, parsingqueue, indexqueue, aggqueue, tcpin_queue, tcpout_queue, httpinputq, splunktcpin, typingqueue, udp_queue, nullqueue)

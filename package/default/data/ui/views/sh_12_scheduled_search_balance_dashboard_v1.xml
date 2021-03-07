@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark">
-  <label>SH - 12 - Scheduled Search Balance - Dashboard - v3.0.7</label>
+  <label>SH - 12 - Scheduled Search Balance - Dashboard - v2.0.80</label>
   <description>Create an Ephemeral Account on the search head you need to run curl on, make that user admin.  Delete the user when you are done with your change.</description>
   <fieldset submitButton="true" autoRun="false"></fieldset>
   <row>

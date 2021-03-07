@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>UF - 01 - Forwarding Analysis - Index Based - Dashboard - v3.0.7</label>
+  <label>UF - 01 - Forwarding Analysis - Index Based - Dashboard - v2.0.80</label>
   <description>Splunk Forwarding Analysis Information Index Based Dashboard</description>
   <search id="uf_01_forwarding_1">
     <query>(index=_internal sourcetype=splunkd (search_group=dmc_group_indexer OR host=idx-i-*) fwdType=* group=tcpin_connections guid=* connectionType IN (cooked, cookedSSL) )

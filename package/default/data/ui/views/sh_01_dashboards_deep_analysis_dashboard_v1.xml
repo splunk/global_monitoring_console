@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 01 - Dashboards Deep Analysis - Dashboard - v3.0.7</label>
+  <label>SH - 01 - Dashboards Deep Analysis - Dashboard - v2.0.80</label>
   <description>Splunk Dashboards, Reports/Alerts &amp; Lookups Analysis Dashboard</description>
   <search id="sh_01_dashboards_1">
     <query>| from lookup:splunk_rest_data_ui_views_sh_kv_store_lookup 
@@ -21,11 +21,10 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
   </search>
   <search id="sh_01_dashboards_2">
     <query>index=`setup_summary_index` source=splunk_internal_web_access_idx_summary_tracker 
-| fields _time shcluster_label Splunk_Instance app Dashboard_Name user Latest_Access min_spent max_spent avg_spent
-| `get_instance_roles(Splunk_Instance)` 
-| `get_shcluster_label(Splunk_Instance)` 
-| `get_dashboards_info(shcluster_label,app,Dashboard_Name)`
-| search shcluster_label="$shcluster_label1$" Splunk_Instance="$Splunk_Instance1$" Splunk_Roles="$Splunk_Roles1$" app="$app1$" Dashboard_Name="$title$"</query>
+| fields _time, shcluster_label, Splunk_Instance, app, view, user, spent, bytes, sid, useragent
+| `get_instance_roles(Splunk_Instance)`
+| `get_dashboards_info(shcluster_label,app,view)`
+| search shcluster_label="$shcluster_label1$" Splunk_Instance="$Splunk_Instance1$" Splunk_Roles="$Splunk_Roles1$" app="$app1$" view="$title$"</query>
     <earliest>$TimeRangePkr1.earliest$</earliest>
     <latest>$TimeRangePkr1.latest$</latest>
   </search>
@@ -33,7 +32,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
   <row>
     <panel>
       <html>
-          <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 01 - Dashboards Deep Analysis - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+          <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 01 - Dashboards Deep Analysis - Dashboard - v1 (Updated: Mar 04, 2021)</h1>
         </html>
     </panel>
   </row>
@@ -505,7 +504,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
     </panel>
   </row>
   <row id="Dashboards_Panel1">
-    <panel id="panel_accordion_togglepanel_false_dashboards_4" depends="$gadget_lib_loaded$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_5" depends="$gadget_lib_loaded$">
       <title>5.1 Dashboards - List</title>
       <input type="link" token="URI">
         <label>1. Dashboard URI</label>
@@ -526,10 +525,18 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
             </html>
       <table>
         <search base="sh_01_dashboards_1">
-          <query>| `get_latest_access_human(Days_Latest_Access)` | eval Num_Searches=mvcount(search) | table title label shcluster_label app sharing acl_perms_read acl_perms_write author updated emp_name num_panels Num_Searches Effective_autoRun auto_refresh_delay submitButton autoRun Days_Latest_Access_Display Latest_Access dashboard_size Dashboard_Reference | sort 0 num_panels | `rename_common_fields` | `rename_identity_fields` | `rename_reference_fields` | `rename_dashboards_fields`</query>
+          <query>| `get_latest_access_human(Days_Latest_Access)` 
+| eval Num_Searches=mvcount(search) 
+| table title label shcluster_label app sharing acl_perms_read acl_perms_write author updated emp_name num_panels Num_Searches Effective_autoRun auto_refresh_delay submitButton autoRun dashboard_size Dashboard_Reference 
+| sort 0 num_panels 
+| `rename_common_fields` 
+| `rename_identity_fields` 
+| `rename_reference_fields` 
+| `rename_dashboards_fields`</query>
         </search>
         <option name="count">5</option>
         <option name="drilldown">row</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">true</option>
         <option name="totalsRow">true</option>
         <option name="wrap">false</option>
@@ -567,7 +574,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
     </panel>
   </row>
   <row id="Dashboards_Panel2">
-    <panel id="panel_accordion_togglepanel_false_dashboards_52" depends="$show_single_value$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_6" depends="$show_single_value$">
       <title>5.2 Searches for: $selected_title$</title>
       <html>
                 <h1>Click on any entry to close all Drill Down Panels</h1>
@@ -595,7 +602,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         </drilldown>
       </table>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_dashboards_53" depends="$show_single_value$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_7" depends="$show_single_value$">
       <title>5.3 Description &amp; Panel Names for: $selected_title$</title>
       <table>
         <search base="sh_01_dashboards_1">
@@ -639,7 +646,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         </format>
       </table>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_dashboards_54" depends="$show_single_value$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_8" depends="$show_single_value$">
       <title>5.4 Time Ranges for: $selected_title$</title>
       <table>
         <title>5.4.1</title>
@@ -676,7 +683,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
     </panel>
   </row>
   <row id="Dashboards_Panel3">
-    <panel id="panel_accordion_togglepanel_false_dashboards_55" depends="$show_single_value$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_9" depends="$show_single_value$">
       <title>5.5 Index/Source Type/Source/Event Type Reference for: $selected_title$</title>
       <table>
         <title>5.5.1</title>
@@ -776,7 +783,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         </format>
       </table>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_dashboards_56" depends="$show_single_value$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_10" depends="$show_single_value$">
       <title>5.6 Report Reference for: $selected_title$</title>
       <table>
         <search base="sh_01_dashboards_1">
@@ -805,7 +812,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         </drilldown>
       </table>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_dashboards_57" depends="$show_single_value$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_11" depends="$show_single_value$">
       <title>5.7 Lookup Reference for: $selected_title$</title>
       <table>
         <search base="sh_01_dashboards_1">
@@ -836,7 +843,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
     </panel>
   </row>
   <row id="Dashboards_Panel4">
-    <panel id="panel_accordion_togglepanel_false_dashboards_81" depends="$show_single_value$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_12" depends="$show_single_value$">
       <title>5.8 Macro Reference for: $selected_title$</title>
       <table>
         <search base="sh_01_dashboards_1">
@@ -862,7 +869,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         </format>
       </table>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_dashboards_82" depends="$show_single_value$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_13" depends="$show_single_value$">
       <title>5.9 Macro Definition for: $selected_title$</title>
       <table>
         <search base="sh_01_dashboards_1">
@@ -888,7 +895,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         </format>
       </table>
     </panel>
-    <panel id="panel_accordion_togglepanel_false_dashboards_83" depends="$show_single_value$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_14" depends="$show_single_value$">
       <title>5.10 Rest Reference for: $selected_title$</title>
       <table>
         <search base="sh_01_dashboards_1">
@@ -928,7 +935,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
     </panel>
   </row>
   <row id="Dashboards_Panel5">
-    <panel id="panel_accordion_togglepanel_false_Reports_55" depends="$show_single_value$">
+    <panel id="panel_accordion_togglepanel_false_Reports_15" depends="$show_single_value$">
       <title>5.11 Dashboard Changes in the last 7 Days for: $selected_title$</title>
       <table>
         <title>Powered by : splunk_internal_splunkd_ui_access_ko_changes_idx_summary_tracker (Runs once every 5 Minutes)</title>
@@ -962,7 +969,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
     </panel>
   </row>
   <row id="Dashboards_Panel6">
-    <panel id="panel_accordion_togglepanel_false_dashboards_5" depends="$gadget_lib_loaded$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_16" depends="$gadget_lib_loaded$">
       <title>6. Dashboards Stats</title>
       <single>
         <search base="sh_01_dashboards_1">
@@ -1003,7 +1010,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
     </panel>
   </row>
   <row id="Dashboards_Panel21">
-    <panel id="panel_accordion_togglepanel_false_dashboards_8" depends="$gadget_lib_loaded$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_17" depends="$gadget_lib_loaded$">
       <title>1. Dashboards Stats By $split_by_tok_1$</title>
       <input type="dropdown" token="split_by_tok_1" searchWhenChanged="true">
         <label>1. Split By</label>
@@ -1048,7 +1055,7 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
     </panel>
   </row>
   <row id="Dashboards_Panel22">
-    <panel id="panel_accordion_togglepanel_false_dashboards_10" depends="$gadget_lib_loaded$">
+    <panel id="panel_accordion_togglepanel_false_dashboards_18" depends="$gadget_lib_loaded$">
       <title>2. Top N Most Used Dashboards Over Time</title>
       <input type="time" token="TimeRangePkr1" searchWhenChanged="true">
         <label>1. Time Range</label>
@@ -1143,10 +1150,8 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
         <label>8. Split By</label>
         <choice value="app">App</choice>
         <choice value="user">User</choice>
-        <choice value="Dashboard_Name">Dashboard Name</choice>
+        <choice value="view">Dashboard Name</choice>
         <choice value="Splunk_Instance">Splunk Instance</choice>
-        <default>Dashboard_Name</default>
-        <initialValue>Dashboard_Name</initialValue>
       </input>
       <input type="text" token="top_tok2" searchWhenChanged="true">
         <label>9. Timechart IN top:</label>
@@ -1173,9 +1178,102 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
       </chart>
     </panel>
   </row>
-  <row id="Dashboards_Panel9">
-    <panel id="panel_accordion_togglepanel_true_dashboards_11" depends="$gadget_lib_loaded$">
-      <title>7. Dashboards Associated GMC Job(s)</title>
+  <row id="Dashboards_Panel23">
+    <panel id="panel_accordion_togglepanel_false_dashboards_19" depends="$gadget_lib_loaded$">
+      <title>3. Used Dashboards</title>
+      <input type="time" token="TimeRangePkr1" searchWhenChanged="true">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="shcluster_label1" searchWhenChanged="true">
+        <label>3. Splunk SH (Cluster/Instance)</label>
+        <fieldForLabel>shcluster_label1</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="sh_01_dashboards_2">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Roles1" searchWhenChanged="true">
+        <label>4. Splunk Roles</label>
+        <fieldForLabel>Splunk_Roles1</fieldForLabel>
+        <fieldForValue>Splunk_Roles</fieldForValue>
+        <search base="sh_01_dashboards_2">
+          <query>| stats count by Splunk_Roles</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="Splunk_Instance1" searchWhenChanged="true">
+        <label>5. Splunk Instance</label>
+        <fieldForLabel>Splunk_Instance1</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="sh_01_dashboards_2">
+          <query>| stats count by Splunk_Instance</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="app1" searchWhenChanged="true">
+        <label>6. App</label>
+        <fieldForLabel>app1</fieldForLabel>
+        <fieldForValue>app</fieldForValue>
+        <search base="sh_01_dashboards_2">
+          <query>| stats count by app</query>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="title" searchWhenChanged="true">
+        <label>7. Dashboard Name</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>title</fieldForLabel>
+        <fieldForValue>view</fieldForValue>
+        <search base="sh_01_dashboards_2">
+          <query>| stats count by view</query>
+        </search>
+        <default>*</default>
+      </input>
+      <table>
+        <search base="sh_01_dashboards_2">
+          <query>| stats 
+    Values(user) As Users
+    latest(*) as *
+    latest(_time) As _time 
+    By shcluster_label app view 
+| `ustime_format(Latest_Access)` 
+| `get_useragent(useragent)` 
+| eval label=if(isnull(label), view, label) 
+| table _time, shcluster_label, Splunk_Instance, app, label, view, user, spent, bytes, browser_name, browser_version</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="shcluster_label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="Dashboards_Panel24">
+    <panel id="panel_accordion_togglepanel_true_dashboards_20" depends="$gadget_lib_loaded$">
+      <title>4. Dashboards Associated GMC Job(s)</title>
       <html>
                 <ol>
                    

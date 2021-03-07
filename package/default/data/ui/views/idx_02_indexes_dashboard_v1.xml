@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form onunloadCancelJobs="true" stylesheet="load.css" script="load.js" theme="dark">
-  <label>IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v3.0.7</label>
+  <label>IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v2.0.80</label>
   <description>Splunk Indexes deep analysis by Indexer Cluster with many filters and important index settings</description>
   <!--splunk_rest_data_indexes_idx_kv_store_lookup-->
   <search id="idx_02_indexes_1">
@@ -109,10 +109,14 @@ SPDX-License-Identifier: Apache-2.0 --><form onunloadCancelJobs="true" styleshee
     <earliest>$TimeRangePkr5.earliest$</earliest>
     <latest>$TimeRangePkr5.latest$</latest>
   </search>
-  
-  <row><panel><html><h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v1 (Updated: Jan 31, 2021)</h1></html></panel></row>
-  
   <fieldset submitButton="true" autoRun="false"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">IDX - 02 - Index Details &amp; Ingestion Deep Analysis - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel id="panel_accordion_togglepanel_false_inputs_1" depends="$gadget_lib_loaded$">
       <title>1. Indexes - Basic Filters</title>
@@ -1882,35 +1886,41 @@ SPDX-License-Identifier: Apache-2.0 --><form onunloadCancelJobs="true" styleshee
       <single>
         <title>IDX Cluster Latest Refresh</title>
         <search>
-          <query>| from lookup: splunk_rest_cluster_config_idx_kv_store_lookup | stats count by _time 
-| fields _time 
-| `strftime_format(_time)`
+          <query>| from lookup: splunk_rest_cluster_config_idx_kv_store_lookup 
+| stats latest(_time) As _time
+| `strftime_format(_time)` 
 | rename _time As "Indexes Latest Refresh"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
         </search>
         <option name="drilldown">none</option>
         <option name="height">50</option>
+        <option name="refresh.display">progressbar</option>
       </single>
       <single>
         <title>Indexes Latest Refresh</title>
         <search base="idx_02_indexes_1">
-          <query>| stats count by _time 
-| fields _time 
+          <query>| stats latest(_time) As _time
 | `strftime_format(_time)`
 | rename _time As "Indexes Latest Refresh"</query>
         </search>
         <option name="drilldown">none</option>
         <option name="height">50</option>
+        <option name="refresh.display">progressbar</option>
       </single>
       <single>
         <title>Volumes Latest Refresh</title>
         <search>
-          <query>| from lookup: splunk_rest_data_index_volumes_idx_kv_store_lookup | stats count by _time 
-| fields _time 
-| `strftime_format(_time)`
+          <query>| from lookup: splunk_rest_data_index_volumes_idx_kv_store_lookup 
+| stats latest(_time) As _time
+| `strftime_format(_time)` 
 | rename _time As "Volumes Latest Refresh"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
         </search>
         <option name="drilldown">none</option>
         <option name="height">50</option>
+        <option name="refresh.display">progressbar</option>
       </single>
     </panel>
   </row>

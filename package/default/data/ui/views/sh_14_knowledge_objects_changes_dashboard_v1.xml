@@ -1,0 +1,260 @@
+<!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
+SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js, tooltip.js" stylesheet="tabs.css, load.css, tooltip.css" onunloadCancelJobs="true">
+  <label>SH - 14 - Splunk Knowledge Object Changes - Dashboard - v2.0.80</label>
+  <description>Splunk Knowledge Object Changes Dashboard</description>
+  <search id="sh14_ko_changes">
+    <query>index=`setup_summary_index` source="splunk_internal_splunkd_ui_access_ko_changes_idx_summary_tracker" shcluster_label IN ($shcluster_label$) Knowledge_Object_Type IN ($Knowledge_Object_Type$) Knowledge_Object IN ($Knowledge_Object$) user IN ($user$) Change_Status IN ($Change_Status$)
+    | fields _time Change_Time shcluster_label Splunk_Instance user Client_IP Knowledge_Object_Type Knowledge_Object Change_Status Duration Provenance 
+    | search Splunk_Instance IN ($Splunk_Instance$) Change_Time=$Change_Time$
+</query>
+    <earliest>$TimeRangePkr1.earliest$</earliest>
+    <latest>$TimeRangePkr1.latest$</latest>
+  </search>
+  <fieldset submitButton="true" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <html>
+        <h1 style="color:rgb(207,49,128);font-size:25px;text-align:center">SH - 14 - Splunk Knowledge Object Changes - Dashboard - v1 (Updated: Jan 31, 2021)</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_Dashboards_0" depends="$gadget_lib_loaded$">
+      <title>Input Filters</title>
+      <input type="time" token="TimeRangePkr1">
+        <label>1. Time Range</label>
+        <default>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="multiselect" token="shcluster_label" searchWhenChanged="false">
+        <label>2.1 Cluster Label</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>shcluster_label</fieldForLabel>
+        <fieldForValue>shcluster_label</fieldForValue>
+        <search base="sh14_ko_changes">
+          <query>| stats count by shcluster_label</query>
+        </search>
+        <initialValue>*</initialValue>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="Splunk_Instance" searchWhenChanged="false">
+        <label>2.2 Splunk Instance</label>
+        <choice value="*">All</choice>
+        <fieldForLabel>Splunk_Instance</fieldForLabel>
+        <fieldForValue>Splunk_Instance</fieldForValue>
+        <search base="sh14_ko_changes">
+          <query>| stats count by Splunk_Instance</query>
+        </search>
+        <initialValue>*</initialValue>
+        <valuePrefix>"</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="Knowledge_Object_Type">
+        <label>3.1 Knowledge Object Type</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Knowledge_Object_Type</fieldForLabel>
+        <fieldForValue>Knowledge_Object_Type</fieldForValue>
+        <search base="sh14_ko_changes">
+          <query>| stats count by Knowledge_Object_Type</query>
+        </search>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="Knowledge_Object">
+        <label>3.2 Knowledge Object Name</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Knowledge_Object</fieldForLabel>
+        <fieldForValue>Knowledge_Object</fieldForValue>
+        <search base="sh14_ko_changes">
+          <query>| stats count by Knowledge_Object</query>
+        </search>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="user">
+        <label>4. User Performed the change</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>user</fieldForLabel>
+        <fieldForValue>user</fieldForValue>
+        <search base="sh14_ko_changes">
+          <query>| stats count by user</query>
+        </search>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="Change_Status">
+        <label>5. Change Status Code</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Change_Status</fieldForLabel>
+        <fieldForValue>Change_Status</fieldForValue>
+        <search base="sh14_ko_changes">
+          <query>| stats count by Change_Status</query>
+        </search>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="Client_IP">
+        <label>6. Client IP</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Client_IP</fieldForLabel>
+        <fieldForValue>Client_IP</fieldForValue>
+        <search base="sh14_ko_changes">
+          <query>| stats count by Client_IP</query>
+        </search>
+        <delimiter>,</delimiter>
+      </input>
+      <input type="multiselect" token="Change_Time">
+        <label>7. Change Time</label>
+        <choice value="*">All</choice>
+        <initialValue>*</initialValue>
+        <fieldForLabel>Change_Time_H</fieldForLabel>
+        <fieldForValue>Change_Time</fieldForValue>
+        <search base="sh14_ko_changes">
+          <query>| stats count by Change_Time
+| eval Change_Time_H=Change_Time | `ustime_format(Change_Time_H)`</query>
+        </search>
+        <delimiter>,</delimiter>
+      </input>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel_accordion_togglepanel_false_Dashboards_1" depends="$gadget_lib_loaded$">
+      <table id="tblToolTip">
+        <search base="sh14_ko_changes">
+          <query>| stats count latest(*) as * by shcluster_label Knowledge_Object
+| `ustime_format(updated)` 
+| `ustime_format(Change_Time)`
+| table shcluster_label Knowledge_Object_Type Knowledge_Object Change_Time user Client_IP Change_Status Duration</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="log_level">
+          <colorPalette type="map">{"INFO":#53A051,"WARN":#F8BE34,"ERROR":#DC4E41,"FATAL":#DC4E41,"UNSET":#006D9C}</colorPalette>
+        </format>
+        <format type="number" field="Num_Errors">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="Num_Errors">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" midColor="#F1813F" minColor="#F8BE34"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="75"></scale>
+        </format>
+        <format type="color" field="ShortMessage">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Knowledge_Object">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+      <single>
+        <title>Number of Knowledge Object Types</title>
+        <search base="sh14_ko_changes">
+          <query>| stats dc(Knowledge_Object_Type)</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,3000,70000,100000]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <title>Number of Knowledge Objects</title>
+        <search base="sh14_ko_changes">
+          <query>| stats dc(Knowledge_Object)</query>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,1000,5000,10000]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>GMC Complete Dashboard backup daily job</title>
+      <table>
+        <search>
+          <query>index=`setup_summary_index` source=splunk_rest_data_ui_views_sh_summary_data_backup shcluster_label IN ($shcluster_label$) title="$Knowledge_Object$"
+| stats latest(*) as * by shcluster_label app title
+| table updated, shcluster_label, app, sharing, author, label, title, , description 
+| sort 0 - updated 
+| `ustime_format(updated)`</query>
+          <earliest>$TimeRangePkr1.earliest$</earliest>
+          <latest>$TimeRangePkr1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">false</option>
+        <format type="color" field="label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="shcluster_label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+      <single>
+        <title>Number of Dashboards backed up in the last 24 hours by instance</title>
+        <search>
+          <query>index=`setup_summary_index` source=splunk_rest_data_ui_views_sh_summary_data_backup shcluster_label IN ($shcluster_label$) title="$Knowledge_Object$"
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">50</option>
+        <option name="rangeColors">["0xf8be34","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>You can recover the complete XML from the latest backup ie. in the last 24 hours.   you can find other versions if you run it in search</title>
+      <table>
+        <search>
+          <query>index=`setup_summary_index` source=splunk_rest_data_ui_views_sh_summary_data_backup shcluster_label IN ($shcluster_label$) title="$Knowledge_Object$" 
+| stats latest(data) as data latest(label) as label by shcluster_label app title 
+| table shcluster_label app title label data</query>
+          <earliest>$TimeRangePkr1.earliest$</earliest>
+          <latest>$TimeRangePkr1.latest$</latest>
+        </search>
+        <option name="count">1</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+        <format type="color" field="label">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+    <row>
+    <panel>
+      <html>
+                <hr style="height:5px;color:#FFFF31;background-color:#FFFF31"/>
+            </html>
+    </panel>
+  </row>
+</form>

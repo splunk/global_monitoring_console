@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>SH - 17 - Automation - Dashboard - v3.0.7</label>
+  <label>SH - 17 - Automation - Dashboard - v2.0.80</label>
   <description>GMC Automation Dashboard</description>
   <search id="sh_17_automation">
     <query>

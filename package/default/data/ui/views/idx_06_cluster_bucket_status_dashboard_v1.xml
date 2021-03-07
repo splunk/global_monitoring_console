@@ -2,7 +2,7 @@
 SPDX-License-Identifier: Apache-2.0 -->
 
 <form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v3.0.7</label>
+  <label>IDX - 06 - Indexer Cluster Bucket Status - Dashboard - v2.0.80</label>
   <description>Splunk Indexer Cluster Bucket Status Information Dashboard</description>
   <search id="idx_07_indexer_cluster_buckets">
     <query>

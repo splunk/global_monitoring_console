@@ -1,11 +1,11 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><!--sh_06_skipped_and_deferred_search_analysis_with_scheduled_time_dashboard_v1--><form theme="dark" script="load.js" stylesheet="load.css" onunloadCancelJobs="true">
-  <label>SH - 06 - Skipped and Deferred Search Analysis - Dashboard - v3.0.7</label>
+  <label>SH - 06 - Skipped and Deferred Search Analysis - Dashboard - v2.0.80</label>
   <description>Skipped and Deferred Search Analysis Dashboard</description>
   <!-- Base Searche Section Starts -->
   <search id="sh_06_skipp_deferred_1">
     <query>
-index=_internal sourcetype=scheduler (search_group=dmc_group_search_head OR host=sh-i-*) host IN (*$host$*) savedsearch_name=* 
+index=_internal sourcetype=scheduler `setup_search_head_search` host IN (*$host$*) savedsearch_name=* 
 | bin _time 
 | `get_shcluster_label(host)`
 | `get_saved_searches_info(shcluster_label,app,savedsearch_name)` 
@@ -55,7 +55,7 @@ COMP_EXEC &gt; 0 AND Deferred_EXEC = 0 AND realtime_schedule = 0, "Succeeded aft
   </search>
   <search id="sh_06_skipp_deferred_4">
     <query>
-index=_introspection sourcetype=splunk_resource_usage (component=PerProcess data.search_props.sid::*) "data.search_props.type"!="ad-hoc" (search_group=dmc_group_search_head OR host=sh-i-*) 
+index=_introspection sourcetype=splunk_resource_usage (component=PerProcess data.search_props.sid::*) "data.search_props.type"!="ad-hoc" `setup_search_head_search` 
 | fields _time host data.search_props.sid 
 | `get_shcluster_label(host)` 
 | search shcluster_label IN ($shcluster_label$) 
@@ -224,7 +224,7 @@ index=_introspection sourcetype=splunk_resource_usage (component=PerProcess data
         <initialValue>*</initialValue>
       </input>
       <input type="text" token="bin" searchWhenChanged="true">
-        <label>15. Time Bins</label>
+        <label>15. Time Bins (example: span=1h)</label>
         <default></default>
       </input>
     </panel>
@@ -502,7 +502,7 @@ index=_introspection sourcetype=splunk_resource_usage (component=PerProcess data
       <chart>
         <title>index=_introspection sourcetype=splunk_resource_usage</title>
         <search>
-          <query>index=_introspection sourcetype=splunk_resource_usage (component=PerProcess "data.process_type"=search ) (search_group=dmc_group_search_head OR host=sh-i-*) 
+          <query>index=_introspection sourcetype=splunk_resource_usage (component=PerProcess "data.process_type"=search ) `setup_search_head_search` 
 | rename data.* as * 
 | rename search_props.* as * 
 | `get_shcluster_label(host)` 
@@ -572,7 +572,7 @@ index=_introspection sourcetype=splunk_resource_usage (component=PerProcess data
       <title>5.3 Deployment-Wide Total Concurrent Scheduled Searches</title>
       <chart>
         <search>
-          <query>index=_introspection sourcetype=splunk_resource_usage (component=PerProcess "data.process_type"=search ) (search_group=dmc_group_search_head OR host=sh-i-*) 
+          <query>index=_introspection sourcetype=splunk_resource_usage (component=PerProcess "data.process_type"=search ) `setup_search_head_search`
 | rename data.* as * 
 | rename search_props.* as * 
 | `get_shcluster_label(host)` 
@@ -757,7 +757,7 @@ index=_introspection sourcetype=splunk_resource_usage (component=PerProcess data
       <chart>
         <search base="sh_06_skipp_deferred_1">
           <query>| timechart $bin$ 
-    ```max(Job_Exec) As Job_Exec```
+    max(Job_Exec) As Job_Exec
     max(Jobs_Skip_Ratio) As Jobs_Skip_Ratio
     max(Job_Success_Exec) As Job_Success_Exec
     max(Job_Skip_Exec) As Job_Skip_Exec</query>

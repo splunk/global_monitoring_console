@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.js" stylesheet="tabs.css, load.css" onunloadCancelJobs="true">
-  <label>SH - 07 - Calculated Fields / Field Extractions &amp; Transformations / Field Aliases - Dashboard - v3.0.7</label>
+  <label>SH - 07 - Calculated Fields / Field Extractions &amp; Transformations / Field Aliases - Dashboard - v2.0.80</label>
   <description>Splunk Calculated Fields, Field Extractions/Transformations and Field Aliases Dashboard</description>
   <search id="sh_07_field_calculated">
     <query>| from lookup:splunk_rest_data_props_calcfields_sh_kv_store_lookup 
@@ -1075,35 +1075,35 @@ SPDX-License-Identifier: Apache-2.0 --><form theme="dark" script="tabs.js, load.
       <single>
         <title>Calculated Fields Latest Refresh</title>
         <search base="sh_07_field_calculated">
-          <query>| stats count by _time 
-| fields _time 
+          <query>| stats latest(_time) As _time
 | `strftime_format(_time)`
 | rename _time As "Calculated Fields Latest Refresh"</query>
         </search>
         <option name="drilldown">none</option>
         <option name="height">50</option>
+        <option name="refresh.display">progressbar</option>
       </single>
       <single>
         <title>Field Extractions Latest Refresh</title>
         <search base="sh_07_field_extractions">
-          <query>| stats count by _time 
-| fields _time 
+          <query>| stats latest(_time) As _time
 | `strftime_format(_time)`
 | rename _time As "Field Extractions Latest Refresh"</query>
         </search>
         <option name="drilldown">none</option>
         <option name="height">50</option>
+        <option name="refresh.display">progressbar</option>
       </single>
       <single>
         <title>Field Aliases Latest Refresh</title>
         <search base="sh_07_field_aliases">
-          <query>| stats count by _time 
-| fields _time 
+          <query>| stats latest(_time) As _time
 | `strftime_format(_time)`
 | rename _time As "Field Aliases Latest Refresh"</query>
         </search>
         <option name="drilldown">none</option>
         <option name="height">50</option>
+        <option name="refresh.display">progressbar</option>
       </single>
     </panel>
   </row>

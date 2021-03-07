@@ -1,6 +1,6 @@
 <!-- SPDX-FileCopyrightText: 2020 Splunk Inc (AK Khamis) <akhamis@splunk.com>
 SPDX-License-Identifier: Apache-2.0 --><!--  (search_group="dmc_group_*" OR host IN (idx-i-*,sh-i-*,idm-i-*,c0m1-i-*)) --><form onunloadCancelJobs="true" stylesheet="load.css" script="load.js" theme="dark">
-  <label>IDX - 01 - Data Quality Analysis - Dashboard - v3.0.7</label>
+  <label>IDX - 01 - Data Quality Analysis - Dashboard - v2.0.80</label>
   <description>This dashboard helps you assess the quality of your incoming data by revealing issues that occur when the data is being indexed. These issues appear as warnings and errors in your splunkd.log.</description>
   <search id="idx_01_data_quality">
     <query>
